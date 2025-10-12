@@ -30,7 +30,6 @@ DirectX::XMFLOAT3 LightComponent::GetWorldPosition() const {
     return t.position;
 }
 
-// Forward ベクトル：回転 (rotation.y = yaw, rotation.x = pitch) 想定
 DirectX::XMFLOAT3 LightComponent::GetWorldDirection() const {
     if (!_Parent) return { 0,-1,0 };
     Transform t = _Parent->GetTransform();

@@ -11,7 +11,6 @@ void Object::BeginPlay(){
 
 void Object::EditUpdate(){
 	for (auto comp : _components) {
-		// カメラコンポーネントは更新しない
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
 		if (comp)comp->EditUpdate();
 	}
@@ -19,7 +18,6 @@ void Object::EditUpdate(){
 
 void Object::InGameUpdate(){
 	for (auto comp : _components) {
-		// カメラコンポーネントは更新しない
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
 		if (comp)comp->InGameUpdate();
 	}
@@ -37,10 +35,22 @@ void Object::UInit(){
 	_components.clear();
 }
 
-Object* Object::Clone()
-{
-	// オブジェクトを複製
-	return nullptr;
+Object* Object::Clone(){
+	Object* newObj = new Object();
+	newObj->_transform = this->_transform;
+	newObj->_ObjectName = this->_ObjectName + "_Clone";
+	for (auto comp : _components) {
+		if (comp) {
+			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj,comp->GetComponentType());
+			if (newComp) {
+				newComp->SetComponentName(comp->GetComponentName());
+				std::stringstream ss;
+				comp->SaveToFile(ss);
+				newComp->LoadFromFile(ss);
+			}
+		}
+	}
+	return newObj;
 }
 
 

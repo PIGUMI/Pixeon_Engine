@@ -42,7 +42,9 @@ private:
 	void TextureManagerWindow();
 	void ModelManagerWindow();
 	void SoundManagerWindow();
+	void ShowLicenseWindow();
 
+	bool ShowLicense				= false;
 	bool dockNeedsReset				= false;
 	bool ShowSettingsWindow			= false;
 	bool ShowConsoleWindow			= false;

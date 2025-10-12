@@ -167,6 +167,8 @@ void EditrGUI::WindowGUI()
 			ImGui::Separator();
             if (ImGui::MenuItem(ShiftJISToUTF8("環境設定").c_str())) ShowSettingsWindow = true;
             ImGui::Separator();
+			if (ImGui::MenuItem(ShiftJISToUTF8("ライセンス表示").c_str())) ShowLicense = true;
+            ImGui::Separator();
             if (ImGui::MenuItem(ShiftJISToUTF8("終了").c_str())) SetRun(false);
             ImGui::EndMenu();
         }
@@ -284,6 +286,7 @@ void EditrGUI::WindowGUI()
 	TextureManagerWindow();
 	ModelManagerWindow();
 	SoundManagerWindow();
+    ShowLicenseWindow();
 }
 
 void EditrGUI::ShowGameView()
@@ -312,6 +315,19 @@ void EditrGUI::ShowGameView()
     // --- ゲーム画面（プレビュー） ---
     ID3D11ShaderResourceView* srv = EngineManager::GetInstance()->GetGameRender();
     ImVec2 size = ImGui::GetContentRegionAvail();
+	// アスペクト比16:9に合わせる
+	float aspect = 16.0f / 9.0f;
+	if (size.x / size.y > aspect) {
+		size.x = size.y * aspect;
+	}
+	else {
+		size.y = size.x / aspect;
+	}
+	// 中央に配置
+	// 上部のコントロールバーの高さを考慮して中央に配置
+	ImVec2 pos = ImGui::GetCursorPos();
+	pos.x += (ImGui::GetContentRegionAvail().x - size.x) * 0.5f;
+	ImGui::SetCursorPosX(pos.x);
     if (srv)
         ImGui::Image((ImTextureID)srv, size);
     else
@@ -520,6 +536,54 @@ void EditrGUI::SoundManagerWindow(){
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
     if (ImGui::Begin(ShiftJISToUTF8("サウンドマネージャー").c_str(), &ShowSoundManagerWindow, flags)) {
         SoundManager::Instance()->DrawDebugGUI();
+        ImGui::End();
+	}
+}
+
+void EditrGUI::ShowLicenseWindow(){
+	if (!ShowLicense)return;
+    ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+    if(ImGui::Begin(ShiftJISToUTF8("ライセンス情報").c_str(), &ShowLicense, flags)){
+        const char* license_text =
+            "本ソフトウェアは、以下のオープンソースライブラリを使用しています。\n"
+            "1. Dear ImGui (MIT License)\n"
+            "2. Bullet Physics Library (zlib License)\n"
+            "\n"
+            "本ソフトウェアは改変・再配布自由ですが、改変配布時は作成者AC30Wの表記をお願いします。\n"
+            "本ソフトウェアの利用によるいかなる損害に対しても、作成者は責任を負いません。\n"
+            "\n"
+            "Dear ImGui - MIT License\n"
+            "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+            "of this software and associated documentation files (the \"Software\"), to deal\n"
+            "in the Software without restriction, including without limitation the rights\n"
+            "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+            "copies of the Software, and to permit persons to whom the Software is\n"
+            "furnished to do so, subject to the following conditions:\n"
+            "The above copyright notice and this permission notice shall be included in all\n"
+            "copies or substantial portions of the Software.\n"
+            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
+            "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+            "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+            "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+            "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+            "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
+            "SOFTWARE.\n"
+            "\n"
+            "Bullet Physics Library - zlib License\n"
+            "This software is provided 'as-is', without any express or implied warranty.\n"
+            "In no event will the authors be held liable for any damages arising from the use of this software.\n"
+            "Permission is granted to anyone to use this software for any purpose,\n"
+            "including commercial applications, and to alter it and redistribute it freely,\n"
+            "subject to the following restrictions:\n"
+            "1. The origin of this software must not be misrepresented;\n"
+            "2. Altered source versions must be plainly marked as such;\n"
+            "3. This notice may not be removed or altered from any source distribution.\n"
+            "\n"
+            "Copyright (c) AC30W\n"
+            ;
+		ImGui::TextWrapped(ShiftJISToUTF8(license_text).c_str());
+
         ImGui::End();
 	}
 }
