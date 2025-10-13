@@ -52,9 +52,9 @@ private:
 	static SettingManager* instance;
 private:
 	// ê›íËçÄñ⁄
-	std::string AssetsFilePath	= "SceneRoot/Assets";
-	std::string ArchiveFilePath = "SceneRoot/Archive";
-	std::string SceneFilePath	= "SceneRoot/Scene";
+	std::string AssetsFilePath	= "SceneRoot/Assets/";
+	std::string ArchiveFilePath = "SceneRoot/Archive/";
+	std::string SceneFilePath	= "SceneRoot/Scene/";
 	std::string PackingTool		= "SceneRoot/Tool/Asset packaging tool.exe";
 	std::string ExternelTool	= "SceneRoot/Tool/IN/";
 	std::string ShaderFilePath	= "SceneRoot/Shader/hlsl/";

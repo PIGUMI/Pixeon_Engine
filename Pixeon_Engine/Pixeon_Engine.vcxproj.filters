@@ -291,5 +291,8 @@
     <Text Include="仕様書.txt">
       <Filter>リソース ファイル\Text</Filter>
     </Text>
+    <Text Include="追加実装予定機能.txt">
+      <Filter>リソース ファイル\Text</Filter>
+    </Text>
   </ItemGroup>
 </Project>
