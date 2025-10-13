@@ -164,6 +164,9 @@
     <ClCompile Include="File.cpp">
       <Filter>ソース ファイル\Sys</Filter>
     </ClCompile>
+    <ClCompile Include="ImageRender.cpp">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="content_Item.h">
@@ -279,6 +282,9 @@
     </ClInclude>
     <ClInclude Include="File.h">
       <Filter>ソース ファイル\Sys</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageRender.h">
+      <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

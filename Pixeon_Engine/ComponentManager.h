@@ -17,6 +17,7 @@ public:
 		GEOMETRY,
 		MODEL,
 		LIGHT,
+		IMAGE,
 		MAX,
 	};
 
