@@ -1,14 +1,14 @@
 {
-    "ArchiveFilePath": "SceneRoot/Archive/",
-    "AssetsFilePath": "SceneRoot/Assets/",
+    "ArchiveFilePath": "SceneRoot/Archive",
+    "AssetsFilePath": "SceneRoot/Assets",
     "AutoSaveInterval": 5,
     "BackgroundColor": [
-        1.0,
-        1.0,
-        1.0,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
         1.0
     ],
     "ExternelTool": "SceneRoot/Tool/IN/",
-    "SceneFilePath": "SceneRoot/Scene/",
+    "SceneFilePath": "SceneRoot/Scene",
     "bZBuffer": true
 }

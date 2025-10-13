@@ -11,6 +11,7 @@
 
 enum class ShaderStage { VS, PS };
 
+
 class ShaderManager {
 public:
     static ShaderManager* GetInstance();
