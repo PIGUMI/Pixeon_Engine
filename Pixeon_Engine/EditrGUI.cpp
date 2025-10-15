@@ -14,6 +14,7 @@
 #include "TextureManager.h"
 #include "ModelManager.h"
 #include "SoundManager.h"
+#include "SceneManger.h"
 
 #pragma comment(lib, "windowscodecs.lib")
 
@@ -159,6 +160,9 @@ void EditrGUI::WindowGUI()
             ImGui::MenuItem(ShiftJISToUTF8("新規シーン").c_str());
             ImGui::MenuItem(ShiftJISToUTF8("開く...").c_str());
             ImGui::MenuItem(ShiftJISToUTF8("保存").c_str());
+            ImGui::Separator();
+			if (ImGui::MenuItem(ShiftJISToUTF8("シーン作成").c_str())) ShowSceneCreate = true;
+            ImGui::Separator();
             if (ImGui::MenuItem(ShiftJISToUTF8("シェーダーリスト").c_str())) ShowShaderListWindow = true;
 			if (ImGui::MenuItem(ShiftJISToUTF8("アセットマネージャー").c_str())) ShowAssetManagerWindow = true;
 			if (ImGui::MenuItem(ShiftJISToUTF8("テクスチャマネージャー").c_str())) ShowTextureManagerWindow = true;
@@ -287,6 +291,7 @@ void EditrGUI::WindowGUI()
 	ModelManagerWindow();
 	SoundManagerWindow();
     ShowLicenseWindow();
+    ShowSceneCreateWindow();
 }
 
 void EditrGUI::ShowGameView()
@@ -342,6 +347,34 @@ void EditrGUI::ShowConsole(){
 
 
 	ImGui::End();
+}
+
+void EditrGUI::ShowSceneCreateWindow()
+{
+	if (!ShowSceneCreate)return;
+    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_FirstUseEver);
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+    if (ImGui::Begin(ShiftJISToUTF8("シーン作成##SceneManager_CreateScene").c_str(), &ShowSceneCreate, flags)) {
+		static char sceneName[128] = "NewScene";
+		ImGui::InputText(ShiftJISToUTF8("シーン名").c_str(), sceneName, sizeof(sceneName));
+		ImGui::Separator();
+		ImGui::Text(ShiftJISToUTF8("説明").c_str());
+		ImGui::TextWrapped(ShiftJISToUTF8("新しいシーンを作成します。シーン名を入力して作成ボタンを押してください。").c_str());
+        ImGui::Separator();
+        if (ImGui::Button(ShiftJISToUTF8("作成").c_str(), ImVec2(120, 0))) {
+            bool OK = SceneManger::GetInstance()->CreateAndRegisterScene(sceneName);
+            if (OK){
+				// 作成成功
+                MessageBoxA(NULL, "シーンの作成に成功しました。", "成功", MB_OK | MB_ICONINFORMATION);
+                // 名前の初期化
+				strcpy_s(sceneName, "NewScene");
+            }
+            else {
+                MessageBoxA(NULL, "シーンの作成に失敗しました。", "失敗", MB_OK | MB_ICONERROR);
+            }
+        }
+		ImGui::End();
+    }
 }
 
 void EditrGUI::ShaderListWindow(){

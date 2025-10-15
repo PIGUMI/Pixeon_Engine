@@ -35,9 +35,10 @@ public:
 	void Load();
 
 	Scene* GetCurrentScene() { return _currentScene; }
+	bool CreateAndRegisterScene(std::string SceneName);
 
 private:
-	bool CreateAndRegisterScene(std::string SceneName);
+	
 	void RegisterScene(std::string Name, std::function<Scene* ()> creator);
 	std::vector<std::string> ListSceneFiles();
 

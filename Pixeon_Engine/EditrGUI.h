@@ -33,6 +33,7 @@ private:
 	void ShowGameView();
 	void ShowConsole();
 
+	void ShowSceneCreateWindow();
 	void ShaderListWindow();
 	void ExternalToolsWindow();
 	void SettingWindow();
@@ -56,6 +57,7 @@ private:
 	bool ShowTextureManagerWindow	= false;
 	bool ShowModelManagerWindow		= false;
 	bool ShowSoundManagerWindow		= false;
+	bool ShowSceneCreate			= false;
 
 private:
 	static ID3D11ShaderResourceView* LoadImg(const std::wstring& filename, ID3D11Device* device);
