@@ -394,7 +394,9 @@ void EditrGUI::ShowSceneCreateWindow()
 		// シーン一覧
 		ImGui::Text(ShiftJISToUTF8("シーン一覧").c_str());
 		auto sceneList = SceneManger::GetInstance()->GetSceneList();
+		ImGui::BeginChild("SceneListChild###EditerGUI___", ImVec2(0, 0), true);
         for (const auto& scene : sceneList) {ImGui::Text(ShiftJISToUTF8(scene).c_str());};
+		ImGui::EndChild();
     }
     ImGui::End();
 }
