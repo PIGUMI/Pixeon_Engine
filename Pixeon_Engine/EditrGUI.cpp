@@ -353,14 +353,16 @@ void EditrGUI::ShowSceneCreateWindow()
 {
 	if (!ShowSceneCreate)return;
     ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_FirstUseEver);
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
     if (ImGui::Begin(ShiftJISToUTF8("シーン作成##SceneManager_CreateScene").c_str(), &ShowSceneCreate, flags)) {
 		static char sceneName[128] = "NewScene";
 		ImGui::InputText(ShiftJISToUTF8("シーン名").c_str(), sceneName, sizeof(sceneName));
 		ImGui::Separator();
 		ImGui::Text(ShiftJISToUTF8("説明").c_str());
 		ImGui::TextWrapped(ShiftJISToUTF8("新しいシーンを作成します。シーン名を入力して作成ボタンを押してください。").c_str());
+
         ImGui::Separator();
+        // シーン作成ボタン
         if (ImGui::Button(ShiftJISToUTF8("作成").c_str(), ImVec2(120, 0))) {
             bool OK = SceneManger::GetInstance()->CreateAndRegisterScene(sceneName);
             if (OK){
@@ -373,8 +375,21 @@ void EditrGUI::ShowSceneCreateWindow()
                 MessageBoxA(NULL, "シーンの作成に失敗しました。", "失敗", MB_OK | MB_ICONERROR);
             }
         }
-		ImGui::End();
+        // シーンチェンジ
+        ImGui::Separator();
+		static char changeSceneName[128] = "";
+		ImGui::InputText(ShiftJISToUTF8("シーン名##ChangeScene").c_str(), changeSceneName, sizeof(changeSceneName));
+        if (ImGui::Button(ShiftJISToUTF8("シーン切り替え").c_str(), ImVec2(120, 0)))SceneManger::GetInstance()->ChangeScene(changeSceneName);
+ 
+        ImGui::Separator();
+		// シーン一覧
+		ImGui::Text(ShiftJISToUTF8("シーン一覧").c_str());
+		auto sceneList = SceneManger::GetInstance()->GetSceneList();
+        for (const auto& scene : sceneList) {ImGui::Text(ShiftJISToUTF8(scene).c_str());};
+
+		
     }
+    ImGui::End();
 }
 
 void EditrGUI::ShaderListWindow(){
