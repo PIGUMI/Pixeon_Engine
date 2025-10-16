@@ -15,6 +15,7 @@
 #include "ModelManager.h"
 #include "SoundManager.h"
 #include "SceneManger.h"
+#include "Scene.h"
 
 #pragma comment(lib, "windowscodecs.lib")
 
@@ -359,8 +360,7 @@ void EditrGUI::ShowSceneCreateWindow()
 		ImGui::InputText(ShiftJISToUTF8("シーン名").c_str(), sceneName, sizeof(sceneName));
 		ImGui::Separator();
 		ImGui::Text(ShiftJISToUTF8("説明").c_str());
-		ImGui::TextWrapped(ShiftJISToUTF8("新しいシーンを作成します。シーン名を入力して作成ボタンを押してください。").c_str());
-
+        ImGui::TextWrapped(ShiftJISToUTF8("新しいシーンを作成します。シーン名を入力して作成ボタンを押してください。").c_str());
         ImGui::Separator();
         // シーン作成ボタン
         if (ImGui::Button(ShiftJISToUTF8("作成").c_str(), ImVec2(120, 0))) {
@@ -377,6 +377,15 @@ void EditrGUI::ShowSceneCreateWindow()
         }
         // シーンチェンジ
         ImGui::Separator();
+		ImGui::Text(ShiftJISToUTF8("現在のシーン:").c_str());
+		ImGui::SameLine();
+		Scene* current = SceneManger::GetInstance()->GetCurrentScene();
+        if (current) {
+            std::string currentScene = SceneManger::GetInstance()->GetCurrentScene()->GetName();
+            ImGui::Text(ShiftJISToUTF8(("現在のシーン: " + currentScene).c_str()).c_str());
+        }
+
+        ImGui::Separator();
 		static char changeSceneName[128] = "";
 		ImGui::InputText(ShiftJISToUTF8("シーン名##ChangeScene").c_str(), changeSceneName, sizeof(changeSceneName));
         if (ImGui::Button(ShiftJISToUTF8("シーン切り替え").c_str(), ImVec2(120, 0)))SceneManger::GetInstance()->ChangeScene(changeSceneName);
@@ -386,8 +395,6 @@ void EditrGUI::ShowSceneCreateWindow()
 		ImGui::Text(ShiftJISToUTF8("シーン一覧").c_str());
 		auto sceneList = SceneManger::GetInstance()->GetSceneList();
         for (const auto& scene : sceneList) {ImGui::Text(ShiftJISToUTF8(scene).c_str());};
-
-		
     }
     ImGui::End();
 }

@@ -17,6 +17,10 @@ void EditrGUI::ShowHierarchy()
     ImGui::Begin(ShiftJISToUTF8("ヒエラルキー").c_str());
     // シーン内のオブジェクトをリスト表示
     Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+	ImGui::Text(ShiftJISToUTF8("シーン: ").c_str());
+	ImGui::SameLine();
+	ImGui::Text(ShiftJISToUTF8(currentScene ? currentScene->GetName() : "No Scene").c_str());
+    ImGui::Separator();
     // 右クリックでコンテキストメニュー表示
     if (ImGui::BeginPopupContextWindow("HierarchyContextMenu", ImGuiPopupFlags_MouseButtonRight))
     {

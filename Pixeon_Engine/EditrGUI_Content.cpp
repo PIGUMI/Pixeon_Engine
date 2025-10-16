@@ -131,7 +131,7 @@ void EditrGUI::ShowContentDrawer() {
             );
         }
 
-        ImGui::PopStyleColor(3); // •K‚¸3‚Âpop‚·‚é
+        ImGui::PopStyleColor(3);
 
         float textWidth = ImGui::CalcTextSize(ShiftJISToUTF8(AbbreviateName(name, 12)).c_str()).x;
         ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
