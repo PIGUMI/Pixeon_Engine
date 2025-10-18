@@ -11,8 +11,10 @@
 #include <string>
 #include <Windows.h> // ShellExecute用
 
+
 static std::string selectedExt = "";
 static std::filesystem::path currentDir;
+
 
 ImTextureID EditrGUI::GetAssetIcon(EditrGUI* gui, const std::string& name) {
     size_t dot = name.find_last_of('.');
@@ -40,7 +42,6 @@ std::string AbbreviateName(const std::string& name, size_t maxLen = 16) {
     if (remain > base.size()) remain = base.size();
     return base.substr(0, remain) + "..." + ext;
 }
-
 // Visual Studioでファイルを開く
 void OpenWithVisualStudio(const std::string& filepath) {
     ShellExecuteA(NULL, "open", "devenv.exe", filepath.c_str(), NULL, SW_SHOWNORMAL);
@@ -57,6 +58,7 @@ void  EditrGUI::HandleAssetClick(const std::filesystem::path& path)
         // ソースコードやシェーダは Visual Studio で開く（devenv がインストールされている場合）
         OpenWithVisualStudio(fullPath);
     }
+
     // シーンファイルを開く
     if (ext == ".scene")
     {
@@ -64,16 +66,24 @@ void  EditrGUI::HandleAssetClick(const std::filesystem::path& path)
 		std::string sceneName = path.stem().string();
 		std::vector<std::string> sceneList = SceneManger::GetInstance()->GetSceneList();
 		// シーンリストに存在する場合のみ切り替え
-
-        if(MessageBox(EngineManager::GetInstance()->GetWindowHandle(), "シーンを切り替えますか？", "確認", MB_YESNO))SceneManger::GetInstance()->ChangeScene(sceneName);
+        SceneManger::GetInstance()->ChangeScene(sceneName);
     }
-
-
-
-
-
 }
 
+void EditrGUI::HandleAssetContextMenu(const std::filesystem::path& path)
+{
+    std::string ext = path.extension().string();
+    std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::string fullPath = path.string();
+
+    if (ext == ".scene"){
+        if (ImGui::MenuItem(ShiftJISToUTF8("名前変更").c_str())) {
+			SceneRenameNewName_ = path.stem().string();
+            ShowSceneRename = true;
+        }
+    }
+
+}
 
 void EditrGUI::ShowContentDrawer() {
     // 初期パス設定（Assetsフォルダ）
@@ -166,10 +176,29 @@ void EditrGUI::ShowContentDrawer() {
 
         float textWidth = ImGui::CalcTextSize(ShiftJISToUTF8(AbbreviateName(name, 12)).c_str()).x;
         ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
+
+        ImGui::PushID(name.c_str());
         bool nameClicked = ImGui::Selectable(
             ShiftJISToUTF8(AbbreviateName(name, 12)).c_str(),
             isSelected, 0, ImVec2(itemWidth, 0)
         );
+
+        // 右クリック（コンテキストメニュー）：BeginPopupContextItem を利用
+        if (ImGui::BeginPopupContextItem("context")) {
+            // エントリに対する右クリックメニューを表示
+            if (!isDir) {
+                HandleAssetContextMenu(entry.path());
+            }
+            else {
+                // ディレクトリに対するメニュー（例）
+                if (ImGui::MenuItem("Open")) {
+                    currentDir = entry.path();
+                }
+            }
+            ImGui::EndPopup();
+        }
+        ImGui::PopID();
+
 
         // クリック判定
         if (iconClicked || nameClicked) {
@@ -186,6 +215,9 @@ void EditrGUI::ShowContentDrawer() {
         ImGui::EndGroup();
         ImGui::NextColumn();
     }
+
+
+
     ImGui::Columns(1);
     ImGui::EndChild();
     ImGui::End();

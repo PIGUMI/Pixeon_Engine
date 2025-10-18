@@ -33,7 +33,6 @@ void SceneManger::Init(){
 		else{
 		}
 	}
-
 	ChangeScene(_StartSceneName);
 }
 
@@ -88,6 +87,7 @@ void SceneManger::Draw(){
 // シーンの変更
 void SceneManger::ChangeScene(std::string SceneName){
 	auto it = _SceneCreators.find(SceneName);
+	
 	if (it != _SceneCreators.end()) {
 		_nextScene = it->second();
 	}
@@ -164,8 +164,9 @@ SceneManger::~SceneManger(){
 bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::string& newName){
 	std::string oldPath = SettingManager::GetInstance()->GetSceneFilePath() + oldName;
 	std::string newPath = SettingManager::GetInstance()->GetSceneFilePath() + newName;
+	oldPath += ".scene";
+	newPath += ".scene";
 	if (std::rename(oldPath.c_str(), newPath.c_str()) != 0) {
-		// リネーム失敗
 		return false;
 	}
 	return true;

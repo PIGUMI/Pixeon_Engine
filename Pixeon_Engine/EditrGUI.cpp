@@ -293,6 +293,7 @@ void EditrGUI::WindowGUI()
 	SoundManagerWindow();
     ShowLicenseWindow();
     ShowSceneCreateWindow();
+    ShowSceneRenameWindow();
 }
 
 void EditrGUI::ShowGameView()
@@ -596,6 +597,44 @@ void EditrGUI::SoundManagerWindow(){
         ImGui::End();
 	}
 }
+
+void EditrGUI::ShowSceneRenameWindow()
+{
+    if (!ShowSceneRename)return;
+    ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+    if (ImGui::Begin(ShiftJISToUTF8("シーンリネーム").c_str(), &ShowSceneRename, flags))
+    {
+        static char oldSceneName[128] = "";
+        static char newSceneName[128] = "";
+        
+		// stringをchar配列に変換
+        std::string currentSceneName = SceneRenameNewName_;
+		strncpy_s(oldSceneName, currentSceneName.c_str(), sizeof(oldSceneName));
+
+        ImGui::InputText(ShiftJISToUTF8("現在のシーン名").c_str(), oldSceneName, sizeof(oldSceneName));
+        ImGui::InputText(ShiftJISToUTF8("新しいシーン名").c_str(), newSceneName, sizeof(newSceneName));
+        ImGui::Separator();
+        ImGui::Text(ShiftJISToUTF8("説明").c_str());
+        ImGui::TextWrapped(ShiftJISToUTF8("シーン名を変更します。現在のシーン名と新しいシーン名を入力してリネームボタンを押してください。").c_str());
+        ImGui::Separator();
+        if (ImGui::Button(ShiftJISToUTF8("リネーム実行").c_str(), ImVec2(120, 0))) {
+			bool OK = SceneManger::GetInstance()->RenameFileInDirectory(oldSceneName, newSceneName);
+            if (OK) {
+                MessageBoxA(NULL, "シーン名の変更に成功しました。", "成功", MB_OK | MB_ICONINFORMATION);
+                // 名前の初期化
+                strcpy_s(oldSceneName, "");
+                strcpy_s(newSceneName, "");
+				SceneRenameNewName_ = "";
+            }
+            else {
+                MessageBoxA(NULL, "シーン名の変更に失敗しました。", "失敗", MB_OK | MB_ICONERROR);
+            }
+		}
+		ImGui::End();
+    }
+}
+
 
 void EditrGUI::ShowLicenseWindow(){
 	if (!ShowLicense)return;

@@ -8,6 +8,7 @@
 #include "IMGUI/imgui_internal.h"
 #include <d3d11.h>
 #include <wincodec.h>
+#include <iostream>
 #include <filesystem>
 
 class Object;
@@ -40,13 +41,16 @@ private:
 	void SettingWindow();
 	void ShaderEditorWindow();
 
+
 	void AssetManagerWindow();
 	void TextureManagerWindow();
 	void ModelManagerWindow();
 	void SoundManagerWindow();
 	void ShowLicenseWindow();
 	void HandleAssetClick(const std::filesystem::path& path);
-	
+	void HandleAssetContextMenu(const std::filesystem::path& path);
+	void ShowSceneRenameWindow();
+
 
 	bool ShowLicense				= false;
 	bool dockNeedsReset				= false;
@@ -61,6 +65,7 @@ private:
 	bool ShowModelManagerWindow		= false;
 	bool ShowSoundManagerWindow		= false;
 	bool ShowSceneCreate			= false;
+	bool ShowSceneRename			= false;
 
 private:
 	static ID3D11ShaderResourceView* LoadImg(const std::wstring& filename, ID3D11Device* device);
@@ -79,6 +84,7 @@ private:
 private:
 	static EditrGUI* instance;
 	Object* SelectedObject = nullptr;
+	std::string SceneRenameNewName_;
 private:
 	EditrGUI() {}
 	~EditrGUI() {}
