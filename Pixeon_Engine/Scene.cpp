@@ -165,7 +165,6 @@ void Scene::Draw() {
 	for (auto& obj : sortedList) if (obj)obj->Draw();
 }
 
-
 // シーンの保存　json形式の状態のまま拡張子を.sceneに変更する
 void Scene::SaveToFile(){
 	std::vector<Object*> SaveObjects;

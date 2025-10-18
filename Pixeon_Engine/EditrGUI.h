@@ -8,6 +8,7 @@
 #include "IMGUI/imgui_internal.h"
 #include <d3d11.h>
 #include <wincodec.h>
+#include <filesystem>
 
 class Object;
 
@@ -44,6 +45,8 @@ private:
 	void ModelManagerWindow();
 	void SoundManagerWindow();
 	void ShowLicenseWindow();
+	void HandleAssetClick(const std::filesystem::path& path);
+	
 
 	bool ShowLicense				= false;
 	bool dockNeedsReset				= false;

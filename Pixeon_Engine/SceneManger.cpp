@@ -106,14 +106,20 @@ bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
 		Scene* newScene = new Scene();
 		newScene->SetName(SceneName);
 		return newScene;
-		});
+	});
+
+	Scene* scene = new Scene();
+	scene->SetName(SceneName);
+	scene->SaveToFile();
+	delete scene;
+	scene = nullptr;
+
 	return true;
 }
 
 // シーンの登録
 void SceneManger::RegisterScene(std::string Name, std::function<Scene* ()> creator){
 	_SceneCreators[Name] = creator;
-	_sceneList.push_back(Name);
 }
 
 // ファイル名の取得

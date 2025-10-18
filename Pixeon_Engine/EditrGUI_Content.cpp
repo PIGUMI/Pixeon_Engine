@@ -4,6 +4,8 @@
 #include "IMGUI/imgui_impl_win32.h"
 #include "IMGUI/imgui_internal.h"
 #include "SettingManager.h"
+#include "SceneManger.h"
+#include "EngineManager.h"
 #include <filesystem>
 #include <vector>
 #include <string>
@@ -43,6 +45,35 @@ std::string AbbreviateName(const std::string& name, size_t maxLen = 16) {
 void OpenWithVisualStudio(const std::string& filepath) {
     ShellExecuteA(NULL, "open", "devenv.exe", filepath.c_str(), NULL, SW_SHOWNORMAL);
 }
+
+void  EditrGUI::HandleAssetClick(const std::filesystem::path& path)
+{
+    std::string ext = path.extension().string();
+    // 大文字小文字を区別しないように小文字化
+    std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::string fullPath = path.string();
+
+    if (ext == ".cpp" || ext == ".h" || ext == ".cs" || ext == ".hlsl" || ext == ".fx" || ext == ".json") {
+        // ソースコードやシェーダは Visual Studio で開く（devenv がインストールされている場合）
+        OpenWithVisualStudio(fullPath);
+    }
+    // シーンファイルを開く
+    if (ext == ".scene")
+    {
+		// 拡張子を除いた名前を取得
+		std::string sceneName = path.stem().string();
+		std::vector<std::string> sceneList = SceneManger::GetInstance()->GetSceneList();
+		// シーンリストに存在する場合のみ切り替え
+
+        if(MessageBox(EngineManager::GetInstance()->GetWindowHandle(), "シーンを切り替えますか？", "確認", MB_YESNO))SceneManger::GetInstance()->ChangeScene(sceneName);
+    }
+
+
+
+
+
+}
+
 
 void EditrGUI::ShowContentDrawer() {
     // 初期パス設定（Assetsフォルダ）
@@ -145,6 +176,10 @@ void EditrGUI::ShowContentDrawer() {
             selectedEntryPath = entry.path();
             if (isDir) {
                 currentDir = entry.path();
+            }
+            else
+            {
+				HandleAssetClick(entry.path());
             }
         }
 
