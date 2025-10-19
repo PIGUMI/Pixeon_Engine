@@ -38,7 +38,7 @@ public:
 	bool CreateAndRegisterScene(std::string SceneName);
 
 private:
-	
+	bool CreateAndRegisterDefaultScene(std::string SceneName);
 	void RegisterScene(std::string Name, std::function<Scene* ()> creator);
 	std::vector<std::string> ListSceneFiles();
 

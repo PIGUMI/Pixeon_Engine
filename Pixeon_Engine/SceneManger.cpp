@@ -28,7 +28,7 @@ void SceneManger::Init(){
 	for (const auto& fileName : _sceneList)
 	{
 		std::string sceneName = fileName.substr(0, fileName.find_last_of('.'));
-		if (CreateAndRegisterScene(sceneName)){
+		if (CreateAndRegisterDefaultScene(sceneName)){
 		}
 		else{
 		}
@@ -93,7 +93,7 @@ void SceneManger::ChangeScene(std::string SceneName){
 	}
 }
 
-// V‹KƒV[ƒ“‚Ìì¬‚Æ“o˜^
+// V‹KƒV[ƒ“‚Ìì¬‚Æ“o˜^ ì¬Žž‚ÉƒZ[ƒu‚ðs‚¤
 bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
 
 	for (const auto& Name : _sceneList){
@@ -113,6 +113,23 @@ bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
 	scene->SaveToFile();
 	delete scene;
 	scene = nullptr;
+
+	return true;
+}
+// ƒV[ƒ“‚Ìì¬‚Æ“o˜^@ƒZ[ƒu‚Ís‚í‚È‚¢
+bool SceneManger::CreateAndRegisterDefaultScene(std::string SceneName)
+{
+	for (const auto& Name : _sceneList) {
+		if (Name == SceneName) {
+			return false;
+		}
+	}
+
+	RegisterScene(SceneName, [SceneName]() -> Scene* {
+		Scene* newScene = new Scene();
+		newScene->SetName(SceneName);
+		return newScene;
+		});
 
 	return true;
 }
@@ -169,6 +186,7 @@ bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::s
 	if (std::rename(oldPath.c_str(), newPath.c_str()) != 0) {
 		return false;
 	}
+
 	return true;
 }
 
