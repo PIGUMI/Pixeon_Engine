@@ -1,3 +1,8 @@
+/*今後の実装予定
+* プレハブ化したオブジェクトの表示と編集
+* 右クリックでファイルやsceneの追加
+*/
+
 #include "EditrGUI.h"
 #include "IMGUI/imgui.h"
 #include "IMGUI/imgui_impl_dx11.h"
