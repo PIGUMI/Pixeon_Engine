@@ -120,7 +120,17 @@ void EditrGUI::ShowContentDrawer() {
         }
     }
 
+
+
+
     ImGui::BeginChild("assets_grid", ImVec2(0, 0), true);
+
+    // 右クリック処理
+    if (ImGui::BeginPopupContextWindow("assets_context", ImGuiMouseButton_Right)) {
+
+        ImGui::EndPopup();
+    }
+
     float iconSize = 48.0f;
     float itemWidth = 96.0f;
     float itemHeight = 80.0f;
@@ -131,12 +141,15 @@ void EditrGUI::ShowContentDrawer() {
 
     static std::filesystem::path selectedEntryPath; // 選択中のパス
 
+    int index = 0;
+
     for (const auto& entry : entries) {
         ImGui::BeginGroup();
 
         std::string name = entry.path().filename().string();
         bool isDir = entry.is_directory();
         ImTextureID icon = isDir ? (ImTextureID)folderIcon : GetAssetIcon(this, name);
+        name += "##" + std::to_string(index++); // ユニークID確保のためにインデックスを追加
 
         float groupX = ImGui::GetCursorPosX();
         float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
@@ -215,6 +228,7 @@ void EditrGUI::ShowContentDrawer() {
         ImGui::EndGroup();
         ImGui::NextColumn();
     }
+
 
 
 

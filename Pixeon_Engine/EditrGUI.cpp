@@ -635,7 +635,6 @@ void EditrGUI::ShowSceneRenameWindow()
     }
 }
 
-
 void EditrGUI::ShowLicenseWindow(){
 	if (!ShowLicense)return;
     ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
