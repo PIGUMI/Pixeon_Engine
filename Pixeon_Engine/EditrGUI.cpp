@@ -354,7 +354,7 @@ void EditrGUI::ShowConsole(){
 void EditrGUI::ShowSceneCreateWindow()
 {
 	if (!ShowSceneCreate)return;
-    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
     if (ImGui::Begin(ShiftJISToUTF8("シーン作成##SceneManager_CreateScene").c_str(), &ShowSceneCreate, flags)) {
 		static char sceneName[128] = "NewScene";

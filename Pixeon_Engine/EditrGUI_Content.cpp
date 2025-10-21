@@ -125,14 +125,25 @@ void EditrGUI::ShowContentDrawer() {
         }
     }
 
-
-
-
     ImGui::BeginChild("assets_grid", ImVec2(0, 0), true);
 
     // 右クリック処理
     if (ImGui::BeginPopupContextWindow("assets_context", ImGuiMouseButton_Right)) {
 
+        if (ImGui::MenuItem(ShiftJISToUTF8("新しいフォルダを作成").c_str())) {
+            std::filesystem::path newFolderPath = currentDir / "NewFolder";
+            int suffix = 1;
+            while (std::filesystem::exists(newFolderPath)) {
+                newFolderPath = currentDir / ("NewFolder" + std::to_string(suffix));
+                suffix++;
+            }
+            std::filesystem::create_directory(newFolderPath);
+		}
+        if (ImGui::MenuItem(ShiftJISToUTF8("シーンの作成").c_str())) {
+			ShowSceneCreate = true;
+        };
+
+        
         ImGui::EndPopup();
     }
 
@@ -233,9 +244,6 @@ void EditrGUI::ShowContentDrawer() {
         ImGui::EndGroup();
         ImGui::NextColumn();
     }
-
-
-
 
     ImGui::Columns(1);
     ImGui::EndChild();
