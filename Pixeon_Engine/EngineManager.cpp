@@ -29,7 +29,6 @@ void EngineManager::DeleteInstance(){
 	}
 }
 
-
 int EngineManager::Init(const EngineConfig& InPut){
 
 	m_bInGame_		= false;
@@ -101,11 +100,9 @@ void EngineManager::UnInit() {
 	CoUninitialize();
 }
 
-
 ID3D11ShaderResourceView* EngineManager::GetGameRender(){
 	return m_gameRenderTarget_->GetShaderResourceView();
 }
-
 
 void EngineManager::EditeUpdate() {
 	ShaderManager::GetInstance()->UpdateAndCompileShaders();

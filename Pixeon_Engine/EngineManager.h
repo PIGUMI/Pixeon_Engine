@@ -5,7 +5,6 @@
 // 全体管理を行う
 // シングルトン
 
-
 #include <Windows.h>
 #include <d3d11.h>
 #include <string> 

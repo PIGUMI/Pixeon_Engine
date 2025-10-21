@@ -265,7 +265,7 @@ void EditrGUI::WindowGUI()
         // 右にInspector
         ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_main_id);
         // 下にContentDrawer
-        ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, &dock_id_bottom, &dock_main_id);
+        ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.4f, &dock_id_bottom, &dock_main_id);
         // 左にHierarchy
         ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.18f, &dock_id_left, &dock_main_id);
 
@@ -280,6 +280,7 @@ void EditrGUI::WindowGUI()
     ImGui::End();
     ImGui::PopStyleVar();
 
+	// 各種ウィンドウ表示
     ShowContentDrawer();
     ShaderEditorWindow();
 	ShaderListWindow();
