@@ -1,0 +1,738 @@
+================================================================================
+Pixeon Engine - 最適化推奨事項
+================================================================================
+作成日: 2025-10-25
+目的: コードベースの最適化可能箇所の特定と推奨事項
+
+注意: このドキュメントは提案のみです。実装の変更は行っていません。
+
+================================================================================
+カテゴリ別最適化推奨
+================================================================================
+
+[P1] = 高優先度 - パフォーマンスへの影響大
+[P2] = 中優先度 - コード品質・保守性の向上
+[P3] = 低優先度 - マイナーな改善
+
+================================================================================
+1. メモリ管理とリソース最適化
+================================================================================
+
+[P1] EngineManager.cpp (行54-55)
+ファイル: Pixeon_Engine/EngineManager.cpp
+問題箇所:
+  m_gameRenderTarget_ = new GameRenderTarget();
+  m_gameRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), ...);
+
+推奨:
+  - 生ポインタではなくstd::unique_ptr使用
+  - 例外安全性の向上
+  - 自動的なリソース管理
+
+改善案:
+  m_gameRenderTarget_ = std::make_unique<GameRenderTarget>();
+
+
+[P2] SceneManger.cpp (行51, 72, 174-176)
+ファイル: Pixeon_Engine/SceneManger.cpp
+問題箇所:
+  if (_currentScene)delete _currentScene;
+
+推奨:
+  - std::unique_ptrを使用してデストラクタで自動削除
+  - メモリリークのリスク低減
+  - 例外安全性の向上
+
+
+[P1] Object.cpp (行31-35)
+ファイル: Pixeon_Engine/Object.cpp
+問題箇所:
+  void Object::UInit(){
+    for (auto comp : _components) {
+      comp->UInit();
+      delete comp;
+    }
+    _components.clear();
+  }
+
+推奨:
+  - std::unique_ptr<Component> に変更
+  - 自動的なメモリ管理
+  - 削除処理の簡素化
+
+
+[P2] Scene.cpp (行91-97)
+ファイル: Pixeon_Engine/Scene.cpp
+問題箇所:
+  for (auto& obj : _ToBeRemoved) {
+    if (!obj) continue;
+    auto it = std::find(_objects.begin(), _objects.end(), obj);
+    if (it != _objects.end()) {
+      _objects.erase(it);
+      delete obj;
+    }
+  }
+
+推奨:
+  - 削除前にnullptrチェック
+  - イテレータ無効化のリスク管理
+  - より安全な削除パターン
+
+================================================================================
+2. パフォーマンス最適化
+================================================================================
+
+[P1] System.cpp (行73-89) - デバイス作成ループ
+ファイル: Pixeon_Engine/System.cpp
+問題箇所:
+  for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; ++driverTypeIndex)
+  {
+    driverType = driverTypes[driverTypeIndex];
+    result = D3D11CreateDeviceAndSwapChain(...);
+    if (SUCCEEDED(result)) {
+      break;
+    }
+  }
+
+推奨:
+  - ループ前にHARDWAREドライバの成功をチェック
+  - 失敗した場合のみフォールバック試行
+  - 起動時間の改善
+
+
+[P1] Object.cpp (行9, 13-16, 20-23)
+ファイル: Pixeon_Engine/Object.cpp
+問題箇所:
+  void Object::BeginPlay(){
+    for(auto comp : _components)if(comp)comp->BeginPlay();
+  }
+  void Object::EditUpdate(){
+    for (auto comp : _components) {
+      if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
+      if (comp)comp->EditUpdate();
+    }
+  }
+
+推奨:
+  - ループ内での重複チェック削除
+  - コンポーネントタイプのキャッシング
+  - 条件分岐の最適化
+
+改善案:
+  for (auto comp : _components) {
+    if (!comp) continue;
+    if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
+    comp->EditUpdate();
+  }
+
+
+[P2] Scene.cpp (行68-80) - カメラコンポーネント検索
+ファイル: Pixeon_Engine/Scene.cpp
+問題箇所:
+  int i = 0;
+  for(auto& obj : _objects){
+    if(!obj) continue;
+    for(auto& comp : obj->GetComponents()){
+      if(!comp) continue;
+      if(comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA){
+        CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
+        cam->SetCameraNumber(i);
+        i++;
+        comp->EditUpdate();
+      }
+    }
+  }
+
+推奨:
+  - カメラコンポーネントを別リストで管理
+  - 毎フレームの全オブジェクト・全コンポーネント走査を避ける
+  - O(n*m) から O(cameras) に削減
+
+
+[P1] ModelRender.cpp (行56-71) - シェーダー取得
+ファイル: Pixeon_Engine/ModelRender.cpp
+問題箇所:
+  bool ModelRenderComponent::EnsureShaders(bool forceRecreateLayout) {
+    auto* sm = ShaderManager::GetInstance();
+    
+    ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
+    ID3D11PixelShader* ps = sm->GetPixelShader(m_psName);
+    
+    if (!vs || !ps) {
+      sm->UpdateAndCompileShaders();
+      vs = sm->GetVertexShader(m_vsName);
+      ps = sm->GetPixelShader(m_psName);
+      ...
+    }
+  }
+
+推奨:
+  - シェーダーが見つからない場合の二重検索を避ける
+  - エラー時の不要な再コンパイル回避
+  - キャッシュヒット率の向上
+
+
+[P2] AssetManager.cpp (行59-90) - ファイルロード
+ファイル: Pixeon_Engine/AssetManager.cpp
+問題箇所:
+  bool AssetManager::LoadAsset(...) {
+    ...
+    std::ifstream ifs(p, std::ios::binary);
+    if (!ifs) { ... return false; }
+    ifs.seekg(0, std::ios::end);
+    size_t sz = (size_t)ifs.tellg();
+    ifs.seekg(0, std::ios::beg);
+    outData.resize(sz);
+    ifs.read((char*)outData.data(), sz);
+  }
+
+推奨:
+  - メモリマップドファイルの使用検討
+  - 大きなファイルのパフォーマンス向上
+  - システムコールの削減
+
+================================================================================
+3. スレッドセーフティとマルチスレッド
+================================================================================
+
+[P2] ModelManager.cpp (行68-89)
+ファイル: Pixeon_Engine/ModelManager.cpp
+問題箇所:
+  std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(...) {
+    std::lock_guard<std::mutex> lk(m_mtx);
+    m_frame++;
+    ...
+    auto res = LoadInternal(logicalName);  // 長時間のロック
+    ...
+  }
+
+推奨:
+  - ロックの粒度を細かくする
+  - LoadInternalの呼び出しをロック外で実行
+  - 複数スレッドからのロード性能向上
+
+改善案:
+  - ダブルチェックロッキングパターン
+  - 読み取りロックと書き込みロックの分離
+
+
+[P2] TextureManager.cpp (行42-62)
+ファイル: Pixeon_Engine/TextureManager.cpp
+問題箇所:
+  std::shared_ptr<TextureResource> TextureManager::LoadOrGet(...) {
+    std::lock_guard<std::mutex> lk(m_mtx);
+    ...
+    auto tex = LoadInternal(logicalName);  // 長時間のロック
+    ...
+  }
+
+推奨:
+  - ModelManagerと同様の最適化
+  - ロック競合の削減
+
+
+[P3] Scene.cpp (行56-66) - スレッドセーフ追加
+ファイル: Pixeon_Engine/Scene.cpp
+問題箇所:
+  void Scene::EditUpdate(){
+    ProcessThreadSafeAdditions();
+    for (auto& obj : _ToBeAdded) {
+      if (obj) {
+        obj->SetParentScene(this);
+        _objects.push_back(obj);
+      }
+    }
+    _ToBeAdded.clear();
+  }
+
+推奨:
+  - _ToBeAdded のクリアとProcessThreadSafeAdditionsの順序検討
+  - より明確な所有権の移動
+
+================================================================================
+4. コード品質と保守性
+================================================================================
+
+[P2] EngineManager.cpp (行18-30)
+ファイル: Pixeon_Engine/EngineManager.cpp
+問題箇所:
+  EngineManager* EngineManager::GetInstance(){
+    if (instance_ == nullptr){
+      instance_ = new EngineManager();
+    }
+    return instance_;
+  }
+
+推奨:
+  - Meyer's Singletonパターンの使用
+  - スレッドセーフ保証（C++11以降）
+  - 静的初期化順序問題の回避
+
+改善案:
+  static EngineManager& GetInstance() {
+    static EngineManager instance;
+    return instance;
+  }
+
+
+[P2] ComponentManager.cpp (行40-66) - switch文
+ファイル: Pixeon_Engine/ComponentManager.cpp
+問題箇所:
+  Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type){
+    Component* component = nullptr;
+    switch (type) {
+      case COMPONENT_TYPE::NONE: break;
+      case COMPONENT_TYPE::CAMERA: component = owner->AddComponent<CameraComponent>(); break;
+      ...
+    }
+    return component;
+  }
+
+推奨:
+  - ファクトリーパターンまたは関数ポインタマップ使用
+  - 新規コンポーネント追加の簡易化
+  - コンパイル時の型安全性向上
+
+
+[P3] System.cpp (行29-31) - マジックナンバー
+ファイル: Pixeon_Engine/System.cpp
+問題箇所:
+  #define SAFE_DELETE(p)         do{if(p){delete p; p = nullptr;}}while(0)
+  #define SAFE_DELETE_ARRAY(p)   do{if(p){delete[] p; p = nullptr;}}while(0)
+  #define SAFE_RELEASE(p)        do{if(p){p->Release(); p = nullptr;}}while(0)
+
+推奨:
+  - テンプレート関数に置き換え
+  - 型安全性の向上
+  - 名前空間汚染の削減
+
+改善案:
+  template<typename T>
+  inline void SafeDelete(T*& p) {
+    delete p;
+    p = nullptr;
+  }
+
+
+[P2] Object.h (行48-54) - テンプレート実装
+ファイル: Pixeon_Engine/Object.h
+問題箇所:
+  template<typename T = Component>
+  T* AddComponent() {
+    T* newComp = new T();
+    newComp->Init(this);
+    _components.push_back(newComp);
+    return newComp;
+  }
+
+推奨:
+  - 例外安全性の考慮
+  - Init失敗時のクリーンアップ
+  - std::unique_ptrの使用
+
+
+[P3] SceneManger.cpp (行28-35) - 空のブロック
+ファイル: Pixeon_Engine/SceneManger.cpp
+問題箇所:
+  for (const auto& fileName : _sceneList) {
+    std::string sceneName = fileName.substr(0, fileName.find_last_of('.'));
+    if (CreateAndRegisterDefaultScene(sceneName)){
+    }
+    else{
+    }
+  }
+
+推奨:
+  - 不要なif-elseブロックの削除
+  - エラーハンドリングの追加またはログ出力
+
+================================================================================
+5. エラーハンドリングと堅牢性
+================================================================================
+
+[P1] EngineManager.cpp (行42-46)
+ファイル: Pixeon_Engine/EngineManager.cpp
+問題箇所:
+  hr = DirectX11::GetInstance()->Init(...);
+  if (FAILED(hr)) {
+    CoUninitialize();
+    return -1;
+  }
+
+推奨:
+  - より詳細なエラーメッセージ
+  - ログへのエラー記録
+  - リソースのクリーンアップ確認
+
+
+[P2] ModelManager.cpp (行110-114)
+ファイル: Pixeon_Engine/ModelManager.cpp
+問題箇所:
+  if (!scene || !scene->mRootNode) {
+    ErrorLogger::Instance().LogError(...);
+    return nullptr;
+  }
+
+推奨:
+  - より詳細なエラー情報
+  - デバッグビルドでのアサーション
+  - ユーザーへの通知改善
+
+
+[P2] Scene.cpp (行51-52) - BeginPlay例外処理
+ファイル: Pixeon_Engine/Scene.cpp
+問題箇所:
+  for (auto& obj : _objects) {
+    if (obj)obj->BeginPlay();
+  }
+
+推奨:
+  - try-catchでの例外捕捉
+  - 一部オブジェクトの失敗が全体に影響しないよう保護
+
+
+[P3] ShaderManager.cpp (行62-86) - テンプレート生成
+ファイル: Pixeon_Engine/ShaderManager.cpp
+問題箇所:
+  bool ShaderManager::CreateHLSLTemplate(...) {
+    std::string path = SettingManager::GetInstance()->GetShaderFilePath() + shaderName + ".hlsl";
+    std::ofstream ofs(path);
+    if (!ofs) return false;
+    ...
+  }
+
+推奨:
+  - ファイルパス検証
+  - ディレクトリの存在確認
+  - エラー時の詳細情報提供
+
+================================================================================
+6. 検索とルックアップの最適化
+================================================================================
+
+[P2] Object.cpp (行58-66)
+ファイル: Pixeon_Engine/Object.cpp
+問題箇所:
+  Component* Object::GetComponent(const std::string& name)
+  {
+    for(auto comp : _components) {
+      if (comp->GetComponentName() == name) {
+        return comp;
+      }
+    }
+    return nullptr;
+  }
+
+推奨:
+  - コンポーネント名でのマップインデックス作成
+  - O(n)からO(1)検索に改善
+  - 頻繁な検索の高速化
+
+
+[P2] ComponentManager.h (行30)
+ファイル: Pixeon_Engine/ComponentManager.h
+問題箇所:
+  std::string _ComponentName[(int)COMPONENT_TYPE::MAX];
+
+推奨:
+  - std::array<std::string, MAX>使用
+  - 型安全性とイテレータサポート
+  - 境界チェック
+
+================================================================================
+7. キャッシング戦略の改善
+================================================================================
+
+[P1] ModelRender.cpp (行84-93) - サンプラー生成
+ファイル: Pixeon_Engine/ModelRender.cpp
+問題箇所:
+  if (!s_linearSmp) {
+    D3D11_SAMPLER_DESC sd{};
+    sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    ...
+    auto dev = DirectX11::GetInstance()->GetDevice();
+    dev->CreateSamplerState(&sd, s_linearSmp.GetAddressOf());
+  }
+
+推奨:
+  - DirectX11クラスでサンプラーを一元管理
+  - 各コンポーネントでの重複生成回避
+  - 初期化時に一度だけ作成
+
+
+[P2] ShaderManager.cpp - バイトコードキャッシング
+ファイル: Pixeon_Engine/ShaderManager.cpp
+問題箇所: バイトコード管理全般
+
+推奨:
+  - コンパイル済みバイトコードのディスクキャッシュ
+  - タイムスタンプによる無効化
+  - 起動時間の短縮
+
+
+[P2] AssetManager.cpp (行92-96) - キャッシュサイズ管理
+ファイル: Pixeon_Engine/AssetManager.cpp
+問題箇所:
+  void AssetManager::ClearRawCache() {
+    std::lock_guard<std::mutex> lk(m_mtx_);
+    m_cache_.clear();
+    m_fileMeta_.clear();
+  }
+
+推奨:
+  - LRU（Least Recently Used）キャッシュポリシー
+  - 最大キャッシュサイズの設定
+  - メモリ使用量の制御
+
+================================================================================
+8. 文字列処理の最適化
+================================================================================
+
+[P2] ModelManager.cpp (行35-42) - パス正規化
+ファイル: Pixeon_Engine/ModelManager.cpp
+問題箇所:
+  static std::string MM_NormalizePath(std::string s) {
+    for (auto& c : s) if (c == '\\') c = '/';
+    while (s.size() && (s[0] == '/' || ...)) {
+      if (s[0] == '/') s.erase(0, 1);
+      ...
+    }
+    return s;
+  }
+
+推奨:
+  - 参照渡し（const std::string&）を受け取る
+  - 戻り値最適化（RVO）の活用
+  - std::string_viewの使用検討
+
+
+[P3] AssetManager.cpp (行43-46)
+ファイル: Pixeon_Engine/AssetManager.cpp
+問題箇所:
+  std::string AssetManager::Normalize(const std::string& name) const {
+    std::string s = name;
+    for (auto& c : s) if (c == '\\') c = '/';
+    return s;
+  }
+
+推奨:
+  - std::replace使用
+  - より効率的な文字置換
+
+
+[P2] 全体 - 文字列連結
+問題箇所: 多数の箇所で文字列連結使用
+
+推奨:
+  - std::string::reserve()で事前メモリ確保
+  - std::ostreamの使用
+  - fmt::formatやstd::formatの使用検討
+
+================================================================================
+9. DirectX11関連の最適化
+================================================================================
+
+[P2] System.cpp (行234-241) - レンダーターゲット設定
+ファイル: Pixeon_Engine/System.cpp
+問題箇所:
+  void DirectX11::SetRenderTargets(UINT num, RenderTarget** ppViews, DepthStencil* pView)
+  {
+    static ID3D11RenderTargetView* rtvs[4];
+    if (num > 4) num = 4;
+    for (UINT i = 0; i < num; ++i)
+      rtvs[i] = ppViews[i]->GetView();
+    g_pContext->OMSetRenderTargets(num, rtvs, pView ? pView->GetView() : nullptr);
+  }
+
+推奨:
+  - 状態変更の削減（現在のRTVと比較）
+  - 不要な設定呼び出しのスキップ
+  - パフォーマンスカウンタの追加
+
+
+[P2] System.cpp (行264-269) - ブレンドステート設定
+ファイル: Pixeon_Engine/System.cpp
+問題箇所:
+  void DirectX11::SetBlendMode(BlendMode blend)
+  {
+    if (blend < 0 || blend >= BLEND_MAX) return;
+    FLOAT blendFactor[4] = { D3D11_BLEND_ZERO, ... };
+    g_pContext->OMSetBlendState(g_pBlendState[blend], blendFactor, 0xffffffff);
+  }
+
+推奨:
+  - 現在のステートをキャッシュ
+  - 変更時のみ設定
+  - 状態変更コストの削減
+
+
+[P1] GameRenderTarget.cpp - レンダーターゲット切り替え
+ファイル: Pixeon_Engine/GameRenderTarget.cpp
+問題箇所: Begin/End呼び出し
+
+推奨:
+  - レンダーターゲットスタックの実装
+  - 深い入れ子での状態管理
+  - エディターモードでの複数ビュー対応
+
+================================================================================
+10. 定数とマジックナンバー
+================================================================================
+
+[P3] System.cpp (行39-40)
+ファイル: Pixeon_Engine/System.cpp
+問題箇所:
+  sd.BufferDesc.RefreshRate.Numerator = 1000;
+  sd.BufferDesc.RefreshRate.Denominator = 1;
+
+推奨:
+  - 名前付き定数の使用
+  - コンフィグファイルからの読み込み
+  - 柔軟なリフレッシュレート設定
+
+
+[P3] Scene.cpp (行23)
+ファイル: Pixeon_Engine/Scene.cpp
+問題箇所:
+  static const int kMaxLights = 8;
+
+推奨:
+  - ヘッダーまたはコンフィグで一元管理
+  - シェーダーとの定数共有
+  - マジックナンバー削減
+
+
+[P3] EditrGUI.cpp (行49)
+ファイル: Pixeon_Engine/EditrGUI.cpp
+問題箇所:
+  io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/meiryo.ttc", 18.0f, ...);
+
+推奨:
+  - ハードコードパスの削除
+  - フォントパスの設定化
+  - クロスプラットフォーム対応
+
+================================================================================
+11. アルゴリズムとデータ構造
+================================================================================
+
+[P2] Object.cpp (行68-76) - コンポーネント削除
+ファイル: Pixeon_Engine/Object.cpp
+問題箇所:
+  void Object::RemoveComponent(Component* comp){
+    if (comp == nullptr) return;
+    auto it = std::remove(_components.begin(), _components.end(), comp);
+    if(it != _components.end()) {
+      _components.erase(it, _components.end());
+      comp->UInit();
+      delete comp;
+    }
+  }
+
+推奨:
+  - std::find + erase イディオムの使用
+  - std::removeは複数要素削除用
+  - 単一要素削除の最適化
+
+
+[P2] Scene.cpp (行93)
+ファイル: Pixeon_Engine/Scene.cpp
+問題箇所:
+  auto it = std::find(_objects.begin(), _objects.end(), obj);
+
+推奨:
+  - unordered_setまたはunordered_mapの使用検討
+  - O(n)からO(1)検索に改善
+  - 大量オブジェクト時のパフォーマンス向上
+
+
+[P3] SceneManger.cpp (行99-103)
+ファイル: Pixeon_Engine/SceneManger.cpp
+問題箇所:
+  for (const auto& Name : _sceneList){
+    if (Name == SceneName){
+      return false;
+    }
+  }
+
+推奨:
+  - std::findまたはstd::setの使用
+  - より標準的なアプローチ
+
+================================================================================
+12. 将来の拡張性
+================================================================================
+
+[P2] ComponentManager - プラグインシステム
+ファイル: Pixeon_Engine/ComponentManager.cpp
+推奨:
+  - 動的コンポーネント登録機能
+  - プラグインアーキテクチャ
+  - ランタイムでのコンポーネント追加
+
+[P2] AssetManager - 非同期ロード
+ファイル: Pixeon_Engine/AssetManager.cpp
+推奨:
+  - std::futureベースの非同期API
+  - バックグラウンドローディング
+  - ストリーミングシステム
+
+[P3] EngineManager - イベントシステム
+ファイル: Pixeon_Engine/EngineManager.cpp
+推奨:
+  - オブザーバーパターン
+  - イベントバス実装
+  - システム間の疎結合化
+
+================================================================================
+まとめ統計
+================================================================================
+
+優先度別カウント:
+- [P1] 高優先度: 10件
+- [P2] 中優先度: 24件
+- [P3] 低優先度: 10件
+
+カテゴリ別カウント:
+1. メモリ管理とリソース最適化: 5件
+2. パフォーマンス最適化: 6件
+3. スレッドセーフティ: 3件
+4. コード品質と保守性: 6件
+5. エラーハンドリング: 4件
+6. 検索とルックアップ: 2件
+7. キャッシング戦略: 3件
+8. 文字列処理: 3件
+9. DirectX11関連: 3件
+10. 定数とマジック: 3件
+11. アルゴリズム: 3件
+12. 将来の拡張性: 3件
+
+合計: 44件の最適化提案
+
+================================================================================
+実装推奨順序
+================================================================================
+
+フェーズ1（基礎固め）:
+  1. メモリ管理をスマートポインタに移行
+  2. エラーハンドリングの強化
+  3. スレッドセーフティの改善
+
+フェーズ2（パフォーマンス）:
+  4. キャッシング戦略の最適化
+  5. 検索アルゴリズムの改善
+  6. 不要な処理の削減
+
+フェーズ3（品質向上）:
+  7. コード品質と保守性の改善
+  8. 文字列処理の最適化
+  9. マジックナンバーの削除
+
+フェーズ4（将来対応）:
+  10. 拡張性の向上
+  11. プラグインシステム
+  12. 非同期処理の強化
+
+================================================================================
+終了
+================================================================================
