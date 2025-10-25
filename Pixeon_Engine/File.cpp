@@ -85,6 +85,18 @@ bool File::RunArchiveTool(const std::string& toolExePath, const std::string& ass
 	return (exitCode == 0);
 }
 
+// 指定ディレクトリ内のファイル名を変更
+// SceneMangerにも同名義関数がありますが、こちらは汎用的に使用するためのものです
+// SceneManager側は拡張子が.sceneで固定されているため、パスの結合処理が異なります
+bool File::RenameFileInDirectory(const std::string& oldName, const std::string& newName){
+	std::string oldPath = oldName;
+	std::string newPath = newName;
+	if (std::rename(oldPath.c_str(), newPath.c_str()) != 0) {
+		return false;
+	}
+	return true;
+}
+
 
 
 
