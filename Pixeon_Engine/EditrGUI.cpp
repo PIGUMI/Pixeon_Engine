@@ -348,7 +348,66 @@ void EditrGUI::ShowGameView()
         ImGui::Image((ImTextureID)srv, size);
     else
         ImGui::Text("SRVがNullです");
+
+
+    bool active = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+
     ImGui::End();
+
+   
+    if (active)
+    {
+        Scene* Temp = nullptr;
+        Temp = SceneManger::GetInstance()->GetCurrentScene();
+        if (Temp)
+        {
+            CameraComponent* Cam = nullptr;
+            Cam = Temp->GetMainCamera();
+            if (Cam)
+            {
+                if (IsKeyPress(1))
+                {
+                    float MoveX = (float)MouseMoveX();
+                    float MoveY = (float)MouseMoveY();
+                    MoveX = MoveX * 0.01f;
+                    MoveY = MoveY * 0.01f;
+                    if (Cam->IsChangeCalculation())
+                    {
+                        DirectX::XMFLOAT3 Pos;
+                        Pos = Cam->GetPosition();
+
+                        Pos.x += MoveX;
+                        Pos.y += MoveY;
+
+                        Cam->SetPosition(Pos);
+                    }
+                    else
+                    {
+                        DirectX::XMFLOAT3 Pos;
+                        Pos = Cam->GetFixation();
+
+                        Pos.x += MoveX;
+                        Pos.y += MoveY;
+
+                        Cam->SetFixation(Pos);
+                    }
+                }
+                if (IsKeyPress(2))
+                {
+
+                    float MoveX = (float)MouseMoveX();
+                    float MoveY = (float)MouseMoveY();
+                    MoveX = MoveX * 0.001f;
+                    MoveY = MoveY * 0.001f;
+                    DirectX::XMFLOAT3 Rot;
+                    Rot = Cam->GetRotation();
+                    Rot.x += MoveX;
+                    Rot.y += MoveY;
+                    Cam->SetRotation(Rot);
+                }
+            }
+        }
+    }
 }
 
 void EditrGUI::ShowConsole(){
