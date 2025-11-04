@@ -581,10 +581,6 @@ void EditrGUI::SettingWindow()
 		float mouseSensitivity = SettingManager::GetInstance()->GetMouseSensitivity();
 		if (ImGui::SliderFloat(ShiftJISToUTF8("マウス感度:").c_str(), &mouseSensitivity, 0.01f, 1.0f))SettingManager::GetInstance()->SetMouseSensitivity(mouseSensitivity);
 
-
-
-
-
     }
     ImGui::End();
 }
