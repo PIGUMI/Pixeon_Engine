@@ -45,6 +45,7 @@ public:
 	void SetIsChangeCalculation(bool isChange) { _IsChangeCalculation = isChange; }
 	int GetCameraNumber() const { return _CameraNumber; }
 	void SetCameraNumber(int num) { _CameraNumber = num; }
+	DirectX::XMFLOAT3 GetUpVector() const { return _Up; }
 private:
 	Object* _Parent;
 	DirectX::XMFLOAT3 _Position;

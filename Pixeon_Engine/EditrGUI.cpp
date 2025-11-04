@@ -372,8 +372,11 @@ void EditrGUI::ShowGameView()
 
                 if (IsKeyPress(1))
                 {
-                    float MoveX = (float)MouseMoveX() * 0.01f; // 右・左
-                    float MoveY = (float)MouseMoveY() * 0.01f; // 前・後（上・下にしたい場合は適宜変更）
+                    float MoveX = (float)MouseMoveX() * 0.01f; // 右・左（ストレイフ移動）
+                    float MoveY = (float)MouseMoveY() * 0.01f; // 上・下（上下移動）
+
+                    DirectX::XMFLOAT3 right = Cam->GetRightVector();
+                    DirectX::XMFLOAT3 up = Cam->GetUpVector(); // CameraComponentに_up（上方向）があればそれを使用
 
                     DirectX::XMFLOAT3 pos;
                     if (Cam->IsChangeCalculation()) {
@@ -383,10 +386,10 @@ void EditrGUI::ShowGameView()
                         pos = Cam->GetFixation();
                     }
 
-                    // 移動量：右方向 × MoveX + 前方向 × MoveY
-                    pos.x += right.x * MoveX + forward.x * MoveY;
-                    pos.y += right.y * MoveX + forward.y * MoveY;
-                    pos.z += right.z * MoveX + forward.z * MoveY;
+                    // 右方向×MoveX ＋ Up方向×MoveY
+                    pos.x += right.x * MoveX + up.x * MoveY;
+                    pos.y += right.y * MoveX + up.y * MoveY;
+                    pos.z += right.z * MoveX + up.z * MoveY;
 
                     if (Cam->IsChangeCalculation()) {
                         Cam->SetPosition(pos);
