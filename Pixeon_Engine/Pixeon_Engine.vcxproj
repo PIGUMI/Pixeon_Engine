@@ -160,6 +160,7 @@
     <ClInclude Include="IMGUI\imstb_rectpack.h" />
     <ClInclude Include="IMGUI\imstb_textedit.h" />
     <ClInclude Include="IMGUI\imstb_truetype.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="LightComponent.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="IMGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="IMGUI\imgui_tables.cpp" />
     <ClCompile Include="IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelRender.cpp" />

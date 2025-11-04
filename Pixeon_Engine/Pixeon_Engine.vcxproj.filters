@@ -170,6 +170,9 @@
     <ClCompile Include="ScripComponent.cpp">
       <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="content_Item.h">
@@ -291,6 +294,9 @@
     </ClInclude>
     <ClInclude Include="ScripComponent.h">
       <Filter>ソース ファイル\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
