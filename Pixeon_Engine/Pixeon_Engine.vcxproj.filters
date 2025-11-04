@@ -167,6 +167,9 @@
     <ClCompile Include="ImageRender.cpp">
       <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
+    <ClCompile Include="ScripComponent.cpp">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="content_Item.h">
@@ -284,6 +287,9 @@
       <Filter>ソース ファイル\Sys</Filter>
     </ClInclude>
     <ClInclude Include="ImageRender.h">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ScripComponent.h">
       <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>

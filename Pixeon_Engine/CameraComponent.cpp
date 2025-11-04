@@ -25,7 +25,6 @@ void CameraComponent::EditUpdate(){
 		// カメラ操作
 	}
 
-
 	if (_IsChangeCalculation){
 		//　カメラの位置から注視点を計算
 		_Fixation.x = _Position.x - cosf(_Rotation.y) * sinf(_Rotation.x) * _radius;
@@ -44,7 +43,6 @@ void CameraComponent::InGameUpdate(){
 	if (_IsKeyMove) {
 		// カメラ操作
 	}
-
 
 	if (_IsChangeCalculation) {
 		//　カメラの位置から注視点を計算
@@ -139,7 +137,6 @@ void CameraComponent::SaveToFile(std::ostream& out){
 	out << _IsKeyMove << " ";
 	out << _IsChangeCalculation << " ";
 	out << _CameraNumber << " ";
-
 }
 
 void CameraComponent::LoadFromFile(std::istream& in){
