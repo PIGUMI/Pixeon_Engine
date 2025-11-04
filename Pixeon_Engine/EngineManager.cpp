@@ -58,6 +58,7 @@ int EngineManager::Init(const EngineConfig& InPut){
 	EditrGUI::GetInstance()->Init();
 	// シーンマネージャー初期化
 	SceneManger::GetInstance()->Init();
+	SceneManger::GetInstance()->Load();
 	// シェーダー初期化
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
 	// コンポーネント初期化
