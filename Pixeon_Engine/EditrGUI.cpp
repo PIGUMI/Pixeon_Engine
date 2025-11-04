@@ -365,31 +365,34 @@ void EditrGUI::ShowGameView()
             Cam = Temp->GetMainCamera();
             if (Cam)
             {
+                // 右方向ベクトル
+                DirectX::XMFLOAT3 right = Cam->GetRightVector();
+                // 前方向ベクトル
+                DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
+
                 if (IsKeyPress(1))
                 {
-                    float MoveX = (float)MouseMoveX();
-                    float MoveY = (float)MouseMoveY();
-                    MoveX = MoveX * 0.01f;
-                    MoveY = MoveY * 0.01f;
-                    if (Cam->IsChangeCalculation())
-                    {
-                        DirectX::XMFLOAT3 Pos;
-                        Pos = Cam->GetPosition();
+                    float MoveX = (float)MouseMoveX() * 0.01f; // 右・左
+                    float MoveY = (float)MouseMoveY() * 0.01f; // 前・後（上・下にしたい場合は適宜変更）
 
-                        Pos.x += MoveX;
-                        Pos.y += MoveY;
-
-                        Cam->SetPosition(Pos);
+                    DirectX::XMFLOAT3 pos;
+                    if (Cam->IsChangeCalculation()) {
+                        pos = Cam->GetPosition();
                     }
-                    else
-                    {
-                        DirectX::XMFLOAT3 Pos;
-                        Pos = Cam->GetFixation();
+                    else {
+                        pos = Cam->GetFixation();
+                    }
 
-                        Pos.x += MoveX;
-                        Pos.y += MoveY;
+                    // 移動量：右方向 × MoveX + 前方向 × MoveY
+                    pos.x += right.x * MoveX + forward.x * MoveY;
+                    pos.y += right.y * MoveX + forward.y * MoveY;
+                    pos.z += right.z * MoveX + forward.z * MoveY;
 
-                        Cam->SetFixation(Pos);
+                    if (Cam->IsChangeCalculation()) {
+                        Cam->SetPosition(pos);
+                    }
+                    else {
+                        Cam->SetFixation(pos);
                     }
                 }
                 if (IsKeyPress(2))
