@@ -59,7 +59,9 @@ void SettingManager::LoadConfig(){
 	if (configJson.contains("ExternelTool")) {
 		ExternelTool = configJson["ExternelTool"].get<std::string>();
 	}
-	
+	if (configJson.contains("MouseSensitivity")) {
+		MouseSensitivity = configJson["MouseSensitivity"].get<float>();
+	}
 }
 
 void SettingManager::SaveConfig(){
@@ -72,6 +74,7 @@ void SettingManager::SaveConfig(){
 	configJson["AutoSaveInterval"] = AutoSaveInterval;
 	configJson["BackgroundColor"] = { BackgroundColor.x, BackgroundColor.y, BackgroundColor.z, BackgroundColor.w };
 	configJson["ExternelTool"] = ExternelTool;
+	configJson["MouseSensitivity"] = MouseSensitivity;
 
 	// JSONÉtÉ@ÉCÉãÇ…èëÇ´çûÇﬁ
 	std::ofstream configFile(CONFIG_FILE_PATH);

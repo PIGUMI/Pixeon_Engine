@@ -372,8 +372,8 @@ void EditrGUI::ShowGameView()
 
                 if (IsKeyPress(1))
                 {
-                    float MoveX = (float)MouseMoveX() * 0.01f;
-                    float MoveY = (float)MouseMoveY() * 0.01f;
+                    float MoveX = (float)MouseMoveX() * SettingManager::GetInstance()->GetMouseSensitivity();
+                    float MoveY = (float)MouseMoveY() * SettingManager::GetInstance()->GetMouseSensitivity();
 
                     DirectX::XMFLOAT3 right = Cam->GetRightVector();
                     DirectX::XMFLOAT3 up = Cam->GetUpVector();
@@ -403,8 +403,8 @@ void EditrGUI::ShowGameView()
 
                     float MoveX = (float)MouseMoveX();
                     float MoveY = (float)MouseMoveY();
-                    MoveX = MoveX * 0.01f;
-                    MoveY = MoveY * 0.01f;
+                    MoveX = MoveX * SettingManager::GetInstance()->GetMouseSensitivity();
+                    MoveY = MoveY * SettingManager::GetInstance()->GetMouseSensitivity();
                     DirectX::XMFLOAT3 Rot;
                     Rot = Cam->GetRotation();
                     Rot.x += MoveX;
@@ -576,6 +576,12 @@ void EditrGUI::SettingWindow()
         if (ImGui::ColorEdit4(ShiftJISToUTF8("背景色").c_str(), color)) {
             SettingManager::GetInstance()->SetBackgroundColor(DirectX::XMFLOAT4(color[0], color[1], color[2], color[3]));
 		}
+
+		ImGui::Text(ShiftJISToUTF8("マウス感度設定").c_str());
+		float mouseSensitivity = SettingManager::GetInstance()->GetMouseSensitivity();
+		if (ImGui::SliderFloat(ShiftJISToUTF8("マウス感度:").c_str(), &mouseSensitivity, 0.01f, 1.0f))SettingManager::GetInstance()->SetMouseSensitivity(mouseSensitivity);
+
+
 
 
 
