@@ -1,7 +1,62 @@
 {
-    "Objects": [],
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "-0.944744 1.15 5.16271 -6.44958 0.189992 0 0.681729 -0.738515 -4.52171 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Cam",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Enemy/Walk.fbx\n1 1 1 1\nVS_ModelBasic\nPS_ModelBasic\n",
+                    "Name": "ModelRender",
+                    "Type": 2
+                }
+            ],
+            "Name": "NewObject1",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
     "SceneSettings": {
-        "MainCameraNumber": -1,
+        "MainCameraNumber": 0,
         "Name": "NewScene"
     }
 }

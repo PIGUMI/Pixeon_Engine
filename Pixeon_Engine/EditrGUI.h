@@ -50,6 +50,7 @@ private:
 	void HandleAssetClick(const std::filesystem::path& path);
 	void HandleAssetContextMenu(const std::filesystem::path& path);
 	void ShowSceneRenameWindow();
+	void ShowInputDebug();
 
 
 	bool ShowLicense				= false;
@@ -66,6 +67,7 @@ private:
 	bool ShowSoundManagerWindow		= false;
 	bool ShowSceneCreate			= false;
 	bool ShowSceneRename			= false;
+	bool ShowInPutDebug				= false;
 
 private:
 	static ID3D11ShaderResourceView* LoadImg(const std::wstring& filename, ID3D11Device* device);

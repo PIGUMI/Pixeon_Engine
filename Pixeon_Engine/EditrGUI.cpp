@@ -16,6 +16,7 @@
 #include "SoundManager.h"
 #include "SceneManger.h"
 #include "Scene.h"
+#include "Input.h"
 
 #pragma comment(lib, "windowscodecs.lib")
 
@@ -188,6 +189,12 @@ void EditrGUI::WindowGUI()
                 ImGui::LoadIniSettingsFromMemory("");
                 dockNeedsReset = true;
             }
+            if (ImGui::MenuItem(ShiftJISToUTF8("レイアウトを保存").c_str())){
+                ImGui::GetIO().IniFilename = "imgui_layout.ini";
+                ImGui::SaveIniSettingsToDisk("imgui_layout.ini");
+			}
+            ImGui::Separator();
+            if (ImGui::MenuItem(ShiftJISToUTF8("入力デバック").c_str())) ShowInPutDebug = true;
             ImGui::EndMenu();
         }
         if(ImGui::BeginMenu(ShiftJISToUTF8("ツール").c_str()))
@@ -295,6 +302,7 @@ void EditrGUI::WindowGUI()
     ShowLicenseWindow();
     ShowSceneCreateWindow();
     ShowSceneRenameWindow();
+    ShowInputDebug();
 }
 
 void EditrGUI::ShowGameView()
@@ -340,7 +348,72 @@ void EditrGUI::ShowGameView()
         ImGui::Image((ImTextureID)srv, size);
     else
         ImGui::Text("SRVがNullです");
+
+
+    bool active = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+
     ImGui::End();
+
+   
+    if (active)
+    {
+        Scene* Temp = nullptr;
+        Temp = SceneManger::GetInstance()->GetCurrentScene();
+        if (Temp)
+        {
+            CameraComponent* Cam = nullptr;
+            Cam = Temp->GetMainCamera();
+            if (Cam)
+            {
+                // 右方向ベクトル
+                DirectX::XMFLOAT3 right = Cam->GetRightVector();
+                // 前方向ベクトル
+                DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
+
+                if (IsKeyPress(1))
+                {
+                    float MoveX = (float)MouseMoveX() * SettingManager::GetInstance()->GetMouseSensitivity();
+                    float MoveY = (float)MouseMoveY() * SettingManager::GetInstance()->GetMouseSensitivity();
+
+                    DirectX::XMFLOAT3 right = Cam->GetRightVector();
+                    DirectX::XMFLOAT3 up = Cam->GetUpVector();
+
+                    DirectX::XMFLOAT3 pos;
+                    if (Cam->IsChangeCalculation()) {
+                        pos = Cam->GetPosition();
+                    }
+                    else {
+                        pos = Cam->GetFixation();
+                    }
+
+                    // 右方向×MoveX ＋ Up方向×MoveY
+                    pos.x += right.x * MoveX + up.x * MoveY;
+                    pos.y += right.y * MoveX + up.y * MoveY;
+                    pos.z += right.z * MoveX + up.z * MoveY;
+
+                    if (Cam->IsChangeCalculation()) {
+                        Cam->SetPosition(pos);
+                    }
+                    else {
+                        Cam->SetFixation(pos);
+                    }
+                }
+                if (IsKeyPress(2))
+                {
+
+                    float MoveX = (float)MouseMoveX();
+                    float MoveY = (float)MouseMoveY();
+                    MoveX = MoveX * SettingManager::GetInstance()->GetMouseSensitivity();
+                    MoveY = MoveY * SettingManager::GetInstance()->GetMouseSensitivity();
+                    DirectX::XMFLOAT3 Rot;
+                    Rot = Cam->GetRotation();
+                    Rot.x += MoveX;
+                    Rot.y += MoveY;
+                    Cam->SetRotation(Rot);
+                }
+            }
+        }
+    }
 }
 
 void EditrGUI::ShowConsole(){
@@ -504,7 +577,9 @@ void EditrGUI::SettingWindow()
             SettingManager::GetInstance()->SetBackgroundColor(DirectX::XMFLOAT4(color[0], color[1], color[2], color[3]));
 		}
 
-
+		ImGui::Text(ShiftJISToUTF8("マウス感度設定").c_str());
+		float mouseSensitivity = SettingManager::GetInstance()->GetMouseSensitivity();
+		if (ImGui::SliderFloat(ShiftJISToUTF8("マウス感度:").c_str(), &mouseSensitivity, 0.01f, 1.0f))SettingManager::GetInstance()->SetMouseSensitivity(mouseSensitivity);
 
     }
     ImGui::End();
@@ -684,6 +759,41 @@ void EditrGUI::ShowLicenseWindow(){
 	}
 }
 
+void EditrGUI::ShowInputDebug()
+{
+    if (!ShowInPutDebug)return;
+    ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+    if (ImGui::Begin(ShiftJISToUTF8("入力デバック").c_str(), &ShowInPutDebug, flags))
+    {
+        ImGui::Text(ShiftJISToUTF8("マウスの移動量").c_str());
+        ImGui::Text(ShiftJISToUTF8("X:").c_str());
+        ImGui::SameLine();
+        int X;
+        // 座標を取得
+        X = MouseMoveX();
+		// 文字列に変換して表示
+        ImGui::Text(std::to_string(X).c_str());
+        ImGui::Text(ShiftJISToUTF8("Y:").c_str());
+        ImGui::SameLine();
+        int Y;
+        // 座標を取得
+        Y = MouseMoveY();
+        // 文字列に変換して表示
+        ImGui::Text(std::to_string(Y).c_str());
+        ImGui::Separator();
+        ImGui::Text(ShiftJISToUTF8("キーボードの入力状態").c_str());
+        for (int i = 0; i < 256; i++) {
+            if (IsKeyPress(i)) {
+                ImGui::Text(ShiftJISToUTF8(("キーコード " + std::to_string(i) + " が押されています").c_str()).c_str());
+            }
+        }
+		ImGui::End();
+        
+    }
+
+}
+
 ID3D11ShaderResourceView* EditrGUI::LoadImg(const std::wstring& filename, ID3D11Device* device)
 {
     IWICImagingFactory* factory = nullptr;
@@ -732,4 +842,6 @@ ID3D11ShaderResourceView* EditrGUI::LoadImg(const std::wstring& filename, ID3D11
 
     return srv;
 }
+
+
 

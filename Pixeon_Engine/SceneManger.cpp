@@ -194,8 +194,44 @@ void SceneManger::Save(){
 	if (_currentScene){
 		_currentScene->SaveToFile();
 	}
+	/*  ビルド処理を制作する際に処理を変えてください */
+	nlohmann::json configJson;
+	if (_currentScene)
+	{
+		configJson["StartScene"] = _currentScene->GetName();
+	}
+	else
+	{
+		configJson["StartScene"] = _StartSceneName;
+	}
+
+	std::string PATH = SettingManager::GetInstance()->GetSceneFilePath();
+	PATH += "SceneConfig.sceneconfig";
+
+	// JSONファイルに書き込む
+	std::ofstream configFile(PATH);
+	if (configFile.is_open())
+	{
+		configFile << configJson.dump(4);
+	}
+
 }
 
 void SceneManger::Load(){
+	std::string PATH = SettingManager::GetInstance()->GetSceneFilePath();
+	PATH += "SceneConfig.sceneconfig";
 
+	std::ifstream configFile(PATH);
+	if(!configFile.is_open()) {
+		MessageBox(nullptr, "シーン設定ファイルが見つからないため\nデフォルトのシーンを読み込みます", "Info", MB_OK);
+		_StartSceneName = "SampleScene";
+		return;
+	}
+	nlohmann::json configJson;
+	configFile >> configJson;
+	if (configJson.contains("StartScene")) {
+		_StartSceneName = configJson["StartScene"].get<std::string>();
+	}
+
+	ChangeScene(_StartSceneName);
 }

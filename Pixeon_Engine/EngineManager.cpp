@@ -12,6 +12,7 @@
 #include "ShaderManager.h"
 #include "ComponentManager.h"
 #include "Object.h"
+#include "Input.h"
 
 EngineManager* EngineManager::instance_ = nullptr;
 
@@ -58,14 +59,17 @@ int EngineManager::Init(const EngineConfig& InPut){
 	EditrGUI::GetInstance()->Init();
 	// シーンマネージャー初期化
 	SceneManger::GetInstance()->Init();
+	SceneManger::GetInstance()->Load();
 	// シェーダー初期化
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
 	// コンポーネント初期化
 	ComponentManager::GetInstance()->Init();
+	InitInput();
 	return 0;
 }
 
 void EngineManager::Update() {
+	UpdateInput(GetWindowHandle());
 	if (m_bInGame_)
 		InGameUpdate();
 	else
@@ -81,6 +85,7 @@ void EngineManager::Draw() {
 }
 
 void EngineManager::UnInit() {
+	UninitInput();
 	// AssetManager の自動同期停止
 	AssetManager::Instance()->StopAutoSync();
 	// 保存
