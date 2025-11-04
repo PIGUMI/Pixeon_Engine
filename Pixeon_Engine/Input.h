@@ -17,6 +17,10 @@ bool IsKeyRepeat(BYTE key);
 int MouseMoveX();
 int MouseMoveY();
 
+// マウスの現在位置を取得、ウインドウ内の
+float GetMousePositionX();
+float GetMousePositionY();
+
 void SetMouseFreeze(bool bFreeze);
 float GetMouseSensitivity();
 

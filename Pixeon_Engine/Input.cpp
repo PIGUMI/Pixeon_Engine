@@ -92,6 +92,16 @@ int MouseMoveY()
 	return mouseMoveY;
 }
 
+float GetMousePositionX()
+{
+	return 0.0f;
+}
+
+float GetMousePositionY()
+{
+	return 0.0f;
+}
+
 void SetMouseFreeze(bool bFreeze)
 {
 	bMouseFreeze = bFreeze;

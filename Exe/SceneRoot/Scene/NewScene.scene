@@ -1,5 +1,27 @@
 {
-    "Objects": [],
+    "Objects": [
+        {
+            "Components": [],
+            "Name": "NewObject",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
     "SceneSettings": {
         "MainCameraNumber": -1,
         "Name": "NewScene"
