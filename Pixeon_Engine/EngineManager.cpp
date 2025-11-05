@@ -95,7 +95,6 @@ void EngineManager::UnInit() {
 	SceneManger::GetInstance()->Save();
 	SettingManager::GetInstance()->SaveConfig();
 	// ”jŠüˆ—
-	ScriptManager::Release();
 	AssetManager::DeleteInstance();
 	ComponentManager::DestroyInstance();
 	SceneManger::DestroyInstance();
@@ -104,6 +103,7 @@ void EngineManager::UnInit() {
 	TextureManager::DeleteInstance();
 	ModelManager::DeleteInstance();
 	ResourceService::DeleteInstance();
+	ScriptManager::Release();
 	DirectX11::GetInstance()->Uninit();
 	DirectX11::DestroyInstance();
 	CoUninitialize();

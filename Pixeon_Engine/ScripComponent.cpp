@@ -31,6 +31,21 @@ void ScripComponent::UInit() {
 	UnLoadScript();
 }
 
+// インスペクター描画
+void ScripComponent::DrawInspector()
+{
+}
+
+// ファイル保存
+void ScripComponent::SaveToFile(std::ostream& out)
+{
+}
+
+// ファイル読み込み
+void ScripComponent::LoadFromFile(std::istream& in)
+{
+}
+
 bool ScripComponent::LoadScript(const std::string& dllPath){
 	_dllName = dllPath;
 	// DLL読み込み
@@ -39,6 +54,13 @@ bool ScripComponent::LoadScript(const std::string& dllPath){
 	CreateScriptInstanceFunc createFunc = (CreateScriptInstanceFunc)GetProcAddress(_dllHandle, "CreateScriptInstance");
 	if (!createFunc) return false;
 	_scriptInstance = createFunc();
-	
 	return _scriptInstance != nullptr;
+}
+
+void ScripComponent::UnLoadScript(){
+	if (!_dllName.empty()) {
+		ScriptManager::Instance().ReleaseScriptDll(_dllName);
+		_dllName.clear();
+		_dllHandle = nullptr;
+	}
 }
