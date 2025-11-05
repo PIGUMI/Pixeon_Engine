@@ -161,6 +161,7 @@
     <ClInclude Include="IMGUI\imstb_textedit.h" />
     <ClInclude Include="IMGUI\imstb_truetype.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="IScript.h" />
     <ClInclude Include="LightComponent.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />

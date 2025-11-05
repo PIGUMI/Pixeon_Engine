@@ -304,6 +304,9 @@
     <ClInclude Include="ScriptManager.h">
       <Filter>ソース ファイル\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="IScript.h">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="仕様書.txt">

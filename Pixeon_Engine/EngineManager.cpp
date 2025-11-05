@@ -11,6 +11,7 @@
 #include "SettingManager.h"
 #include "ShaderManager.h"
 #include "ComponentManager.h"
+#include "ScriptManager.h"
 #include "Object.h"
 #include "Input.h"
 
@@ -64,6 +65,8 @@ int EngineManager::Init(const EngineConfig& InPut){
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
 	// コンポーネント初期化
 	ComponentManager::GetInstance()->Init();
+	// スクリプトコンポーネントの初期化
+	ScriptManager::Instance();
 	InitInput();
 	return 0;
 }
@@ -92,6 +95,7 @@ void EngineManager::UnInit() {
 	SceneManger::GetInstance()->Save();
 	SettingManager::GetInstance()->SaveConfig();
 	// 破棄処理
+	ScriptManager::Release();
 	AssetManager::DeleteInstance();
 	ComponentManager::DestroyInstance();
 	SceneManger::DestroyInstance();

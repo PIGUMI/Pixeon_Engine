@@ -6,13 +6,15 @@
 */
 
 #include "Component.h"
+#include <Windows.h>
+#include <string>
+#include "IScript.h"
 
 class ScripComponent : public Component
 {
 public :
 	void Init(Object* owner) override;
 	void BeginPlay() override;
-	void EditUpdate() override;
 	void InGameUpdate() override;
 	void UInit() override;
 	void DrawInspector() override;
@@ -20,8 +22,18 @@ public :
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
+	bool LoadScript(const std::string& dllPath);
+	void UnLoadScript();
+
+	IScript* GetScriptInstance() const { return _scriptInstance; }
+	std::string GetScriptName() const { return _dllName; }
 
 private:
+	IScript* _scriptInstance = nullptr;
+	std::string _dllName;
+	HMODULE _dllHandle = nullptr;
+private:
+
 	ScripComponent();
 	~ScripComponent();
 };
