@@ -558,6 +558,17 @@ void EditrGUI::SettingWindow()
 		strncpy_s(ExternelToolBuffer, ExternelTool.c_str(), sizeof(ExternelToolBuffer));
 		if (ImGui::InputText(ShiftJISToUTF8("外部ツールフォルダ").c_str(), ExternelToolBuffer, sizeof(ExternelToolBuffer)))SettingManager::GetInstance()->SetExternelToolPath(ExternelToolBuffer);
 
+		char ScriptDllBuffer[256];
+        std::string ScriptDllPath = SettingManager::GetInstance()->GetDLLFilePath();
+		strncpy_s(ScriptDllBuffer, ScriptDllPath.c_str(), sizeof(ScriptDllBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("スクリプトDLLフォルダ").c_str(), ScriptDllBuffer, sizeof(ScriptDllBuffer)))SettingManager::GetInstance()->SetDLLFilePath(ScriptDllBuffer);
+
+		char ScriptSourceBuffer[256];
+        std::string ScriptSourcePath = SettingManager::GetInstance()->GetScriptFilePath();
+		strncpy_s(ScriptSourceBuffer, ScriptSourcePath.c_str(), sizeof(ScriptSourceBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("スクリプトソースフォルダ").c_str(), ScriptSourceBuffer, sizeof(ScriptSourceBuffer)))SettingManager::GetInstance()->SetScriptFilePath(ScriptSourceBuffer);
+       
+
 		ImGui::Text(ShiftJISToUTF8("レンダリング設定").c_str());
 		ImGui::Separator();
 		bool bZBuffer = SettingManager::GetInstance()->GetZBuffer();

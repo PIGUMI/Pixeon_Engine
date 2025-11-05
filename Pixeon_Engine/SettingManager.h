@@ -51,6 +51,12 @@ public:
 	float GetMouseSensitivity() const { return MouseSensitivity; }
 	void SetMouseSensitivity(float sensitivity) { MouseSensitivity = sensitivity; }
 
+	std::string GetDLLFilePath() const { return DLLFilePath; }
+	void SetDLLFilePath(const std::string& path) { DLLFilePath = path; }
+
+	std::string GetScriptFilePath() const { return ScriptFilePath; }
+	void SetScriptFilePath(const std::string& path) { ScriptFilePath = path; }
+
 private:
 	static SettingManager* instance;
 private:
@@ -62,6 +68,8 @@ private:
 	std::string ExternelTool	= "SceneRoot/Tool/IN/";
 	std::string ShaderFilePath	= "SceneRoot/Shader/hlsl/";
 	std::string CSOFilePath		= "SceneRoot/Shader/cso/";
+	std::string DLLFilePath		= "SceneRoot/Script/DLL/";
+	std::string ScriptFilePath = "SceneRoot/Script/Source/";
 	DirectX::XMFLOAT4 BackgroundColor = DirectX::XMFLOAT4(0.1f, 0.1f, 0.1f,1.0f);
 	float MouseSensitivity = 0.01f;
 	
