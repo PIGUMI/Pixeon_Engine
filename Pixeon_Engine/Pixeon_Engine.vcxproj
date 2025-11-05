@@ -170,6 +170,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManger.h" />
     <ClInclude Include="ScripComponent.h" />
+    <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="SettingManager.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="SoundManager.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManger.cpp" />
     <ClCompile Include="ScripComponent.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="SettingManager.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="SoundManager.cpp" />

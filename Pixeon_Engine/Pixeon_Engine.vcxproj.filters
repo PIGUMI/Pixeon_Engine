@@ -173,6 +173,9 @@
     <ClCompile Include="Input.cpp">
       <Filter>ソース ファイル\Other</Filter>
     </ClCompile>
+    <ClCompile Include="ScriptManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="content_Item.h">
@@ -297,6 +300,9 @@
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptManager.h">
+      <Filter>ソース ファイル\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
