@@ -3,7 +3,7 @@
 #include "ComponentManager.h"
 #include "EditrGUI.h"
 #include "IMGUI/imgui.h"
-
+#include "SettingManager.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -56,7 +56,7 @@ void ScripComponent::LoadFromFile(std::istream& in) {
 void ScripComponent::RefreshScriptList() {
     _scriptList.clear();
     try {
-        const fs::path srcDir = "Script/Src";
+        const fs::path srcDir = SettingManager::GetInstance()->GetScriptFilePath();;
         if (!fs::exists(srcDir)) {
             fs::create_directories(srcDir);
         }
@@ -80,7 +80,7 @@ void ScripComponent::RefreshScriptList() {
 bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
     if (scriptName.empty()) return false;
     try {
-        const fs::path srcDir = "Script/Src";
+        const fs::path srcDir = SettingManager::GetInstance()->GetScriptFilePath();
         fs::create_directories(srcDir);
         std::string className = "Script_" + scriptName;
         std::string headerPath = (srcDir / (scriptName + ".h")).string();
@@ -89,7 +89,7 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
         std::ostringstream header;
         header <<
             "#pragma once\n"
-            "#include \"../Include/IScript.h\"\n\n"
+            "#include \"Include/IScript.h\"\n\n"
             "class " << className << " : public IScript {\n"
             "public:\n"
             "    void BeginPlay() override;\n"
@@ -152,18 +152,18 @@ bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
         return false;
     }
 
-    const fs::path srcDir = "Script/Src";
-    const fs::path includeDir = "Script/Include";
-    const fs::path binDir = "Script/Bin";
+    const fs::path srcDir       = SettingManager::GetInstance()->GetScriptFilePath();
+    const fs::path includeDir   = SettingManager::GetInstance()->GetSceneFilePath() + "Include";
+    const fs::path binDir       = SettingManager::GetInstance()->GetDLLFilePath();;
     fs::create_directories(binDir);
 
-    std::string srcPath = (srcDir / (scriptName + ".cpp")).string();
-    std::string dllPath = (binDir / (scriptName + ".dll")).string();
-    std::string libPath = (binDir / (scriptName + ".lib")).string();
-    std::string pdbPath = (binDir / (scriptName + ".pdb")).string();
-    std::string engineLib = (includeDir / "Pixeon.lib").string(); // 必要なら変更
+    std::string srcPath     = (srcDir / (scriptName + ".cpp")).string();
+    std::string dllPath     = (binDir / (scriptName + ".dll")).string();
+    std::string libPath     = (binDir / (scriptName + ".lib")).string();
+    std::string pdbPath     = (binDir / (scriptName + ".pdb")).string();
+    std::string engineLib   = (includeDir / "Pixeon_Engine.lib").string(); // 必要なら変更
 
-    std::string logFile = "Script/Bin/build_" + scriptName + ".log";
+    std::string logFile = SettingManager::GetInstance()->GetDLLFilePath() + "build_" + scriptName + ".log";
     std::ostringstream cmd;
     cmd << "cmd /C \"call \"" << vcvars << "\" && "
         << "cl /LD /EHsc /MD "
@@ -203,7 +203,7 @@ bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
 
 // Script/Bin/<name>.dll をロード（存在しなければビルドを試す）
 bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
-    std::string dllPath = "Script/Bin/" + scriptName + ".dll";
+    std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
     if (!fs::exists(dllPath)) {
         // ビルドを試す（無ければ CreateScriptFiles で雛形作成してもよい）
         BuildScriptDll(scriptName);

@@ -892,6 +892,3 @@ ID3D11ShaderResourceView* EditrGUI::LoadImg(const std::wstring& filename, ID3D11
 
     return srv;
 }
-
-
-

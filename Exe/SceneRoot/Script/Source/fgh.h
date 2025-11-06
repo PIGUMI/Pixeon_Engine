@@ -1,7 +1,7 @@
 #pragma once
-#include "../Include/IScript.h"
+#include "Include/IScript.h"
 
-class Script_aaaa : public IScript {
+class Script_fgh : public IScript {
 public:
     void BeginPlay() override;
     void Update() override;
@@ -9,7 +9,7 @@ public:
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
-    return new Script_aaaa();
+    return new Script_fgh();
 }
 
 extern "C" __declspec(dllexport) void DestroyScriptInstance(IScript* script) {

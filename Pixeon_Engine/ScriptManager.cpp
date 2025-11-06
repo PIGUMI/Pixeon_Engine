@@ -243,7 +243,7 @@ void ScriptManager::Update()
 
 bool ScriptManager::LoadDllForScript(const std::string& scriptName, DllEntry& entry)
 {
-	std::string dllPath = "Script/Bin/" + scriptName + ".dll";
+	std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 	if (!fs::exists(dllPath)) {
 		std::cerr << "[ScriptManager] DLL not found: " << dllPath << std::endl;
 		return false;
@@ -294,10 +294,10 @@ std::string ScriptManager::GetVSDevEnvPath() const
 bool ScriptManager::BuildScriptDll(const std::string& scriptName, std::string& outError)
 {
 	// Paths
-	std::string srcPath = "Script/Src/" + scriptName + ".cpp";
-	std::string headerPath = "Script/Src/" + scriptName + ".h";
-	std::string includeDir = "Script/Include";
-	std::string binDir = "Script/Bin";
+	std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
+	std::string headerPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".h";
+	std::string includeDir = SettingManager::GetInstance()->GetScriptFilePath() + "Include";
+	std::string binDir = SettingManager::GetInstance()->GetDLLFilePath();
 	std::string dllPath = binDir + "/" + scriptName + ".dll";
 	std::string libPath = binDir + "/" + scriptName + ".lib";
 	std::string pdbPath = binDir + "/" + scriptName + ".pdb";
