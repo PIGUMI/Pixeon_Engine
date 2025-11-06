@@ -153,7 +153,7 @@ bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
     }
 
     const fs::path srcDir       = SettingManager::GetInstance()->GetScriptFilePath();
-    const fs::path includeDir   = SettingManager::GetInstance()->GetSceneFilePath() + "Include";
+    const fs::path includeDir   = SettingManager::GetInstance()->GetScriptFilePath() + "Include";
     const fs::path binDir       = SettingManager::GetInstance()->GetDLLFilePath();;
     fs::create_directories(binDir);
 
@@ -163,12 +163,12 @@ bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
     std::string pdbPath     = (binDir / (scriptName + ".pdb")).string();
     std::string engineLib   = (includeDir / "Pixeon_Engine.lib").string(); // •K—v‚È‚ç•ÏX
 
-    std::string logFile = SettingManager::GetInstance()->GetDLLFilePath() + "build_" + scriptName + ".log";
+    std::string logFile = SettingManager::GetInstance()->GetScriptLogFilePath() +"build_" + scriptName + ".log";
     std::ostringstream cmd;
     cmd << "cmd /C \"call \"" << vcvars << "\" && "
         << "cl /LD /EHsc /MD "
         << "\"" << srcPath << "\" "
-        << "\"Script/Include/IScript.cpp\" "
+        << "\"" + SettingManager::GetInstance()->GetScriptFilePath() + "Include/IScript.cpp\" "
         << "/Fe:\"" << dllPath << "\" "
         << "/I\"" << includeDir.string() << "\" "
         << "/link /LIBPATH:\"" << includeDir.string() << "\" \"" << engineLib << "\" user32.lib "
