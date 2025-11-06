@@ -291,6 +291,44 @@ std::string ScriptManager::GetVSDevEnvPath() const
 	return "";
 }
 
+void ScriptManager::RegisterAllScripts()
+{
+	std::lock_guard<std::mutex> lk(_mutex);
+
+	std::string srcDirStr = SettingManager::GetInstance()->GetScriptFilePath();
+	if (srcDirStr.empty()) return;
+
+	fs::path srcDir = srcDirStr;
+	if (!fs::exists(srcDir)) return;
+
+	for (auto& p : fs::directory_iterator(srcDir)) {
+		if (!p.is_regular_file()) continue;
+		auto ext = p.path().extension().string();
+		if (ext != ".cpp" && ext != ".CPP" && ext != ".cxx") continue;
+
+		std::string name = p.path().stem().string();
+		auto it = _dllMap.find(name);
+		if (it == _dllMap.end()) {
+			DllEntry entry;
+			try {
+				entry.lastCppWriteTime = fs::last_write_time(p.path());
+			}
+			catch (...) {
+				// if cannot read time, leave default
+			}
+			// hDll==nullptr, instances empty, refCount==0 の監視エントリを作るだけ
+			_dllMap.emplace(name, std::move(entry));
+		}
+		else {
+			// 既に存在する場合はタイムスタンプを最新にしておく（Update の差分検出の基準になる）
+			try {
+				it->second.lastCppWriteTime = fs::last_write_time(p.path());
+			}
+			catch (...) {}
+		}
+	}
+}
+
 bool ScriptManager::BuildScriptDll(const std::string& scriptName, std::string& outError)
 {
 	// Paths
@@ -317,13 +355,13 @@ bool ScriptManager::BuildScriptDll(const std::string& scriptName, std::string& o
 
 	// Build command (simple synchronous)
 	// Note: adjust Engine lib name if needed
-	std::string engineLib = includeDir + "\\Pixeon.lib"; // adjust as needed
+	std::string engineLib = includeDir + "\\Pixeon_Engine.lib"; // adjust as needed
 	std::ostringstream cmd;
 	// Wrap with call to vcvars and cl compile & link
 	cmd << "cmd /C \"call \"" << vcvars << "\" && "
 		<< "cl /LD /EHsc /MD "
 		<< "\"" << srcPath << "\" "
-		<< "\"Script/Include/IScript.cpp\" "
+		<< "\"" + SettingManager::GetInstance()->GetScriptFilePath() + "Include/IScript.cpp\" "
 		<< "/Fe:\"" << dllPath << "\" "
 		<< "/I\"" << includeDir << "\" "
 		<< "/link /LIBPATH:\"" << includeDir << "\" \"" << engineLib << "\" user32.lib "

@@ -161,7 +161,7 @@ bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
     std::string dllPath     = (binDir / (scriptName + ".dll")).string();
     std::string libPath     = (binDir / (scriptName + ".lib")).string();
     std::string pdbPath     = (binDir / (scriptName + ".pdb")).string();
-    std::string engineLib   = (includeDir / "Pixeon_Engine.lib").string(); // •K—v‚È‚ç•ÏX
+    std::string engineLib   = (includeDir / "Pixeon_Engine.lib").string();
 
     std::string logFile = SettingManager::GetInstance()->GetScriptLogFilePath() +"build_" + scriptName + ".log";
     std::ostringstream cmd;
@@ -311,7 +311,6 @@ void ScripComponent::DrawInspector() {
                 LoadScriptByName(name);
             }
         }
-        ImGui::SameLine();
         if (ImGui::Button(("Unload##unload_" + Ptr).c_str())) {
             UnLoadScript();
         }

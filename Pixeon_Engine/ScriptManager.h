@@ -35,6 +35,8 @@ public:
     // VS 開発者コマンドプロンプトのパスを返す（vcvars64.bat）
     std::string GetVSDevEnvPath() const;
 
+    void RegisterAllScripts();
+
 private:
     ScriptManager() = default;
     ~ScriptManager();

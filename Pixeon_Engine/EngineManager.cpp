@@ -66,7 +66,7 @@ int EngineManager::Init(const EngineConfig& InPut){
 	// コンポーネント初期化
 	ComponentManager::GetInstance()->Init();
 	// スクリプトコンポーネントの初期化
-	ScriptManager::Instance();
+	ScriptManager::Instance().RegisterAllScripts();
 	InitInput();
 	return 0;
 }
