@@ -18,6 +18,7 @@ public:
 		MODEL,
 		LIGHT,
 		IMAGE,
+		SCRIPT,
 		MAX,
 	};
 

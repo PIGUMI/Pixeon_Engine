@@ -161,6 +161,7 @@
     <ClInclude Include="IMGUI\imstb_textedit.h" />
     <ClInclude Include="IMGUI\imstb_truetype.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="IScript.h" />
     <ClInclude Include="LightComponent.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManger.h" />
     <ClInclude Include="ScripComponent.h" />
+    <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="SettingManager.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="SoundManager.h" />
@@ -203,6 +205,7 @@
     <ClCompile Include="IMGUI\imgui_tables.cpp" />
     <ClCompile Include="IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="IScript.cpp" />
     <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelRender.cpp" />
@@ -211,6 +214,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManger.cpp" />
     <ClCompile Include="ScripComponent.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="SettingManager.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="SoundManager.cpp" />

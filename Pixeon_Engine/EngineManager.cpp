@@ -11,6 +11,7 @@
 #include "SettingManager.h"
 #include "ShaderManager.h"
 #include "ComponentManager.h"
+#include "ScriptManager.h"
 #include "Object.h"
 #include "Input.h"
 
@@ -64,6 +65,8 @@ int EngineManager::Init(const EngineConfig& InPut){
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
 	// コンポーネント初期化
 	ComponentManager::GetInstance()->Init();
+	// スクリプトコンポーネントの初期化
+	ScriptManager::Instance().RegisterAllScripts();
 	InitInput();
 	return 0;
 }
@@ -100,6 +103,7 @@ void EngineManager::UnInit() {
 	TextureManager::DeleteInstance();
 	ModelManager::DeleteInstance();
 	ResourceService::DeleteInstance();
+	ScriptManager::Release();
 	DirectX11::GetInstance()->Uninit();
 	DirectX11::DestroyInstance();
 	CoUninitialize();
@@ -110,6 +114,7 @@ ID3D11ShaderResourceView* EngineManager::GetGameRender(){
 }
 
 void EngineManager::EditeUpdate() {
+	ScriptManager::Instance().Update();
 	ShaderManager::GetInstance()->UpdateAndCompileShaders();
 	EditrGUI::GetInstance()->Update();
 	SceneManger::GetInstance()->EditUpdate();

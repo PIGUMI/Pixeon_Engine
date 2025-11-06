@@ -173,6 +173,12 @@
     <ClCompile Include="Input.cpp">
       <Filter>ソース ファイル\Other</Filter>
     </ClCompile>
+    <ClCompile Include="ScriptManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="IScript.cpp">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="content_Item.h">
@@ -296,6 +302,12 @@
       <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptManager.h">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="IScript.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
   </ItemGroup>

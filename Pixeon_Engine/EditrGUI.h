@@ -84,9 +84,9 @@ private:
 	ID3D11ShaderResourceView* ExeIcon;
 
 private:
-	static EditrGUI* instance;
-	Object* SelectedObject = nullptr;
-	std::string SceneRenameNewName_;
+	static EditrGUI*	instance;
+	Object*				SelectedObject = nullptr;
+	std::string			SceneRenameNewName_;
 private:
 	EditrGUI() {}
 	~EditrGUI() {}

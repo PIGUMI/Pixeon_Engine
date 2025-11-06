@@ -5,6 +5,7 @@
 #include "ModelRender.h"
 #include "LightComponent.h"
 #include "ImageRender.h"
+#include "ScripComponent.h"
 #include <Windows.h>
 
 ComponentManager* ComponentManager::_instance;
@@ -29,6 +30,7 @@ void ComponentManager::Init(){
 	_ComponentName[(int)COMPONENT_TYPE::MODEL]		= "Model";
 	_ComponentName[(int)COMPONENT_TYPE::LIGHT]		= "Light";
 	_ComponentName[(int)COMPONENT_TYPE::IMAGE]		= "Image";
+	_ComponentName[(int)COMPONENT_TYPE::SCRIPT]		= "Script";
 }
 
 Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type){
@@ -56,6 +58,9 @@ Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type){
 		break;
 	case ComponentManager::COMPONENT_TYPE::IMAGE:
 		component = owner->AddComponent<ImageRender>();
+		break;
+	case ComponentManager::COMPONENT_TYPE::SCRIPT:
+		component = owner->AddComponent<ScripComponent>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::MAX:
 		MessageBox(nullptr, "—áŠO‚È’l‚Å‚·\nCode : CMMAX", "Error", MB_OK);

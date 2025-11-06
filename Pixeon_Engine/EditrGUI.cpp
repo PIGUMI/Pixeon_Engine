@@ -377,6 +377,7 @@ void EditrGUI::ShowGameView()
 
                     DirectX::XMFLOAT3 right = Cam->GetRightVector();
                     DirectX::XMFLOAT3 up = Cam->GetUpVector();
+					DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
 
                     DirectX::XMFLOAT3 pos;
                     if (Cam->IsChangeCalculation()) {
@@ -390,6 +391,24 @@ void EditrGUI::ShowGameView()
                     pos.x += right.x * MoveX + up.x * MoveY;
                     pos.y += right.y * MoveX + up.y * MoveY;
                     pos.z += right.z * MoveX + up.z * MoveY;
+
+                    float scrollSpeed = 2.0f;
+                    float forwardNotches  = MouseWheelForward();
+                    float backwardNotches = MouseWheelBackward();
+
+                    // 前方向に移動
+                    if (forwardNotches > 0.0f) {
+                        pos.x += forward.x * forwardNotches * scrollSpeed;
+                        pos.y += forward.y * forwardNotches * scrollSpeed;
+                        pos.z += forward.z * forwardNotches * scrollSpeed;
+                    }
+
+                    // 後方向に移動
+                    if (backwardNotches > 0.0f) {
+                        pos.x -= forward.x * backwardNotches * scrollSpeed;
+                        pos.y -= forward.y * backwardNotches * scrollSpeed;
+                        pos.z -= forward.z * backwardNotches * scrollSpeed;
+                    }
 
                     if (Cam->IsChangeCalculation()) {
                         Cam->SetPosition(pos);
@@ -557,6 +576,17 @@ void EditrGUI::SettingWindow()
 		std::string ExternelTool = SettingManager::GetInstance()->GetExternelToolPath();
 		strncpy_s(ExternelToolBuffer, ExternelTool.c_str(), sizeof(ExternelToolBuffer));
 		if (ImGui::InputText(ShiftJISToUTF8("外部ツールフォルダ").c_str(), ExternelToolBuffer, sizeof(ExternelToolBuffer)))SettingManager::GetInstance()->SetExternelToolPath(ExternelToolBuffer);
+
+		char ScriptDllBuffer[256];
+        std::string ScriptDllPath = SettingManager::GetInstance()->GetDLLFilePath();
+		strncpy_s(ScriptDllBuffer, ScriptDllPath.c_str(), sizeof(ScriptDllBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("スクリプトDLLフォルダ").c_str(), ScriptDllBuffer, sizeof(ScriptDllBuffer)))SettingManager::GetInstance()->SetDLLFilePath(ScriptDllBuffer);
+
+		char ScriptSourceBuffer[256];
+        std::string ScriptSourcePath = SettingManager::GetInstance()->GetScriptFilePath();
+		strncpy_s(ScriptSourceBuffer, ScriptSourcePath.c_str(), sizeof(ScriptSourceBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("スクリプトソースフォルダ").c_str(), ScriptSourceBuffer, sizeof(ScriptSourceBuffer)))SettingManager::GetInstance()->SetScriptFilePath(ScriptSourceBuffer);
+       
 
 		ImGui::Text(ShiftJISToUTF8("レンダリング設定").c_str());
 		ImGui::Separator();
@@ -781,6 +811,26 @@ void EditrGUI::ShowInputDebug()
         Y = MouseMoveY();
         // 文字列に変換して表示
         ImGui::Text(std::to_string(Y).c_str());
+
+        // マウスのホイール量
+        int Wheel;
+        Wheel = MouseWheel();
+        ImGui::Text(ShiftJISToUTF8("ホイール:").c_str());
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(Wheel).c_str());
+
+        int A;
+		A = MouseWheelForward();
+		ImGui::Text(ShiftJISToUTF8("ホイール前方向ノッチ数:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(std::to_string(A).c_str());
+
+        int B;
+		B = MouseWheelBackward();
+		ImGui::Text(ShiftJISToUTF8("ホイール後方向ノッチ数:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(std::to_string(B).c_str());
+
         ImGui::Separator();
         ImGui::Text(ShiftJISToUTF8("キーボードの入力状態").c_str());
         for (int i = 0; i < 256; i++) {
@@ -842,6 +892,3 @@ ID3D11ShaderResourceView* EditrGUI::LoadImg(const std::wstring& filename, ID3D11
 
     return srv;
 }
-
-
-
