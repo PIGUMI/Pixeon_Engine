@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-3.69109 1.48 1.93997 -13.5997 0.179992 0 4.76023 -0.310217 -3.09694 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 ",
+                    "Data": "-0.0422586 1.89181 4.03217 -0.0699986 0.18 0 0.645856 0.101514 -5.78217 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -30,7 +30,7 @@
         {
             "Components": [
                 {
-                    "Data": "Enemy/Walk.fbx\n1 1 1 1\nVS_ModelBasic\nPS_ModelBasic\n",
+                    "Data": "Enemy/Walk.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n",
                     "Name": "ModelRender",
                     "Type": 2
                 },
@@ -50,6 +50,33 @@
                 "Rotation": [
                     0.0,
                     0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1 1 1 1 1 10 20 35 1 ",
+                    "Name": "Light",
+                    "Type": 3
+                }
+            ],
+            "Name": "NewObject",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    -2.5999999046325684,
+                    2.700000047683716
+                ],
+                "Rotation": [
+                    -0.10646507889032364,
+                    0.05585051327943802,
                     0.0
                 ],
                 "Scale": [

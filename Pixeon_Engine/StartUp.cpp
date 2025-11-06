@@ -5,8 +5,10 @@
 * https://ttsuki.github.io/styleguide/cppguide.ja.html
 */
 
+#include <windowsx.h>
 #include "System.h"
 #include "EngineManager.h"
+#include "Input.h"
 #include "IMGUI/imgui_impl_win32.h" 
 #include "IMGUI/imgui_impl_dx11.h"
 #include "StartUp.h"
@@ -55,12 +57,18 @@ extern "C" {
 	__declspec(dllexport) void EngineProc(HWND wnd, UINT uint, WPARAM wparam, LPARAM lparam) {
 		ImGui_ImplWin32_WndProcHandler(wnd, uint, wparam, lparam);
 		switch (uint) {
+		case WM_MOUSEWHEEL:
+			OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wparam));
+			break;
+		case WM_MOUSEHWHEEL:
+			OnMouseHWheel(GET_WHEEL_DELTA_WPARAM(wparam));
+			break;
 		case WM_SIZE:
 			if (g_bInit && wparam != SIZE_MINIMIZED) {
 				UINT width = LOWORD(lparam);
 				UINT height = HIWORD(lparam);
 				g_nScreenHeight = height;
-				g_nScreenWidth = width;
+				g_nScreenWidth	= width;
 				DirectX11::GetInstance()->OnResize(width, height);
 			}
 			break;

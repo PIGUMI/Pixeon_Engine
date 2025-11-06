@@ -377,6 +377,7 @@ void EditrGUI::ShowGameView()
 
                     DirectX::XMFLOAT3 right = Cam->GetRightVector();
                     DirectX::XMFLOAT3 up = Cam->GetUpVector();
+					DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
 
                     DirectX::XMFLOAT3 pos;
                     if (Cam->IsChangeCalculation()) {
@@ -390,6 +391,24 @@ void EditrGUI::ShowGameView()
                     pos.x += right.x * MoveX + up.x * MoveY;
                     pos.y += right.y * MoveX + up.y * MoveY;
                     pos.z += right.z * MoveX + up.z * MoveY;
+
+                    float scrollSpeed = 2.0f;
+                    float forwardNotches  = MouseWheelForward();
+                    float backwardNotches = MouseWheelBackward();
+
+                    // 前方向に移動
+                    if (forwardNotches > 0.0f) {
+                        pos.x += forward.x * forwardNotches * scrollSpeed;
+                        pos.y += forward.y * forwardNotches * scrollSpeed;
+                        pos.z += forward.z * forwardNotches * scrollSpeed;
+                    }
+
+                    // 後方向に移動
+                    if (backwardNotches > 0.0f) {
+                        pos.x -= forward.x * backwardNotches * scrollSpeed;
+                        pos.y -= forward.y * backwardNotches * scrollSpeed;
+                        pos.z -= forward.z * backwardNotches * scrollSpeed;
+                    }
 
                     if (Cam->IsChangeCalculation()) {
                         Cam->SetPosition(pos);
@@ -792,6 +811,26 @@ void EditrGUI::ShowInputDebug()
         Y = MouseMoveY();
         // 文字列に変換して表示
         ImGui::Text(std::to_string(Y).c_str());
+
+        // マウスのホイール量
+        int Wheel;
+        Wheel = MouseWheel();
+        ImGui::Text(ShiftJISToUTF8("ホイール:").c_str());
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(Wheel).c_str());
+
+        int A;
+		A = MouseWheelForward();
+		ImGui::Text(ShiftJISToUTF8("ホイール前方向ノッチ数:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(std::to_string(A).c_str());
+
+        int B;
+		B = MouseWheelBackward();
+		ImGui::Text(ShiftJISToUTF8("ホイール後方向ノッチ数:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(std::to_string(B).c_str());
+
         ImGui::Separator();
         ImGui::Text(ShiftJISToUTF8("キーボードの入力状態").c_str());
         for (int i = 0; i < 256; i++) {
