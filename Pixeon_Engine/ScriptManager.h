@@ -4,9 +4,10 @@
 #include <string>
 #include <map>
 #include <Windows.h>
-
-// Scriptを管理するマネージャークラス
-// DLLの読み込み・解放を行う
+/*
+ Scriptを管理するマネージャークラス
+ DLLの読み込み・解放を行う
+*/
 
 class ScriptManager
 {
@@ -18,6 +19,7 @@ public:
 
 	HMODULE LoadScriptDll(const std::string& dllPath);
 	void ReleaseScriptDll(const std::string& dllPath);
+	std::string GetVSDevEnvPath();
 
 private:
 	struct DllEntry {

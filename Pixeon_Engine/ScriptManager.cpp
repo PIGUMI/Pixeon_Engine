@@ -1,4 +1,7 @@
 #include "ScriptManager.h"
+#include <vector>
+#include <fstream>
+#include <filesystem>
 
 ScriptManager* ScriptManager::instance = nullptr;
 
@@ -44,4 +47,17 @@ void ScriptManager::ReleaseScriptDll(const std::string& dllPath)
 			_dllCache.erase(it);
 		}
 	}
+}
+
+std::string ScriptManager::GetVSDevEnvPath()
+{
+	const std::vector<std::string> vsPaths = {
+		"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat",
+		"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Auxiliary\\Build\\vcvars64.bat",
+		"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+	};
+	for (const auto& path : vsPaths) {
+		if (std::filesystem::exists(path)) return path;
+	}
+	return "";
 }

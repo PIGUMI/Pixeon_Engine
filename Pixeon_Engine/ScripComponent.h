@@ -12,29 +12,29 @@
 
 class ScripComponent : public Component
 {
-public :
-	void Init(Object* owner) override;
-	void BeginPlay() override;
-	void InGameUpdate() override;
-	void UInit() override;
-	void DrawInspector() override;
+public:
+    void Init(Object* owner) override;
+    void BeginPlay() override;
+    void InGameUpdate() override;
+    void UInit() override;
+    void DrawInspector() override;
+    void SaveToFile(std::ostream& out) override;
+    void LoadFromFile(std::istream& in) override;
 
-	void SaveToFile(std::ostream& out) override;
-	void LoadFromFile(std::istream& in) override;
+    bool CreateScriptFiles(const std::string& scriptName);
+    bool BuildScriptDll(const std::string& scriptName);
 
-	bool LoadScript(const std::string& dllPath);
-	void UnLoadScript();
+    void SetScriptName(const std::string& name) { _scriptName = name; }
+    std::string GetScriptName() const { return _scriptName; }
 
-	IScript* GetScriptInstance() const { return _scriptInstance; }
-	std::string GetScriptName() const { return _dllName; }
+    bool LoadScript(const std::string& scriptName);
+    void UnLoadScript();
+
+    IScript* GetScriptInstance() const { return _scriptInstance; }
 
 private:
-	IScript* _scriptInstance = nullptr;
-	std::string _dllName;
-	HMODULE _dllHandle = nullptr;
-private:
-
-	ScripComponent();
-	~ScripComponent();
+    IScript* _scriptInstance = nullptr;
+    std::string _scriptName;
+    HMODULE _dllHandle = nullptr;
 };
 
