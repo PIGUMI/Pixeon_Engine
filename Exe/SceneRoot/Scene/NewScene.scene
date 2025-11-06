@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-2.10637 1.2 1.2979 -13.5897 -0.080008 0 6.40473 1.99923 -3.89079 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 ",
+                    "Data": "-3.89075 1.46 1.60496 -13.5997 0.179992 0 4.56056 -0.330217 -3.43195 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -33,6 +33,11 @@
                     "Data": "Enemy/Walk.fbx\n1 1 1 1\nVS_ModelBasic\nPS_ModelBasic\n",
                     "Name": "ModelRender",
                     "Type": 2
+                },
+                {
+                    "Data": "ScriptName \n",
+                    "Name": "ScripComponent",
+                    "Type": 5
                 }
             ],
             "Name": "NewObject1",

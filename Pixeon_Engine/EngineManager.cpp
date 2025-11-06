@@ -114,6 +114,7 @@ ID3D11ShaderResourceView* EngineManager::GetGameRender(){
 }
 
 void EngineManager::EditeUpdate() {
+	ScriptManager::Instance().Update();
 	ShaderManager::GetInstance()->UpdateAndCompileShaders();
 	EditrGUI::GetInstance()->Update();
 	SceneManger::GetInstance()->EditUpdate();

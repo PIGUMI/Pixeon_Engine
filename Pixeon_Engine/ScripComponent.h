@@ -5,9 +5,14 @@
 * 読み込んだスクリプトをメモリ上に保存し、動的にコンパイル・実行する方式に変更
 */
 
+#pragma once
+/* Script コンポーネント（Inspector 対応） */
+
 #include "Component.h"
 #include <Windows.h>
 #include <string>
+#include <vector>
+#include <filesystem>
 #include "IScript.h"
 
 class ScripComponent : public Component
@@ -18,23 +23,33 @@ public:
     void InGameUpdate() override;
     void UInit() override;
     void DrawInspector() override;
+
     void SaveToFile(std::ostream& out) override;
     void LoadFromFile(std::istream& in) override;
 
-    bool CreateScriptFiles(const std::string& scriptName);
-    bool BuildScriptDll(const std::string& scriptName);
-
-    void SetScriptName(const std::string& name) { _scriptName = name; }
-    std::string GetScriptName() const { return _scriptName; }
-
+    // スクリプト読み込み / 解放
     bool LoadScript(const std::string& scriptName);
     void UnLoadScript();
 
+    // ユーティリティ（Inspector 用）
+    bool LoadScriptByName(const std::string& scriptName); // Script/Bin/<name>.dll をロード（存在しなければビルド）
+    bool CreateScriptFiles(const std::string& scriptName); // Script/Src/<name>.h/.cpp を生成（雛形）
+    bool BuildScriptDll(const std::string& scriptName);   // 同期ビルド（vcvars + cl）
+    void RefreshScriptList();                              // Script/Src を走査して _scriptList 更新
+    std::string GetVSDevEnvPath() const;
+
     IScript* GetScriptInstance() const { return _scriptInstance; }
+    std::string GetScriptName() const { return _scriptName; }
 
 private:
     IScript* _scriptInstance = nullptr;
     std::string _scriptName;
-    HMODULE _dllHandle = nullptr;
-};
 
+    // Inspector state
+    std::vector<std::string> _scriptList;
+    int _selectedIndex = -1;
+    char _newNameBuf[128] = {};
+    char _callBuf[128] = {};
+    std::string _buildLog;
+    bool _showBuildLog = false;
+};
