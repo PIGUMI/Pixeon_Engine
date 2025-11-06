@@ -1,12 +1,18 @@
 #include "ScriptManager.h"
 #include "ScripComponent.h"
+#include "SettingManager.h"
 #include "IScript.h"
 
 #include <iostream>
 #include <sstream>
-#include <cstdlib> // system
+#include <cstdlib>
 #include <chrono>
 #include <thread>
+
+
+/* ToDo
+*  ファイルパスをSettingManagerから取得するようにする
+*/
 
 namespace fs = std::filesystem;
 
@@ -48,8 +54,8 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
     auto& entry = _dllMap[scriptName];
 
     // ソース/バイナリパス
-    std::string srcPath = "Script/Src/" + scriptName + ".cpp";
-    std::string dllPath = "Script/Bin/" + scriptName + ".dll";
+    std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
+    std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
     // 初回か、ソースが新しいかをチェックしビルドが必要ならビルド
     bool needBuild = false;
@@ -146,8 +152,8 @@ void ScriptManager::Update()
         const std::string scriptName = it->first;
         DllEntry& entry = it->second;
 
-        std::string srcPath = "Script/Src/" + scriptName + ".cpp";
-        std::string dllPath = "Script/Bin/" + scriptName + ".dll";
+        std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
+        std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
         bool needBuild = false;
         if (fs::exists(srcPath)) {

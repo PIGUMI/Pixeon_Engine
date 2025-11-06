@@ -372,7 +372,7 @@ void ScripComponent::DrawInspector() {
     if (_showBuildLog) {
         if (ImGui::CollapsingHeader(("Build Log##log_" + Ptr).c_str())) {
             ImGui::BeginChild(("BuildLogChild_" + Ptr).c_str(), ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
-            ImGui::TextUnformatted(_buildLog.c_str());
+            ImGui::TextUnformatted(EditrGUI::GetInstance()->ShiftJISToUTF8(_buildLog).c_str());
             ImGui::EndChild();
         }
     }
