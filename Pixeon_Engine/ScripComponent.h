@@ -1,12 +1,16 @@
-#pragma once
+#ifndef SCRIPT_COMPONENT_H
+#define SCRIPT_COMPONENT_H
+
+/*  TODO
+*   ScriptComponent及び、ScriptManagerのリファクタリング
+*   SettingMangerからファイルパスを取得するようにする
+*/
+
 /*　実装概要
 * 動的スクリプト用コンポーネント
 * 前回のスクリプト用コンポーネントはファイルを複製し読み込んでいたが、i/o負荷が高いため
 * 読み込んだスクリプトをメモリ上に保存し、動的にコンパイル・実行する方式に変更
 */
-
-#pragma once
-/* Script コンポーネント（Inspector 対応） */
 
 #include "Component.h"
 #include <Windows.h>
@@ -53,3 +57,5 @@ private:
     std::string _buildLog;
     bool _showBuildLog = false;
 };
+
+#endif // !SCRIPT_COMPONENT_H
