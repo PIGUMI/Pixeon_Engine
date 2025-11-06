@@ -35,7 +35,7 @@
                     "Type": 2
                 },
                 {
-                    "Data": "ScriptName \n",
+                    "Data": "ScriptName aad\n",
                     "Name": "ScripComponent",
                     "Type": 5
                 }

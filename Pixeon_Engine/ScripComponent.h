@@ -36,10 +36,10 @@ public:
     void UnLoadScript();
 
     // ユーティリティ（Inspector 用）
-    bool LoadScriptByName(const std::string& scriptName); // Script/Bin/<name>.dll をロード（存在しなければビルド）
-    bool CreateScriptFiles(const std::string& scriptName); // Script/Src/<name>.h/.cpp を生成（雛形）
-    bool BuildScriptDll(const std::string& scriptName);   // 同期ビルド（vcvars + cl）
-    void RefreshScriptList();                              // Script/Src を走査して _scriptList 更新
+    bool LoadScriptByName(const std::string& scriptName);
+    bool CreateScriptFiles(const std::string& scriptName);
+    bool BuildScriptDll(const std::string& scriptName);
+    void RefreshScriptList();
     std::string GetVSDevEnvPath() const;
 
     IScript* GetScriptInstance() const { return _scriptInstance; }
