@@ -90,6 +90,23 @@ extern"C"
 	PIXEON_API APIResult CameraComponent_SetFar(ComponentHandle cameraComponent, float InFar);
 	PIXEON_API APIResult CameraComponent_ChangeCalculationMode(ComponentHandle cameraComponent, bool isChange);
 	/*                 */
+
+	/* ImageRender */
+	PIXEON_API APIResult ImageRender_SetTextureName(ComponentHandle imageRender, const char* textureName);
+	PIXEON_API APIResult ImageRender_GetTextureName(ComponentHandle imageRender, char* outTextureName, int bufferSize);
+	PIXEON_API APIResult ImageRender_SetPlacementMode(ComponentHandle imageRender, int mode);
+	PIXEON_API APIResult ImageRender_GetPlacementMode(ComponentHandle imageRender, int* outMode);
+	PIXEON_API APIResult ImageRender_SetOffset2D(ComponentHandle imageRender, Float2 offset);
+	PIXEON_API APIResult ImageRender_GetOffset2D(ComponentHandle imageRender, Float2 *offset);
+	PIXEON_API APIResult ImageRender_SetSize2D(ComponentHandle imageRender, Float2 size);
+	PIXEON_API APIResult ImageRender_GetSize2D(ComponentHandle imageRender, Float2* size);
+	PIXEON_API APIResult ImageRender_SetOffset3D(ComponentHandle imageRender, Float3 offset);
+	PIXEON_API APIResult ImageRender_GetOffset3D(ComponentHandle imageRender, Float3* offset);
+	PIXEON_API APIResult ImageRender_SetSize3D(ComponentHandle imageRender, Float2 size);
+	PIXEON_API APIResult ImageRender_GetSize3D(ComponentHandle imageRender, Float2* size);
+	PIXEON_API APIResult ImageRender_SetUVRect(ComponentHandle imageRender, Float4 uvRect);
+	PIXEON_API APIResult ImageRender_GetUVRect(ComponentHandle imageRender, Float4* outUVRect);
+	/*             */
 }
 
 

@@ -41,6 +41,21 @@ public:
     void SetTextureName(const std::string& name);
     const std::string& GetTextureName() const { return m_textureName; }
 
+	DirectX::XMFLOAT2 GetSize2D() const { return m_size2D; }
+    void SetSize2D(const DirectX::XMFLOAT2& size) { m_size2D = size; }
+    DirectX::XMFLOAT2 GetSizeWorld() const { return m_sizeWorld; }
+    void SetSizeWorld(const DirectX::XMFLOAT2& size) { m_sizeWorld = size; }
+    PlacementMode GetPlacementMode() const { return m_mode; }
+    void SetPlacementMode(PlacementMode mode) { m_mode = mode; }
+    DirectX::XMFLOAT4 GetUVRect() const { return m_uvRect; }
+    void SetUVRect(const DirectX::XMFLOAT4& rect) { m_uvRect = rect; }
+    DirectX::XMFLOAT4 GetColor() const { return m_color; }
+	void SetColor(const DirectX::XMFLOAT4& color) { m_color = color; }
+	DirectX::XMFLOAT2 GetOffset2D() const { return m_offset2D; }
+    void SetOffset2D(const DirectX::XMFLOAT2& offset) { m_offset2D = offset; }
+    DirectX::XMFLOAT3 GetOffset3D() const { return m_offset3D; }
+	void SetOffset3D(const DirectX::XMFLOAT3& offset) { m_offset3D = offset; }
+
 private:
     struct Vertex {
         DirectX::XMFLOAT3 pos;

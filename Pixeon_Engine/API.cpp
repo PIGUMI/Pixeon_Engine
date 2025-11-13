@@ -2,9 +2,11 @@
 #include "Object.h"
 #include "Component.h"
 #include "CameraComponent.h"
+#include "ImageRender.h"
 #include "Scene.h"
 #include "SceneManger.h"
 
+/* 基本API */
 extern "C" {
 		/* 現在のシーンの取得 */
 	PIXEON_API APIResult GetCurrentScene(SceneHandle* outHandle)
@@ -133,6 +135,156 @@ extern "C"
 		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
 		targetComp->SetIsChangeCalculation(isChange);
+		return PN_SUCCESS;
+	}
+}
+
+/* イメージレンダーコンポーネントに関するAPI */
+extern "C" {
+			/* テクスチャ名の設定 */
+	PIXEON_API APIResult ImageRender_SetTextureName(ComponentHandle imageRender, const char* textureName)
+	{
+		if (imageRender == nullptr || textureName == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		targetComp->SetTextureName(textureName);
+		return PN_SUCCESS;
+	}
+			/* テクスチャ名の取得 */
+	PIXEON_API APIResult ImageRender_GetTextureName(ComponentHandle imageRender, char* outTextureName, int bufferSize)
+	{
+		if (imageRender == nullptr || outTextureName == nullptr || bufferSize <= 0)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		std::string texName = targetComp->GetTextureName();
+		if (texName.size() + 1 > static_cast<size_t>(bufferSize))return PN_ERROR_BUFFER_TOO_SMALL;
+		strcpy_s(outTextureName, bufferSize, texName.c_str());
+		return PN_SUCCESS;
+	}
+			/* 描画モードの変更 */
+			/* 0:2D描画 1:ビルボード 2:3D描画 */
+	PIXEON_API APIResult ImageRender_SetPlacementMode(ComponentHandle imageRender, int mode)
+	{
+		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		if (mode < 0 || mode > 2)return PN_ERROR_INVALID_PARAMETER;
+		targetComp->SetPlacementMode(static_cast<ImageRender::PlacementMode>(mode));
+		return PN_SUCCESS;
+	}
+			/* 描画モードの取得 */
+			/* 0:2D描画 1:ビルボード 2:3D描画 */
+	PIXEON_API APIResult ImageRender_GetPlacementMode(ComponentHandle imageRender, int* outMode)
+	{
+		if (imageRender == nullptr || outMode == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		*outMode = static_cast<int>(targetComp->GetPlacementMode());
+		return PN_SUCCESS;
+	}
+			/* オフセット設定 */
+			/* ※2D描画時 */
+	PIXEON_API APIResult ImageRender_SetOffset2D(ComponentHandle imageRender, Float2 offset)
+	{
+		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT2 oFfset = { offset.x, offset.y };
+		targetComp->SetOffset2D(oFfset);
+		return PN_SUCCESS;
+	}
+			/* オフセット取得 */
+			/* ※2D描画時 */
+	PIXEON_API APIResult ImageRender_GetOffset2D(ComponentHandle imageRender, Float2* offset)
+	{
+		if (imageRender == nullptr || offset == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT2 oFfset = targetComp->GetOffset2D();
+		offset->x = oFfset.x;
+		offset->y = oFfset.y;
+		return PN_SUCCESS;
+	}
+			/* サイズ取得 */
+			/* ※2D描画時 */
+	PIXEON_API APIResult ImageRender_SetSize2D(ComponentHandle imageRender, Float2 size)
+	{
+		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT2 sz = { size.x, size.y };
+		targetComp->SetSize2D(sz);
+		return PN_SUCCESS;
+	}
+			/* サイズ設定 */
+			/* ※2D描画時 */
+	PIXEON_API APIResult ImageRender_GetSize2D(ComponentHandle imageRender, Float2* size)
+	{
+		if (imageRender == nullptr || size == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT2 sz = targetComp->GetSize2D();
+		size->x = sz.x;
+		size->y = sz.y;
+		return PN_SUCCESS;
+	}
+			/* オフセット設定 */
+			/* ※ビルボード・3D描画時 */
+	PIXEON_API APIResult ImageRender_SetOffset3D(ComponentHandle imageRender, Float3 offset)
+	{
+		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT3 oFfset = { offset.x, offset.y, offset.z };
+		targetComp->SetOffset3D(oFfset);
+		return PN_SUCCESS;
+	}
+			/* オフセット取得 */
+			/* ※ビルボード・3D描画時 */
+	PIXEON_API APIResult ImageRender_GetOffset3D(ComponentHandle imageRender, Float3* offset)
+	{
+		if (imageRender == nullptr || offset == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT3 oFfset = targetComp->GetOffset3D();
+		offset->x = oFfset.x;
+		offset->y = oFfset.y;
+		offset->z = oFfset.z;
+		return PN_SUCCESS;
+	}
+			/* サイズの設定 */
+			/* ※ビルボード・3D描画時 */
+	PIXEON_API APIResult ImageRender_SetSize3D(ComponentHandle imageRender, Float2 size)
+	{
+		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT2 sz = { size.x, size.y };
+		targetComp->SetSizeWorld(sz);
+		return PN_SUCCESS;
+	}
+			/* サイズの設定 */
+			/* ※ビルボード・3D描画時 */
+	PIXEON_API APIResult ImageRender_GetSize3D(ComponentHandle imageRender, Float2* size)
+	{
+		if (imageRender == nullptr || size == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT2 sz = targetComp->GetSizeWorld();
+		size->x = sz.x;
+		size->y = sz.y;
+		return PN_SUCCESS;
+	}
+			/* UV設定 */
+			/* 0～1 */
+			/* X:Y = 0:0 Z:W = 1:1 */
+	PIXEON_API APIResult ImageRender_SetUVRect(ComponentHandle imageRender, Float4 uvRect)
+	{
+		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT4 uvR = { uvRect.x, uvRect.y, uvRect.z, uvRect.w };
+		targetComp->SetUVRect(uvR);
+		return PN_SUCCESS;
+	}
+			/* UV取得 */
+			/* 0 ～ 1 */
+	PIXEON_API APIResult ImageRender_GetUVRect(ComponentHandle imageRender, Float4* outUVRect)
+	{
+		if (imageRender == nullptr || outUVRect == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
+		DirectX::XMFLOAT4 uvR = targetComp->GetUVRect();
+		outUVRect->x = uvR.x;
+		outUVRect->y = uvR.y;
+		outUVRect->z = uvR.z;
+		outUVRect->w = uvR.w;
 		return PN_SUCCESS;
 	}
 }
