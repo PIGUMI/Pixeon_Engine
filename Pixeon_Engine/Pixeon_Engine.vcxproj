@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="API.h" />
     <ClInclude Include="ApplicationFeedbackSystem.h" />
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="API.cpp" />
     <ClCompile Include="ApplicationFeedbackSystem.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
