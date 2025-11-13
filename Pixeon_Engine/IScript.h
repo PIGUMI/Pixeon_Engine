@@ -3,6 +3,7 @@
 
 //　Scriptのインターフェースクラス
 #include <string>
+#include "API.h"
 
 class IScript
 {

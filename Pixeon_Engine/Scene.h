@@ -39,6 +39,8 @@ public: // Setter And Getter
 	int GetMainCameraNumber() { return _MainCameraNumber; }
 	void SetMainCameraNumber(int num) { _MainCameraNumber = num; }
 
+	Object* FindObjectByName(const char*name);
+
 	std::vector<LightComponent*> *GetLights() { return &_lights; }
 
 	void RegisterLight(LightComponent* l);
@@ -59,5 +61,6 @@ private:
 	std::mutex _mtx;
 	CameraComponent* _MainCamera = nullptr;
 	int _MainCameraNumber = -1;
+	bool EndPlayCalled = false;
 };
 

@@ -205,7 +205,6 @@ bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
 bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
     std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
     if (!fs::exists(dllPath)) {
-        // ビルドを試す（無ければ CreateScriptFiles で雛形作成してもよい）
         BuildScriptDll(scriptName);
     }
     return LoadScript(scriptName);
@@ -224,7 +223,7 @@ bool ScripComponent::LoadScript(const std::string& scriptName) {
         return false;
     }
     _scriptInstance = inst;
-    _scriptInstance->BeginPlay();
+    //_scriptInstance->BeginPlay();
     return true;
 }
 

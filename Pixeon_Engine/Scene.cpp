@@ -12,13 +12,21 @@
 #include <iostream>
 #include "System.h"
 
+// ライト用GPU定数バッファ構造体
 struct LightGPU {
-	DirectX::XMFLOAT3 position; float intensity;
-	DirectX::XMFLOAT3 direction; float type;      // type: 0=Dir,1=Point,2=Spot
-	DirectX::XMFLOAT3 color;     float range;
-	float innerCos; float outerCos; float enabled; float pad; // 16B アライメント
+	DirectX::XMFLOAT3 position; 
+	float intensity;
+	DirectX::XMFLOAT3 direction; 
+	float type;      // type: 0=Dir,1=Point,2=Spot
+	DirectX::XMFLOAT3 color;     
+	float range;
+	float innerCos; 
+	float outerCos; 
+	float enabled; 
+	float pad; // 16B アライメント
 };
 
+// ライト用定数バッファ構造体
 static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
@@ -32,6 +40,7 @@ void Scene::Init(){
 	_ToBeAdded.clear();
 	_ToBeRemoved.clear();
 	_SaveObjects.clear();
+	EndPlayCalled = true;
 }
 
 void Scene::BeginPlay(){
@@ -50,9 +59,35 @@ void Scene::BeginPlay(){
 	for (auto& obj : _objects) {
 		if (obj)obj->BeginPlay();
 	}
+	EndPlayCalled = false;
 }
 
 void Scene::EditUpdate(){
+	if (!EndPlayCalled)
+	{
+		EndPlayCalled = true;
+		for(auto& obj : _objects)
+		{
+			if(obj) obj->UInit();
+			delete obj;
+		}
+		_objects.clear();
+		_objects = _SaveObjects;
+		_SaveObjects.clear();
+		for (auto& obj : _objects) {
+			if (!obj) continue;
+			for (auto& comp : obj->GetComponents()) {
+				if (!comp) continue;
+				if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
+					CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
+					if (cam->GetCameraNumber() == _MainCameraNumber)
+					{
+						_MainCamera = cam;
+					}
+				}
+			}
+		}
+	}
 	// 非同期追加の処理
 	ProcessThreadSafeAdditions();
 	// オブジェクトの追加処理
@@ -287,6 +322,20 @@ void Scene::LoadToFile(){
 		}
 		if (_MainCamera) break;
 	}
+}
+
+Object* Scene::FindObjectByName(const char* name)
+{
+	std::string strName(name);
+	if (_objects.empty())return nullptr;
+	for (auto& obj : _objects) {
+		if (obj) {
+			if (obj->GetObjectName() == strName) {
+				return obj;
+			}
+		}
+	}
+	return nullptr;
 }
 
 void Scene::RegisterLight(LightComponent* l){
