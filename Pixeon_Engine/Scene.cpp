@@ -12,6 +12,7 @@
 #include <iostream>
 #include "System.h"
 
+// ライト用GPU定数バッファ構造体
 struct LightGPU {
 	DirectX::XMFLOAT3 position; float intensity;
 	DirectX::XMFLOAT3 direction; float type;      // type: 0=Dir,1=Point,2=Spot
@@ -19,6 +20,7 @@ struct LightGPU {
 	float innerCos; float outerCos; float enabled; float pad; // 16B アライメント
 };
 
+// ライト用定数バッファ構造体
 static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
