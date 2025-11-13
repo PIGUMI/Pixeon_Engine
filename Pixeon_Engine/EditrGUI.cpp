@@ -18,7 +18,7 @@
 #include "Scene.h"
 #include "Input.h"
 
-#pragma comment(lib, "windowscodecs.lib")aw
+#pragma comment(lib, "windowscodecs.lib")
 
 EditrGUI* EditrGUI::instance = nullptr;
 
@@ -288,12 +288,13 @@ void EditrGUI::WindowGUI()
     ImGui::PopStyleVar();
 
 	// 各種ウィンドウ表示
+    ShowGameView();
+    if (EngineManager::GetInstance()->IsShowGUI())return;
     ShowContentDrawer();
     ShaderEditorWindow();
 	ShaderListWindow();
     ShowHierarchy();
     ShowInspector();
-    ShowGameView();
     ShowConsole();
 	AssetManagerWindow();
 	TextureManagerWindow();
@@ -317,12 +318,19 @@ void EditrGUI::ShowGameView()
 
     // 再生・停止ボタン
     if (!isGamePlaying) {
-        if (ImGui::Button(ShiftJISToUTF8("再生").c_str(), ImVec2(70, 0))) isGamePlaying = true;
+        if (ImGui::Button(ShiftJISToUTF8("再生").c_str(), ImVec2(70, 0)))
+        {
+			EngineManager::GetInstance()->SetInGame(true);
+            EngineManager::GetInstance()->SetShowGUI(true);
+        }
     } else {
-        if (ImGui::Button(ShiftJISToUTF8("停止").c_str(), ImVec2(70, 0))) isGamePlaying = false;
-    }
+        if (ImGui::Button(ShiftJISToUTF8("停止").c_str(), ImVec2(70, 0)))
+        {
+			EngineManager::GetInstance()->SetInGame(false);
+            EngineManager::GetInstance()->SetShowGUI(false);
+        }
 
-	EngineManager::GetInstance()->SetInGame(isGamePlaying);
+    }
 
     ImGui::PopStyleVar(2);
 

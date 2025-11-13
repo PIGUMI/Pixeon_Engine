@@ -34,7 +34,7 @@ void EngineManager::DeleteInstance(){
 int EngineManager::Init(const EngineConfig& InPut){
 
 	m_bInGame_		= false;
-	m_bIsShowGUI_	= true;
+	m_bIsShowGUI_	= false;
 
 	// COM ‚Ì‰Šú‰»
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -73,6 +73,7 @@ int EngineManager::Init(const EngineConfig& InPut){
 
 void EngineManager::Update() {
 	UpdateInput(GetWindowHandle());
+	if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))m_bIsShowGUI_ = !m_bIsShowGUI_;
 	if (m_bInGame_)
 		InGameUpdate();
 	else
@@ -81,9 +82,6 @@ void EngineManager::Update() {
 
 void EngineManager::Draw() {
 	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-	if (!m_bIsShowGUI_)
-		InGameDraw();
-	else
 		EditeDraw();	
 }
 
