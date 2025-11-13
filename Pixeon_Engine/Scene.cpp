@@ -297,6 +297,16 @@ void Scene::LoadToFile(){
 	}
 }
 
+Object* Scene::FindObjectByName(const std::string& name)
+{
+	for (auto& obj : _objects) {
+		if (obj && obj->GetObjectName() == name) {
+			return obj;
+		}
+	}
+	return nullptr;
+}
+
 void Scene::RegisterLight(LightComponent* l){
 	if (!l) return;
 	if (std::find(_lights.begin(), _lights.end(), l) == _lights.end())
