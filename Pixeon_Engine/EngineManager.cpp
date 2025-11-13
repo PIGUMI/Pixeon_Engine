@@ -82,7 +82,7 @@ void EngineManager::Update() {
 
 void EngineManager::Draw() {
 	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-		EditeDraw();	
+	EditeDraw();	
 }
 
 void EngineManager::UnInit() {
