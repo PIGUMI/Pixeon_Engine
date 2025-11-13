@@ -6,9 +6,9 @@ public:
     void BeginPlay() override;
     void Update() override;
     void EndPlay() override;
-
 private:
-	GameObjectHandle skyboxObject;
+    GameObjectHandle SkyBox;
+    GameObjectHandle Cam;
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {

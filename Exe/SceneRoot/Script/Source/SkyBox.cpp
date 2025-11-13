@@ -1,17 +1,19 @@
 #include "SkyBox.h"
 
-
 void Script_SkyBox::BeginPlay() {
     // BeginPlay
-    SceneHandle Scene;
-    GetCurrentScene(&Scene);
-    GetGameObject(Scene, "SkeBox", &skyboxObject);
+    SceneHandle CurrentScene;
+	GetCurrentScene(&CurrentScene);
+	GetGameObject(CurrentScene, "SkyBox", &SkyBox);
+	GetGameObject(CurrentScene, "Cam", &Cam);
 }
 
 void Script_SkyBox::Update() {
-    // Update
+	TransformData Trans;
+	GetGameObjectTransform(Cam, &Trans);
+	SetGameObjectTransform(SkyBox, &Trans);
 }
 
 void Script_SkyBox::EndPlay() {
-    // EndPlay
+
 }

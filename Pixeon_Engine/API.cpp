@@ -18,9 +18,10 @@ extern "C" {
 		if(scene == nullptr || objectname == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Object* obj = targetScene->FindObjectByName(std::string(objectname));
+		Object* obj = targetScene->FindObjectByName(objectname);
 		if (obj == nullptr)return PN_ERROR_NOT_FOUND;
 		outObject = reinterpret_cast<GameObjectHandle*>(obj);
+		return PN_SUCCESS;
 	}
 		/* トランスフォームの設定 */
 	PIXEON_API APIResult SetGameObjectTransform(GameObjectHandle gameObject, const TransformData* inTransform)

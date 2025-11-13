@@ -297,7 +297,7 @@ void Scene::LoadToFile(){
 	}
 }
 
-Object* Scene::FindObjectByName(const std::string& name)
+Object* Scene::FindObjectByName(std::string name)
 {
 	for (auto& obj : _objects) {
 		if (obj && obj->GetObjectName() == name) {

@@ -39,7 +39,7 @@ public: // Setter And Getter
 	int GetMainCameraNumber() { return _MainCameraNumber; }
 	void SetMainCameraNumber(int num) { _MainCameraNumber = num; }
 
-	Object* FindObjectByName(const std::string& name);
+	Object* FindObjectByName(std::string name);
 
 	std::vector<LightComponent*> *GetLights() { return &_lights; }
 
