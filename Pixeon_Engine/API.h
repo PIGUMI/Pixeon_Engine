@@ -82,8 +82,13 @@ extern"C" {
 extern"C"
 {
 	/* CameraComponent */
-	PIXEON_API APIResult CameraComponent_GetTrsform(ComponentHandle cameraComponent, CameraTransform* outTransform);
-	PIXEON_API APIResult CameraComponent_SetTrsform(ComponentHandle cameraComponent, const CameraTransform* inTransform);
+	PIXEON_API APIResult CameraComponent_GetTransform(ComponentHandle cameraComponent, CameraTransform* outTransform);
+	PIXEON_API APIResult CameraComponent_SetTransform(ComponentHandle cameraComponent, const CameraTransform* inTransform);
+	PIXEON_API APIResult CameraComponent_SetFov(ComponentHandle cameraComponent, float InFov);
+	PIXEON_API APIResult CameraComponent_SetAspect(ComponentHandle cameraComponent, float InAspect);
+	PIXEON_API APIResult CameraComponent_SetNear(ComponentHandle cameraComponent, float InNear);
+	PIXEON_API APIResult CameraComponent_SetFar(ComponentHandle cameraComponent, float InFar);
+	PIXEON_API APIResult CameraComponent_ChangeCalculationMode(ComponentHandle cameraComponent, bool isChange);
 	/*                 */
 }
 

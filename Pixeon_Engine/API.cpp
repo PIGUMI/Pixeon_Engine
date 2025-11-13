@@ -72,10 +72,11 @@ extern "C" {
 	}
 }
 
+/* カメラコンポーネントに関するAPI */
 extern "C"
 {
 		/* カメラのトランスフォーム取得 */
-	PIXEON_API APIResult CameraComponent_GetTrsform(ComponentHandle cameraComponent, CameraTransform* outTransform)
+	PIXEON_API APIResult CameraComponent_GetTransform(ComponentHandle cameraComponent, CameraTransform* outTransform)
 	{
 		if (cameraComponent == nullptr || outTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
@@ -84,14 +85,54 @@ extern "C"
 		outTransform->fixation = { targetComp->GetFixation().x, targetComp->GetFixation().y, targetComp->GetFixation().z };
 		return PN_SUCCESS;
 	}
-	/* カメラのトランスフォーム設定 */
-	PIXEON_API APIResult CameraComponent_SetTrsform(ComponentHandle cameraComponent, const CameraTransform* inTransform)
+		/* カメラのトランスフォーム設定 */
+	PIXEON_API APIResult CameraComponent_SetTransform(ComponentHandle cameraComponent, const CameraTransform* inTransform)
 	{
 		if (cameraComponent == nullptr || inTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
 		targetComp->SetPosition({ inTransform->position.x, inTransform->position.y, inTransform->position.z });
 		targetComp->SetRotation({ inTransform->rotation.x, inTransform->rotation.y, inTransform->rotation.z });
 		targetComp->SetFixation({ inTransform->fixation.x, inTransform->fixation.y, inTransform->fixation.z });
+		return PN_SUCCESS;
+	}
+		/* カメラのFOV設定 */
+	PIXEON_API APIResult CameraComponent_SetFov(ComponentHandle cameraComponent, float outFov)
+	{
+		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
+		targetComp->SetFov(outFov);
+		return PN_SUCCESS;
+	}
+		/* カメラのアスペクト比設定 */
+	PIXEON_API APIResult CameraComponent_SetAspect(ComponentHandle cameraComponent, float InAspect)
+	{
+		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
+		targetComp->SetAspect(InAspect);
+		return PN_SUCCESS;
+	}
+		/* カメラのニアクリップ設定 */
+	PIXEON_API APIResult CameraComponent_SetNear(ComponentHandle cameraComponent, float InNear)
+	{
+		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
+		targetComp->SetNear(InNear);
+		return PN_SUCCESS;
+	}
+		/* カメラのファークリップ設定 */
+	PIXEON_API APIResult CameraComponent_SetFar(ComponentHandle cameraComponent, float InFar)
+	{
+		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
+		targetComp->SetFar(InFar);
+		return PN_SUCCESS;
+	}
+		/* カメラの計算方法変更設定 */
+	PIXEON_API APIResult CameraComponent_ChangeCalculationMode(ComponentHandle cameraComponent, bool isChange)
+	{
+		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
+		targetComp->SetIsChangeCalculation(isChange);
 		return PN_SUCCESS;
 	}
 }

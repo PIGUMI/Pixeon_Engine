@@ -328,6 +328,7 @@ void EditrGUI::ShowGameView()
         {
 			EngineManager::GetInstance()->SetInGame(false);
             EngineManager::GetInstance()->SetShowGUI(false);
+			SelectedObject = nullptr;
         }
 
     }
