@@ -116,9 +116,14 @@ void EngineManager::EditeUpdate() {
 	ShaderManager::GetInstance()->UpdateAndCompileShaders();
 	EditrGUI::GetInstance()->Update();
 	SceneManger::GetInstance()->EditUpdate();
+	m_bIsBeginPlayCalled = false;
 }
 
 void EngineManager::InGameUpdate() {
+	if(!m_bIsBeginPlayCalled) {
+		SceneManger::GetInstance()->BeginPlay();
+		m_bIsBeginPlayCalled = true;
+	}
 	SceneManger::GetInstance()->PlayUpdate();
 }
 

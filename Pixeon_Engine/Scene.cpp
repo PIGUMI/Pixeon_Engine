@@ -297,11 +297,15 @@ void Scene::LoadToFile(){
 	}
 }
 
-Object* Scene::FindObjectByName(std::string name)
+Object* Scene::FindObjectByName(const char* name)
 {
+	std::string strName(name);
+	if (_objects.empty())return nullptr;
 	for (auto& obj : _objects) {
-		if (obj && obj->GetObjectName() == name) {
-			return obj;
+		if (obj) {
+			if (obj->GetObjectName() == strName) {
+				return obj;
+			}
 		}
 	}
 	return nullptr;

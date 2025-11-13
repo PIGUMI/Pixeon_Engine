@@ -1,4 +1,5 @@
 #include "API.h"
+#include "Object.h"
 #include "Scene.h"
 #include "SceneManger.h"
 
@@ -10,17 +11,19 @@ extern "C" {
 		Scene* currentScene = nullptr;
 		currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (currentScene == nullptr) return PN_ERROR_NULL_POINTER;
-		outHandle = reinterpret_cast<SceneHandle*>(currentScene);
+		*outHandle = reinterpret_cast<SceneHandle*>(currentScene);
 	}
 		/* ゲームオブジェクトの取得 */
 	PIXEON_API APIResult GetGameObject(SceneHandle scene, const char* objectname, GameObjectHandle* outObject)
 	{
 		if(scene == nullptr || objectname == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
+
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
+
 		Object* obj = targetScene->FindObjectByName(objectname);
 		if (obj == nullptr)return PN_ERROR_NOT_FOUND;
-		outObject = reinterpret_cast<GameObjectHandle*>(obj);
+		*outObject = reinterpret_cast<GameObjectHandle*>(obj);
 		return PN_SUCCESS;
 	}
 		/* トランスフォームの設定 */

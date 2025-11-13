@@ -61,6 +61,7 @@ private:
 	bool m_bInGame_;
 	// GUI•\Ž¦”»’è
 	bool m_bIsShowGUI_;
+	bool m_bIsBeginPlayCalled;
 };
 
 #endif // !ENGINE_MANAGER_H

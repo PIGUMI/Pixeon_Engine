@@ -38,7 +38,7 @@ void Object::UInit(){
 Object* Object::Clone(){
 	Object* newObj = new Object();
 	newObj->_transform = this->_transform;
-	newObj->_ObjectName = this->_ObjectName + "_Clone";
+	newObj->_ObjectName = this->_ObjectName;
 	for (auto comp : _components) {
 		if (comp) {
 			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj,comp->GetComponentType());
