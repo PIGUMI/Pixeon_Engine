@@ -18,7 +18,7 @@
 #include "Scene.h"
 #include "Input.h"
 
-#pragma comment(lib, "windowscodecs.lib")
+#pragma comment(lib, "windowscodecs.lib")aw
 
 EditrGUI* EditrGUI::instance = nullptr;
 
@@ -339,8 +339,7 @@ void EditrGUI::ShowGameView()
 	else {
 		size.y = size.x / aspect;
 	}
-	// 中央に配置
-	// 上部のコントロールバーの高さを考慮して中央に配置
+
 	ImVec2 pos = ImGui::GetCursorPos();
 	pos.x += (ImGui::GetContentRegionAvail().x - size.x) * 0.5f;
 	ImGui::SetCursorPosX(pos.x);
@@ -370,52 +369,42 @@ void EditrGUI::ShowGameView()
                 // 前方向ベクトル
                 DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
 
+                float scrollSpeed = 2.0f;
+                float forwardNotches = MouseWheelForward();
+                float backwardNotches = MouseWheelBackward();
+
+
+                DirectX::XMFLOAT3 pos;
+                if (Cam->IsChangeCalculation()) {
+                    pos = Cam->GetPosition();
+                }
+                else {
+                    pos = Cam->GetFixation();
+                }
+                // 前方向に移動
+                if (forwardNotches > 0.0f) {
+                    pos.x -= forward.x * forwardNotches * scrollSpeed;
+                    pos.y -= forward.y * forwardNotches * scrollSpeed;
+                    pos.z -= forward.z * forwardNotches * scrollSpeed;
+                }
+                // 後方向に移動
+                if (backwardNotches > 0.0f) {
+                    pos.x += forward.x * backwardNotches * scrollSpeed;
+                    pos.y += forward.y * backwardNotches * scrollSpeed;
+                    pos.z += forward.z * backwardNotches * scrollSpeed;
+                }
+
                 if (IsKeyPress(1))
                 {
                     float MoveX = (float)MouseMoveX() * SettingManager::GetInstance()->GetMouseSensitivity();
                     float MoveY = (float)MouseMoveY() * SettingManager::GetInstance()->GetMouseSensitivity();
 
-                    DirectX::XMFLOAT3 right = Cam->GetRightVector();
                     DirectX::XMFLOAT3 up = Cam->GetUpVector();
-					DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
-
-                    DirectX::XMFLOAT3 pos;
-                    if (Cam->IsChangeCalculation()) {
-                        pos = Cam->GetPosition();
-                    }
-                    else {
-                        pos = Cam->GetFixation();
-                    }
 
                     // 右方向×MoveX ＋ Up方向×MoveY
                     pos.x += right.x * MoveX + up.x * MoveY;
                     pos.y += right.y * MoveX + up.y * MoveY;
                     pos.z += right.z * MoveX + up.z * MoveY;
-
-                    float scrollSpeed = 2.0f;
-                    float forwardNotches  = MouseWheelForward();
-                    float backwardNotches = MouseWheelBackward();
-
-                    // 前方向に移動
-                    if (forwardNotches > 0.0f) {
-                        pos.x += forward.x * forwardNotches * scrollSpeed;
-                        pos.y += forward.y * forwardNotches * scrollSpeed;
-                        pos.z += forward.z * forwardNotches * scrollSpeed;
-                    }
-
-                    // 後方向に移動
-                    if (backwardNotches > 0.0f) {
-                        pos.x -= forward.x * backwardNotches * scrollSpeed;
-                        pos.y -= forward.y * backwardNotches * scrollSpeed;
-                        pos.z -= forward.z * backwardNotches * scrollSpeed;
-                    }
-
-                    if (Cam->IsChangeCalculation()) {
-                        Cam->SetPosition(pos);
-                    }
-                    else {
-                        Cam->SetFixation(pos);
-                    }
                 }
                 if (IsKeyPress(2))
                 {
@@ -429,6 +418,12 @@ void EditrGUI::ShowGameView()
                     Rot.x += MoveX;
                     Rot.y += MoveY;
                     Cam->SetRotation(Rot);
+                }
+                if (Cam->IsChangeCalculation()) {
+                    Cam->SetPosition(pos);
+                }
+                else {
+                    Cam->SetFixation(pos);
                 }
             }
         }
