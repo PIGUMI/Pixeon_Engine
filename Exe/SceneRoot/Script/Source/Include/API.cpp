@@ -1,5 +1,7 @@
 #include "API.h"
 #include "Object.h"
+#include "Component.h"
+#include "CameraComponent.h"
 #include "Scene.h"
 #include "SceneManger.h"
 
@@ -39,6 +41,17 @@ extern "C" {
 		targetObject->SetTransform(t);
 		return PN_SUCCESS;
 	}
+		/* コンポーネントの取得 */
+	PIXEON_API APIResult GetComponent(GameObjectHandle gameObject, const char* componentName, ComponentHandle* outComponent)
+	{
+		if (gameObject == nullptr || componentName == nullptr || outComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		Object* targetObject = reinterpret_cast<Object*>(gameObject);
+		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
+		Component* comp = targetObject->GetComponent(componentName);
+		if (comp == nullptr)return PN_ERROR_NOT_FOUND;
+		*outComponent = reinterpret_cast<ComponentHandle*>(comp);
+		return PN_SUCCESS;
+	}
 		/* トランスフォームの取得 */
 	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform)
 	{
@@ -55,6 +68,30 @@ extern "C" {
 		outTransform->scale.x = t.scale.x;
 		outTransform->scale.y = t.scale.y;
 		outTransform->scale.z = t.scale.z;
+		return PN_SUCCESS;
+	}
+}
+
+extern "C"
+{
+		/* カメラのトランスフォーム取得 */
+	PIXEON_API APIResult CameraComponent_GetTrsform(ComponentHandle cameraComponent, CameraTransform* outTransform)
+	{
+		if (cameraComponent == nullptr || outTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
+		outTransform->position = { targetComp->GetPosition().x, targetComp->GetPosition().y, targetComp->GetPosition().z };
+		outTransform->rotation = { targetComp->GetRotation().x, targetComp->GetRotation().y,  targetComp->GetRotation().z };
+		outTransform->fixation = { targetComp->GetFixation().x, targetComp->GetFixation().y, targetComp->GetFixation().z };
+		return PN_SUCCESS;
+	}
+	/* カメラのトランスフォーム設定 */
+	PIXEON_API APIResult CameraComponent_SetTrsform(ComponentHandle cameraComponent, const CameraTransform* inTransform)
+	{
+		if (cameraComponent == nullptr || inTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
+		targetComp->SetPosition({ inTransform->position.x, inTransform->position.y, inTransform->position.z });
+		targetComp->SetRotation({ inTransform->rotation.x, inTransform->rotation.y, inTransform->rotation.z });
+		targetComp->SetFixation({ inTransform->fixation.x, inTransform->fixation.y, inTransform->fixation.z });
 		return PN_SUCCESS;
 	}
 }

@@ -55,6 +55,12 @@ typedef struct {
     Float3 scale;
 } TransformData;
 
+typedef struct {
+	Float3 position;
+	Float3 rotation;
+	Float3 fixation;
+} CameraTransform;
+
 
 #pragma pack(pop)
 
@@ -62,7 +68,6 @@ typedef struct {
 extern "C"{
 	/* 現在のシーンの取得 */
 	PIXEON_API APIResult GetCurrentScene(SceneHandle* outHandle);
-
 }
 
 /* ゲームオブジェクトに関するAPI */
@@ -70,12 +75,16 @@ extern"C" {
 	PIXEON_API APIResult GetGameObject(SceneHandle scene, const char* objectname, GameObjectHandle* outObject);
 	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform);
 	PIXEON_API APIResult SetGameObjectTransform(GameObjectHandle gameObject, const TransformData* inTransform);
+	PIXEON_API APIResult GetComponent(GameObjectHandle gameObject, const char* componentName, ComponentHandle* outComponent);
 }
 
 /* コンポーネントに関するAPI */
 extern"C"
 {
-
+	/* CameraComponent */
+	PIXEON_API APIResult CameraComponent_GetTrsform(ComponentHandle cameraComponent, CameraTransform* outTransform);
+	PIXEON_API APIResult CameraComponent_SetTrsform(ComponentHandle cameraComponent, const CameraTransform* inTransform);
+	/*                 */
 }
 
 
