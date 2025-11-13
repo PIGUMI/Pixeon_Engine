@@ -39,6 +39,7 @@ Object* Object::Clone(){
 	Object* newObj = new Object();
 	newObj->_transform = this->_transform;
 	newObj->_ObjectName = this->_ObjectName;
+	newObj->SetParentScene(this->GetParentScene());
 	for (auto comp : _components) {
 		if (comp) {
 			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj,comp->GetComponentType());

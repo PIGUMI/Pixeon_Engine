@@ -40,6 +40,7 @@ void Scene::Init(){
 	_ToBeAdded.clear();
 	_ToBeRemoved.clear();
 	_SaveObjects.clear();
+	EndPlayCalled = true;
 }
 
 void Scene::BeginPlay(){
@@ -58,9 +59,35 @@ void Scene::BeginPlay(){
 	for (auto& obj : _objects) {
 		if (obj)obj->BeginPlay();
 	}
+	EndPlayCalled = false;
 }
 
 void Scene::EditUpdate(){
+	if (!EndPlayCalled)
+	{
+		EndPlayCalled = true;
+		for(auto& obj : _objects)
+		{
+			if(obj) obj->UInit();
+			delete obj;
+		}
+		_objects.clear();
+		_objects = _SaveObjects;
+		_SaveObjects.clear();
+		for (auto& obj : _objects) {
+			if (!obj) continue;
+			for (auto& comp : obj->GetComponents()) {
+				if (!comp) continue;
+				if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
+					CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
+					if (cam->GetCameraNumber() == _MainCameraNumber)
+					{
+						_MainCamera = cam;
+					}
+				}
+			}
+		}
+	}
 	// 非同期追加の処理
 	ProcessThreadSafeAdditions();
 	// オブジェクトの追加処理

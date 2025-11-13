@@ -61,5 +61,6 @@ private:
 	std::mutex _mtx;
 	CameraComponent* _MainCamera = nullptr;
 	int _MainCameraNumber = -1;
+	bool EndPlayCalled = false;
 };
 
