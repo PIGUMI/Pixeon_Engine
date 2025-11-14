@@ -16,9 +16,10 @@ void Script_Image::BeginPlay() {
 void Script_Image::Update() {
     // Update
 	Float2 Offset2D;
-	ImageRender_GetOffset2D(Img, &Offset2D);
-	Offset2D.x += 1.0f;
-	ImageRender_SetOffset2D(Img,Offset2D);
+	ImageRender_GetSize3D(Img, &Offset2D);
+	Offset2D.x += 0.1f;
+	Offset2D.y += 0.1f;
+	ImageRender_SetSize3D(Img, Offset2D);
 }
 
 void Script_Image::EndPlay() {
