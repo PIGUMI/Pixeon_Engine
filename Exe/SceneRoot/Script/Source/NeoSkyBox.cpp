@@ -29,7 +29,7 @@ void Script_NeoSkyBox::BeginPlay() {
 void Script_NeoSkyBox::Update() {
     // Update
 	CameraTransform camTransform;
-	CameraComponent_GetTrsform(CameraComp, &camTransform);
+	CameraComponent_GetTransform(CameraComp, &camTransform);
 	TransformData skyboxTransform;
 	GetGameObjectTransform(skyboxObject, &skyboxTransform);
 	skyboxTransform.position = camTransform.position;
