@@ -11,6 +11,7 @@ ImageRender::ImageRender() {
     _ComponentName = "ImageRender";
     _Type = ComponentManager::COMPONENT_TYPE::IMAGE; // •K—v‚É‰ž‚¶‚ÄComponentManager‚Ö’è‹`’Ç‰Á
 }
+
 ImageRender::~ImageRender() {
     UInit();
 }

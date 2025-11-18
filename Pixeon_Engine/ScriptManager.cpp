@@ -9,13 +9,8 @@
 #include <chrono>
 #include <thread>
 
-/* ToDo
-*  ファイルパスをSettingManagerから取得するようにする
-*/
-
 namespace fs = std::filesystem;
 
-// Create/Destroy function types (DLL側でエクスポートされていること)
 typedef IScript* (*CreateScriptInstanceFunc)();
 typedef void (*DestroyScriptInstanceFunc)(IScript*);
 
