@@ -88,16 +88,13 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11Buffer>        m_cb;
 
-    // 以前 static だったものをインスタンスメンバへ
     Microsoft::WRL::ComPtr<ID3D11VertexShader>  m_vs;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>   m_ps;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>   m_layout;
 
-    // シェーダ名保持
     std::string m_vsName = "VS_ModelStatic";
     std::string m_psName = "PS_ModelStatic";
 
-    // 共有で良いものは static のまま
     static Microsoft::WRL::ComPtr<ID3D11SamplerState>        s_linearSmp;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  s_whiteTexSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  s_magentaTexSRV;
