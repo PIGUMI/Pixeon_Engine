@@ -287,6 +287,7 @@ void ModelRenderComponent::Draw() {
     auto ctx = DirectX11::GetInstance()->GetContext();
     ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
 
+
     UINT stride = sizeof(ModelVertex);
     UINT offset = 0;
     ID3D11Buffer* vb = m_model->vb.Get();
