@@ -29,7 +29,7 @@ void ComponentManager::Init(){
 	_ComponentName[(int)COMPONENT_TYPE::GEOMETRY]   = "Geometry";
 	_ComponentName[(int)COMPONENT_TYPE::MODEL]		= "Model";
 	_ComponentName[(int)COMPONENT_TYPE::LIGHT]		= "Light";
-	_ComponentName[(int)COMPONENT_TYPE::IMAGE]		= "Image";
+	_ComponentName[(int)COMPONENT_TYPE::IMAGE]		= "ImageRender";
 	_ComponentName[(int)COMPONENT_TYPE::SCRIPT]		= "Script";
 }
 

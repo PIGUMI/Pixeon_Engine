@@ -4,6 +4,7 @@
 #include "EditrGUI.h"
 #include "IMGUI/imgui.h"
 #include "SettingManager.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -52,7 +53,6 @@ void ScripComponent::LoadFromFile(std::istream& in) {
     }
 }
 
-// ファイル一覧を更新（Script/Src/*.cpp）
 void ScripComponent::RefreshScriptList() {
     _scriptList.clear();
     try {
@@ -76,7 +76,6 @@ void ScripComponent::RefreshScriptList() {
     else if (_selectedIndex < 0) _selectedIndex = 0;
 }
 
-// スクリプト雛形生成（既存ファイルは上書きしない）
 bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
     if (scriptName.empty()) return false;
     try {
@@ -129,7 +128,6 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
     }
 }
 
-// vcvars64.bat の簡易検索
 std::string ScripComponent::GetVSDevEnvPath() const {
     const std::vector<std::string> vsPaths = {
         "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat",
@@ -142,8 +140,8 @@ std::string ScripComponent::GetVSDevEnvPath() const {
     return "";
 }
 
-// 同期ビルド（ログは _buildLog に格納）
 bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
+	// スクリプト名が空ならビルドしない
     if (scriptName.empty()) return false;
     std::string vcvars = GetVSDevEnvPath();
     if (vcvars.empty()) {
@@ -201,7 +199,6 @@ bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
     }
 }
 
-// Script/Bin/<name>.dll をロード（存在しなければビルドを試す）
 bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
     std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
     if (!fs::exists(dllPath)) {
@@ -210,7 +207,6 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
     return LoadScript(scriptName);
 }
 
-// 既存 LoadScript / UnLoadScript を使用（ScriptManager 経由）
 bool ScripComponent::LoadScript(const std::string& scriptName) {
     if (_scriptInstance) {
         UnLoadScript();
