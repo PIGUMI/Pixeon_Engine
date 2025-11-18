@@ -367,6 +367,8 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
     if (!m_modelPath.empty()) SetModel(m_modelPath);
 }
 
+// IMGUI インスペクタ表示
+
 void ModelRenderComponent::DrawInspector() {
     auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
     if (!ImGui::CollapsingHeader("ModelRenderComponent", ImGuiTreeNodeFlags_DefaultOpen))
