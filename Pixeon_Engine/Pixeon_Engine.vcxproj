@@ -165,6 +165,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IScript.h" />
     <ClInclude Include="LightComponent.h" />
+    <ClInclude Include="ModelAnimation.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
     <ClInclude Include="Object.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IScript.cpp" />
     <ClCompile Include="LightComponent.cpp" />
+    <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelRender.cpp" />
     <ClCompile Include="Object.cpp" />
