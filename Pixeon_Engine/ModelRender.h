@@ -4,11 +4,13 @@
 #include "TextureManager.h"
 #include "ShaderManager.h"
 #include "EditrGUI.h"
+
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <string>
 #include <vector>
+#include <functional>
 
 class ModelRenderComponent : public Component
 {
