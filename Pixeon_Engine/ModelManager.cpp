@@ -647,7 +647,7 @@ void ModelManager::BuildNodeHierarchy(
     int currentIndex = static_cast<int>(clip.nodeHierarchy.size());
     nodeNameToIndex[nodeInfo.name] = currentIndex;
 
-    // ⭐ 修正: 子ノードのインデックスは後で設定
+    // ⭐ 子ノードのインデックスは後で追加
     clip.nodeHierarchy.push_back(nodeInfo);
 
     // 子ノードを再帰的に処理

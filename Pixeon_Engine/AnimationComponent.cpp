@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <set>
 
-
 void AnimationComponent::Init(Object* owner) {
     _Parent = owner;
     _ComponentName = "Animation";
@@ -78,6 +77,84 @@ void AnimationComponent::BeginPlay() {
         }
     }
 
+    EditrGUI::GetInstance()->WriteLog("=== Animation Debug Info ===");
+
+    // ボーン情報
+    EditrGUI::GetInstance()->WriteLog("Model bones: " + std::to_string(m_modelResource->bones.size()));
+    for (size_t i = 0; i < std::min(size_t(10), m_modelResource->bones.size()); ++i) {
+        EditrGUI::GetInstance()->WriteLog("  Bone[" + std::to_string(i) + "]: " + m_modelResource->bones[i].name);
+    }
+
+    // アニメーションクリップ情報
+    EditrGUI::GetInstance()->WriteLog("Animation clips: " + std::to_string(m_clips.size()));
+
+    if (!m_clips.empty() && !m_modelResource->clips.empty()) {
+        auto& clip = m_clips[0];
+        auto& sourceClip = m_modelResource->clips[0];
+
+        EditrGUI::GetInstance()->WriteLog("Clip[0]: " + clip.name +
+            " duration=" + std::to_string(clip.duration) +
+            " channels=" + std::to_string(clip.channels.size()));
+
+        // ノード階層の情報
+        EditrGUI::GetInstance()->WriteLog("Node hierarchy: " + std::to_string(sourceClip.nodeHierarchy.size()) + " nodes");
+
+        // 最初の10ノードを出力
+        for (size_t i = 0; i < std::min(size_t(10), sourceClip.nodeHierarchy.size()); ++i) {
+            auto& node = sourceClip.nodeHierarchy[i];
+            EditrGUI::GetInstance()->WriteLog("  Node[" + std::to_string(i) + "]: " + node.name +
+                " parent=" + std::to_string(node.parentIndex) +
+                " children=" + std::to_string(node.children.size()));
+        }
+
+        // チャンネルとノードのマッピング確認
+        EditrGUI::GetInstance()->WriteLog("Channel mapping:");
+        for (size_t i = 0; i < std::min(size_t(10), clip.channels.size()); ++i) {
+            auto& ch = clip.channels[i];
+            std::string nodeName = (ch.nodeIndex >= 0 && ch.nodeIndex < (int)sourceClip.nodeHierarchy.size())
+                ? sourceClip.nodeHierarchy[ch.nodeIndex].name
+                : "INVALID";
+            EditrGUI::GetInstance()->WriteLog("  Channel[" + std::to_string(i) + "]: NodeIdx=" +
+                std::to_string(ch.nodeIndex) + " (" + nodeName + ") Keys=" +
+                std::to_string(ch.timeline.size()));
+        }
+
+        EditrGUI::GetInstance()->WriteLog("Bone-Node matching:");
+        for (size_t i = 0; i < std::min(size_t(10), m_modelResource->bones.size()); ++i) {
+            std::string boneName = m_modelResource->bones[i].name;
+            bool foundNode = false;
+            int nodeIdx = -1;
+
+            for (size_t j = 0; j < sourceClip.nodeHierarchy.size(); ++j) {
+                std::string nodeName = sourceClip.nodeHierarchy[j].name;
+
+                // 小文字に変換して比較
+                std::string boneLower = boneName;
+                std::string nodeLower = nodeName;
+                std::transform(boneLower.begin(), boneLower.end(), boneLower.begin(), ::tolower);
+                std::transform(nodeLower.begin(), nodeLower.end(), nodeLower.begin(), ::tolower);
+
+                if (boneLower == nodeLower) {
+                    foundNode = true;
+                    nodeIdx = (int)j;
+                    break;
+                }
+            }
+
+            if (foundNode) {
+                EditrGUI::GetInstance()->WriteLog("  Bone[" + std::to_string(i) + "]: " + boneName +
+                    " -> Node[" + std::to_string(nodeIdx) + "] MATCHED");
+            }
+            else {
+                EditrGUI::GetInstance()->WriteLog("  Bone[" + std::to_string(i) + "]: " + boneName +
+                    " -> NO MATCH FOUND!");
+            }
+        }
+    }
+
+    EditrGUI::GetInstance()->WriteLog("Bone matrices allocated: " + std::to_string(m_boneMatrices.size()));
+    EditrGUI::GetInstance()->WriteLog("=== End Debug Info ===");
+
     if (m_debugMode) {
         ErrorLogger::Instance().LogError("AnimationComponent",
             "Loaded " + std::to_string(m_clips.size()) + " animation clips", false, 5);
@@ -98,6 +175,31 @@ void AnimationComponent::InGameUpdate() {
     }
 
     CalculateBoneMatrices();
+
+   
+    static float totalTime = 0.0f;
+    totalTime += deltaTime;
+    if (totalTime < 5.0f) {
+        static int frameCount = 0;
+        if (++frameCount % 30 == 0) { // 30フレームごと（約0.5秒）
+            EditrGUI::GetInstance()->WriteLog("[Animation] Time: " +
+                std::to_string(m_currentTime) + " / " +
+                std::to_string(m_clips[m_currentClipIndex].duration));
+
+            for (int i = 0; i < std::min(3, (int)m_boneMatrices.size()); ++i) {
+                DirectX::XMFLOAT4X4& mat = m_boneMatrices[i];
+
+                // 移動成分を直接取得
+                EditrGUI::GetInstance()->WriteLog("  Bone[" + std::to_string(i) +
+                    "] pos: (" + std::to_string(mat._41) + ", " +
+                    std::to_string(mat._42) + ", " + std::to_string(mat._43) + ")" +
+                    " | m11=" + std::to_string(mat._11) +
+                    " m22=" + std::to_string(mat._22) +
+                    " m33=" + std::to_string(mat._33));
+            }
+        }
+    }
+
     ApplyBoneMatricesToModel();
 }
 
@@ -193,16 +295,19 @@ void AnimationComponent::CalculateBoneMatricesForClip(int clipIndex, float time,
     auto& clip = m_clips[clipIndex];
     auto& sourceClip = m_modelResource->clips[clipIndex];
 
-    // 単位行列で初期化
-    for (auto& mat : outMatrices) {
-        DirectX::XMStoreFloat4x4(&mat, DirectX::XMMatrixIdentity());
+    for (size_t i = 0; i < outMatrices.size(); ++i) {
+        DirectX::XMStoreFloat4x4(&outMatrices[i], DirectX::XMMatrixIdentity());
     }
 
-    // ===修正: ノード数に合わせてローカル行列を確保 ===
+    // ノード数に合わせてローカル行列を確保
     size_t nodeCount = sourceClip.nodeHierarchy.size();
     std::vector<DirectX::XMMATRIX> localMatrices(nodeCount, DirectX::XMMatrixIdentity());
 
-    // アニメーションチャンネルからローカル変換を計算
+    // ===⭐ 重要: 全てのノードの初期変換を設定 ===
+    for (size_t i = 0; i < nodeCount; ++i) {
+        localMatrices[i] = sourceClip.nodeHierarchy[i].localTransform;
+    }
+
     for (auto& channel : clip.channels) {
         if (channel.nodeIndex < 0 || channel.nodeIndex >= (int)nodeCount) continue;
 
@@ -210,25 +315,39 @@ void AnimationComponent::CalculateBoneMatricesForClip(int clipIndex, float time,
         localMatrices[channel.nodeIndex] = BuildMatrixFromTransform(transform);
     }
 
-    // ===修正: アニメーションがないノードは初期変換を使用 ===
-    for (size_t i = 0; i < nodeCount; ++i) {
-        bool hasAnimation = false;
-        for (auto& channel : clip.channels) {
-            if (channel.nodeIndex == (int)i) {
-                hasAnimation = true;
-                break;
-            }
-        }
-
-        if (!hasAnimation && i < sourceClip.nodeHierarchy.size()) {
-            localMatrices[i] = sourceClip.nodeHierarchy[i].localTransform;
-        }
-    }
-
     // ノード階層に基づいてワールド行列を計算
     if (!sourceClip.nodeHierarchy.empty()) {
+        // ===⭐ 修正: RootNodeから開始（インデックス0）
         CalculateWorldMatricesRecursive(clipIndex, 0, DirectX::XMMatrixIdentity(),
             localMatrices, outMatrices);
+    }
+
+    static bool firstCheck = true;
+    if (firstCheck) {
+        firstCheck = false;
+        for (size_t i = 0; i < outMatrices.size(); ++i) {
+            DirectX::XMMATRIX mat = DirectX::XMLoadFloat4x4(&outMatrices[i]);
+
+            // 単位行列のままか確認
+            DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
+            bool isIdentity = true;
+            for (int r = 0; r < 4; r++) {
+                for (int c = 0; c < 4; c++) {
+                    float m = DirectX::XMVectorGetByIndex(mat.r[r], c);
+                    float id = DirectX::XMVectorGetByIndex(identity.r[r], c);
+                    if (std::abs(m - id) > 0.0001f) {
+                        isIdentity = false;
+                        break;
+                    }
+                }
+                if (!isIdentity) break;
+            }
+
+            if (isIdentity && i < 20) {
+                EditrGUI::GetInstance()->WriteLog("[WARNING] Bone[" + std::to_string(i) + "]=" +
+                    m_modelResource->bones[i].name + " is still IDENTITY (no animation data)");
+            }
+        }
     }
 }
 
@@ -243,58 +362,48 @@ void AnimationComponent::CalculateWorldMatricesRecursive(
 
     auto& node = nodeHierarchy[nodeIndex];
 
-    // ⭐ 修正: ローカル行列の取得（アニメーション優先）
-    DirectX::XMMATRIX localMat = node.localTransform; // デフォルトは初期変換
-
-    // ノードインデックスがローカル行列配列の範囲内なら使用
-    if (nodeIndex < (int)localMatrices.size()) {
-        // アニメーションチャンネルがこのノードに存在するか確認
-        bool hasAnimation = false;
-        if (clipIndex < (int)m_clips.size()) {
-            for (auto& channel : m_clips[clipIndex].channels) {
-                if (channel.nodeIndex == nodeIndex) {
-                    hasAnimation = true;
-                    break;
-                }
-            }
-        }
-
-        // アニメーションがある場合のみローカル行列を上書き
-        if (hasAnimation) {
-            localMat = localMatrices[nodeIndex];
-        }
-    }
+    DirectX::XMMATRIX localMat = (nodeIndex < (int)localMatrices.size())
+        ? localMatrices[nodeIndex]
+        : DirectX::XMMatrixIdentity();
 
     // ワールド行列 = ローカル行列 × 親のワールド行列
     DirectX::XMMATRIX worldMat = localMat * parentWorld;
 
-    // ⭐ 修正: ボーン名でマッチング（正確な比較）
-    for (size_t i = 0; i < m_modelResource->bones.size(); ++i) {
-        // 完全一致で比較（大文字小文字区別なし）
-        std::string nodeName = node.name;
-        std::string boneName = m_modelResource->bones[i].name;
 
-        // 両方を小文字に変換
-        std::transform(nodeName.begin(), nodeName.end(), nodeName.begin(), ::tolower);
+    std::string nodeName = node.name;
+    std::transform(nodeName.begin(), nodeName.end(), nodeName.begin(), ::tolower);
+
+    for (size_t i = 0; i < m_modelResource->bones.size(); ++i) {
+        std::string boneName = m_modelResource->bones[i].name;
         std::transform(boneName.begin(), boneName.end(), boneName.begin(), ::tolower);
 
         if (boneName == nodeName) {
-            // オフセット行列を適用
-            DirectX::XMMATRIX finalMat = m_modelResource->bones[i].offset * worldMat;
+          
+            DirectX::XMMATRIX finalMat = worldMat * m_modelResource->bones[i].offset;
 
             if (IsValidMatrix(finalMat)) {
                 DirectX::XMStoreFloat4x4(&outMatrices[i], DirectX::XMMatrixTranspose(finalMat));
             }
 
-            // ⭐ デバッグ出力（最初の数フレームだけ）
+
             static int debugFrameCount = 0;
-            if (debugFrameCount < 60 && i < 3) { // 最初の3ボーンのみ
-                char dbg[256];
-                sprintf_s(dbg, "[AnimComp] Bone[%zu]=%s matched Node[%d]=%s\n",
-                    i, m_modelResource->bones[i].name.c_str(), nodeIndex, node.name.c_str());
-                OutputDebugStringA(dbg);
+            static bool firstTime = true;
+            if (firstTime && i < 5 && debugFrameCount < 10) {
+                // 行列の移動成分を確認
+                DirectX::XMFLOAT4X4 debugMat;
+                DirectX::XMStoreFloat4x4(&debugMat, finalMat);
+
+                EditrGUI::GetInstance()->WriteLog(
+                    "[AnimComp] Bone[" + std::to_string(i) + "]=" + boneName +
+                    " -> Node[" + std::to_string(nodeIndex) + "]=" + nodeName +
+                    " finalMat pos: (" +
+                    std::to_string(debugMat._41) + ", " +
+                    std::to_string(debugMat._42) + ", " +
+                    std::to_string(debugMat._43) + ")"
+                );
             }
             debugFrameCount++;
+            if (debugFrameCount > 60) firstTime = false;
 
             break;
         }

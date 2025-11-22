@@ -32,6 +32,7 @@ EditrGUI* EditrGUI::GetInstance()
 
 void EditrGUI::DestroyInstance(){
     if (instance) {
+        instance->WriteLogBuffer();
         delete instance;
         instance = nullptr;
     }
@@ -85,6 +86,7 @@ void EditrGUI::Init(){
     // タブのテキスト色（アクティブのみ白寄り・非アクティブはグレー寄りで差をつける）
     colors[ImGuiCol_Text] = ImVec4(0.88f, 0.90f, 0.94f, 1.00f);
     colors[ImGuiCol_TextDisabled] = ImVec4(0.45f, 0.48f, 0.54f, 1.00f);
+	LogBuffer = "";
 
 	img         = LoadImg(L"SceneRoot/Editor/texture/img.png", DirectX11::GetInstance()->GetDevice());
 	Sound       = LoadImg(L"SceneRoot/Editor/texture/Sound.png", DirectX11::GetInstance()->GetDevice());
@@ -278,6 +280,7 @@ void EditrGUI::WindowGUI()
 
         ImGui::DockBuilderDockWindow(ShiftJISToUTF8("ゲームビュー").c_str(), dock_main_id);
         ImGui::DockBuilderDockWindow(ShiftJISToUTF8("インスペクター").c_str(), dock_id_right);
+        ImGui::DockBuilderDockWindow(ShiftJISToUTF8("コンソール").c_str(), dock_id_bottom);
         ImGui::DockBuilderDockWindow(ShiftJISToUTF8("コンテンツドロワー").c_str(), dock_id_bottom);
         ImGui::DockBuilderDockWindow(ShiftJISToUTF8("ヒエラルキー").c_str(), dock_id_left);
 
@@ -291,11 +294,11 @@ void EditrGUI::WindowGUI()
     ShowGameView();
     if (EngineManager::GetInstance()->IsShowGUI())return;
     ShowContentDrawer();
+    ShowConsole();
     ShaderEditorWindow();
 	ShaderListWindow();
     ShowHierarchy();
     ShowInspector();
-    ShowConsole();
 	AssetManagerWindow();
 	TextureManagerWindow();
 	ModelManagerWindow();
@@ -330,7 +333,6 @@ void EditrGUI::ShowGameView()
             EngineManager::GetInstance()->SetShowGUI(false);
 			SelectedObject = nullptr;
         }
-
     }
 
     ImGui::PopStyleVar(2);
@@ -440,12 +442,30 @@ void EditrGUI::ShowGameView()
 }
 
 void EditrGUI::ShowConsole(){
-	if (!ShowConsoleWindow)return;
     ImGui::Begin(ShiftJISToUTF8("コンソール").c_str());
-
-
-
+	ImGui::BeginChild("ConsoleChild###EditerGUI___", ImVec2(0, 0), true);
+	ImGui::Text(ShiftJISToUTF8(LogBuffer).c_str());
+	ImGui::EndChild();
 	ImGui::End();
+}
+
+void EditrGUI::WriteLog(std::string Log)
+{
+    std::string Buffer;
+    Buffer += Log + "\n";
+    LogBuffer += Buffer;
+}
+
+void EditrGUI::WriteLogBuffer()
+{
+	MessageBox(NULL,"エディタのログを保存します。","ログ保存", MB_OK | MB_ICONINFORMATION);
+	nlohmann::json logJson;
+	logJson["Log"] = LogBuffer;
+	std::ofstream logFile(SettingManager::GetInstance()->GetAssetsFilePath() + "Log.json");
+    if (logFile.is_open())
+    {
+        logFile << logJson.dump(4);
+    }
 }
 
 void EditrGUI::ShowSceneCreateWindow()
@@ -843,9 +863,7 @@ void EditrGUI::ShowInputDebug()
             }
         }
 		ImGui::End();
-        
     }
-
 }
 
 ID3D11ShaderResourceView* EditrGUI::LoadImg(const std::wstring& filename, ID3D11Device* device)
