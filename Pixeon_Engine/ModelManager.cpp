@@ -211,7 +211,9 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 
     uint32_t vertexOffset = static_cast<uint32_t>(vertices.size());
 
-    // ★ UV チャンネル決定をループ外に移動
+    // ========================================
+    // 1. UV チャンネルの決定
+    // ========================================
     unsigned useUVChannel = 0;
     if (mesh->GetNumUVChannels() > 1) {
         float bestArea = -1.0f;
@@ -239,18 +241,86 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
         OutputDebugStringA(dbg);
     }
 
+    // ========================================
+    // 2. ボーンマッピングの構築（メッシュ全体で1回だけ）
+    // ========================================
+    std::map<std::string, int> boneMap;
+    for (size_t i = 0; i < shared->bones.size(); ++i) {
+        boneMap[shared->bones[i].name] = static_cast<int>(i);
+    }
+
+    // ========================================
+    // 3. ボーンウェイト用の一時バッファ
+    // ========================================
+    struct VertexBoneData {
+        std::vector<std::pair<int, float>> weights; // (boneIndex, weight)
+    };
+    std::vector<VertexBoneData> vertexBoneData(mesh->mNumVertices);
+
+    // ========================================
+    // 4. ボーンウェイトの収集（メッシュ全体で1回だけ）
+    // ========================================
+    if (mesh->HasBones()) {
+        for (uint32_t boneIdx = 0; boneIdx < mesh->mNumBones; boneIdx++) {
+            aiBone* bone = mesh->mBones[boneIdx];
+            std::string boneName = bone->mName.C_Str();
+
+            int boneIndex = -1;
+            auto it = boneMap.find(boneName);
+            if (it != boneMap.end()) {
+                boneIndex = it->second;
+            }
+            else {
+                // 新しいボーンを追加
+                boneIndex = static_cast<int>(shared->bones.size());
+                boneMap[boneName] = boneIndex;
+
+                Bone newBone;
+                newBone.name = boneName;
+                newBone.parentIndex = -1;
+
+                aiMatrix4x4& m = bone->mOffsetMatrix;
+                newBone.offset = DirectX::XMMATRIX(
+                    m.a1, m.b1, m.c1, m.d1,
+                    m.a2, m.b2, m.c2, m.d2,
+                    m.a3, m.b3, m.c3, m.d3,
+                    m.a4, m.b4, m.c4, m.d4
+                );
+
+                shared->bones.push_back(newBone);
+            }
+
+            // 各頂点にウェイトを設定
+            for (uint32_t weightIdx = 0; weightIdx < bone->mNumWeights; weightIdx++) {
+                uint32_t vertexId = bone->mWeights[weightIdx].mVertexId;
+                float weight = bone->mWeights[weightIdx].mWeight;
+
+                if (vertexId < vertexBoneData.size()) {
+                    vertexBoneData[vertexId].weights.push_back({ boneIndex, weight });
+                }
+            }
+        }
+    }
+
+    // ========================================
+    // 5. 頂点データの構築（ボーンウェイトを含む）
+    // ========================================
     for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
         ModelVertex vertex{};
+
+        // 位置
         vertex.position[0] = mesh->mVertices[i].x;
         vertex.position[1] = mesh->mVertices[i].y;
         vertex.position[2] = mesh->mVertices[i].z;
 
+        // 法線
         if (mesh->HasNormals()) {
             vertex.normal[0] = mesh->mNormals[i].x;
             vertex.normal[1] = mesh->mNormals[i].y;
             vertex.normal[2] = mesh->mNormals[i].z;
         }
 
+        // タンジェント
         if (mesh->mTangents) {
             vertex.tangent[0] = mesh->mTangents[i].x;
             vertex.tangent[1] = mesh->mTangents[i].y;
@@ -258,20 +328,48 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
             vertex.tangent[3] = 1.0f;
         }
 
+        // UV座標
         if (mesh->mTextureCoords[useUVChannel]) {
             vertex.uv[0] = mesh->mTextureCoords[useUVChannel][i].x;
             vertex.uv[1] = mesh->mTextureCoords[useUVChannel][i].y;
-            // aiProcess_FlipUVs を使うのでここで 1 - v はしない
         }
 
+        // ⭐ ボーンウェイトの設定
         for (int j = 0; j < 4; j++) {
             vertex.boneIndices[j] = 0;
             vertex.boneWeights[j] = 0.0f;
         }
 
+        if (i < vertexBoneData.size() && !vertexBoneData[i].weights.empty()) {
+            auto& boneData = vertexBoneData[i];
+
+            // ウェイトを降順にソート
+            std::sort(boneData.weights.begin(), boneData.weights.end(),
+                [](const auto& a, const auto& b) { return a.second > b.second; });
+
+            // 上位4つのウェイトを設定
+            float totalWeight = 0.0f;
+            int count = std::min(4, static_cast<int>(boneData.weights.size()));
+            for (int j = 0; j < count; j++) {
+                vertex.boneIndices[j] = boneData.weights[j].first;
+                vertex.boneWeights[j] = boneData.weights[j].second;
+                totalWeight += boneData.weights[j].second;
+            }
+
+            // ウェイトの正規化
+            if (totalWeight > 0.0f && totalWeight != 1.0f) {
+                for (int j = 0; j < count; j++) {
+                    vertex.boneWeights[j] /= totalWeight;
+                }
+            }
+        }
+
         vertices.push_back(vertex);
     }
 
+    // ========================================
+    // 6. インデックスの構築
+    // ========================================
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
         for (uint32_t j = 0; j < face.mNumIndices; j++) {
@@ -279,30 +377,9 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
         }
     }
 
-    {
-        bool anyUV = false;
-        bool allZero = true;
-        for (uint32_t i = 0; i < mesh->mNumVertices; ++i) {
-            if (mesh->mTextureCoords[0]) {
-                anyUV = true;
-                if (!(mesh->mTextureCoords[0][i].x == 0.0f && mesh->mTextureCoords[0][i].y == 0.0f)) {
-                    allZero = false;
-                    break;
-                }
-            }
-        }
-        if (!anyUV) {
-            char buf[128];
-            sprintf_s(buf, "[ModelManager] Mesh mat=%u UV channel MISSING\n", mesh->mMaterialIndex);
-			ErrorLogger::Instance().LogError("ModelManager", buf, false, 3);
-        }
-        else if (allZero) {
-            char buf[128];
-            sprintf_s(buf, "[ModelManager] Mesh mat=%u UV ALL ZERO\n", mesh->mMaterialIndex);
-			ErrorLogger::Instance().LogError("ModelManager", buf, false, 3);
-        }
-    }
-
+    // ========================================
+    // 7. UV検証
+    // ========================================
     bool anyUV = false;
     bool allZero = true;
     if (mesh->mTextureCoords[0]) {
@@ -316,6 +393,7 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
             }
         }
     }
+
     subMesh.hasUV = anyUV;
     subMesh.uvAllZero = anyUV ? allZero : false;
 
@@ -328,9 +406,19 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
             "[Mesh mat=" + std::to_string(mesh->mMaterialIndex) + "] UV ALL ZERO", false, 3);
     }
 
-
+    // ========================================
+    // 8. SubMeshの登録
+    // ========================================
     subMesh.indexCount = static_cast<uint32_t>(indices.size()) - subMesh.indexOffset;
     shared->submeshes.push_back(subMesh);
+
+    // ⭐ デバッグ出力
+    if (mesh->HasBones()) {
+        char dbg[256];
+        sprintf_s(dbg, "[ModelManager] Mesh mat=%u: %u vertices, %u bones processed\n",
+            mesh->mMaterialIndex, mesh->mNumVertices, mesh->mNumBones);
+        OutputDebugStringA(dbg);
+    }
 }
 
 bool ModelManager::CreateGPUBuffers(const std::vector<ModelVertex>& vertices,
@@ -415,13 +503,60 @@ void ModelManager::ProcessMaterials(const aiScene* scene, std::shared_ptr<ModelS
 }
 
 void ModelManager::ProcessBones(const aiScene* scene, std::shared_ptr<ModelSharedResource> shared) {
-
     shared->hasSkin = false;
-    for (uint32_t i = 0; i < scene->mNumMeshes; i++) {
-        if (scene->mMeshes[i]->HasBones()) {
-            shared->hasSkin = true;
-            break;
+
+    // ボーンデータを収集
+    std::map<std::string, int> boneMap;
+    std::vector<ModelVertex>* verticesPtr = nullptr; // 実際の頂点データへの参照が必要
+
+    for (uint32_t meshIdx = 0; meshIdx < scene->mNumMeshes; meshIdx++) {
+        aiMesh* mesh = scene->mMeshes[meshIdx];
+
+        if (!mesh->HasBones()) continue;
+
+        shared->hasSkin = true;
+
+        for (uint32_t boneIdx = 0; boneIdx < mesh->mNumBones; boneIdx++) {
+            aiBone* bone = mesh->mBones[boneIdx];
+            std::string boneName = bone->mName.C_Str();
+
+            int boneIndex = -1;
+            auto it = boneMap.find(boneName);
+            if (it == boneMap.end()) {
+                // 新しいボーンを追加
+                boneIndex = static_cast<int>(shared->bones.size());
+                boneMap[boneName] = boneIndex;
+
+                Bone newBone;
+                newBone.name = boneName;
+                newBone.parentIndex = -1; // 後で階層を構築
+
+                // オフセット行列の変換
+                aiMatrix4x4& m = bone->mOffsetMatrix;
+                newBone.offset = DirectX::XMMATRIX(
+                    m.a1, m.b1, m.c1, m.d1,
+                    m.a2, m.b2, m.c2, m.d2,
+                    m.a3, m.b3, m.c3, m.d3,
+                    m.a4, m.b4, m.c4, m.d4
+                );
+
+                shared->bones.push_back(newBone);
+            }
+            else {
+                boneIndex = it->second;
+            }
+
+            // ⭐ ボーンウェイトの適用（これが重要！）
+            // 注意: この時点では頂点データへのアクセス方法を検討する必要があります
+            // 現在の実装では頂点データが ProcessMesh で処理されているため、
+            // ボーンウェイトの適用は ProcessMesh 内で行う必要があります
         }
+    }
+
+    // デバッグ出力
+    if (shared->hasSkin) {
+        OutputDebugStringA(("[ModelManager] Loaded " +
+            std::to_string(shared->bones.size()) + " bones\n").c_str());
     }
 }
 
