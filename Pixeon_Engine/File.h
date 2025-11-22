@@ -3,7 +3,6 @@
 
 #include <string>
 
-// I/O関連のユーティリティクラス
 class File
 {
 public:
@@ -15,5 +14,5 @@ public:
 	static bool RenameFileInDirectory(const std::string& oldName, const std::string& newName);
 };
 
-#endif // !FILE_H
+#endif 
 

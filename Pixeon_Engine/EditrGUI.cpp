@@ -818,19 +818,19 @@ void EditrGUI::ShowInputDebug()
 
         // マウスのホイール量
         int Wheel;
-        Wheel = MouseWheel();
+        Wheel = (int)MouseWheel();
         ImGui::Text(ShiftJISToUTF8("ホイール:").c_str());
         ImGui::SameLine();
         ImGui::Text(std::to_string(Wheel).c_str());
 
         int A;
-		A = MouseWheelForward();
+		A = (int)MouseWheelForward();
 		ImGui::Text(ShiftJISToUTF8("ホイール前方向ノッチ数:").c_str());
 		ImGui::SameLine();
 		ImGui::Text(std::to_string(A).c_str());
 
         int B;
-		B = MouseWheelBackward();
+		B = (int)MouseWheelBackward();
 		ImGui::Text(ShiftJISToUTF8("ホイール後方向ノッチ数:").c_str());
 		ImGui::SameLine();
 		ImGui::Text(std::to_string(B).c_str());

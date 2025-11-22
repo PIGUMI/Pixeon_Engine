@@ -182,12 +182,6 @@
     <ClCompile Include="API.cpp">
       <Filter>ソース ファイル\Other</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationManager.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelAnimation.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="content_Item.h">
@@ -321,12 +315,6 @@
     </ClInclude>
     <ClInclude Include="API.h">
       <Filter>ソース ファイル\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationManager.h">
-      <Filter>ソース ファイル\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelAnimation.h">
-      <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
