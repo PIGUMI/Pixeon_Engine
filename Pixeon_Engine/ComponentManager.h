@@ -19,6 +19,7 @@ public:
 		LIGHT,
 		IMAGE,
 		SCRIPT,
+		ANIMATION,
 		MAX,
 	};
 

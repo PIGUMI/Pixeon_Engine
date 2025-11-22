@@ -107,6 +107,21 @@ private:
     // === モデル取得 ===
     ModelRenderComponent* GetModelRenderComponent();
     std::shared_ptr<ModelSharedResource> GetModelResource();
+private:
+    // === 既存の関数宣言... ===
+
+    // === 補間用ヘルパー関数（追加） ===
+    DirectX::XMFLOAT3 InterpolatePosition(const AnimationChannel& channel, float time);
+    DirectX::XMFLOAT4 InterpolateRotation(const AnimationChannel& channel, float time);
+    DirectX::XMFLOAT3 InterpolateScale(const AnimationChannel& channel, float time);
+
+    // === ボーン行列計算（追加） ===
+    void CalculateBoneMatricesForClip(int clipIndex, float time,
+        std::vector<DirectX::XMFLOAT4X4>& outMatrices);
+    void CalculateWorldMatricesRecursive(int clipIndex, int nodeIndex,
+        const DirectX::XMMATRIX& parentWorld,
+        const std::vector<DirectX::XMMATRIX>& localMatrices,
+        std::vector<DirectX::XMFLOAT4X4>& outMatrices);
 
 private:
     // === モデル参照 ===
