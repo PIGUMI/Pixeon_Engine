@@ -269,7 +269,7 @@ void ModelRenderComponent::Draw() {
     CameraComponent* cam = scene->GetMainCamera();
     if (!cam) return;
 
-    // シェーダが HotReload で無効になった場合再取得
+    // シェーダが HotReload で無効になった場合に再取得
     if (!m_vs || !m_ps) {
         if (!EnsureShaders(false)) return;
     }
@@ -287,7 +287,6 @@ void ModelRenderComponent::Draw() {
     auto ctx = DirectX11::GetInstance()->GetContext();
     ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
 
-
     UINT stride = sizeof(ModelVertex);
     UINT offset = 0;
     ID3D11Buffer* vb = m_model->vb.Get();
@@ -304,6 +303,10 @@ void ModelRenderComponent::Draw() {
     ctx->PSSetConstantBuffers(0, 1, cbs);
     ID3D11SamplerState* smp = s_linearSmp.Get();
     ctx->PSSetSamplers(0, 1, &smp);
+
+    if (m_useBoneMatrices && !m_boneMatrices.empty()) {
+        SetupBoneMatricesForShader(ctx);
+    }
 
     EnsureDebugFallbackTextures();
 
@@ -347,6 +350,49 @@ void ModelRenderComponent::Draw() {
     }
 }
 
+void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) {
+    // ボーン行列用の定数バッファを作成（初回のみ）
+    static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;
+
+    if (!s_boneCB) {
+        D3D11_BUFFER_DESC bd{};
+        bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bd.ByteWidth = sizeof(DirectX::XMFLOAT4X4) * 256; // 最大256ボーン
+        bd.Usage = D3D11_USAGE_DEFAULT;
+
+        auto dev = DirectX11::GetInstance()->GetDevice();
+        HRESULT hr = dev->CreateBuffer(&bd, nullptr, s_boneCB.GetAddressOf());
+        if (FAILED(hr)) {
+            ErrorLogger::Instance().LogError("ModelRenderComponent",
+                "Failed to create bone constant buffer");
+            return;
+        }
+    }
+
+    // ボーン行列をGPUに転送
+    struct BoneMatrixBuffer {
+        DirectX::XMFLOAT4X4 bones[256];
+    };
+
+    BoneMatrixBuffer boneData;
+    size_t copyCount = std::min(m_boneMatrices.size(), size_t(256));
+
+    for (size_t i = 0; i < copyCount; ++i) {
+        boneData.bones[i] = m_boneMatrices[i];
+    }
+
+    // 残りは単位行列で埋める
+    for (size_t i = copyCount; i < 256; ++i) {
+        DirectX::XMStoreFloat4x4(&boneData.bones[i], DirectX::XMMatrixIdentity());
+    }
+
+    ctx->UpdateSubresource(s_boneCB.Get(), 0, nullptr, &boneData, 0, 0);
+
+    // 頂点シェーダーのスロット1にバインド（スロット0はWVP用）
+    ID3D11Buffer* boneCBs[] = { s_boneCB.Get() };
+    ctx->VSSetConstantBuffers(1, 1, boneCBs);
+}
+
 void ModelRenderComponent::SaveToFile(std::ostream& out) {
     out << m_modelPath << "\n";
     out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << "\n";
@@ -365,6 +411,21 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
     if (!m_psName.empty() && m_psName.back() == '\r') m_psName.pop_back();
 
     if (!m_modelPath.empty()) SetModel(m_modelPath);
+}
+
+void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices)
+{
+    m_boneMatrices = matrices;
+    m_useBoneMatrices = !matrices.empty();
+
+    // デバッグ出力（必要に応じて）
+#ifdef _DEBUG
+    static int debugCounter = 0;
+    if (++debugCounter % 60 == 0) { // 60フレームに1回
+        OutputDebugStringA(("[ModelRender] Updated " +
+            std::to_string(matrices.size()) + " bone matrices\n").c_str());
+    }
+#endif
 }
 
 // IMGUI インスペクタ表示

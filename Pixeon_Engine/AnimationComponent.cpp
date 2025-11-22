@@ -319,10 +319,7 @@ DirectX::XMMATRIX AnimationComponent::BuildMatrixFromTransform(const BoneTransfo
 
 void AnimationComponent::ApplyBoneMatricesToModel() {
     if (!m_modelRender || m_boneMatrices.empty()) return;
-
-    // ModelRenderComponentにボーン行列を設定
-    // ※ ModelRenderComponentに SetBoneMatrices メソッドを追加する必要があります
-    // m_modelRender->SetBoneMatrices(m_boneMatrices);
+    m_modelRender->SetBoneMatrices(m_boneMatrices);
 }
 
 bool AnimationComponent::IsValidMatrix(const DirectX::XMMATRIX& mat) const {
