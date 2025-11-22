@@ -351,13 +351,12 @@ void ModelRenderComponent::Draw() {
 }
 
 void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) {
-    // ボーン行列用の定数バッファを作成（初回のみ）
     static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;
 
     if (!s_boneCB) {
         D3D11_BUFFER_DESC bd{};
         bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        bd.ByteWidth = sizeof(DirectX::XMFLOAT4X4) * 256; // 最大256ボーン
+        bd.ByteWidth = sizeof(DirectX::XMFLOAT4X4) * 256;
         bd.Usage = D3D11_USAGE_DEFAULT;
 
         auto dev = DirectX11::GetInstance()->GetDevice();
@@ -369,7 +368,6 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) 
         }
     }
 
-    // ボーン行列をGPUに転送
     struct BoneMatrixBuffer {
         DirectX::XMFLOAT4X4 bones[256];
     };
@@ -378,7 +376,8 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) 
     size_t copyCount = std::min(m_boneMatrices.size(), size_t(256));
 
     for (size_t i = 0; i < copyCount; ++i) {
-        boneData.bones[i] = m_boneMatrices[i];
+        DirectX::XMMATRIX mat = DirectX::XMLoadFloat4x4(&m_boneMatrices[i]);
+        DirectX::XMStoreFloat4x4(&boneData.bones[i], DirectX::XMMatrixTranspose(mat));
     }
 
     // 残りは単位行列で埋める
@@ -388,7 +387,6 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) 
 
     ctx->UpdateSubresource(s_boneCB.Get(), 0, nullptr, &boneData, 0, 0);
 
-    // 頂点シェーダーのスロット1にバインド（スロット0はWVP用）
     ID3D11Buffer* boneCBs[] = { s_boneCB.Get() };
     ctx->VSSetConstantBuffers(1, 1, boneCBs);
 }

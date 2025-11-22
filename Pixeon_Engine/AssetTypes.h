@@ -39,9 +39,10 @@ struct MaterialShared {
 
 // ボーン情報
 struct Bone {
-	std::string name;						// ボーン名
-	int parentIndex = -1;					// 親ボーンインデックス（-1なら親なし）
-	DirectX::XMMATRIX offset;
+    std::string name;
+    int parentIndex = -1;
+    DirectX::XMMATRIX offset;
+    DirectX::XMMATRIX invOffset;
 };
 
 // アニメーションチャンネル

@@ -3,6 +3,7 @@
 #include "AssetManager.h"
 #include "System.h"
 #include "ErrorLog.h"
+#include "EditrGUI.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -280,12 +281,29 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
                 newBone.parentIndex = -1;
 
                 aiMatrix4x4& m = bone->mOffsetMatrix;
-                newBone.offset = DirectX::XMMATRIX(
+                // ⭐正常動作プロジェクトと同じ処理
+                newBone.offset = DirectX::XMMatrixSet(
                     m.a1, m.b1, m.c1, m.d1,
                     m.a2, m.b2, m.c2, m.d2,
                     m.a3, m.b3, m.c3, m.d3,
                     m.a4, m.b4, m.c4, m.d4
                 );
+                newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
+
+                if (boneIdx < 5) {
+                    char dbg[512];
+                    sprintf_s(dbg, "[ModelManager] Bone[%u]=%s Offset Matrix:\n"
+                        "  [%.4f %.4f %.4f %.4f]\n"
+                        "  [%.4f %.4f %.4f %.4f]\n"
+                        "  [%.4f %.4f %.4f %.4f]\n"
+                        "  [%.4f %.4f %.4f %.4f]\n",
+                        boneIdx, boneName.c_str(),
+                        m.a1, m.b1, m.c1, m.d1,
+                        m.a2, m.b2, m.c2, m.d2,
+                        m.a3, m.b3, m.c3, m.d3,
+                        m.a4, m.b4, m.c4, m.d4);
+					EditrGUI::GetInstance()->WriteLog(dbg);
+				}
 
                 shared->bones.push_back(newBone);
             }
@@ -533,7 +551,7 @@ void ModelManager::ProcessBones(const aiScene* scene, std::shared_ptr<ModelShare
 
                 // オフセット行列の変換
                 aiMatrix4x4& m = bone->mOffsetMatrix;
-                newBone.offset = DirectX::XMMATRIX(
+                newBone.offset = DirectX::XMMatrixSet(
                     m.a1, m.b1, m.c1, m.d1,
                     m.a2, m.b2, m.c2, m.d2,
                     m.a3, m.b3, m.c3, m.d3,
@@ -545,11 +563,6 @@ void ModelManager::ProcessBones(const aiScene* scene, std::shared_ptr<ModelShare
             else {
                 boneIndex = it->second;
             }
-
-            // ⭐ ボーンウェイトの適用（これが重要！）
-            // 注意: この時点では頂点データへのアクセス方法を検討する必要があります
-            // 現在の実装では頂点データが ProcessMesh で処理されているため、
-            // ボーンウェイトの適用は ProcessMesh 内で行う必要があります
         }
     }
 
@@ -635,9 +648,8 @@ void ModelManager::BuildNodeHierarchy(
     nodeInfo.name = node->mName.C_Str();
     nodeInfo.parentIndex = parentIndex;
 
-    // ローカル変換行列の取得
     aiMatrix4x4& t = node->mTransformation;
-    nodeInfo.localTransform = DirectX::XMMATRIX(
+    nodeInfo.localTransform = DirectX::XMMatrixSet(
         t.a1, t.b1, t.c1, t.d1,
         t.a2, t.b2, t.c2, t.d2,
         t.a3, t.b3, t.c3, t.d3,
@@ -647,7 +659,6 @@ void ModelManager::BuildNodeHierarchy(
     int currentIndex = static_cast<int>(clip.nodeHierarchy.size());
     nodeNameToIndex[nodeInfo.name] = currentIndex;
 
-    // ⭐ 子ノードのインデックスは後で追加
     clip.nodeHierarchy.push_back(nodeInfo);
 
     // 子ノードを再帰的に処理

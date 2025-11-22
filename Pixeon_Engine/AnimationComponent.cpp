@@ -369,33 +369,32 @@ void AnimationComponent::CalculateWorldMatricesRecursive(
     // ワールド行列 = ローカル行列 × 親のワールド行列
     DirectX::XMMATRIX worldMat = localMat * parentWorld;
 
-
     std::string nodeName = node.name;
     std::transform(nodeName.begin(), nodeName.end(), nodeName.begin(), ::tolower);
 
     for (size_t i = 0; i < m_modelResource->bones.size(); ++i) {
         std::string boneName = m_modelResource->bones[i].name;
-        std::transform(boneName.begin(), boneName.end(), boneName.begin(), ::tolower);
+        std::transform(boneName.begin(), boneName.end(),
+            boneName.begin(), ::tolower);
 
         if (boneName == nodeName) {
-          
-            DirectX::XMMATRIX finalMat = worldMat * m_modelResource->bones[i].offset;
+
+            DirectX::XMMATRIX finalMat =
+                m_modelResource->bones[i].invOffset * worldMat;
 
             if (IsValidMatrix(finalMat)) {
-                DirectX::XMStoreFloat4x4(&outMatrices[i], DirectX::XMMatrixTranspose(finalMat));
+                DirectX::XMStoreFloat4x4(&outMatrices[i], finalMat);
             }
 
-
+            // デバッグ出力
             static int debugFrameCount = 0;
             static bool firstTime = true;
             if (firstTime && i < 5 && debugFrameCount < 10) {
-                // 行列の移動成分を確認
                 DirectX::XMFLOAT4X4 debugMat;
                 DirectX::XMStoreFloat4x4(&debugMat, finalMat);
 
                 EditrGUI::GetInstance()->WriteLog(
                     "[AnimComp] Bone[" + std::to_string(i) + "]=" + boneName +
-                    " -> Node[" + std::to_string(nodeIndex) + "]=" + nodeName +
                     " finalMat pos: (" +
                     std::to_string(debugMat._41) + ", " +
                     std::to_string(debugMat._42) + ", " +
