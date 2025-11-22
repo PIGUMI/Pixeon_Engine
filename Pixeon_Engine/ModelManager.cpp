@@ -1,4 +1,3 @@
-
 #define NOMINMAX
 #include "ModelManager.h"
 #include "AssetManager.h"
@@ -427,14 +426,102 @@ void ModelManager::ProcessBones(const aiScene* scene, std::shared_ptr<ModelShare
 }
 
 void ModelManager::ProcessAnimations(const aiScene* scene, std::shared_ptr<ModelSharedResource> shared) {
+    if (!scene->HasAnimations()) return;
+
     for (uint32_t i = 0; i < scene->mNumAnimations; i++) {
         aiAnimation* anim = scene->mAnimations[i];
         AnimationClip clip;
+
         clip.name = anim->mName.length > 0 ? anim->mName.C_Str() : ("Animation_" + std::to_string(i));
         clip.duration = anim->mDuration;
         clip.tps = anim->mTicksPerSecond != 0.0 ? anim->mTicksPerSecond : 25.0;
 
+        // === ⭐ 修正：ノード階層の構築（クリップごとに） ===
+        std::map<std::string, int> nodeNameToIndex;
+        BuildNodeHierarchy(scene->mRootNode, clip, nodeNameToIndex, -1);
+
+        // チャンネルの処理
+        for (uint32_t ch = 0; ch < anim->mNumChannels; ch++) {
+            aiNodeAnim* nodeAnim = anim->mChannels[ch];
+            AnimationChannel channel;
+
+            channel.nodeName = nodeAnim->mNodeName.C_Str();
+            auto it = nodeNameToIndex.find(channel.nodeName);
+            channel.nodeIndex = (it != nodeNameToIndex.end()) ? it->second : -1;
+
+            // Position keys
+            for (uint32_t k = 0; k < nodeAnim->mNumPositionKeys; k++) {
+                float time = static_cast<float>(nodeAnim->mPositionKeys[k].mTime / clip.tps);
+                DirectX::XMFLOAT3 pos(
+                    nodeAnim->mPositionKeys[k].mValue.x,
+                    nodeAnim->mPositionKeys[k].mValue.y,
+                    nodeAnim->mPositionKeys[k].mValue.z
+                );
+                channel.positionKeys.push_back({ time, pos });
+            }
+
+            // Rotation keys
+            for (uint32_t k = 0; k < nodeAnim->mNumRotationKeys; k++) {
+                float time = static_cast<float>(nodeAnim->mRotationKeys[k].mTime / clip.tps);
+                DirectX::XMFLOAT4 rot(
+                    nodeAnim->mRotationKeys[k].mValue.x,
+                    nodeAnim->mRotationKeys[k].mValue.y,
+                    nodeAnim->mRotationKeys[k].mValue.z,
+                    nodeAnim->mRotationKeys[k].mValue.w
+                );
+                channel.rotationKeys.push_back({ time, rot });
+            }
+
+            // Scale keys
+            for (uint32_t k = 0; k < nodeAnim->mNumScalingKeys; k++) {
+                float time = static_cast<float>(nodeAnim->mScalingKeys[k].mTime / clip.tps);
+                DirectX::XMFLOAT3 scale(
+                    nodeAnim->mScalingKeys[k].mValue.x,
+                    nodeAnim->mScalingKeys[k].mValue.y,
+                    nodeAnim->mScalingKeys[k].mValue.z
+                );
+                channel.scaleKeys.push_back({ time, scale });
+            }
+
+            clip.channels.push_back(channel);
+        }
+
         shared->clips.push_back(clip);
+    }
+}
+
+void ModelManager::BuildNodeHierarchy(
+    aiNode* node,
+    AnimationClip& clip,
+    std::map<std::string, int>& nodeNameToIndex,
+    int parentIndex)
+{
+    AnimationClip::NodeInfo nodeInfo;
+    nodeInfo.name = node->mName.C_Str();
+    nodeInfo.parentIndex = parentIndex;
+
+    // ローカル変換行列の取得
+    aiMatrix4x4& t = node->mTransformation;
+    nodeInfo.localTransform = DirectX::XMMATRIX(
+        t.a1, t.b1, t.c1, t.d1,
+        t.a2, t.b2, t.c2, t.d2,
+        t.a3, t.b3, t.c3, t.d3,
+        t.a4, t.b4, t.c4, t.d4
+    );
+
+    int currentIndex = static_cast<int>(clip.nodeHierarchy.size());
+    nodeNameToIndex[nodeInfo.name] = currentIndex;
+
+    // 子ノードのインデックスを予約
+    for (uint32_t i = 0; i < node->mNumChildren; i++) {
+        nodeInfo.children.push_back(currentIndex + 1 + i);
+    }
+
+    clip.nodeHierarchy.push_back(nodeInfo);
+
+    // 再帰的に子ノードを処理
+    for (uint32_t i = 0; i < node->mNumChildren; i++) {
+        BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, currentIndex);
     }
 }
 

@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="API.h" />
     <ClInclude Include="ApplicationFeedbackSystem.h" />
     <ClInclude Include="ArchiveFormat.h" />
@@ -144,7 +145,6 @@
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
-    <ClInclude Include="content_Item.h" />
     <ClInclude Include="EditrGUI.h" />
     <ClInclude Include="EngineManager.h" />
     <ClInclude Include="ErrorLog.h" />
@@ -187,7 +187,6 @@
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
-    <ClCompile Include="content_Item.cpp" />
     <ClCompile Include="EditrGUI.cpp" />
     <ClCompile Include="EditrGUI_Content.cpp" />
     <ClCompile Include="EditrGUI_Hierarchy.cpp" />

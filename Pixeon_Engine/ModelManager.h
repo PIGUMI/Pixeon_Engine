@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <memory>
 #include <mutex>
+#include <map>
 
 class ModelManager {
 public:
@@ -20,6 +21,13 @@ public:
     void GarbageCollect();
     void DrawDebugGUI();
 private:
+    void BuildNodeHierarchy(
+        aiNode* node,
+        AnimationClip& clip,
+        std::map<std::string, int>& nodeNameToIndex,
+        int parentIndex
+    );
+
     std::string ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath);
     void ProcessNode(aiNode* node, const aiScene* scene,
         std::vector<ModelVertex>& vertices,

@@ -21,9 +21,6 @@
     <Filter Include="ソース ファイル\GUI\View">
       <UniqueIdentifier>{306ee381-2d50-4435-99d5-f6e344be05b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\GUI\Ohter">
-      <UniqueIdentifier>{db601874-c5f0-415d-a0e8-b065767540fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Other">
       <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
     </Filter>
@@ -59,9 +56,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="content_Item.cpp">
-      <Filter>ソース ファイル\GUI\Ohter</Filter>
-    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>ソース ファイル\BaseClass</Filter>
     </ClCompile>
@@ -184,9 +178,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="content_Item.h">
-      <Filter>ソース ファイル\GUI\Ohter</Filter>
-    </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>ソース ファイル\BaseClass</Filter>
     </ClInclude>
@@ -315,6 +306,9 @@
     </ClInclude>
     <ClInclude Include="API.h">
       <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

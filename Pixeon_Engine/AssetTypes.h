@@ -46,7 +46,14 @@ struct Bone {
 
 // アニメーションチャンネル
 struct AnimationChannel {
-	// 未実装
+    int nodeIndex = -1;
+    std::string nodeName;
+    // Position keys
+    std::vector<std::pair<float, DirectX::XMFLOAT3>> positionKeys;
+    // Rotation keys (quaternion)
+    std::vector<std::pair<float, DirectX::XMFLOAT4>> rotationKeys;
+    // Scale keys
+    std::vector<std::pair<float, DirectX::XMFLOAT3>> scaleKeys;
 };
 
 // アニメーションクリップ
@@ -55,6 +62,14 @@ struct AnimationClip {
     double duration = 0;
     double tps = 25.0;
     std::vector<AnimationChannel> channels;
+    // ノード階層情報
+    struct NodeInfo {
+        std::string name;
+        int parentIndex = -1;
+        DirectX::XMMATRIX localTransform;
+        std::vector<int> children;
+    };
+    std::vector<NodeInfo> nodeHierarchy;
 };
 
 // モデル共通データ
