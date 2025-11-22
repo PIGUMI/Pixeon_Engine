@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "AnimationComponent.h"
 #include "ModelRender.h"
 #include "ErrorLog.h"
@@ -15,7 +15,7 @@ void AnimationComponent::Init(Object* owner) {
 }
 
 void AnimationComponent::BeginPlay() {
-    // ModelRenderComponent‚ğæ“¾
+    // ModelRenderComponentã‚’å–å¾—
     m_modelRender = GetModelRenderComponent();
     if (!m_modelRender) {
         ErrorLogger::Instance().LogError("AnimationComponent",
@@ -23,7 +23,7 @@ void AnimationComponent::BeginPlay() {
         return;
     }
 
-    // ƒ‚ƒfƒ‹ƒŠƒ\[ƒX‚ğæ“¾
+    // ãƒ¢ãƒ‡ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’å–å¾—
     m_modelResource = GetModelResource();
     if (!m_modelResource) {
         ErrorLogger::Instance().LogError("AnimationComponent",
@@ -31,21 +31,21 @@ void AnimationComponent::BeginPlay() {
         return;
     }
 
-    // ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚ğƒ[ƒh
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã‚’ãƒ­ãƒ¼ãƒ‰
     m_clips.clear();
     for (auto& clip : m_modelResource->clips) {
         AnimationClipRuntime runtime;
         runtime.name = clip.name;
-        runtime.duration = clip.duration / clip.tps; // •b’PˆÊ‚É•ÏŠ·
+        runtime.duration = clip.duration / clip.tps; // ç§’å˜ä½ã«å¤‰æ›
         runtime.ticksPerSecond = clip.tps;
         runtime.isLoaded = true;
 
-        // ƒ`ƒƒƒ“ƒlƒ‹‚ğƒ‰ƒ“ƒ^ƒCƒ€Œ`®‚É•ÏŠ·
+        // ãƒãƒ£ãƒ³ãƒãƒ«ã‚’ãƒ©ãƒ³ã‚¿ã‚¤ãƒ å½¢å¼ã«å¤‰æ›
         for (auto& channel : clip.channels) {
             AnimationChannelRuntime runtimeChannel;
             runtimeChannel.nodeIndex = channel.nodeIndex;
 
-            // ƒL[ƒtƒŒ[ƒ€‚ğƒ^ƒCƒ€ƒ‰ƒCƒ“Œ`®‚É“‡
+            // ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³å½¢å¼ã«çµ±åˆ
             std::set<float> allTimes;
             for (auto& key : channel.positionKeys) allTimes.insert(key.first);
             for (auto& key : channel.rotationKeys) allTimes.insert(key.first);
@@ -67,7 +67,7 @@ void AnimationComponent::BeginPlay() {
         m_clips.push_back(runtime);
     }
 
-    // ƒ{[ƒ“s—ñ‚Ì‰Šú‰»
+    // ãƒœãƒ¼ãƒ³è¡Œåˆ—ã®åˆæœŸåŒ–
     if (m_modelResource->bones.size() > 0) {
         m_boneMatrices.resize(m_modelResource->bones.size());
         m_blendSourceMatrices.resize(m_modelResource->bones.size());
@@ -106,7 +106,7 @@ void AnimationComponent::UpdateAnimation(float deltaTime) {
 
     m_currentTime += deltaTime * m_playbackSpeed;
 
-    // ƒ‹[ƒvˆ—
+    // ãƒ«ãƒ¼ãƒ—å‡¦ç†
     if (m_currentTime >= clip.duration) {
         if (m_loop) {
             m_currentTime = fmod(m_currentTime, clip.duration);
@@ -124,7 +124,7 @@ void AnimationComponent::UpdateBlending(float deltaTime) {
     float blendProgress = m_blendTimer / m_blendDuration;
 
     if (blendProgress >= 1.0f) {
-        // ƒuƒŒƒ“ƒhŠ®—¹
+        // ãƒ–ãƒ¬ãƒ³ãƒ‰å®Œäº†
         m_isBlending = false;
         m_currentClipIndex = m_blendTargetIndex;
         m_blendTimer = 0.0f;
@@ -136,7 +136,7 @@ void AnimationComponent::UpdateBlending(float deltaTime) {
         }
     }
     else {
-        // ƒ^[ƒQƒbƒgƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠÔ‚ği‚ß‚é
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ™‚é–“ã‚’é€²ã‚ã‚‹
         auto& targetClip = m_clips[m_blendTargetIndex];
         m_currentTime += deltaTime * m_playbackSpeed;
         if (m_currentTime >= targetClip.duration) {
@@ -154,19 +154,19 @@ void AnimationComponent::CalculateBoneMatrices() {
     if (m_boneMatrices.empty()) return;
 
     if (m_isBlending) {
-        // ƒuƒŒƒ“ƒh’†F2‚Â‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ğ•âŠÔ
+        // ãƒ–ãƒ¬ãƒ³ãƒ‰ä¸­ï¼š2ã¤ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è£œé–“
         CalculateBoneMatricesForClip(m_currentClipIndex, m_currentTime, m_blendSourceMatrices);
         CalculateBoneMatricesForClip(m_blendTargetIndex, m_currentTime, m_blendTargetMatrices);
 
         float blendFactor = m_blendTimer / m_blendDuration;
-        // ƒXƒ€[ƒYƒXƒeƒbƒv•âŠÔ
+        // ã‚¹ãƒ ãƒ¼ã‚ºã‚¹ãƒ†ãƒƒãƒ—è£œé–“
         blendFactor = blendFactor * blendFactor * (3.0f - 2.0f * blendFactor);
 
         for (size_t i = 0; i < m_boneMatrices.size(); ++i) {
             DirectX::XMMATRIX src = DirectX::XMLoadFloat4x4(&m_blendSourceMatrices[i]);
             DirectX::XMMATRIX dst = DirectX::XMLoadFloat4x4(&m_blendTargetMatrices[i]);
 
-            // s—ñ‚ÌüŒ`•âŠÔiŠÈˆÕ”Åj
+            // è¡Œåˆ—ã®ç·šå½¢è£œé–“ï¼ˆç°¡æ˜“ç‰ˆï¼‰
             DirectX::XMMATRIX blended;
             blended.r[0] = DirectX::XMVectorLerp(src.r[0], dst.r[0], blendFactor);
             blended.r[1] = DirectX::XMVectorLerp(src.r[1], dst.r[1], blendFactor);
@@ -179,7 +179,7 @@ void AnimationComponent::CalculateBoneMatrices() {
         }
     }
     else {
-        // ’ÊíÄ¶
+        // é€šå¸¸å†ç”Ÿ
         CalculateBoneMatricesForClip(m_currentClipIndex, m_currentTime, m_boneMatrices);
     }
 }
@@ -188,26 +188,45 @@ void AnimationComponent::CalculateBoneMatricesForClip(int clipIndex, float time,
     std::vector<DirectX::XMFLOAT4X4>& outMatrices) {
     if (clipIndex < 0 || clipIndex >= (int)m_clips.size()) return;
     if (outMatrices.empty()) return;
+    if (clipIndex >= (int)m_modelResource->clips.size()) return;
 
     auto& clip = m_clips[clipIndex];
+    auto& sourceClip = m_modelResource->clips[clipIndex];
 
-    // ’PˆÊs—ñ‚Å‰Šú‰»
+    // å˜ä½è¡Œåˆ—ã§åˆæœŸåŒ–
     for (auto& mat : outMatrices) {
         DirectX::XMStoreFloat4x4(&mat, DirectX::XMMatrixIdentity());
     }
 
-    // Šeƒ`ƒƒƒ“ƒlƒ‹‚©‚çƒ[ƒJƒ‹•ÏŠ·‚ğŒvZ
-    std::vector<DirectX::XMMATRIX> localMatrices(m_boneMatrices.size(), DirectX::XMMatrixIdentity());
+    // ===ä¿®æ­£: ãƒãƒ¼ãƒ‰æ•°ã«åˆã‚ã›ã¦ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã‚’ç¢ºä¿ ===
+    size_t nodeCount = sourceClip.nodeHierarchy.size();
+    std::vector<DirectX::XMMATRIX> localMatrices(nodeCount, DirectX::XMMatrixIdentity());
 
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒãƒ£ãƒ³ãƒãƒ«ã‹ã‚‰ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ›ã‚’è¨ˆç®—
     for (auto& channel : clip.channels) {
-        if (channel.nodeIndex < 0 || channel.nodeIndex >= (int)localMatrices.size()) continue;
+        if (channel.nodeIndex < 0 || channel.nodeIndex >= (int)nodeCount) continue;
 
         BoneTransform transform = InterpolateTransform(channel, time);
         localMatrices[channel.nodeIndex] = BuildMatrixFromTransform(transform);
     }
 
-    // ƒm[ƒhŠK‘w‚ÉŠî‚Ã‚¢‚Äƒ[ƒ‹ƒhs—ñ‚ğŒvZ
-    if (!m_modelResource->clips.empty() && !m_modelResource->clips[clipIndex].nodeHierarchy.empty()) {
+    // ===ä¿®æ­£: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒãªã„ãƒãƒ¼ãƒ‰ã¯åˆæœŸå¤‰æ›ã‚’ä½¿ç”¨ ===
+    for (size_t i = 0; i < nodeCount; ++i) {
+        bool hasAnimation = false;
+        for (auto& channel : clip.channels) {
+            if (channel.nodeIndex == (int)i) {
+                hasAnimation = true;
+                break;
+            }
+        }
+
+        if (!hasAnimation && i < sourceClip.nodeHierarchy.size()) {
+            localMatrices[i] = sourceClip.nodeHierarchy[i].localTransform;
+        }
+    }
+
+    // ãƒãƒ¼ãƒ‰éšå±¤ã«åŸºã¥ã„ã¦ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’è¨ˆç®—
+    if (!sourceClip.nodeHierarchy.empty()) {
         CalculateWorldMatricesRecursive(clipIndex, 0, DirectX::XMMatrixIdentity(),
             localMatrices, outMatrices);
     }
@@ -218,33 +237,70 @@ void AnimationComponent::CalculateWorldMatricesRecursive(
     const std::vector<DirectX::XMMATRIX>& localMatrices,
     std::vector<DirectX::XMFLOAT4X4>& outMatrices)
 {
-    if (clipIndex >= m_modelResource->clips.size()) return;
+    if (clipIndex >= (int)m_modelResource->clips.size()) return;
     auto& nodeHierarchy = m_modelResource->clips[clipIndex].nodeHierarchy;
     if (nodeIndex >= (int)nodeHierarchy.size()) return;
 
     auto& node = nodeHierarchy[nodeIndex];
 
-    // ƒ[ƒ‹ƒhs—ñ = ƒ[ƒJƒ‹s—ñ ~ e‚Ìƒ[ƒ‹ƒhs—ñ
-    DirectX::XMMATRIX localMat = (nodeIndex < localMatrices.size())
-        ? localMatrices[nodeIndex]
-        : DirectX::XMMatrixIdentity();
+    // â­ ä¿®æ­£: ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã®å–å¾—ï¼ˆã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å„ªå…ˆï¼‰
+    DirectX::XMMATRIX localMat = node.localTransform; // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯åˆæœŸå¤‰æ›
 
+    // ãƒãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—é…åˆ—ã®ç¯„å›²å†…ãªã‚‰ä½¿ç”¨
+    if (nodeIndex < (int)localMatrices.size()) {
+        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒãƒ£ãƒ³ãƒãƒ«ãŒã“ã®ãƒãƒ¼ãƒ‰ã«å­˜åœ¨ã™ã‚‹ã‹ç¢ºèª
+        bool hasAnimation = false;
+        if (clipIndex < (int)m_clips.size()) {
+            for (auto& channel : m_clips[clipIndex].channels) {
+                if (channel.nodeIndex == nodeIndex) {
+                    hasAnimation = true;
+                    break;
+                }
+            }
+        }
+
+        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚‹å ´åˆã®ã¿ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã‚’ä¸Šæ›¸ã
+        if (hasAnimation) {
+            localMat = localMatrices[nodeIndex];
+        }
+    }
+
+    // ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— = ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ— Ã— è¦ªã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
     DirectX::XMMATRIX worldMat = localMat * parentWorld;
 
-    // ‘Î‰‚·‚éƒ{[ƒ“‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ’T‚·
+    // â­ ä¿®æ­£: ãƒœãƒ¼ãƒ³åã§ãƒãƒƒãƒãƒ³ã‚°ï¼ˆæ­£ç¢ºãªæ¯”è¼ƒï¼‰
     for (size_t i = 0; i < m_modelResource->bones.size(); ++i) {
-        if (m_modelResource->bones[i].name == node.name) {
-            // ƒIƒtƒZƒbƒgs—ñ‚ğ“K—p
+        // å®Œå…¨ä¸€è‡´ã§æ¯”è¼ƒï¼ˆå¤§æ–‡å­—å°æ–‡å­—åŒºåˆ¥ãªã—ï¼‰
+        std::string nodeName = node.name;
+        std::string boneName = m_modelResource->bones[i].name;
+
+        // ä¸¡æ–¹ã‚’å°æ–‡å­—ã«å¤‰æ›
+        std::transform(nodeName.begin(), nodeName.end(), nodeName.begin(), ::tolower);
+        std::transform(boneName.begin(), boneName.end(), boneName.begin(), ::tolower);
+
+        if (boneName == nodeName) {
+            // ã‚ªãƒ•ã‚»ãƒƒãƒˆè¡Œåˆ—ã‚’é©ç”¨
             DirectX::XMMATRIX finalMat = m_modelResource->bones[i].offset * worldMat;
 
             if (IsValidMatrix(finalMat)) {
                 DirectX::XMStoreFloat4x4(&outMatrices[i], DirectX::XMMatrixTranspose(finalMat));
             }
+
+            // â­ ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›ï¼ˆæœ€åˆã®æ•°ãƒ•ãƒ¬ãƒ¼ãƒ ã ã‘ï¼‰
+            static int debugFrameCount = 0;
+            if (debugFrameCount < 60 && i < 3) { // æœ€åˆã®3ãƒœãƒ¼ãƒ³ã®ã¿
+                char dbg[256];
+                sprintf_s(dbg, "[AnimComp] Bone[%zu]=%s matched Node[%d]=%s\n",
+                    i, m_modelResource->bones[i].name.c_str(), nodeIndex, node.name.c_str());
+                OutputDebugStringA(dbg);
+            }
+            debugFrameCount++;
+
             break;
         }
     }
 
-    // qƒm[ƒh‚ğÄ‹A“I‚Éˆ—
+    // å­ãƒãƒ¼ãƒ‰ã‚’å†å¸°çš„ã«å‡¦ç†
     for (int childIndex : node.children) {
         CalculateWorldMatricesRecursive(clipIndex, childIndex, worldMat,
             localMatrices, outMatrices);
@@ -262,7 +318,7 @@ BoneTransform AnimationComponent::InterpolateTransform(
         return identity;
     }
 
-    // ƒ^ƒCƒ€ƒ‰ƒCƒ“‚©‚ç•âŠÔ
+    // ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ã‹ã‚‰è£œé–“
     auto it = channel.timeline.lower_bound(time);
 
     if (it == channel.timeline.begin()) {
@@ -283,7 +339,7 @@ BoneTransform AnimationComponent::InterpolateTransform(
     const BoneTransform& a = prevIt->second;
     const BoneTransform& b = nextIt->second;
 
-    // Position: üŒ`•âŠÔ
+    // Position: ç·šå½¢è£œé–“
     result.position.x = a.position.x + (b.position.x - a.position.x) * factor;
     result.position.y = a.position.y + (b.position.y - a.position.y) * factor;
     result.position.z = a.position.z + (b.position.z - a.position.z) * factor;
@@ -294,7 +350,7 @@ BoneTransform AnimationComponent::InterpolateTransform(
     DirectX::XMVECTOR qr = DirectX::XMQuaternionSlerp(qa, qb, factor);
     DirectX::XMStoreFloat4(&result.rotation, DirectX::XMQuaternionNormalize(qr));
 
-    // Scale: üŒ`•âŠÔ
+    // Scale: ç·šå½¢è£œé–“
     result.scale.x = a.scale.x + (b.scale.x - a.scale.x) * factor;
     result.scale.y = a.scale.y + (b.scale.y - a.scale.y) * factor;
     result.scale.z = a.scale.z + (b.scale.z - a.scale.z) * factor;
@@ -348,7 +404,7 @@ bool AnimationComponent::IsValidBoneTransform(const BoneTransform& transform) co
         isFiniteVec3(transform.scale);
 }
 
-// === Ä¶§Œä ===
+// === å†ç”Ÿåˆ¶å¾¡ ===
 void AnimationComponent::Play() {
     if (m_currentClipIndex < 0 || m_currentClipIndex >= (int)m_clips.size()) {
         if (!m_clips.empty()) {
@@ -383,7 +439,7 @@ void AnimationComponent::Restart() {
     m_isPaused = false;
 }
 
-// === ƒAƒjƒ[ƒVƒ‡ƒ“İ’è ===
+// === ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®š ===
 bool AnimationComponent::SetAnimationClip(int clipIndex) {
     if (clipIndex < 0 || clipIndex >= (int)m_clips.size()) return false;
 
@@ -413,11 +469,11 @@ void AnimationComponent::PlayBlend(int targetClipIndex, float blendDuration) {
     m_blendDuration = blendDuration;
     m_blendTimer = 0.0f;
 
-    // ƒ\[ƒXs—ñ‚ğŒ»İ‚Ìó‘Ô‚Å•Û‘¶
+    // ã‚½ãƒ¼ã‚¹è¡Œåˆ—ã‚’ç¾åœ¨ã®çŠ¶æ…‹ã§ä¿å­˜
     m_blendSourceMatrices = m_boneMatrices;
 }
 
-// === ó‘Ôæ“¾ ===
+// === çŠ¶æ…‹å–å¾— ===
 bool AnimationComponent::IsPlaying() const {
     return m_isPlaying && !m_isPaused;
 }
@@ -447,7 +503,7 @@ float AnimationComponent::GetBlendProgress() const {
     return m_isBlending ? (m_blendTimer / m_blendDuration) : 0.0f;
 }
 
-// === ƒwƒ‹ƒp[ŠÖ” ===
+// === ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•° ===
 ModelRenderComponent* AnimationComponent::GetModelRenderComponent() {
     return _Parent->GetComponent<ModelRenderComponent>();
 }
@@ -457,7 +513,7 @@ std::shared_ptr<ModelSharedResource> AnimationComponent::GetModelResource() {
     return ModelManager::Instance()->LoadOrGet(m_modelRender->GetModelPath());
 }
 
-// === ƒZ[ƒu/ƒ[ƒh ===
+// === ã‚»ãƒ¼ãƒ–/ãƒ­ãƒ¼ãƒ‰ ===
 void AnimationComponent::SaveToFile(std::ostream& out) {
     out << m_currentClipIndex << "\n";
     out << (m_loop ? 1 : 0) << "\n";
@@ -476,12 +532,12 @@ void AnimationComponent::LoadFromFile(std::istream& in) {
     m_blendMode = static_cast<BlendMode>(blendModeInt);
 }
 
-// === ImGui ƒCƒ“ƒXƒyƒNƒ^[•\¦ ===
+// === ImGui ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼è¡¨ç¤º ===
 void AnimationComponent::DrawInspector() {
     if (!ImGui::CollapsingHeader("AnimationComponent", ImGuiTreeNodeFlags_DefaultOpen))
         return;
 
-    // === ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‘I‘ğ ===
+    // === ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—é¸æŠ ===
     ImGui::Text("Animation Clips: %zu", m_clips.size());
 
     if (!m_clips.empty()) {
@@ -508,7 +564,7 @@ void AnimationComponent::DrawInspector() {
 
     ImGui::Separator();
 
-    // === Ä¶§Œä ===
+    // === å†ç”Ÿåˆ¶å¾¡ ===
     ImGui::Text("Playback Control");
 
     if (ImGui::Button(m_isPlaying && !m_isPaused ? "Pause" : "Play")) {
@@ -531,7 +587,7 @@ void AnimationComponent::DrawInspector() {
         Restart();
     }
 
-    // === Ä¶ó‘Ô•\¦ ===
+    // === å†ç”ŸçŠ¶æ…‹è¡¨ç¤º ===
     ImGui::Text("Status: %s",
         m_isPlaying ? (m_isPaused ? "Paused" : "Playing") : "Stopped");
 
@@ -540,7 +596,7 @@ void AnimationComponent::DrawInspector() {
             GetBlendProgress() * 100.0f);
     }
 
-    // === Ä¶ŠÔ‚ÆƒvƒƒOƒŒƒXƒo[ ===
+    // === å†ç”Ÿæ™‚é–“ã¨ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ ===
     if (m_currentClipIndex >= 0 && m_currentClipIndex < (int)m_clips.size()) {
         float duration = m_clips[m_currentClipIndex].duration;
         float progress = GetAnimationProgress();
@@ -548,7 +604,7 @@ void AnimationComponent::DrawInspector() {
         ImGui::Text("Time: %.2f / %.2f sec", m_currentTime, duration);
         ImGui::ProgressBar(progress, ImVec2(-1, 0), "");
 
-        // ƒ^ƒCƒ€ƒXƒ‰ƒCƒ_[
+        // ã‚¿ã‚¤ãƒ ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼
         float sliderTime = m_currentTime;
         if (ImGui::SliderFloat("##TimeSlider", &sliderTime, 0.0f, duration, "")) {
             m_currentTime = sliderTime;
@@ -557,7 +613,7 @@ void AnimationComponent::DrawInspector() {
 
     ImGui::Separator();
 
-    // === Ä¶İ’è ===
+    // === å†ç”Ÿè¨­å®š ===
     ImGui::Text("Playback Settings");
 
     ImGui::Checkbox("Loop", &m_loop);
@@ -569,7 +625,7 @@ void AnimationComponent::DrawInspector() {
 
     ImGui::Separator();
 
-    // === ƒuƒŒƒ“ƒhİ’è ===
+    // === ãƒ–ãƒ¬ãƒ³ãƒ‰è¨­å®š ===
     ImGui::Text("Blend Settings");
 
     const char* blendModeNames[] = { "Instant", "Fast", "Normal", "Smooth", "Slow" };
@@ -580,7 +636,7 @@ void AnimationComponent::DrawInspector() {
 
     ImGui::Text("Blend Duration: %.2f sec", m_blendDuration);
 
-    // === ƒuƒŒƒ“ƒhÀs ===
+    // === ãƒ–ãƒ¬ãƒ³ãƒ‰å®Ÿè¡Œ ===
     if (!m_clips.empty() && m_currentClipIndex >= 0) {
         ImGui::Text("Blend To:");
         ImGui::BeginChild("BlendTargetList", ImVec2(0, 100), true);
@@ -598,7 +654,7 @@ void AnimationComponent::DrawInspector() {
 
     ImGui::Separator();
 
-    // === ƒfƒoƒbƒOî•ñ ===
+    // === ãƒ‡ãƒãƒƒã‚°æƒ…å ± ===
     if (ImGui::TreeNode("Debug Info")) {
         ImGui::Checkbox("Debug Mode", &m_debugMode);
 
@@ -629,7 +685,7 @@ void AnimationComponent::DrawInspector() {
     }
 }
 
-// === •âŠÔ—pƒwƒ‹ƒp[ŠÖ”iAssetTypes.h‚ÌAnimationChannel‚É‘Î‰j ===
+// === è£œé–“ç”¨ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°ï¼ˆAssetTypes.hã®AnimationChannelã«å¯¾å¿œï¼‰ ===
 DirectX::XMFLOAT3 AnimationComponent::InterpolatePosition(
     const AnimationChannel& channel, float time)
 {
@@ -640,7 +696,7 @@ DirectX::XMFLOAT3 AnimationComponent::InterpolatePosition(
         return channel.positionKeys[0].second;
     }
 
-    // ŠÔ‚É‘Î‰‚·‚éƒL[ƒtƒŒ[ƒ€‚ğŒŸõ
+    // æ™‚é–“ã«å¯¾å¿œã™ã‚‹ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æ¤œç´¢
     size_t nextIndex = 0;
     for (size_t i = 0; i < channel.positionKeys.size(); ++i) {
         if (channel.positionKeys[i].first > time) {
@@ -676,13 +732,13 @@ DirectX::XMFLOAT4 AnimationComponent::InterpolateRotation(
     const AnimationChannel& channel, float time)
 {
     if (channel.rotationKeys.empty()) {
-        return { 0, 0, 0, 1 }; // ’PˆÊƒNƒH[ƒ^ƒjƒIƒ“
+        return { 0, 0, 0, 1 }; // å˜ä½ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
     }
     if (channel.rotationKeys.size() == 1) {
         return channel.rotationKeys[0].second;
     }
 
-    // ŠÔ‚É‘Î‰‚·‚éƒL[ƒtƒŒ[ƒ€‚ğŒŸõ
+    // æ™‚é–“ã«å¯¾å¿œã™ã‚‹ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æ¤œç´¢
     size_t nextIndex = 0;
     for (size_t i = 0; i < channel.rotationKeys.size(); ++i) {
         if (channel.rotationKeys[i].first > time) {
@@ -706,7 +762,7 @@ DirectX::XMFLOAT4 AnimationComponent::InterpolateRotation(
     const auto& a = channel.rotationKeys[prevIndex].second;
     const auto& b = channel.rotationKeys[nextIndex].second;
 
-    // Slerp•âŠÔ
+    // Slerpè£œé–“
     DirectX::XMVECTOR qa = DirectX::XMLoadFloat4(&a);
     DirectX::XMVECTOR qb = DirectX::XMLoadFloat4(&b);
     DirectX::XMVECTOR qr = DirectX::XMQuaternionSlerp(qa, qb, factor);
@@ -726,7 +782,7 @@ DirectX::XMFLOAT3 AnimationComponent::InterpolateScale(
         return channel.scaleKeys[0].second;
     }
 
-    // ŠÔ‚É‘Î‰‚·‚éƒL[ƒtƒŒ[ƒ€‚ğŒŸõ
+    // æ™‚é–“ã«å¯¾å¿œã™ã‚‹ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æ¤œç´¢
     size_t nextIndex = 0;
     for (size_t i = 0; i < channel.scaleKeys.size(); ++i) {
         if (channel.scaleKeys[i].first > time) {
@@ -755,7 +811,7 @@ DirectX::XMFLOAT3 AnimationComponent::InterpolateScale(
     result.y = a.y + (b.y - a.y) * factor;
     result.z = a.z + (b.z - a.z) * factor;
 
-    // ƒXƒP[ƒ‹’l‚ÌˆÀ‘S«ƒ`ƒFƒbƒN
+    // ã‚¹ã‚±ãƒ¼ãƒ«å€¤ã®å®‰å…¨æ€§ãƒã‚§ãƒƒã‚¯
     const float MIN_SCALE = 0.01f;
     const float MAX_SCALE = 100.0f;
     result.x = std::max(MIN_SCALE, std::min(MAX_SCALE, result.x));

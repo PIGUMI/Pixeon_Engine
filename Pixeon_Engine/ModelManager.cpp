@@ -647,15 +647,13 @@ void ModelManager::BuildNodeHierarchy(
     int currentIndex = static_cast<int>(clip.nodeHierarchy.size());
     nodeNameToIndex[nodeInfo.name] = currentIndex;
 
-    // 子ノードのインデックスを予約
-    for (uint32_t i = 0; i < node->mNumChildren; i++) {
-        nodeInfo.children.push_back(currentIndex + 1 + i);
-    }
-
+    // ⭐ 修正: 子ノードのインデックスは後で設定
     clip.nodeHierarchy.push_back(nodeInfo);
 
-    // 再帰的に子ノードを処理
+    // 子ノードを再帰的に処理
     for (uint32_t i = 0; i < node->mNumChildren; i++) {
+        int childIndex = static_cast<int>(clip.nodeHierarchy.size());
+        clip.nodeHierarchy[currentIndex].children.push_back(childIndex);
         BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, currentIndex);
     }
 }
