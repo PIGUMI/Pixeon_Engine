@@ -459,13 +459,15 @@ void EditrGUI::WriteLog(std::string Log)
 void EditrGUI::WriteLogBuffer()
 {
 	MessageBox(NULL,"エディタのログを保存します。","ログ保存", MB_OK | MB_ICONINFORMATION);
-	nlohmann::json logJson;
-	logJson["Log"] = LogBuffer;
-	std::ofstream logFile(SettingManager::GetInstance()->GetAssetsFilePath() + "Log.json");
-    if (logFile.is_open())
-    {
-        logFile << logJson.dump(4);
-    }
+	// txtファイルに保存
+    std::string LogFilePath = SettingManager::GetInstance()->GetAssetsFilePath();
+	LogFilePath += "/EditorLog.txt";
+	// ファイルに書き込み
+    std::ofstream ofs(LogFilePath, std::ios::out | std::ios::trunc);
+    if (ofs.is_open()) {
+        ofs << LogBuffer;
+        ofs.close();
+	}
 }
 
 void EditrGUI::ShowSceneCreateWindow()

@@ -278,8 +278,7 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
         int nodeIdx = bone.nodeIndex;
         if (nodeIdx < 0 || nodeIdx >= (int)global.size()) continue;
 
-        // デバッグ: ボーン名とノード名のマッピングを出力
-        if (b < 10) {  // 最初の10個のボーンのみ
+        if (b < 10) {
             std::string nodeName = (nodeIdx >= 0 && nodeIdx < sourceClip.nodeHierarchy.size())
                 ? sourceClip.nodeHierarchy[nodeIdx].name : "INVALID";
             EditrGUI::GetInstance()->WriteLog(
@@ -287,7 +286,8 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
                 " -> Node[" + std::to_string(nodeIdx) + "] " + nodeName);
         }
 
-        DirectX::XMMATRIX finalMat = bone.offset * global[nodeIdx];
+        // 正式な LBS 式: currentGlobal * InverseBindPose
+        DirectX::XMMATRIX finalMat =  bone.offset * global[nodeIdx];
 
         if (IsValidMatrix(finalMat)) {
             XMStoreFloat4x4(&outFinal[b], finalMat);
