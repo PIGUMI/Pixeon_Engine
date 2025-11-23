@@ -38,27 +38,27 @@ struct Bone {
     DirectX::XMMATRIX invOffset;  // BindPose(必要なら保持。未使用なら省略可)
 };
 
-//struct AnimationChannel {
-//    int nodeIndex = -1;
-//    std::string nodeName;
-//    std::vector<std::pair<float, DirectX::XMFLOAT3>> positionKeys;
-//    std::vector<std::pair<float, DirectX::XMFLOAT4>> rotationKeys;
-//    std::vector<std::pair<float, DirectX::XMFLOAT3>> scaleKeys;
-//};
+struct AnimationChannel {
+    int nodeIndex = -1;
+    std::string nodeName;
+    std::vector<std::pair<float, DirectX::XMFLOAT3>> positionKeys;
+    std::vector<std::pair<float, DirectX::XMFLOAT4>> rotationKeys;
+    std::vector<std::pair<float, DirectX::XMFLOAT3>> scaleKeys;
+};
 
-//struct AnimationClip {
-//    std::string name;
-//    double duration = 0;
-//    double tps = 25.0;
-//    std::vector<AnimationChannel> channels;
-//    struct NodeInfo {
-//        std::string name;
-//        int parentIndex = -1;
-//        DirectX::XMMATRIX localTransform;
-//        std::vector<int> children;
-//    };
-//    std::vector<NodeInfo> nodeHierarchy;
-//};
+struct AnimationClip {
+    std::string name;
+    double duration = 0;
+    double tps = 25.0;
+    std::vector<AnimationChannel> channels;
+    struct NodeInfo {
+        std::string name;
+        int parentIndex = -1;
+        DirectX::XMMATRIX localTransform;
+        std::vector<int> children;
+    };
+    std::vector<NodeInfo> nodeHierarchy;
+};
 
 struct ModelSharedResource {
     std::string source;
