@@ -313,6 +313,12 @@
     <ClInclude Include="AnimationComponent.h">
       <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
+    <ClInclude Include="BoneNodeMapping.h">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="WeightFix.h">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="仕様書.txt">

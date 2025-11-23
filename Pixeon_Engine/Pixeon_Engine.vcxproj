@@ -142,6 +142,7 @@
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
+    <ClInclude Include="BoneNodeMapping.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="WeightFix.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />

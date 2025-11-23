@@ -12,7 +12,7 @@
 #include <filesystem>
 #include <unordered_set>
 #include <algorithm>
-#include <Windows.h>
+#include "BoneNodeMapping.h"
 #include <functional>
 
 #if _MSC_VER >= 1930
@@ -164,7 +164,6 @@ void ModelManager::ProcessNode(aiNode* node, const aiScene* scene,
         ProcessNode(node->mChildren[i], scene, vertices, indices, shared);
 }
 
-// 修正後: ProcessMesh
 void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
     std::vector<ModelVertex>& vertices,
     std::vector<uint32_t>& indices,
@@ -176,13 +175,13 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
     sm.skinned = mesh->HasBones();
     uint32_t vtxOffset = (uint32_t)vertices.size();
 
-    // 既存ボーンマップ
+    // 既存ボーン名 -> インデックス
     std::unordered_map<std::string, int> boneMap;
     for (size_t i = 0; i < shared->bones.size(); ++i)
         boneMap[shared->bones[i].name] = (int)i;
 
-    struct VtxBoneTmp { std::vector<std::pair<int, float>> weights; };
-    std::vector<VtxBoneTmp> vtxWeights(mesh->mNumVertices);
+    struct TmpWeight { std::vector<std::pair<int, float>> w; };
+    std::vector<TmpWeight> tmp(mesh->mNumVertices);
 
     if (mesh->HasBones()) {
         for (uint32_t bi = 0; bi < mesh->mNumBones; ++bi) {
@@ -195,7 +194,7 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
                 boneMap[bname] = boneIndex;
                 Bone newBone;
                 newBone.name = bname;
-
+                // InverseBindPose
                 aiMatrix4x4& m = ab->mOffsetMatrix;
                 newBone.offset = DirectX::XMMatrixSet(
                     m.a1, m.b1, m.c1, m.d1,
@@ -203,10 +202,9 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
                     m.a3, m.b3, m.c3, m.d3,
                     m.a4, m.b4, m.c4, m.d4
                 );
-
-                // 必要ならロード時スケール・Z反転（例）
-                float loadScale = 1.0f;       // 外部設定があれば取得
-                bool  zFlip = false;      // 外部設定があれば取得
+                // 必要ならスケール/反転（現在は loadScale=1, zFlip=false）
+                float loadScale = 1.0f;
+                bool  zFlip = false;
                 if (loadScale != 1.0f) {
                     newBone.offset.r[3].m128_f32[0] *= loadScale;
                     newBone.offset.r[3].m128_f32[1] *= loadScale;
@@ -216,26 +214,24 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
                     DirectX::XMMATRIX flip = DirectX::XMMatrixScaling(-1.f, 1.f, 1.f);
                     newBone.offset = flip * newBone.offset;
                 }
-
                 newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
                 newBone.parentIndex = -1;
-                newBone.nodeIndex = -1; // 後で確定
+                newBone.nodeIndex = -1; // クリップ階層生成後に確定
                 shared->bones.push_back(newBone);
             }
             else {
                 boneIndex = it->second;
             }
-
             for (uint32_t w = 0; w < ab->mNumWeights; ++w) {
                 uint32_t vid = ab->mWeights[w].mVertexId;
-                float weight = ab->mWeights[w].mWeight;
-                if (vid < vtxWeights.size())
-                    vtxWeights[vid].weights.push_back({ boneIndex, weight });
+                float     val = ab->mWeights[w].mWeight;
+                if (vid < tmp.size())
+                    tmp[vid].w.push_back({ boneIndex, val });
             }
         }
     }
 
-    // 頂点追加
+    // 頂点生成
     for (uint32_t v = 0; v < mesh->mNumVertices; ++v) {
         ModelVertex mv{};
         mv.position[0] = mesh->mVertices[v].x;
@@ -258,14 +254,19 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
         }
         for (int k = 0; k < 4; ++k) { mv.boneIndices[k] = 0; mv.boneWeights[k] = 0.0f; }
 
-        if (!vtxWeights[v].weights.empty()) {
-            auto& bw = vtxWeights[v].weights;
-            std::sort(bw.begin(), bw.end(), [](auto& a, auto& b) {return a.second > b.second; });
-            float total = 0.0f;
-            int count = std::min<int>(4, (int)bw.size());
-            for (int k = 0; k < count; ++k) { mv.boneIndices[k] = bw[k].first; mv.boneWeights[k] = bw[k].second; total += bw[k].second; }
-            if (total > 0.0f && fabs(total - 1.0f) > 1e-5f) {
-                for (int k = 0; k < count; ++k) mv.boneWeights[k] /= total;
+        if (!tmp[v].w.empty()) {
+            auto& arr = tmp[v].w;
+            std::sort(arr.begin(), arr.end(), [](auto& a, auto& b) {return a.second > b.second; });
+            int count = std::min<int>(4, (int)arr.size());
+            float total = 0.f;
+            for (int k = 0; k < count; ++k) {
+                mv.boneIndices[k] = arr[k].first;
+                mv.boneWeights[k] = arr[k].second;
+                total += arr[k].second;
+            }
+            if (total > 0.f && fabs(total - 1.f) > 1e-5f) {
+                for (int k = 0; k < count; ++k)
+                    mv.boneWeights[k] /= total;
             }
         }
         vertices.push_back(mv);
@@ -278,6 +279,7 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
             indices.push_back(vtxOffset + face.mIndices[j]);
     }
 
+    // UV状況
     bool anyUV = mesh->mTextureCoords[0] != nullptr;
     bool allZero = true;
     if (anyUV) {
@@ -408,8 +410,10 @@ void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
     }
 }
 
+// --- 修正対象: ProcessAnimations （末尾に MapBonesToNodes 呼び出しを追加） ---
 void ModelManager::ProcessAnimations(const aiScene* scene,
-    std::shared_ptr<ModelSharedResource> shared) {
+    std::shared_ptr<ModelSharedResource> shared)
+{
     if (!scene->HasAnimations()) return;
     for (uint32_t i = 0; i < scene->mNumAnimations; ++i) {
         aiAnimation* anim = scene->mAnimations[i];
@@ -427,32 +431,38 @@ void ModelManager::ProcessAnimations(const aiScene* scene,
             ac.nodeName = na->mNodeName.C_Str();
             auto it = nodeMap.find(ac.nodeName);
             ac.nodeIndex = (it != nodeMap.end()) ? it->second : -1;
-            // position
+            // position keys
             for (uint32_t k = 0; k < na->mNumPositionKeys; ++k) {
                 float t = (float)(na->mPositionKeys[k].mTime / clip.tps);
-                ac.positionKeys.push_back({ t,{ na->mPositionKeys[k].mValue.x,
-                                               na->mPositionKeys[k].mValue.y,
-                                               na->mPositionKeys[k].mValue.z } });
+                ac.positionKeys.push_back({ t,{
+                    na->mPositionKeys[k].mValue.x,
+                    na->mPositionKeys[k].mValue.y,
+                    na->mPositionKeys[k].mValue.z } });
             }
-            // rotation
+            // rotation keys
             for (uint32_t k = 0; k < na->mNumRotationKeys; ++k) {
                 float t = (float)(na->mRotationKeys[k].mTime / clip.tps);
-                ac.rotationKeys.push_back({ t,{ na->mRotationKeys[k].mValue.x,
-                                               na->mRotationKeys[k].mValue.y,
-                                               na->mRotationKeys[k].mValue.z,
-                                               na->mRotationKeys[k].mValue.w } });
+                ac.rotationKeys.push_back({ t,{
+                    na->mRotationKeys[k].mValue.x,
+                    na->mRotationKeys[k].mValue.y,
+                    na->mRotationKeys[k].mValue.z,
+                    na->mRotationKeys[k].mValue.w } });
             }
-            // scale
+            // scale keys
             for (uint32_t k = 0; k < na->mNumScalingKeys; ++k) {
                 float t = (float)(na->mScalingKeys[k].mTime / clip.tps);
-                ac.scaleKeys.push_back({ t,{ na->mScalingKeys[k].mValue.x,
-                                            na->mScalingKeys[k].mValue.y,
-                                            na->mScalingKeys[k].mValue.z } });
+                ac.scaleKeys.push_back({ t,{
+                    na->mScalingKeys[k].mValue.x,
+                    na->mScalingKeys[k].mValue.y,
+                    na->mScalingKeys[k].mValue.z } });
             }
             clip.channels.push_back(ac);
         }
         shared->clips.push_back(clip);
     }
+
+    // ★ 追加: クリップ階層が揃った後で bone.nodeIndex を一括確定
+    MapBonesToNodes(*shared);
 }
 
 void ModelManager::BuildNodeHierarchy(aiNode* node,
