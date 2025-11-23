@@ -21,14 +21,15 @@ std::shared_ptr<ModelSharedResource> AnimationComponent::GetResource() {
     return m_renderer ? ModelManager::Instance()->LoadOrGet(m_renderer->GetModelPath()) : nullptr;
 }
 
-// --- 修正対象: BeginPlay（nodeIndex 未設定警告） ---
+// 関数: BeginPlay
+// 目的: スキン VS へ切り替え後に bone.nodeIndex の欠落やクリップ状態を必ずログ（Release/Debug共）
+// 修正ポイント: ログを #ifdef _DEBUG ではなく常時出力
 void AnimationComponent::BeginPlay() {
     m_renderer = GetRenderer();
     if (!m_renderer) { ErrorLogger::Instance().LogError("Animation", "Renderer not found"); return; }
     m_resource = GetResource();
     if (!m_resource) { ErrorLogger::Instance().LogError("Animation", "Resource null"); return; }
 
-    // クリップ展開（既存ロジック）
     m_clips.clear();
     for (auto& c : m_resource->clips) {
         AnimationClipRuntime rt;
@@ -36,61 +37,117 @@ void AnimationComponent::BeginPlay() {
         rt.duration = c.duration / c.tps;
         rt.tps = c.tps;
         rt.isLoaded = true;
+
         for (auto& ch : c.channels) {
             AnimationChannelRuntime rch;
             rch.nodeIndex = ch.nodeIndex;
-            // 位置/回転/スケール キー統合（既存処理そのまま）
             std::set<float> times;
             for (auto& k : ch.positionKeys) times.insert(k.first);
             for (auto& k : ch.rotationKeys) times.insert(k.first);
             for (auto& k : ch.scaleKeys)    times.insert(k.first);
+
             for (float t : times) {
                 BoneTransform bt;
-                // 以下既存補間処理（省略せずそのまま）
-                // ...
-                bt.position = { 0,0,0 };
-                // 実際は既存コード内のロジックを維持
+                // 位置
+                if (!ch.positionKeys.empty()) {
+                    auto it = std::lower_bound(ch.positionKeys.begin(), ch.positionKeys.end(),
+                        std::pair<float, DirectX::XMFLOAT3>(t, {}),
+                        [](auto& a, auto& b) {return a.first < b.first; });
+                    if (it == ch.positionKeys.begin()) bt.position = it->second;
+                    else if (it == ch.positionKeys.end()) bt.position = ch.positionKeys.back().second;
+                    else {
+                        auto prev = std::prev(it);
+                        float f = (t - prev->first) / (it->first - prev->first);
+                        bt.position = {
+                            prev->second.x + (it->second.x - prev->second.x) * f,
+                            prev->second.y + (it->second.y - prev->second.y) * f,
+                            prev->second.z + (it->second.z - prev->second.z) * f
+                        };
+                    }
+                }
+                else bt.position = { 0,0,0 };
+                // 回転
+                if (!ch.rotationKeys.empty()) {
+                    auto it = std::lower_bound(ch.rotationKeys.begin(), ch.rotationKeys.end(),
+                        std::pair<float, DirectX::XMFLOAT4>(t, {}),
+                        [](auto& a, auto& b) {return a.first < b.first; });
+                    if (it == ch.rotationKeys.begin()) bt.rotation = it->second;
+                    else if (it == ch.rotationKeys.end()) bt.rotation = ch.rotationKeys.back().second;
+                    else {
+                        auto prev = std::prev(it);
+                        float f = (t - prev->first) / (it->first - prev->first);
+                        XMVECTOR qa = XMLoadFloat4(&prev->second);
+                        XMVECTOR qb = XMLoadFloat4(&it->second);
+                        XMVECTOR q = XMQuaternionNormalize(XMQuaternionSlerp(qa, qb, f));
+                        XMStoreFloat4(&bt.rotation, q);
+                    }
+                }
+                else bt.rotation = { 0,0,0,1 };
+                // スケール
+                if (!ch.scaleKeys.empty()) {
+                    auto it = std::lower_bound(ch.scaleKeys.begin(), ch.scaleKeys.end(),
+                        std::pair<float, DirectX::XMFLOAT3>(t, {}),
+                        [](auto& a, auto& b) {return a.first < b.first; });
+                    if (it == ch.scaleKeys.begin()) bt.scale = it->second;
+                    else if (it == ch.scaleKeys.end()) bt.scale = ch.scaleKeys.back().second;
+                    else {
+                        auto prev = std::prev(it);
+                        float f = (t - prev->first) / (it->first - prev->first);
+                        bt.scale = {
+                            prev->second.x + (it->second.x - prev->second.x) * f,
+                            prev->second.y + (it->second.y - prev->second.y) * f,
+                            prev->second.z + (it->second.z - prev->second.z) * f
+                        };
+                    }
+                }
+                else bt.scale = { 1,1,1 };
+                bt.isValid = true;
+                rch.timeline[t] = bt;
             }
-            // ここでは既存コードを使用（全文はあなたの現行版で OK）
+            rt.channels.push_back(rch);
         }
         m_clips.push_back(rt);
     }
 
-    // Bone 行列初期化
     if (!m_resource->bones.empty()) {
         m_boneMatrices.assign(m_resource->bones.size(), DirectX::XMFLOAT4X4());
         for (auto& m : m_boneMatrices)
-            DirectX::XMStoreFloat4x4(&m, DirectX::XMMatrixIdentity());
+            XMStoreFloat4x4(&m, XMMatrixIdentity());
         m_sourceBlend = m_boneMatrices;
         m_targetBlend = m_boneMatrices;
     }
 
-    // nodeIndex 未設定の警告（デバッグ）
-#ifdef _DEBUG
     int missing = 0;
-    for (auto& b : m_resource->bones)
-        if (b.nodeIndex < 0) ++missing;
-    if (missing > 0) {
-        OutputDebugStringA(("[AnimationComponent::BeginPlay] Bones missing nodeIndex count=" + std::to_string(missing) + "\n").c_str());
-    }
-#endif
+    for (auto& b : m_resource->bones) if (b.nodeIndex < 0) ++missing;
+    EditrGUI::GetInstance()->WriteLog("[Animation BeginPlay] clips=" + std::to_string(m_clips.size()) +
+        " channels(total)=" + std::to_string((m_clips.empty() ? 0 : m_clips[0].channels.size())) +
+        " bones=" + std::to_string(m_resource->bones.size()) +
+        " boneMissingNodeIndex=" + std::to_string(missing));
 
-    // nodeName→boneIndex マップ（既存）
     m_nodeToBone.clear();
     for (size_t i = 0; i < m_resource->bones.size(); ++i)
         m_nodeToBone[m_resource->bones[i].name] = (int)i;
 }
 
+// 関数: InGameUpdate
+// 目的: 毎フレーム時間と現在クリップをログ（負荷過多防止で間引き）
 void AnimationComponent::InGameUpdate() {
     if (!m_playing || m_paused) return;
     if (m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return;
 
-    float dt = 0.016f; // 仮: 実際は TimeSystem から取得
+    float dt = 0.016f;
     if (m_blending) UpdateBlend(dt);
     else UpdateAnimation(dt);
 
     RebuildBoneMatrices();
     ApplyToModel();
+
+    static int frameCounter = 0;
+    if (++frameCounter % 120 == 0) {
+        EditrGUI::GetInstance()->WriteLog("[Animation Update] clip=" +
+            (m_currentClip >= 0 ? m_clips[m_currentClip].name : "NONE") +
+            " time=" + std::to_string(m_time));
+    }
 }
 
 void AnimationComponent::UpdateAnimation(float dt) {
@@ -166,8 +223,8 @@ DirectX::XMMATRIX AnimationComponent::BlendBoneMatrix(const XMMATRIX& A, const X
         XMMatrixTranslationFromVector(t);
 }
 
-// 修正後: BuildClipPose（最終行列式とグローバル合成順）
-// --- 修正対象: BuildClipPose ---
+// 関数: BuildClipPose
+// 目的: 適用された骨数と最初の骨の平行移動をログ
 void AnimationComponent::BuildClipPose(int clipIndex, float time,
     std::vector<DirectX::XMFLOAT4X4>& outFinal)
 {
@@ -179,47 +236,50 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
     size_t nodeCount = sourceClip.nodeHierarchy.size();
 
     std::vector<DirectX::XMMATRIX> local(nodeCount, DirectX::XMMatrixIdentity());
-
-    // 初期ローカル行列（バインドポーズ）
     for (size_t i = 0; i < nodeCount; ++i)
         local[i] = sourceClip.nodeHierarchy[i].localTransform;
 
-    // キー適用
     for (auto& ch : clipRuntime.channels) {
         if (ch.nodeIndex < 0 || ch.nodeIndex >= (int)nodeCount) continue;
         BoneTransform bt = InterpChannel(ch, time);
         local[ch.nodeIndex] = BuildMatrix(bt);
     }
 
-    // 親合成 (local * parent)
     std::vector<DirectX::XMMATRIX> global(nodeCount, DirectX::XMMatrixIdentity());
     for (size_t i = 0; i < nodeCount; ++i) {
         int parent = sourceClip.nodeHierarchy[i].parentIndex;
-        if (parent >= 0)
-            global[i] = local[i] * global[parent];
-        else
-            global[i] = local[i];
+        global[i] = (parent >= 0) ? (local[i] * global[parent]) : local[i];
     }
 
-    // 出力初期化
     if (outFinal.size() != m_resource->bones.size())
         outFinal.resize(m_resource->bones.size());
     for (auto& f : outFinal)
         DirectX::XMStoreFloat4x4(&f, DirectX::XMMatrixIdentity());
 
-    // 最終ボーン行列: offset * global
+    int applied = 0;
     for (size_t b = 0; b < m_resource->bones.size(); ++b) {
         const auto& bone = m_resource->bones[b];
         int nodeIdx = bone.nodeIndex;
-        if (nodeIdx < 0 || nodeIdx >= (int)global.size()) {
-#ifdef _DEBUG
-            OutputDebugStringA(("[BuildClipPose] Skip bone (nodeIdx invalid): " + bone.name + "\n").c_str());
-#endif
-            continue;
-        }
+        if (nodeIdx < 0 || nodeIdx >= (int)global.size()) continue;
         DirectX::XMMATRIX finalMat = bone.offset * global[nodeIdx];
-        if (IsValidMatrix(finalMat))
-            DirectX::XMStoreFloat4x4(&outFinal[b], finalMat);
+        if (IsValidMatrix(finalMat)) {
+            XMStoreFloat4x4(&outFinal[b], finalMat);
+            ++applied;
+        }
+    }
+
+    static int poseCounter = 0;
+    if (++poseCounter % 240 == 0) { // 4秒毎程度
+        // 最初の骨の平行移動を記録
+        if (!outFinal.empty()) {
+            auto& m = outFinal[0];
+            EditrGUI::GetInstance()->WriteLog("[BuildClipPose] clip=" + clipRuntime.name +
+                " appliedBones=" + std::to_string(applied) +
+                " rootT=(" + std::to_string(m._41) + "," + std::to_string(m._42) + "," + std::to_string(m._43) + ")");
+        }
+        else {
+            EditrGUI::GetInstance()->WriteLog("[BuildClipPose] clip=" + clipRuntime.name + " appliedBones=0");
+        }
     }
 }
 

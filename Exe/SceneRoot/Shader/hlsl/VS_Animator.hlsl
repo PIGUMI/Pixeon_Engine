@@ -1,6 +1,3 @@
-// VS_ModelSkinned.hlsl - スキニングアニメーション用頂点シェーダー
-
-// WVP行列用
 cbuffer CameraBuffer : register(b0)
 {
     matrix World;
@@ -9,7 +6,6 @@ cbuffer CameraBuffer : register(b0)
     float4 BaseColor;
 };
 
-// ボーン行列用（最大256ボーン）
 cbuffer BoneBuffer : register(b1)
 {
     matrix Bones[256];
@@ -35,49 +31,32 @@ struct VS_OUTPUT
 
 VS_OUTPUT main(VS_INPUT input)
 {
-    VS_OUTPUT output;
-    
-    // スキニング計算
-    float4 pos = float4(input.position, 1.0f);
-    float4 skinnedPos = float4(0, 0, 0, 0);
-    float3 skinnedNormal = float3(0, 0, 0);
-    
-    // 最大4つのボーンの影響を合成
-    for (int i = 0; i < 4; ++i)
+    VS_OUTPUT o;
+    float4 pos = float4(input.position, 1);
+    float4 skinned = float4(0, 0, 0, 0);
+    float3 n = float3(0, 0, 0);
+
+    [unroll]
+    for (int i = 0; i < 4; i++)
     {
-        uint boneIndex = input.boneIndices[i];
-        float weight = input.boneWeights[i];
-        
-        if (weight > 0.0f && boneIndex < 256)
+        uint bi = input.boneIndices[i];
+        float w = input.boneWeights[i];
+        if (w > 0 && bi < 256)
         {
-            // 位置の変換
-            skinnedPos += weight * mul(pos, Bones[boneIndex]);
-            
-            // 法線の変換
-            float3 n = mul(input.normal, (float3x3) Bones[boneIndex]);
-            skinnedNormal += weight * n;
+            skinned += w * mul(pos, Bones[bi]);
+            n += w * mul(input.normal, (float3x3) Bones[bi]);
         }
     }
-    
-    // ウェイトが0の場合は元の位置を使用
-    if (length(skinnedPos.xyz) < 0.001f)
+    if (skinned.w == 0)
     {
-        skinnedPos = pos;
-        skinnedNormal = input.normal;
+        skinned = pos;
+        n = input.normal;
     }
-    
-    // ワールド・ビュー・射影変換
-    skinnedPos = mul(skinnedPos, World);
-    skinnedPos = mul(skinnedPos, View);
-    output.position = mul(skinnedPos, Proj);
-    
-    // 法線の変換
-    skinnedNormal = normalize(skinnedNormal);
-    output.normal = mul(skinnedNormal, (float3x3) World);
-    
-    // UV座標とカラーをそのまま渡す
-    output.uv = input.uv;
-    output.color = BaseColor;
-    
-    return output;
+    skinned = mul(skinned, World);
+    skinned = mul(skinned, View);
+    o.position = mul(skinned, Proj);
+    o.normal = normalize(mul(n, (float3x3) World));
+    o.uv = input.uv;
+    o.color = BaseColor;
+    return o;
 }

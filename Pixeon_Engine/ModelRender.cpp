@@ -350,6 +350,8 @@ void ModelRenderComponent::Draw() {
     }
 }
 
+// 関数: SetupBoneMatricesForShader
+// 目的: 骨行列アップロード時の最初の3骨平行移動をログ
 void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 {
     static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;
@@ -376,6 +378,17 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
     ctx->UpdateSubresource(s_boneCB.Get(), 0, nullptr, &data, 0, 0);
     ID3D11Buffer* cbs[] = { s_boneCB.Get() };
     ctx->VSSetConstantBuffers(1, 1, cbs);
+
+    static int uploadCounter = 0;
+    if (++uploadCounter % 240 == 0 && count > 0) {
+        std::string log = "[BoneUpload] count=" + std::to_string(count);
+        int show = std::min<int>((int)count, 3);
+        for (int i = 0; i < show; ++i) {
+            auto& m = m_boneMatrices[i];
+            log += " b" + std::to_string(i) + "T(" + std::to_string(m._41) + "," + std::to_string(m._42) + "," + std::to_string(m._43) + ")";
+        }
+        EditrGUI::GetInstance()->WriteLog(log);
+    }
 }
 
 

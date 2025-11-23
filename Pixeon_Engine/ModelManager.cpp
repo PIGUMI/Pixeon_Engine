@@ -111,7 +111,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 
     std::vector<ModelVertex> vertices;
     std::vector<uint32_t> indices;
-
     ProcessNode(scene->mRootNode, scene, vertices, indices, shared);
 
     auto device = DirectX11::GetInstance()->GetDevice();
@@ -146,8 +145,19 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
     shared->gpuBytes = vertices.size() * sizeof(ModelVertex) + indices.size() * sizeof(uint32_t);
 
     ProcessMaterials(scene, shared);
-    ProcessBonesFinalizeHierarchy(scene, shared);
+    // 先にアニメーション生成
     ProcessAnimations(scene, shared);
+    // その後に骨階層最終化（親 index & nodeIndex）
+    ProcessBonesFinalizeHierarchy(scene, shared);
+    // 追加の nodeIndex 再マップ（保険）
+    MapBonesToNodes(*shared);
+
+#ifdef _DEBUG
+    // ログ: nodeIndex が無い骨数
+    int missing = 0;
+    for (auto& b : shared->bones) if (b.nodeIndex < 0) ++missing;
+    EditrGUI::GetInstance()->WriteLog("[ModelManager] LoadInternal bone missing nodeIndex=" + std::to_string(missing));
+#endif
 
     return shared;
 }
@@ -361,12 +371,15 @@ std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, co
 }
 
 // 修正後: ProcessBonesFinalizeHierarchy
+// 関数: ProcessBonesFinalizeHierarchy
+// 目的: nodeIndex 設定は clips が存在する場合のみ
+// 修正ポイント:
+// - clips 空なら nodeIndex 設定をスキップ
 void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
     std::shared_ptr<ModelSharedResource> shared)
 {
     if (shared->bones.empty()) return;
 
-    // 親ノード名マップ（aiNode 再帰）
     std::unordered_map<std::string, std::string> parentName;
     std::function<void(aiNode*, aiNode*)> walk = [&](aiNode* n, aiNode* p) {
         if (!n) return;
@@ -376,38 +389,27 @@ void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
         };
     walk(scene->mRootNode, nullptr);
 
-    // Bone 名→インデックス
     std::unordered_map<std::string, int> boneIndexMap;
     for (int i = 0; i < (int)shared->bones.size(); ++i)
         boneIndexMap[shared->bones[i].name] = i;
 
-    // 親インデックス設定
     for (auto& b : shared->bones) {
         auto pit = parentName.find(b.name);
         if (pit == parentName.end() || pit->second.empty()) {
             b.parentIndex = -1;
-            continue;
         }
-        auto bit = boneIndexMap.find(pit->second);
-        b.parentIndex = (bit != boneIndexMap.end()) ? bit->second : -1;
-    }
-
-    // nodeIndex 設定: AnimationClip が生成済みなら最初のクリップから名前マップ
-    if (!shared->clips.empty()) {
-        // すべてのクリップで同じ階層前提なら 0 番で十分
-        const auto& clip = shared->clips[0];
-        std::unordered_map<std::string, int> nodeNameToIndex;
-        for (int i = 0; i < (int)clip.nodeHierarchy.size(); ++i)
-            nodeNameToIndex[clip.nodeHierarchy[i].name] = i;
-
-        for (auto& b : shared->bones) {
-            auto it = nodeNameToIndex.find(b.name);
-            if (it != nodeNameToIndex.end())
-                b.nodeIndex = it->second;
-            else
-                b.nodeIndex = -1;
+        else {
+            auto bit = boneIndexMap.find(pit->second);
+            b.parentIndex = (bit != boneIndexMap.end()) ? bit->second : -1;
+        }
+        // nodeIndex は後段 (ProcessAnimations 後) に設定する方針
+        if (shared->clips.empty()) {
+            b.nodeIndex = -1;
         }
     }
+#ifdef _DEBUG
+    EditrGUI::GetInstance()->WriteLog("[ModelManager] ProcessBonesFinalizeHierarchy done");
+#endif
 }
 
 // --- 修正対象: ProcessAnimations （末尾に MapBonesToNodes 呼び出しを追加） ---
