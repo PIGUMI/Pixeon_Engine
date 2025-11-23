@@ -71,7 +71,6 @@ private:
 
     bool IsValidMatrix(const DirectX::XMMATRIX& m) const;
 
-    // ブレンド用: 行列分解
     DirectX::XMMATRIX BlendBoneMatrix(const DirectX::XMMATRIX& A,
         const DirectX::XMMATRIX& B,
         float f) const;
@@ -91,7 +90,6 @@ private:
     float m_speed = 1.0f;
     float m_time = 0.0f;
 
-    // ブレンド
     bool  m_blending = false;
     int   m_blendTarget = -1;
     float m_blendTimer = 0.0f;
@@ -102,6 +100,5 @@ private:
     std::vector<DirectX::XMFLOAT4X4> m_sourceBlend;
     std::vector<DirectX::XMFLOAT4X4> m_targetBlend;
 
-    // 高速化: nodeName→boneIndex
     std::unordered_map<std::string, int> m_nodeToBone;
 };

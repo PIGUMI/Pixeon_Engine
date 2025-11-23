@@ -11,7 +11,6 @@
 
 using namespace DirectX;
 
-// static (共有) は sampler と fallback テクスチャだけ
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ModelRenderComponent::s_linearSmp;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_magentaTexSRV;
@@ -70,7 +69,6 @@ bool ModelRenderComponent::EnsureShaders(bool forceRecreateLayout) {
         }
     }
 
-    // ポインタ変化検出 (再コンパイル後など)
     bool vsChanged = (m_vs.Get() != vs);
     bool needLayout = forceRecreateLayout || vsChanged || !m_layout;
 
@@ -269,7 +267,6 @@ void ModelRenderComponent::Draw() {
     CameraComponent* cam = scene->GetMainCamera();
     if (!cam) return;
 
-    // シェーダが HotReload で無効になった場合に再取得
     if (!m_vs || !m_ps) {
         if (!EnsureShaders(false)) return;
     }
@@ -350,8 +347,9 @@ void ModelRenderComponent::Draw() {
     }
 }
 
-// 関数: SetupBoneMatricesForShader
-// 目的: 骨行列アップロード時の最初の3骨平行移動をログ
+// ボーン行列アップロード: CPU側→転置→VS定数バッファ
+// AnimationComponent 側で final = InverseBindPose * Global を構築している前提。
+// VS 内で頂点は (pos * boneMatrixBlend) 形式ならこの転置が必要（行ベクトル * 列行列式）。
 void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 {
     static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;
@@ -391,7 +389,6 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
     }
 }
 
-
 void ModelRenderComponent::SaveToFile(std::ostream& out) {
     out << m_modelPath << "\n";
     out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << "\n";
@@ -417,17 +414,14 @@ void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4
     m_boneMatrices = matrices;
     m_useBoneMatrices = !matrices.empty();
 
-    // デバッグ出力（必要に応じて）
 #ifdef _DEBUG
     static int debugCounter = 0;
-    if (++debugCounter % 60 == 0) { // 60フレームに1回
+    if (++debugCounter % 60 == 0) {
         OutputDebugStringA(("[ModelRender] Updated " +
             std::to_string(matrices.size()) + " bone matrices\n").c_str());
     }
 #endif
 }
-
-// IMGUI インスペクタ表示
 
 void ModelRenderComponent::DrawInspector() {
     auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
@@ -448,7 +442,7 @@ void ModelRenderComponent::DrawInspector() {
         auto* sm = ShaderManager::GetInstance();
         static std::vector<std::string> vsList;
         static std::vector<std::string> psList;
-        if (ImGui::Button(SJ("更新(列挙)").c_str())) {
+        if (ImGui::Button(SJ("更新(一覧)").c_str())) {
             vsList = sm->GetShaderList("VS");
             psList = sm->GetShaderList("PS");
         }
@@ -490,29 +484,6 @@ void ModelRenderComponent::DrawInspector() {
         ImGui::SameLine();
         std::string shown = m_materials[i].texName.empty() ? SJ("(なし)") : m_materials[i].texName;
         ImGui::Text("tex=%s", shown.c_str());
-        ImGui::SameLine();
-        if (ImGui::Button(SJ("テクスチャ選択...").c_str())) {
-            m_texPopupMatIndex = (int)i;
-            ImGui::OpenPopup("TextureSelectPopup");
-        }
-        if (ImGui::BeginPopup("TextureSelectPopup")) {
-            auto texList = AssetManager::Instance()->GetCachedTextureNames();
-            static char texFilter[128] = "";
-            ImGui::InputText("Filter", texFilter, sizeof(texFilter));
-            ImGui::BeginChild("TexListChild", ImVec2(380, 230), true);
-            for (int ti = 0; ti < (int)texList.size(); ++ti) {
-                const std::string& name = texList[ti];
-                if (texFilter[0] && name.find(texFilter) == std::string::npos) continue;
-                if (ImGui::Selectable(name.c_str(), false)) {
-                    m_materials[i].texName = name;
-                    m_materials[i].tex.reset();
-                    ImGui::CloseCurrentPopup();
-                }
-            }
-            ImGui::EndChild();
-            if (ImGui::Button(SJ("閉じる").c_str())) ImGui::CloseCurrentPopup();
-            ImGui::EndPopup();
-        }
         ImGui::PopID();
     }
 }
@@ -556,7 +527,7 @@ void ModelRenderComponent::ShowModelSelectPopup()
             }
             if (m_modelPath == rawName) {
                 ImGui::SameLine();
-                ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[Using]").c_str());
+                ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[使用中]").c_str());
             }
         }
         ImGui::EndChild();
@@ -575,54 +546,10 @@ void ModelRenderComponent::ShowModelSelectPopup()
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
-        if (ImGui::Button(SJ("再ロード").c_str())) {
+        if (ImGui::Button(SJ("リロード").c_str())) {
             if (!m_modelPath.empty()) SetModel(m_modelPath);
         }
 
-        ImGui::EndPopup();
-    }
-}
-
-void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
-    if (!m_openTexPopup || materialIndex < 0 || materialIndex >= (int)m_materials.size())
-    {
-        MessageBox(nullptr, "Invalid state in ShowTextureSelectPopup", "Error", MB_OK);
-        return;
-    }
-
-    auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
-
-    std::string popupId = "TextureSelectPopup";
-    ImGui::SetNextWindowSize(ImVec2(420, 400), ImGuiCond_FirstUseEver);
-    if (ImGui::BeginPopupModal(popupId.c_str(), &m_openTexPopup, ImGuiWindowFlags_NoCollapse))
-    {
-        static char filter[128] = "";
-        ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
-
-        auto texList = AssetManager::Instance()->GetCachedTextureNames();
-        ImGui::Text(SJ("テクスチャ数: %d").c_str(), (int)texList.size());
-        ImGui::Separator();
-
-        ImGui::BeginChild("TexList", ImVec2(0, 280), true);
-        for (int i = 0; i < (int)texList.size(); ++i) {
-            const std::string& name = texList[i];
-            if (filter[0] && name.find(filter) == std::string::npos) continue;
-
-            bool select = false;
-            if (ImGui::Selectable(name.c_str(), select)) {
-                // 選択で即適用
-                m_materials[materialIndex].texName = name;
-                m_materials[materialIndex].tex.reset(); // 再ロードさせる
-                m_openTexPopup = false;
-                ImGui::CloseCurrentPopup();
-            }
-        }
-        ImGui::EndChild();
-
-        if (ImGui::Button(SJ("閉じる").c_str(), ImVec2(80, 0))) {
-            m_openTexPopup = false;
-            ImGui::CloseCurrentPopup();
-        }
         ImGui::EndPopup();
     }
 }

@@ -16,6 +16,7 @@ public:
     void UnInit();
     void GarbageCollect();
     void DrawDebugGUI();
+
 private:
     ModelManager() = default;
     std::shared_ptr<ModelSharedResource> LoadInternal(const std::string& logicalName);
@@ -33,7 +34,6 @@ private:
     void ProcessMaterials(const aiScene* scene,
         std::shared_ptr<ModelSharedResource> shared);
 
-    // 修正: 重複追加禁止 / 親インデックス設定のみ
     void ProcessBonesFinalizeHierarchy(const aiScene* scene,
         std::shared_ptr<ModelSharedResource> shared);
 

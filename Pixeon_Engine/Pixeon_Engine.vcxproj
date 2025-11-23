@@ -137,6 +137,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationComponent.h" />
+    <ClInclude Include="AnimationDebug.h" />
     <ClInclude Include="API.h" />
     <ClInclude Include="ApplicationFeedbackSystem.h" />
     <ClInclude Include="ArchiveFormat.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IScript.h" />
     <ClInclude Include="LightComponent.h" />
+    <ClInclude Include="MatrixUtil.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
     <ClInclude Include="Object.h" />
@@ -185,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="AnimationDebug.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="ApplicationFeedbackSystem.cpp" />
     <ClCompile Include="AssetManager.cpp" />

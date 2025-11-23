@@ -6,6 +6,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
+// テクスチャ共有リソース
 struct TextureResource {
     std::string name;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
@@ -30,12 +31,17 @@ struct MaterialShared {
     float roughness = 0.8f;
 };
 
+// ------------------------------------------------------------
+// Bone.offset : InverseBindPose (aiBone::mOffsetMatrix そのまま)
+// Bone.invOffset : BindPose = inverse(InverseBindPose)
+// nodeIndex : アニメ用ノード階層(clip.nodeHierarchy)上の index
+// ------------------------------------------------------------
 struct Bone {
     std::string name;
     int parentIndex = -1;
-    int nodeIndex = -1;         // ★ 追加: ノード階層上の index
-    DirectX::XMMATRIX offset;     // InverseBindPose(aiBone::mOffsetMatrix)
-    DirectX::XMMATRIX invOffset;  // BindPose(必要なら保持。未使用なら省略可)
+    int nodeIndex = -1;
+    DirectX::XMMATRIX offset;     // InverseBindPose
+    DirectX::XMMATRIX invOffset;  // BindPose = inverse(offset)
 };
 
 struct AnimationChannel {

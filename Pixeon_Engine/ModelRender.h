@@ -45,7 +45,6 @@ public:
     void SaveToFile(std::ostream& out) override;
     void LoadFromFile(std::istream& in) override;
 
-
     void SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices);
     const std::vector<DirectX::XMFLOAT4X4>& GetBoneMatrices() const { return m_boneMatrices; }
     bool HasBoneMatrices() const { return !m_boneMatrices.empty(); }

@@ -179,6 +179,9 @@
     <ClCompile Include="AnimationComponent.cpp">
       <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationDebug.cpp">
+      <Filter>ソース ファイル\Sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -317,6 +320,12 @@
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
     <ClInclude Include="WeightFix.h">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationDebug.h">
+      <Filter>ソース ファイル\Sys</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixUtil.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
   </ItemGroup>

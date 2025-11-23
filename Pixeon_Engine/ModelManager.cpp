@@ -1,4 +1,5 @@
 #define NOMINMAX
+#include "AnimationDebug.h"
 #include "ModelManager.h"
 #include "AssetManager.h"
 #include "System.h"
@@ -14,6 +15,7 @@
 #include <algorithm>
 #include "BoneNodeMapping.h"
 #include <functional>
+#include "MatrixUtil.h"
 
 #if _MSC_VER >= 1930
 #ifdef _DEBUG
@@ -145,15 +147,14 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
     shared->gpuBytes = vertices.size() * sizeof(ModelVertex) + indices.size() * sizeof(uint32_t);
 
     ProcessMaterials(scene, shared);
-    // 先にアニメーション生成
     ProcessAnimations(scene, shared);
-    // その後に骨階層最終化（親 index & nodeIndex）
     ProcessBonesFinalizeHierarchy(scene, shared);
-    // 追加の nodeIndex 再マップ（保険）
     MapBonesToNodes(*shared);
-
+    QuickIntegrityReport(shared.get());
+    DumpBoneChannelMapping(shared.get());
+    RebindBoneNodeIndices(shared.get());
+    QuickIntegrityReport(shared.get());
 #ifdef _DEBUG
-    // ログ: nodeIndex が無い骨数
     int missing = 0;
     for (auto& b : shared->bones) if (b.nodeIndex < 0) ++missing;
     EditrGUI::GetInstance()->WriteLog("[ModelManager] LoadInternal bone missing nodeIndex=" + std::to_string(missing));
@@ -183,9 +184,11 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
     sm.indexOffset = (uint32_t)indices.size();
     sm.materialIndex = mesh->mMaterialIndex;
     sm.skinned = mesh->HasBones();
+    if (sm.skinned) {
+        shared->hasSkin = true;
+    }
     uint32_t vtxOffset = (uint32_t)vertices.size();
 
-    // 既存ボーン名 -> インデックス
     std::unordered_map<std::string, int> boneMap;
     for (size_t i = 0; i < shared->bones.size(); ++i)
         boneMap[shared->bones[i].name] = (int)i;
@@ -204,29 +207,12 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
                 boneMap[bname] = boneIndex;
                 Bone newBone;
                 newBone.name = bname;
-                // InverseBindPose
-                aiMatrix4x4& m = ab->mOffsetMatrix;
-                newBone.offset = DirectX::XMMatrixSet(
-                    m.a1, m.b1, m.c1, m.d1,
-                    m.a2, m.b2, m.c2, m.d2,
-                    m.a3, m.b3, m.c3, m.d3,
-                    m.a4, m.b4, m.c4, m.d4
-                );
-                // 必要ならスケール/反転（現在は loadScale=1, zFlip=false）
-                float loadScale = 1.0f;
-                bool  zFlip = false;
-                if (loadScale != 1.0f) {
-                    newBone.offset.r[3].m128_f32[0] *= loadScale;
-                    newBone.offset.r[3].m128_f32[1] *= loadScale;
-                    newBone.offset.r[3].m128_f32[2] *= loadScale;
-                }
-                if (zFlip) {
-                    DirectX::XMMATRIX flip = DirectX::XMMatrixScaling(-1.f, 1.f, 1.f);
-                    newBone.offset = flip * newBone.offset;
-                }
+                // InverseBindPose 正しい行(row)順変換
+                newBone.offset = AssimpToXM_RowMajor(ab->mOffsetMatrix);
+                // 必要なら座標スケール / 反転処理ここで (現状不要)
                 newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
                 newBone.parentIndex = -1;
-                newBone.nodeIndex = -1; // クリップ階層生成後に確定
+                newBone.nodeIndex = -1;
                 shared->bones.push_back(newBone);
             }
             else {
@@ -241,7 +227,6 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
         }
     }
 
-    // 頂点生成
     for (uint32_t v = 0; v < mesh->mNumVertices; ++v) {
         ModelVertex mv{};
         mv.position[0] = mesh->mVertices[v].x;
@@ -262,11 +247,15 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
             mv.uv[0] = mesh->mTextureCoords[0][v].x;
             mv.uv[1] = mesh->mTextureCoords[0][v].y;
         }
-        for (int k = 0; k < 4; ++k) { mv.boneIndices[k] = 0; mv.boneWeights[k] = 0.0f; }
+        for (int k = 0; k < 4; ++k) {
+            mv.boneIndices[k] = 0;
+            mv.boneWeights[k] = 0.0f;
+        }
 
         if (!tmp[v].w.empty()) {
             auto& arr = tmp[v].w;
-            std::sort(arr.begin(), arr.end(), [](auto& a, auto& b) {return a.second > b.second; });
+            std::sort(arr.begin(), arr.end(),
+                [](auto& a, auto& b) {return a.second > b.second; });
             int count = std::min<int>(4, (int)arr.size());
             float total = 0.f;
             for (int k = 0; k < count; ++k) {
@@ -282,14 +271,12 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
         vertices.push_back(mv);
     }
 
-    // インデックス
     for (uint32_t f = 0; f < mesh->mNumFaces; ++f) {
         aiFace face = mesh->mFaces[f];
         for (uint32_t j = 0; j < face.mNumIndices; ++j)
             indices.push_back(vtxOffset + face.mIndices[j]);
     }
 
-    // UV状況
     bool anyUV = mesh->mTextureCoords[0] != nullptr;
     bool allZero = true;
     if (anyUV) {
@@ -321,7 +308,6 @@ void ModelManager::ProcessMaterials(const aiScene* scene,
     }
 }
 
-// ★ これが不足していたためリンクエラー
 std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath) {
     if (rawPath.empty()) return {};
     if (rawPath[0] == '*') {
@@ -330,7 +316,6 @@ std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, co
     }
     std::string norm = MM_NormalizePath(rawPath);
 
-    // 絶対パスならファイル名のみ (Assimp が絶対パスを吐くケースの簡易対処)
     {
         std::filesystem::path p(norm);
         if (p.is_absolute()) norm = p.filename().generic_string();
@@ -365,16 +350,11 @@ std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, co
             return c;
         }
     }
-    // 見つからない場合はログのみ
-    ErrorLogger::Instance().LogError("ModelManager", "Texture not found: " + rawPath + " (tried " + std::to_string(uniq.size()) + " paths)", false, 3);
+    ErrorLogger::Instance().LogError("ModelManager",
+        "Texture not found: " + rawPath + " (tried " + std::to_string(uniq.size()) + " paths)", false, 3);
     return {};
 }
 
-// 修正後: ProcessBonesFinalizeHierarchy
-// 関数: ProcessBonesFinalizeHierarchy
-// 目的: nodeIndex 設定は clips が存在する場合のみ
-// 修正ポイント:
-// - clips 空なら nodeIndex 設定をスキップ
 void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
     std::shared_ptr<ModelSharedResource> shared)
 {
@@ -402,7 +382,6 @@ void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
             auto bit = boneIndexMap.find(pit->second);
             b.parentIndex = (bit != boneIndexMap.end()) ? bit->second : -1;
         }
-        // nodeIndex は後段 (ProcessAnimations 後) に設定する方針
         if (shared->clips.empty()) {
             b.nodeIndex = -1;
         }
@@ -412,7 +391,6 @@ void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
 #endif
 }
 
-// --- 修正対象: ProcessAnimations （末尾に MapBonesToNodes 呼び出しを追加） ---
 void ModelManager::ProcessAnimations(const aiScene* scene,
     std::shared_ptr<ModelSharedResource> shared)
 {
@@ -433,7 +411,6 @@ void ModelManager::ProcessAnimations(const aiScene* scene,
             ac.nodeName = na->mNodeName.C_Str();
             auto it = nodeMap.find(ac.nodeName);
             ac.nodeIndex = (it != nodeMap.end()) ? it->second : -1;
-            // position keys
             for (uint32_t k = 0; k < na->mNumPositionKeys; ++k) {
                 float t = (float)(na->mPositionKeys[k].mTime / clip.tps);
                 ac.positionKeys.push_back({ t,{
@@ -441,7 +418,6 @@ void ModelManager::ProcessAnimations(const aiScene* scene,
                     na->mPositionKeys[k].mValue.y,
                     na->mPositionKeys[k].mValue.z } });
             }
-            // rotation keys
             for (uint32_t k = 0; k < na->mNumRotationKeys; ++k) {
                 float t = (float)(na->mRotationKeys[k].mTime / clip.tps);
                 ac.rotationKeys.push_back({ t,{
@@ -450,7 +426,6 @@ void ModelManager::ProcessAnimations(const aiScene* scene,
                     na->mRotationKeys[k].mValue.z,
                     na->mRotationKeys[k].mValue.w } });
             }
-            // scale keys
             for (uint32_t k = 0; k < na->mNumScalingKeys; ++k) {
                 float t = (float)(na->mScalingKeys[k].mTime / clip.tps);
                 ac.scaleKeys.push_back({ t,{
@@ -462,8 +437,6 @@ void ModelManager::ProcessAnimations(const aiScene* scene,
         }
         shared->clips.push_back(clip);
     }
-
-    // ★ 追加: クリップ階層が揃った後で bone.nodeIndex を一括確定
     MapBonesToNodes(*shared);
 }
 
@@ -474,13 +447,8 @@ void ModelManager::BuildNodeHierarchy(aiNode* node,
     AnimationClip::NodeInfo ni;
     ni.name = node->mName.C_Str();
     ni.parentIndex = parentIndex;
-    aiMatrix4x4& t = node->mTransformation;
-    ni.localTransform = DirectX::XMMatrixSet(
-        t.a1, t.b1, t.c1, t.d1,
-        t.a2, t.b2, t.c2, t.d2,
-        t.a3, t.b3, t.c3, t.d3,
-        t.a4, t.b4, t.c4, t.d4
-    );
+    // 行順で変換（旧コードは転置ミス）
+    ni.localTransform = AssimpToXM_RowMajor(node->mTransformation);
     int current = (int)clip.nodeHierarchy.size();
     nodeNameToIndex[ni.name] = current;
     clip.nodeHierarchy.push_back(ni);
