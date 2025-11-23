@@ -1,60 +1,102 @@
 #pragma once
-#include "AssetTypes.h"
-#include <unordered_map>
-#include <memory>
-#include <mutex>
+#include <string>
+#include <vector>
 #include <map>
-#include <assimp/Importer.hpp>
+#include <memory>
+#include <DirectXMath.h>
+#include <wrl/client.h>
 #include <assimp/scene.h>
+#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-class ModelManager {
+
+struct NodeInfo {
+    std::string name;
+    int parentIndex;
+    DirectX::XMMATRIX bindLocal;
+    std::vector<int> children;
+};
+
+struct BoneInfo {
+    std::string name;
+    int nodeIndex;
+    int parentIndex;
+    DirectX::XMMATRIX invBind;
+};
+
+struct AnimeTransform {
+    DirectX::XMFLOAT3 translation;
+    DirectX::XMFLOAT4 rotation;
+    DirectX::XMFLOAT3 scale;
+};
+
+struct AnimationChannel {
+    int nodeIndex;
+    std::map<float, AnimeTransform> timeline;
+};
+
+struct AnimationClip {
+    std::string name;
+    float durationSeconds;
+    float ticksPerSecond;
+    std::vector<AnimationChannel> channels;
+    std::vector<NodeInfo> nodesCopy;
+};
+
+struct ModelVertexNew {
+    float position[3];
+    float normal[3];
+    float uv[2];
+    unsigned int boneIndices[4];
+    float boneWeights[4];
+};
+
+struct SubMeshNew {
+    uint32_t indexOffset;
+    uint32_t indexCount;
+    uint32_t materialIndex;
+    bool skinned;
+};
+
+struct MaterialNew {
+    DirectX::XMFLOAT4 baseColor;
+    std::string baseColorTex;
+};
+
+struct ModelSharedResourceNew {
+    std::string source;
+    std::vector<NodeInfo> nodes;
+    std::vector<BoneInfo> bones;
+    std::vector<AnimationClip> clips;
+    std::vector<SubMeshNew> submeshes;
+    std::vector<MaterialNew> materials;
+
+    Microsoft::WRL::ComPtr<ID3D11Buffer> vb;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> ib;
+    uint32_t vertexCount = 0;
+    uint32_t indexCount = 0;
+};
+
+class ModelManagerRebuild {
 public:
-    static ModelManager* Instance();
-    static void DeleteInstance();
-    std::shared_ptr<ModelSharedResource> LoadOrGet(const std::string& logicalName);
-    void UnInit();
-    void GarbageCollect();
-    void DrawDebugGUI();
+    static ModelManagerRebuild* Instance();
+    std::shared_ptr<ModelSharedResourceNew> Load(const std::string& logicalName);
+
 private:
-    ModelManager() = default;
-    std::shared_ptr<ModelSharedResource> LoadInternal(const std::string& logicalName);
-
-    void ProcessNode(aiNode* node, const aiScene* scene,
-        std::vector<ModelVertex>& vertices,
-        std::vector<uint32_t>& indices,
-        std::shared_ptr<ModelSharedResource> shared);
-
+    void BuildNodeHierarchy(aiNode* node, int parent, std::vector<NodeInfo>& nodes);
     void ProcessMesh(aiMesh* mesh, const aiScene* scene,
-        std::vector<ModelVertex>& vertices,
+        std::vector<ModelVertexNew>& vertices,
         std::vector<uint32_t>& indices,
-        std::shared_ptr<ModelSharedResource> shared);
-
-    void ProcessMaterials(const aiScene* scene,
-        std::shared_ptr<ModelSharedResource> shared);
-
-    // 修正: 重複追加禁止 / 親インデックス設定のみ
-    void ProcessBonesFinalizeHierarchy(const aiScene* scene,
-        std::shared_ptr<ModelSharedResource> shared);
-
+        std::vector<SubMeshNew>& submeshes,
+        std::vector<BoneInfo>& bones,
+        const std::vector<NodeInfo>& nodes);
     void ProcessAnimations(const aiScene* scene,
-        std::shared_ptr<ModelSharedResource> shared);
+        std::vector<AnimationClip>& clips,
+        const std::vector<NodeInfo>& nodes);
+    AnimeTransform MakeAnimeTransform(aiVector3D t, aiQuaternion q, aiVector3D s);
+    int FindNodeIndex(const std::vector<NodeInfo>& nodes, const std::string& name);
+    void FinalizeBoneParents(std::vector<BoneInfo>& bones);
 
-    void BuildNodeHierarchy(aiNode* node,
-        AnimationClip& clip,
-        std::map<std::string, int>& nodeNameToIndex,
-        int parentIndex);
-
-    std::string ResolveTexturePath(const std::string& modelLogical,
-        const std::string& rawPath);
-
-    struct Entry {
-        std::weak_ptr<ModelSharedResource> weak;
-        uint64_t lastUse = 0;
-        size_t gpuBytes = 0;
-    };
-    std::unordered_map<std::string, Entry> m_cache;
-    uint64_t m_frame = 0;
-    std::mutex m_mtx;
-    static ModelManager* s_instance;
+private:
+    static ModelManagerRebuild* s_inst;
 };
