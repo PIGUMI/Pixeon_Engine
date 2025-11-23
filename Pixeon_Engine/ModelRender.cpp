@@ -350,46 +350,34 @@ void ModelRenderComponent::Draw() {
     }
 }
 
-void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) {
+void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
+{
     static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;
-
     if (!s_boneCB) {
         D3D11_BUFFER_DESC bd{};
         bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         bd.ByteWidth = sizeof(DirectX::XMFLOAT4X4) * 256;
         bd.Usage = D3D11_USAGE_DEFAULT;
-
         auto dev = DirectX11::GetInstance()->GetDevice();
-        HRESULT hr = dev->CreateBuffer(&bd, nullptr, s_boneCB.GetAddressOf());
-        if (FAILED(hr)) {
-            ErrorLogger::Instance().LogError("ModelRenderComponent",
-                "Failed to create bone constant buffer");
+        if (FAILED(dev->CreateBuffer(&bd, nullptr, s_boneCB.GetAddressOf()))) {
+            ErrorLogger::Instance().LogError("ModelRenderComponent", "Bone CB create failed");
             return;
         }
     }
-
-    struct BoneMatrixBuffer {
-        DirectX::XMFLOAT4X4 bones[256];
-    };
-
-    BoneMatrixBuffer boneData;
-    size_t copyCount = std::min(m_boneMatrices.size(), size_t(256));
-
-    for (size_t i = 0; i < copyCount; ++i) {
-        DirectX::XMMATRIX mat = DirectX::XMLoadFloat4x4(&m_boneMatrices[i]);
-        DirectX::XMStoreFloat4x4(&boneData.bones[i], DirectX::XMMatrixTranspose(mat));
+    struct BoneCB { DirectX::XMFLOAT4X4 m[256]; } data;
+    size_t count = std::min(m_boneMatrices.size(), size_t(256));
+    for (size_t i = 0; i < count; ++i) {
+        DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&m_boneMatrices[i]);
+        DirectX::XMStoreFloat4x4(&data.m[i], DirectX::XMMatrixTranspose(M));
     }
+    for (size_t i = count; i < 256; ++i)
+        DirectX::XMStoreFloat4x4(&data.m[i], DirectX::XMMatrixIdentity());
 
-    // Žc‚è‚Í’PˆÊs—ñ‚Å–„‚ß‚é
-    for (size_t i = copyCount; i < 256; ++i) {
-        DirectX::XMStoreFloat4x4(&boneData.bones[i], DirectX::XMMatrixIdentity());
-    }
-
-    ctx->UpdateSubresource(s_boneCB.Get(), 0, nullptr, &boneData, 0, 0);
-
-    ID3D11Buffer* boneCBs[] = { s_boneCB.Get() };
-    ctx->VSSetConstantBuffers(1, 1, boneCBs);
+    ctx->UpdateSubresource(s_boneCB.Get(), 0, nullptr, &data, 0, 0);
+    ID3D11Buffer* cbs[] = { s_boneCB.Get() };
+    ctx->VSSetConstantBuffers(1, 1, cbs);
 }
+
 
 void ModelRenderComponent::SaveToFile(std::ostream& out) {
     out << m_modelPath << "\n";

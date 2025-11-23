@@ -11,6 +11,9 @@
 #include "IMGUI/imgui.h"
 #include <filesystem>
 #include <unordered_set>
+#include <algorithm>
+#include <Windows.h>
+#include <functional>
 
 #if _MSC_VER >= 1930
 #ifdef _DEBUG
@@ -32,9 +35,11 @@
 #endif
 #endif
 
+ModelManager* ModelManager::s_instance = nullptr;
+
 static std::string MM_NormalizePath(std::string s) {
     for (auto& c : s) if (c == '\\') c = '/';
-    while (s.size() && (s[0] == '/' || (s.size() >= 2 && s[0] == '.' && s[1] == '/'))) {
+    while (s.size() && (s[0] == '/' || (s.size() >= 2 && s.rfind("./", 0) == 0))) {
         if (s[0] == '/') s.erase(0, 1);
         else if (s.rfind("./", 0) == 0) s.erase(0, 2);
         else break;
@@ -42,23 +47,17 @@ static std::string MM_NormalizePath(std::string s) {
     return s;
 }
 
-ModelManager* ModelManager::s_instance = nullptr;
-
 ModelManager* ModelManager::Instance() {
-    if (!s_instance) {
-        s_instance = new ModelManager();
-    }
+    if (!s_instance) s_instance = new ModelManager();
     return s_instance;
 }
-
 void ModelManager::DeleteInstance() {
     if (s_instance) {
-		s_instance->UnInit();
+        s_instance->UnInit();
         delete s_instance;
         s_instance = nullptr;
     }
 }
-
 void ModelManager::UnInit() {
     std::lock_guard<std::mutex> lk(m_mtx);
     m_cache.clear();
@@ -68,7 +67,6 @@ void ModelManager::UnInit() {
 std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& logicalName) {
     std::lock_guard<std::mutex> lk(m_mtx);
     m_frame++;
-
     auto it = m_cache.find(logicalName);
     if (it != m_cache.end()) {
         if (auto sp = it->second.weak.lock()) {
@@ -76,13 +74,9 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& 
             return sp;
         }
     }
-
     auto res = LoadInternal(logicalName);
     if (res) {
-        Entry e;
-        e.weak = res;
-        e.lastUse = m_frame;
-        e.gpuBytes = res->gpuBytes;
+        Entry e; e.weak = res; e.lastUse = m_frame; e.gpuBytes = res->gpuBytes;
         m_cache[logicalName] = e;
     }
     return res;
@@ -91,10 +85,9 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& 
 std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::string& logicalName) {
     std::vector<uint8_t> data;
     if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
-		ErrorLogger::Instance().LogError("ModelManager", "Failed to load model asset: " + logicalName);
+        ErrorLogger::Instance().LogError("ModelManager", "Failed load asset: " + logicalName);
         return nullptr;
     }
-
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFileFromMemory(
         data.data(), data.size(),
@@ -108,8 +101,8 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
         aiProcess_FlipUVs);
 
     if (!scene || !scene->mRootNode) {
-        ErrorLogger::Instance().LogError("ModelManager", "Assimp parse failed: " + logicalName + 
-			(importer.GetErrorString()[0] ? (" (" + std::string(importer.GetErrorString()) + ")") : ""));
+        ErrorLogger::Instance().LogError("ModelManager", "Assimp parse failed: " + logicalName +
+            (importer.GetErrorString()[0] ? (" (" + std::string(importer.GetErrorString()) + ")") : ""));
         return nullptr;
     }
 
@@ -121,43 +114,222 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 
     ProcessNode(scene->mRootNode, scene, vertices, indices, shared);
 
-    if (!CreateGPUBuffers(vertices, indices, shared)) {
-		ErrorLogger::Instance().LogError("ModelManager", "GPU buffer creation failed: " + logicalName);
+    auto device = DirectX11::GetInstance()->GetDevice();
+    if (!device) {
+        ErrorLogger::Instance().LogError("ModelManager", "Device null");
         return nullptr;
     }
-
-    ProcessMaterials(scene, shared);
-
-    ProcessBones(scene, shared);
-
-    ProcessAnimations(scene, shared);
-
+    { // VB
+        D3D11_BUFFER_DESC bd{};
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = (UINT)(vertices.size() * sizeof(ModelVertex));
+        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        D3D11_SUBRESOURCE_DATA srd{ vertices.data(),0,0 };
+        if (FAILED(device->CreateBuffer(&bd, &srd, shared->vb.GetAddressOf()))) {
+            ErrorLogger::Instance().LogError("ModelManager", "VB creation failed");
+            return nullptr;
+        }
+    }
+    { // IB
+        D3D11_BUFFER_DESC bd{};
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = (UINT)(indices.size() * sizeof(uint32_t));
+        bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        D3D11_SUBRESOURCE_DATA srd{ indices.data(),0,0 };
+        if (FAILED(device->CreateBuffer(&bd, &srd, shared->ib.GetAddressOf()))) {
+            ErrorLogger::Instance().LogError("ModelManager", "IB creation failed");
+            return nullptr;
+        }
+    }
+    shared->vertexCount = (uint32_t)vertices.size();
+    shared->indexCount = (uint32_t)indices.size();
     shared->gpuBytes = vertices.size() * sizeof(ModelVertex) + indices.size() * sizeof(uint32_t);
 
-	//ErrorLogger::Instance().LogError("ModelManager", "Load OK: " + logicalName, false, 5);
+    ProcessMaterials(scene, shared);
+    ProcessBonesFinalizeHierarchy(scene, shared);
+    ProcessAnimations(scene, shared);
+
     return shared;
 }
 
-std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath){
+void ModelManager::ProcessNode(aiNode* node, const aiScene* scene,
+    std::vector<ModelVertex>& vertices,
+    std::vector<uint32_t>& indices,
+    std::shared_ptr<ModelSharedResource> shared) {
+    for (uint32_t i = 0; i < node->mNumMeshes; ++i) {
+        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+        ProcessMesh(mesh, scene, vertices, indices, shared);
+    }
+    for (uint32_t i = 0; i < node->mNumChildren; ++i)
+        ProcessNode(node->mChildren[i], scene, vertices, indices, shared);
+}
+
+// 修正後: ProcessMesh
+void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
+    std::vector<ModelVertex>& vertices,
+    std::vector<uint32_t>& indices,
+    std::shared_ptr<ModelSharedResource> shared)
+{
+    SubMesh sm;
+    sm.indexOffset = (uint32_t)indices.size();
+    sm.materialIndex = mesh->mMaterialIndex;
+    sm.skinned = mesh->HasBones();
+    uint32_t vtxOffset = (uint32_t)vertices.size();
+
+    // 既存ボーンマップ
+    std::unordered_map<std::string, int> boneMap;
+    for (size_t i = 0; i < shared->bones.size(); ++i)
+        boneMap[shared->bones[i].name] = (int)i;
+
+    struct VtxBoneTmp { std::vector<std::pair<int, float>> weights; };
+    std::vector<VtxBoneTmp> vtxWeights(mesh->mNumVertices);
+
+    if (mesh->HasBones()) {
+        for (uint32_t bi = 0; bi < mesh->mNumBones; ++bi) {
+            aiBone* ab = mesh->mBones[bi];
+            std::string bname = ab->mName.C_Str();
+            int boneIndex = -1;
+            auto it = boneMap.find(bname);
+            if (it == boneMap.end()) {
+                boneIndex = (int)shared->bones.size();
+                boneMap[bname] = boneIndex;
+                Bone newBone;
+                newBone.name = bname;
+
+                aiMatrix4x4& m = ab->mOffsetMatrix;
+                newBone.offset = DirectX::XMMatrixSet(
+                    m.a1, m.b1, m.c1, m.d1,
+                    m.a2, m.b2, m.c2, m.d2,
+                    m.a3, m.b3, m.c3, m.d3,
+                    m.a4, m.b4, m.c4, m.d4
+                );
+
+                // 必要ならロード時スケール・Z反転（例）
+                float loadScale = 1.0f;       // 外部設定があれば取得
+                bool  zFlip = false;      // 外部設定があれば取得
+                if (loadScale != 1.0f) {
+                    newBone.offset.r[3].m128_f32[0] *= loadScale;
+                    newBone.offset.r[3].m128_f32[1] *= loadScale;
+                    newBone.offset.r[3].m128_f32[2] *= loadScale;
+                }
+                if (zFlip) {
+                    DirectX::XMMATRIX flip = DirectX::XMMatrixScaling(-1.f, 1.f, 1.f);
+                    newBone.offset = flip * newBone.offset;
+                }
+
+                newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
+                newBone.parentIndex = -1;
+                newBone.nodeIndex = -1; // 後で確定
+                shared->bones.push_back(newBone);
+            }
+            else {
+                boneIndex = it->second;
+            }
+
+            for (uint32_t w = 0; w < ab->mNumWeights; ++w) {
+                uint32_t vid = ab->mWeights[w].mVertexId;
+                float weight = ab->mWeights[w].mWeight;
+                if (vid < vtxWeights.size())
+                    vtxWeights[vid].weights.push_back({ boneIndex, weight });
+            }
+        }
+    }
+
+    // 頂点追加
+    for (uint32_t v = 0; v < mesh->mNumVertices; ++v) {
+        ModelVertex mv{};
+        mv.position[0] = mesh->mVertices[v].x;
+        mv.position[1] = mesh->mVertices[v].y;
+        mv.position[2] = mesh->mVertices[v].z;
+        if (mesh->HasNormals()) {
+            mv.normal[0] = mesh->mNormals[v].x;
+            mv.normal[1] = mesh->mNormals[v].y;
+            mv.normal[2] = mesh->mNormals[v].z;
+        }
+        if (mesh->mTangents) {
+            mv.tangent[0] = mesh->mTangents[v].x;
+            mv.tangent[1] = mesh->mTangents[v].y;
+            mv.tangent[2] = mesh->mTangents[v].z;
+            mv.tangent[3] = 1.0f;
+        }
+        if (mesh->mTextureCoords[0]) {
+            mv.uv[0] = mesh->mTextureCoords[0][v].x;
+            mv.uv[1] = mesh->mTextureCoords[0][v].y;
+        }
+        for (int k = 0; k < 4; ++k) { mv.boneIndices[k] = 0; mv.boneWeights[k] = 0.0f; }
+
+        if (!vtxWeights[v].weights.empty()) {
+            auto& bw = vtxWeights[v].weights;
+            std::sort(bw.begin(), bw.end(), [](auto& a, auto& b) {return a.second > b.second; });
+            float total = 0.0f;
+            int count = std::min<int>(4, (int)bw.size());
+            for (int k = 0; k < count; ++k) { mv.boneIndices[k] = bw[k].first; mv.boneWeights[k] = bw[k].second; total += bw[k].second; }
+            if (total > 0.0f && fabs(total - 1.0f) > 1e-5f) {
+                for (int k = 0; k < count; ++k) mv.boneWeights[k] /= total;
+            }
+        }
+        vertices.push_back(mv);
+    }
+
+    // インデックス
+    for (uint32_t f = 0; f < mesh->mNumFaces; ++f) {
+        aiFace face = mesh->mFaces[f];
+        for (uint32_t j = 0; j < face.mNumIndices; ++j)
+            indices.push_back(vtxOffset + face.mIndices[j]);
+    }
+
+    bool anyUV = mesh->mTextureCoords[0] != nullptr;
+    bool allZero = true;
+    if (anyUV) {
+        for (uint32_t vv = 0; vv < mesh->mNumVertices; ++vv) {
+            float ux = mesh->mTextureCoords[0][vv].x;
+            float uy = mesh->mTextureCoords[0][vv].y;
+            if (ux != 0.f || uy != 0.f) { allZero = false; break; }
+        }
+    }
+    sm.hasUV = anyUV;
+    sm.uvAllZero = anyUV ? allZero : false;
+    sm.indexCount = (uint32_t)indices.size() - sm.indexOffset;
+    shared->submeshes.push_back(sm);
+}
+
+void ModelManager::ProcessMaterials(const aiScene* scene,
+    std::shared_ptr<ModelSharedResource> shared) {
+    for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
+        aiMaterial* mat = scene->mMaterials[i];
+        MaterialShared ms;
+        aiColor4D col;
+        if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, col))
+            ms.baseColor = { col.r,col.g,col.b,col.a };
+        aiString texPath;
+        if (AI_SUCCESS == mat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath)) {
+            ms.baseColorTex = ResolveTexturePath(shared->source, texPath.C_Str());
+        }
+        shared->materials.push_back(ms);
+    }
+}
+
+// ★ これが不足していたためリンクエラー
+std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath) {
     if (rawPath.empty()) return {};
-    if (rawPath[0] == '*') { 
-		ErrorLogger::Instance().LogError("ModelManager", "Embedded texture unsupported: " + rawPath);
+    if (rawPath[0] == '*') {
+        ErrorLogger::Instance().LogError("ModelManager", "Embedded texture unsupported: " + rawPath);
         return {};
     }
     std::string norm = MM_NormalizePath(rawPath);
 
-   
+    // 絶対パスならファイル名のみ (Assimp が絶対パスを吐くケースの簡易対処)
     {
         std::filesystem::path p(norm);
         if (p.is_absolute()) norm = p.filename().generic_string();
     }
-
 
     std::string modelDir;
     if (auto pos = modelLogical.find_last_of("/\\"); pos != std::string::npos) {
         modelDir = modelLogical.substr(0, pos + 1);
         for (auto& c : modelDir) if (c == '\\') c = '/';
     }
+
     std::string filename = norm;
     if (auto pos = norm.find_last_of('/'); pos != std::string::npos)
         filename = norm.substr(pos + 1);
@@ -181,503 +353,137 @@ std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, co
             return c;
         }
     }
-	ErrorLogger::Instance().LogError("ModelManager", "Texture not found: " + rawPath + " (tried " + std::to_string(uniq.size()) + " paths)", false, 3);
+    // 見つからない場合はログのみ
+    ErrorLogger::Instance().LogError("ModelManager", "Texture not found: " + rawPath + " (tried " + std::to_string(uniq.size()) + " paths)", false, 3);
     return {};
 }
 
-void ModelManager::ProcessNode(aiNode* node, const aiScene* scene,
-    std::vector<ModelVertex>& vertices,
-    std::vector<uint32_t>& indices,
-    std::shared_ptr<ModelSharedResource> shared) {
+// 修正後: ProcessBonesFinalizeHierarchy
+void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
+    std::shared_ptr<ModelSharedResource> shared)
+{
+    if (shared->bones.empty()) return;
 
-    for (uint32_t i = 0; i < node->mNumMeshes; i++) {
-        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        ProcessMesh(mesh, scene, vertices, indices, shared);
-    }
-
-    for (uint32_t i = 0; i < node->mNumChildren; i++) {
-        ProcessNode(node->mChildren[i], scene, vertices, indices, shared);
-    }
-}
-
-void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
-    std::vector<ModelVertex>& vertices,
-    std::vector<uint32_t>& indices,
-    std::shared_ptr<ModelSharedResource> shared) {
-
-    SubMesh subMesh;
-    subMesh.indexOffset = static_cast<uint32_t>(indices.size());
-    subMesh.materialIndex = mesh->mMaterialIndex;
-    subMesh.skinned = mesh->HasBones();
-
-    uint32_t vertexOffset = static_cast<uint32_t>(vertices.size());
-
-    // ========================================
-    // 1. UV チャンネルの決定
-    // ========================================
-    unsigned useUVChannel = 0;
-    if (mesh->GetNumUVChannels() > 1) {
-        float bestArea = -1.0f;
-        for (unsigned ch = 0; ch < mesh->GetNumUVChannels(); ++ch) {
-            if (!mesh->mTextureCoords[ch]) continue;
-            float minU = 1e9f, maxU = -1e9f, minV = 1e9f, maxV = -1e9f;
-            for (uint32_t vi = 0; vi < mesh->mNumVertices; ++vi) {
-                auto& uv = mesh->mTextureCoords[ch][vi];
-                minU = std::min(minU, uv.x);
-                maxU = std::max(maxU, uv.x);
-                minV = std::min(minV, uv.y);
-                maxV = std::max(maxV, uv.y);
-            }
-            float du = maxU - minU;
-            float dv = maxV - minV;
-            float area = du * dv;
-            if (area > bestArea) {
-                bestArea = area;
-                useUVChannel = ch;
-            }
-        }
-        char dbg[128];
-        sprintf_s(dbg, "[ModelManager] Mesh mat=%u select UV channel=%u\n",
-            mesh->mMaterialIndex, useUVChannel);
-        OutputDebugStringA(dbg);
-    }
-
-    // ========================================
-    // 2. ボーンマッピングの構築（メッシュ全体で1回だけ）
-    // ========================================
-    std::map<std::string, int> boneMap;
-    for (size_t i = 0; i < shared->bones.size(); ++i) {
-        boneMap[shared->bones[i].name] = static_cast<int>(i);
-    }
-
-    // ========================================
-    // 3. ボーンウェイト用の一時バッファ
-    // ========================================
-    struct VertexBoneData {
-        std::vector<std::pair<int, float>> weights; // (boneIndex, weight)
-    };
-    std::vector<VertexBoneData> vertexBoneData(mesh->mNumVertices);
-
-    // ========================================
-    // 4. ボーンウェイトの収集（メッシュ全体で1回だけ）
-    // ========================================
-    if (mesh->HasBones()) {
-        for (uint32_t boneIdx = 0; boneIdx < mesh->mNumBones; boneIdx++) {
-            aiBone* bone = mesh->mBones[boneIdx];
-            std::string boneName = bone->mName.C_Str();
-
-            int boneIndex = -1;
-            auto it = boneMap.find(boneName);
-            if (it != boneMap.end()) {
-                boneIndex = it->second;
-            }
-            else {
-                // 新しいボーンを追加
-                boneIndex = static_cast<int>(shared->bones.size());
-                boneMap[boneName] = boneIndex;
-
-                Bone newBone;
-                newBone.name = boneName;
-                newBone.parentIndex = -1;
-
-                aiMatrix4x4& m = bone->mOffsetMatrix;
-                // ⭐正常動作プロジェクトと同じ処理
-                newBone.offset = DirectX::XMMatrixSet(
-                    m.a1, m.b1, m.c1, m.d1,
-                    m.a2, m.b2, m.c2, m.d2,
-                    m.a3, m.b3, m.c3, m.d3,
-                    m.a4, m.b4, m.c4, m.d4
-                );
-                newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
-
-                if (boneIdx < 5) {
-                    char dbg[512];
-                    sprintf_s(dbg, "[ModelManager] Bone[%u]=%s Offset Matrix:\n"
-                        "  [%.4f %.4f %.4f %.4f]\n"
-                        "  [%.4f %.4f %.4f %.4f]\n"
-                        "  [%.4f %.4f %.4f %.4f]\n"
-                        "  [%.4f %.4f %.4f %.4f]\n",
-                        boneIdx, boneName.c_str(),
-                        m.a1, m.b1, m.c1, m.d1,
-                        m.a2, m.b2, m.c2, m.d2,
-                        m.a3, m.b3, m.c3, m.d3,
-                        m.a4, m.b4, m.c4, m.d4);
-					EditrGUI::GetInstance()->WriteLog(dbg);
-				}
-
-                shared->bones.push_back(newBone);
-            }
-
-            // 各頂点にウェイトを設定
-            for (uint32_t weightIdx = 0; weightIdx < bone->mNumWeights; weightIdx++) {
-                uint32_t vertexId = bone->mWeights[weightIdx].mVertexId;
-                float weight = bone->mWeights[weightIdx].mWeight;
-
-                if (vertexId < vertexBoneData.size()) {
-                    vertexBoneData[vertexId].weights.push_back({ boneIndex, weight });
-                }
-            }
-        }
-    }
-
-    // ========================================
-    // 5. 頂点データの構築（ボーンウェイトを含む）
-    // ========================================
-    for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
-        ModelVertex vertex{};
-
-        // 位置
-        vertex.position[0] = mesh->mVertices[i].x;
-        vertex.position[1] = mesh->mVertices[i].y;
-        vertex.position[2] = mesh->mVertices[i].z;
-
-        // 法線
-        if (mesh->HasNormals()) {
-            vertex.normal[0] = mesh->mNormals[i].x;
-            vertex.normal[1] = mesh->mNormals[i].y;
-            vertex.normal[2] = mesh->mNormals[i].z;
-        }
-
-        // タンジェント
-        if (mesh->mTangents) {
-            vertex.tangent[0] = mesh->mTangents[i].x;
-            vertex.tangent[1] = mesh->mTangents[i].y;
-            vertex.tangent[2] = mesh->mTangents[i].z;
-            vertex.tangent[3] = 1.0f;
-        }
-
-        // UV座標
-        if (mesh->mTextureCoords[useUVChannel]) {
-            vertex.uv[0] = mesh->mTextureCoords[useUVChannel][i].x;
-            vertex.uv[1] = mesh->mTextureCoords[useUVChannel][i].y;
-        }
-
-        // ⭐ ボーンウェイトの設定
-        for (int j = 0; j < 4; j++) {
-            vertex.boneIndices[j] = 0;
-            vertex.boneWeights[j] = 0.0f;
-        }
-
-        if (i < vertexBoneData.size() && !vertexBoneData[i].weights.empty()) {
-            auto& boneData = vertexBoneData[i];
-
-            // ウェイトを降順にソート
-            std::sort(boneData.weights.begin(), boneData.weights.end(),
-                [](const auto& a, const auto& b) { return a.second > b.second; });
-
-            // 上位4つのウェイトを設定
-            float totalWeight = 0.0f;
-            int count = std::min(4, static_cast<int>(boneData.weights.size()));
-            for (int j = 0; j < count; j++) {
-                vertex.boneIndices[j] = boneData.weights[j].first;
-                vertex.boneWeights[j] = boneData.weights[j].second;
-                totalWeight += boneData.weights[j].second;
-            }
-
-            // ウェイトの正規化
-            if (totalWeight > 0.0f && totalWeight != 1.0f) {
-                for (int j = 0; j < count; j++) {
-                    vertex.boneWeights[j] /= totalWeight;
-                }
-            }
-        }
-
-        vertices.push_back(vertex);
-    }
-
-    // ========================================
-    // 6. インデックスの構築
-    // ========================================
-    for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
-        aiFace face = mesh->mFaces[i];
-        for (uint32_t j = 0; j < face.mNumIndices; j++) {
-            indices.push_back(vertexOffset + face.mIndices[j]);
-        }
-    }
-
-    // ========================================
-    // 7. UV検証
-    // ========================================
-    bool anyUV = false;
-    bool allZero = true;
-    if (mesh->mTextureCoords[0]) {
-        anyUV = true;
-        for (uint32_t i = 0; i < mesh->mNumVertices; ++i) {
-            float ux = mesh->mTextureCoords[0][i].x;
-            float uy = mesh->mTextureCoords[0][i].y;
-            if (!(ux == 0.0f && uy == 0.0f)) {
-                allZero = false;
-                break;
-            }
-        }
-    }
-
-    subMesh.hasUV = anyUV;
-    subMesh.uvAllZero = anyUV ? allZero : false;
-
-    if (!anyUV) {
-        ErrorLogger::Instance().LogError("ModelManager",
-            "[Mesh mat=" + std::to_string(mesh->mMaterialIndex) + "] UV channel MISSING", false, 3);
-    }
-    else if (allZero) {
-        ErrorLogger::Instance().LogError("ModelManager",
-            "[Mesh mat=" + std::to_string(mesh->mMaterialIndex) + "] UV ALL ZERO", false, 3);
-    }
-
-    // ========================================
-    // 8. SubMeshの登録
-    // ========================================
-    subMesh.indexCount = static_cast<uint32_t>(indices.size()) - subMesh.indexOffset;
-    shared->submeshes.push_back(subMesh);
-
-    // ⭐ デバッグ出力
-    if (mesh->HasBones()) {
-        char dbg[256];
-        sprintf_s(dbg, "[ModelManager] Mesh mat=%u: %u vertices, %u bones processed\n",
-            mesh->mMaterialIndex, mesh->mNumVertices, mesh->mNumBones);
-        OutputDebugStringA(dbg);
-    }
-}
-
-bool ModelManager::CreateGPUBuffers(const std::vector<ModelVertex>& vertices,
-    const std::vector<uint32_t>& indices,
-    std::shared_ptr<ModelSharedResource> shared) {
-
-    auto device = DirectX11::GetInstance()->GetDevice();
-    if (!device) return false;
-
-    D3D11_BUFFER_DESC vbDesc = {};
-    vbDesc.Usage = D3D11_USAGE_DEFAULT;
-    vbDesc.ByteWidth = static_cast<UINT>(vertices.size() * sizeof(ModelVertex));
-    vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA vbData = {};
-    vbData.pSysMem = vertices.data();
-
-    HRESULT hr = device->CreateBuffer(&vbDesc, &vbData, shared->vb.GetAddressOf());
-    if (FAILED(hr)) return false;
-
-    D3D11_BUFFER_DESC ibDesc = {};
-    ibDesc.Usage = D3D11_USAGE_DEFAULT;
-    ibDesc.ByteWidth = static_cast<UINT>(indices.size() * sizeof(uint32_t));
-    ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA ibData = {};
-    ibData.pSysMem = indices.data();
-
-    hr = device->CreateBuffer(&ibDesc, &ibData, shared->ib.GetAddressOf());
-    if (FAILED(hr)) return false;
-
-    shared->vertexCount = static_cast<uint32_t>(vertices.size());
-    shared->indexCount = static_cast<uint32_t>(indices.size());
-
-    return true;
-}
-
-void ModelManager::ProcessMaterials(const aiScene* scene, std::shared_ptr<ModelSharedResource> shared) {
-    for (uint32_t i = 0; i < scene->mNumMaterials; i++) {
-        aiMaterial* mat = scene->mMaterials[i];
-        MaterialShared material;
-
-        aiColor4D color;
-        if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
-            material.baseColor = DirectX::XMFLOAT4(color.r, color.g, color.b, color.a);
-        }
-
-        float metallic, roughness;
-        if (AI_SUCCESS == mat->Get(AI_MATKEY_METALLIC_FACTOR, metallic)) material.metallic = metallic;
-        if (AI_SUCCESS == mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness)) material.roughness = roughness;
-
-        aiString texPath;
-        // 複数のテクスチャタイプを優先順で試行 (DIFFUSE → BASE_COLOR → EMISSIVE → AMBIENT)
-        aiTextureType texTypes[] = { 
-            aiTextureType_DIFFUSE, 
-            aiTextureType_BASE_COLOR, 
-            aiTextureType_EMISSIVE, 
-            aiTextureType_AMBIENT 
+    // 親ノード名マップ（aiNode 再帰）
+    std::unordered_map<std::string, std::string> parentName;
+    std::function<void(aiNode*, aiNode*)> walk = [&](aiNode* n, aiNode* p) {
+        if (!n) return;
+        parentName[n->mName.C_Str()] = p ? p->mName.C_Str() : "";
+        for (uint32_t c = 0; c < n->mNumChildren; ++c)
+            walk(n->mChildren[c], n);
         };
-        
-        bool foundTexture = false;
-        for (aiTextureType texType : texTypes) {
-            if (AI_SUCCESS == mat->GetTexture(texType, 0, &texPath)) {
-                std::string resolved = ResolveTexturePath(shared->source, texPath.C_Str());
-                material.baseColorTex = resolved;
-                foundTexture = true;
-                // デバッグ用: どのテクスチャタイプで見つかったかログ出力
-                OutputDebugStringA(("[ModelManager] Material " + std::to_string(i) + 
-                    " texture found in type " + std::to_string(texType) + 
-                    ": " + resolved + "\n").c_str());
-                break; // 最初に見つかったテクスチャを使用
-            }
-        }
-        
-        if (!foundTexture) {
-            OutputDebugStringA(("[ModelManager] Material " + std::to_string(i) + 
-                " has no texture in any supported type\n").c_str());
-        }
+    walk(scene->mRootNode, nullptr);
 
-        shared->materials.push_back(material);
+    // Bone 名→インデックス
+    std::unordered_map<std::string, int> boneIndexMap;
+    for (int i = 0; i < (int)shared->bones.size(); ++i)
+        boneIndexMap[shared->bones[i].name] = i;
+
+    // 親インデックス設定
+    for (auto& b : shared->bones) {
+        auto pit = parentName.find(b.name);
+        if (pit == parentName.end() || pit->second.empty()) {
+            b.parentIndex = -1;
+            continue;
+        }
+        auto bit = boneIndexMap.find(pit->second);
+        b.parentIndex = (bit != boneIndexMap.end()) ? bit->second : -1;
+    }
+
+    // nodeIndex 設定: AnimationClip が生成済みなら最初のクリップから名前マップ
+    if (!shared->clips.empty()) {
+        // すべてのクリップで同じ階層前提なら 0 番で十分
+        const auto& clip = shared->clips[0];
+        std::unordered_map<std::string, int> nodeNameToIndex;
+        for (int i = 0; i < (int)clip.nodeHierarchy.size(); ++i)
+            nodeNameToIndex[clip.nodeHierarchy[i].name] = i;
+
+        for (auto& b : shared->bones) {
+            auto it = nodeNameToIndex.find(b.name);
+            if (it != nodeNameToIndex.end())
+                b.nodeIndex = it->second;
+            else
+                b.nodeIndex = -1;
+        }
     }
 }
 
-void ModelManager::ProcessBones(const aiScene* scene, std::shared_ptr<ModelSharedResource> shared) {
-    shared->hasSkin = false;
-
-    // ボーンデータを収集
-    std::map<std::string, int> boneMap;
-    std::vector<ModelVertex>* verticesPtr = nullptr; // 実際の頂点データへの参照が必要
-
-    for (uint32_t meshIdx = 0; meshIdx < scene->mNumMeshes; meshIdx++) {
-        aiMesh* mesh = scene->mMeshes[meshIdx];
-
-        if (!mesh->HasBones()) continue;
-
-        shared->hasSkin = true;
-
-        for (uint32_t boneIdx = 0; boneIdx < mesh->mNumBones; boneIdx++) {
-            aiBone* bone = mesh->mBones[boneIdx];
-            std::string boneName = bone->mName.C_Str();
-
-            int boneIndex = -1;
-            auto it = boneMap.find(boneName);
-            if (it == boneMap.end()) {
-                // 新しいボーンを追加
-                boneIndex = static_cast<int>(shared->bones.size());
-                boneMap[boneName] = boneIndex;
-
-                Bone newBone;
-                newBone.name = boneName;
-                newBone.parentIndex = -1; // 後で階層を構築
-
-                // オフセット行列の変換
-                aiMatrix4x4& m = bone->mOffsetMatrix;
-                newBone.offset = DirectX::XMMatrixSet(
-                    m.a1, m.b1, m.c1, m.d1,
-                    m.a2, m.b2, m.c2, m.d2,
-                    m.a3, m.b3, m.c3, m.d3,
-                    m.a4, m.b4, m.c4, m.d4
-                );
-
-                shared->bones.push_back(newBone);
-            }
-            else {
-                boneIndex = it->second;
-            }
-        }
-    }
-
-    // デバッグ出力
-    if (shared->hasSkin) {
-        OutputDebugStringA(("[ModelManager] Loaded " +
-            std::to_string(shared->bones.size()) + " bones\n").c_str());
-    }
-}
-
-void ModelManager::ProcessAnimations(const aiScene* scene, std::shared_ptr<ModelSharedResource> shared) {
+void ModelManager::ProcessAnimations(const aiScene* scene,
+    std::shared_ptr<ModelSharedResource> shared) {
     if (!scene->HasAnimations()) return;
-
-    for (uint32_t i = 0; i < scene->mNumAnimations; i++) {
+    for (uint32_t i = 0; i < scene->mNumAnimations; ++i) {
         aiAnimation* anim = scene->mAnimations[i];
         AnimationClip clip;
-
-        clip.name = anim->mName.length > 0 ? anim->mName.C_Str() : ("Animation_" + std::to_string(i));
+        clip.name = anim->mName.length ? anim->mName.C_Str() : ("Animation_" + std::to_string(i));
         clip.duration = anim->mDuration;
         clip.tps = anim->mTicksPerSecond != 0.0 ? anim->mTicksPerSecond : 25.0;
 
-        // === ⭐ 修正：ノード階層の構築（クリップごとに） ===
-        std::map<std::string, int> nodeNameToIndex;
-        BuildNodeHierarchy(scene->mRootNode, clip, nodeNameToIndex, -1);
+        std::map<std::string, int> nodeMap;
+        BuildNodeHierarchy(scene->mRootNode, clip, nodeMap, -1);
 
-        // チャンネルの処理
-        for (uint32_t ch = 0; ch < anim->mNumChannels; ch++) {
-            aiNodeAnim* nodeAnim = anim->mChannels[ch];
-            AnimationChannel channel;
-
-            channel.nodeName = nodeAnim->mNodeName.C_Str();
-            auto it = nodeNameToIndex.find(channel.nodeName);
-            channel.nodeIndex = (it != nodeNameToIndex.end()) ? it->second : -1;
-
-            // Position keys
-            for (uint32_t k = 0; k < nodeAnim->mNumPositionKeys; k++) {
-                float time = static_cast<float>(nodeAnim->mPositionKeys[k].mTime / clip.tps);
-                DirectX::XMFLOAT3 pos(
-                    nodeAnim->mPositionKeys[k].mValue.x,
-                    nodeAnim->mPositionKeys[k].mValue.y,
-                    nodeAnim->mPositionKeys[k].mValue.z
-                );
-                channel.positionKeys.push_back({ time, pos });
+        for (uint32_t ch = 0; ch < anim->mNumChannels; ++ch) {
+            aiNodeAnim* na = anim->mChannels[ch];
+            AnimationChannel ac;
+            ac.nodeName = na->mNodeName.C_Str();
+            auto it = nodeMap.find(ac.nodeName);
+            ac.nodeIndex = (it != nodeMap.end()) ? it->second : -1;
+            // position
+            for (uint32_t k = 0; k < na->mNumPositionKeys; ++k) {
+                float t = (float)(na->mPositionKeys[k].mTime / clip.tps);
+                ac.positionKeys.push_back({ t,{ na->mPositionKeys[k].mValue.x,
+                                               na->mPositionKeys[k].mValue.y,
+                                               na->mPositionKeys[k].mValue.z } });
             }
-
-            // Rotation keys
-            for (uint32_t k = 0; k < nodeAnim->mNumRotationKeys; k++) {
-                float time = static_cast<float>(nodeAnim->mRotationKeys[k].mTime / clip.tps);
-                DirectX::XMFLOAT4 rot(
-                    nodeAnim->mRotationKeys[k].mValue.x,
-                    nodeAnim->mRotationKeys[k].mValue.y,
-                    nodeAnim->mRotationKeys[k].mValue.z,
-                    nodeAnim->mRotationKeys[k].mValue.w
-                );
-                channel.rotationKeys.push_back({ time, rot });
+            // rotation
+            for (uint32_t k = 0; k < na->mNumRotationKeys; ++k) {
+                float t = (float)(na->mRotationKeys[k].mTime / clip.tps);
+                ac.rotationKeys.push_back({ t,{ na->mRotationKeys[k].mValue.x,
+                                               na->mRotationKeys[k].mValue.y,
+                                               na->mRotationKeys[k].mValue.z,
+                                               na->mRotationKeys[k].mValue.w } });
             }
-
-            // Scale keys
-            for (uint32_t k = 0; k < nodeAnim->mNumScalingKeys; k++) {
-                float time = static_cast<float>(nodeAnim->mScalingKeys[k].mTime / clip.tps);
-                DirectX::XMFLOAT3 scale(
-                    nodeAnim->mScalingKeys[k].mValue.x,
-                    nodeAnim->mScalingKeys[k].mValue.y,
-                    nodeAnim->mScalingKeys[k].mValue.z
-                );
-                channel.scaleKeys.push_back({ time, scale });
+            // scale
+            for (uint32_t k = 0; k < na->mNumScalingKeys; ++k) {
+                float t = (float)(na->mScalingKeys[k].mTime / clip.tps);
+                ac.scaleKeys.push_back({ t,{ na->mScalingKeys[k].mValue.x,
+                                            na->mScalingKeys[k].mValue.y,
+                                            na->mScalingKeys[k].mValue.z } });
             }
-
-            clip.channels.push_back(channel);
+            clip.channels.push_back(ac);
         }
-
         shared->clips.push_back(clip);
     }
 }
 
-void ModelManager::BuildNodeHierarchy(
-    aiNode* node,
+void ModelManager::BuildNodeHierarchy(aiNode* node,
     AnimationClip& clip,
     std::map<std::string, int>& nodeNameToIndex,
-    int parentIndex)
-{
-    AnimationClip::NodeInfo nodeInfo;
-    nodeInfo.name = node->mName.C_Str();
-    nodeInfo.parentIndex = parentIndex;
-
+    int parentIndex) {
+    AnimationClip::NodeInfo ni;
+    ni.name = node->mName.C_Str();
+    ni.parentIndex = parentIndex;
     aiMatrix4x4& t = node->mTransformation;
-    nodeInfo.localTransform = DirectX::XMMatrixSet(
+    ni.localTransform = DirectX::XMMatrixSet(
         t.a1, t.b1, t.c1, t.d1,
         t.a2, t.b2, t.c2, t.d2,
         t.a3, t.b3, t.c3, t.d3,
         t.a4, t.b4, t.c4, t.d4
     );
-
-    int currentIndex = static_cast<int>(clip.nodeHierarchy.size());
-    nodeNameToIndex[nodeInfo.name] = currentIndex;
-
-    clip.nodeHierarchy.push_back(nodeInfo);
-
-    // 子ノードを再帰的に処理
-    for (uint32_t i = 0; i < node->mNumChildren; i++) {
-        int childIndex = static_cast<int>(clip.nodeHierarchy.size());
-        clip.nodeHierarchy[currentIndex].children.push_back(childIndex);
-        BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, currentIndex);
+    int current = (int)clip.nodeHierarchy.size();
+    nodeNameToIndex[ni.name] = current;
+    clip.nodeHierarchy.push_back(ni);
+    for (uint32_t i = 0; i < node->mNumChildren; ++i) {
+        int childIndex = (int)clip.nodeHierarchy.size();
+        clip.nodeHierarchy[current].children.push_back(childIndex);
+        BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, current);
     }
 }
 
 void ModelManager::GarbageCollect() {
     std::lock_guard<std::mutex> lk(m_mtx);
-    for (auto it = m_cache.begin(); it != m_cache.end(); ) {
-        if (it->second.weak.expired()) {
-            it = m_cache.erase(it);
-        }
-        else {
-            ++it;
-        }
+    for (auto it = m_cache.begin(); it != m_cache.end();) {
+        if (it->second.weak.expired()) it = m_cache.erase(it);
+        else ++it;
     }
 }
 
