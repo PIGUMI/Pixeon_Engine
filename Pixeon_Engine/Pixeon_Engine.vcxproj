@@ -137,6 +137,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationComponent.h" />
+    <ClInclude Include="AnimationComponentV2.h" />
     <ClInclude Include="AnimationDebug.h" />
     <ClInclude Include="API.h" />
     <ClInclude Include="ApplicationFeedbackSystem.h" />
@@ -187,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="AnimationComponentV2.cpp" />
     <ClCompile Include="AnimationDebug.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="ApplicationFeedbackSystem.cpp" />

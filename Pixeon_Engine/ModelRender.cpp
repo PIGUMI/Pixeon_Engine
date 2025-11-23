@@ -301,7 +301,8 @@ void ModelRenderComponent::Draw() {
     ID3D11SamplerState* smp = s_linearSmp.Get();
     ctx->PSSetSamplers(0, 1, &smp);
 
-    if (m_useBoneMatrices && !m_boneMatrices.empty()) {
+    // スキンメッシュの場合は骨行列を送る（AnimationComponent から SetBoneMatrices 済の前提）
+    if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty()) {
         SetupBoneMatricesForShader(ctx);
     }
 
@@ -347,9 +348,6 @@ void ModelRenderComponent::Draw() {
     }
 }
 
-// ボーン行列アップロード: CPU側→転置→VS定数バッファ
-// AnimationComponent 側で final = InverseBindPose * Global を構築している前提。
-// VS 内で頂点は (pos * boneMatrixBlend) 形式ならこの転置が必要（行ベクトル * 列行列式）。
 void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 {
     static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;

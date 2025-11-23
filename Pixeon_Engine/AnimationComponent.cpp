@@ -1,6 +1,6 @@
 ﻿#define NOMINMAX
-#include "AnimationDebug.h"
 #include "AnimationComponent.h"
+#include "AnimationDebug.h"
 #include "ErrorLog.h"
 #include "IMGUI/imgui.h"
 #include <algorithm>
@@ -16,7 +16,7 @@ void AnimationComponent::Init(Object* owner) {
 }
 
 ModelRenderComponent* AnimationComponent::GetRenderer() {
-    return _Parent->GetComponent<ModelRenderComponent>();
+    return _Parent ? _Parent->GetComponent<ModelRenderComponent>() : nullptr;
 }
 std::shared_ptr<ModelSharedResource> AnimationComponent::GetResource() {
     return m_renderer ? ModelManager::Instance()->LoadOrGet(m_renderer->GetModelPath()) : nullptr;
@@ -28,6 +28,7 @@ void AnimationComponent::BeginPlay() {
     m_resource = GetResource();
     if (!m_resource) { ErrorLogger::Instance().LogError("Animation", "Resource null"); return; }
 
+    // クリップ構築（キー統合）
     m_clips.clear();
     for (auto& c : m_resource->clips) {
         AnimationClipRuntime rt;
@@ -46,9 +47,10 @@ void AnimationComponent::BeginPlay() {
 
             for (float t : times) {
                 BoneTransform bt;
-                // 位置
+                // 位置補間
                 if (!ch.positionKeys.empty()) {
-                    auto it = std::lower_bound(ch.positionKeys.begin(), ch.positionKeys.end(),
+                    auto it = std::lower_bound(
+                        ch.positionKeys.begin(), ch.positionKeys.end(),
                         std::pair<float, DirectX::XMFLOAT3>(t, {}),
                         [](auto& a, auto& b) {return a.first < b.first; });
                     if (it == ch.positionKeys.begin()) bt.position = it->second;
@@ -64,9 +66,11 @@ void AnimationComponent::BeginPlay() {
                     }
                 }
                 else bt.position = { 0,0,0 };
-                // 回転
+
+                // 回転補間
                 if (!ch.rotationKeys.empty()) {
-                    auto it = std::lower_bound(ch.rotationKeys.begin(), ch.rotationKeys.end(),
+                    auto it = std::lower_bound(
+                        ch.rotationKeys.begin(), ch.rotationKeys.end(),
                         std::pair<float, DirectX::XMFLOAT4>(t, {}),
                         [](auto& a, auto& b) {return a.first < b.first; });
                     if (it == ch.rotationKeys.begin()) bt.rotation = it->second;
@@ -81,9 +85,11 @@ void AnimationComponent::BeginPlay() {
                     }
                 }
                 else bt.rotation = { 0,0,0,1 };
-                // スケール
+
+                // スケール補間
                 if (!ch.scaleKeys.empty()) {
-                    auto it = std::lower_bound(ch.scaleKeys.begin(), ch.scaleKeys.end(),
+                    auto it = std::lower_bound(
+                        ch.scaleKeys.begin(), ch.scaleKeys.end(),
                         std::pair<float, DirectX::XMFLOAT3>(t, {}),
                         [](auto& a, auto& b) {return a.first < b.first; });
                     if (it == ch.scaleKeys.begin()) bt.scale = it->second;
@@ -107,34 +113,24 @@ void AnimationComponent::BeginPlay() {
         m_clips.push_back(rt);
     }
 
+    // ボーン配列確保
     if (!m_resource->bones.empty()) {
         m_boneMatrices.assign(m_resource->bones.size(), DirectX::XMFLOAT4X4());
         for (auto& m : m_boneMatrices)
             XMStoreFloat4x4(&m, XMMatrixIdentity());
-        m_sourceBlend = m_boneMatrices;
-        m_targetBlend = m_boneMatrices;
     }
 
-    if (m_resource) {
-        // 既存のデバッグ処理
-        QuickIntegrityReport(m_resource.get());
-        DumpBoneChannelMapping(m_resource.get());
-
-        // ボーンのnodeIndexを修正
-        int fixCount = RebindBoneNodeIndices(m_resource.get());
-        if (fixCount > 0) {
-            EditrGUI::GetInstance()->WriteLog("[BeginPlay] Fixed " +
-                std::to_string(fixCount) + " bone mappings");
-        }
-
-        // チャンネルのnodeIndexも修正
-        for (auto& rtClip : m_clips) {
-            RebindChannelNodeIndices(m_resource.get(), rtClip);
-        }
-
-        // 修正後に再度確認
-        QuickIntegrityReport(m_resource.get());
+    // デバッグ処理 (任意残存)
+    QuickIntegrityReport(m_resource.get());
+    DumpBoneChannelMapping(m_resource.get());
+    int fixCount = RebindBoneNodeIndices(m_resource.get());
+    if (fixCount > 0) {
+        EditrGUI::GetInstance()->WriteLog("[BeginPlay] Fixed " + std::to_string(fixCount) + " bone mappings");
     }
+    for (auto& rtClip : m_clips) {
+        RebindChannelNodeIndices(m_resource.get(), rtClip);
+    }
+    QuickIntegrityReport(m_resource.get());
 
     int missing = 0;
     for (auto& b : m_resource->bones) if (b.nodeIndex < 0) ++missing;
@@ -146,10 +142,10 @@ void AnimationComponent::BeginPlay() {
     for (size_t i = 0; i < m_resource->bones.size(); ++i)
         m_nodeToBone[m_resource->bones[i].name] = (int)i;
 
-    // スキンモデルなら VS をスキン用に変更
+    // スキンモデルなら VS を差し替え（ModelRender 側で使う想定）
     if (m_renderer && m_resource->hasSkin) {
-        // モデル描画側で VS 切替が可能ならここでマークする仕組みを別途追加しても良い
-        // （本コードでは ModelRenderComponent に直接 VS 名を設定するメソッドがないためコメントのみ）
+        // ModelRenderComponent の VS 名をスキン用に変更する処理を追加してもよい
+        // （現在は ModelRenderComponent 側のインスペクターで手動設定）
     }
 }
 
@@ -157,10 +153,8 @@ void AnimationComponent::InGameUpdate() {
     if (!m_playing || m_paused) return;
     if (m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return;
 
-    float dt = 0.016f;
-    if (m_blending) UpdateBlend(dt);
-    else UpdateAnimation(dt);
-
+    float dt = 0.016f; // 固定フレーム
+    UpdateAnimation(dt);
     RebuildBoneMatrices();
     ApplyToModel();
 
@@ -181,63 +175,51 @@ void AnimationComponent::UpdateAnimation(float dt) {
     }
 }
 
-void AnimationComponent::UpdateBlend(float dt) {
-    m_blendTimer += dt;
-    float prog = m_blendTimer / m_blendDuration;
-    if (prog >= 1.0f) {
-        m_blending = false;
-        m_currentClip = m_blendTarget;
-        m_blendTimer = 0.0f;
-        m_time = 0.0f;
-    }
-    else {
-        m_time += dt * m_speed;
-        auto& tgt = m_clips[m_blendTarget];
-        if (m_time >= tgt.duration) {
-            if (m_loop) m_time = fmod(m_time, (float)tgt.duration);
-            else m_time = (float)tgt.duration;
-        }
-    }
-}
-
 void AnimationComponent::RebuildBoneMatrices() {
     if (m_boneMatrices.empty()) return;
-
-    if (m_blending) {
-        BuildClipPose(m_currentClip, m_time, m_sourceBlend);
-        BuildClipPose(m_blendTarget, m_time, m_targetBlend);
-        float f = m_blendTimer / m_blendDuration;
-        f = f * f * (3.0f - 2.0f * f); // SmoothStep
-        for (size_t i = 0; i < m_boneMatrices.size(); ++i) {
-            XMMATRIX A = XMLoadFloat4x4(&m_sourceBlend[i]);
-            XMMATRIX B = XMLoadFloat4x4(&m_targetBlend[i]);
-            XMMATRIX R = BlendBoneMatrix(A, B, f);
-            XMStoreFloat4x4(&m_boneMatrices[i], R);
-        }
-    }
-    else {
-        BuildClipPose(m_currentClip, m_time, m_boneMatrices);
-    }
+    BuildClipPose(m_currentClip, m_time, m_boneMatrices);
 }
 
-DirectX::XMMATRIX AnimationComponent::BlendBoneMatrix(const XMMATRIX& A, const XMMATRIX& B, float f) const {
-    XMVECTOR sA, rA, tA;
-    XMMatrixDecompose(&sA, &rA, &tA, A);
-    XMVECTOR sB, rB, tB;
-    XMMatrixDecompose(&sB, &rB, &tB, B);
-
-    XMVECTOR s = XMVectorLerp(sA, sB, f);
-    XMVECTOR t = XMVectorLerp(tA, tB, f);
-    XMVECTOR r = XMQuaternionSlerp(rA, rB, f);
-    r = XMQuaternionNormalize(r);
-
-    return XMMatrixScalingFromVector(s) *
-        XMMatrixRotationQuaternion(r) *
-        XMMatrixTranslationFromVector(t);
+DirectX::XMMATRIX AnimationComponent::BuildMatrix(const BoneTransform& bt) const {
+    XMVECTOR S = XMLoadFloat3(&bt.scale);
+    XMVECTOR R = XMLoadFloat4(&bt.rotation);
+    XMVECTOR P = XMLoadFloat3(&bt.position);
+    R = XMQuaternionNormalize(R);
+    return XMMatrixScalingFromVector(S) * XMMatrixRotationQuaternion(R) * XMMatrixTranslationFromVector(P);
 }
 
-// 最重要修正: final = InverseBindPose * currentGlobal
-// 旧コード: global * offset (列並べ転置ミス込み) → 崩壊
+BoneTransform AnimationComponent::InterpChannel(const AnimationChannelRuntime& ch, float t) const {
+    if (ch.timeline.empty())
+        return { {0,0,0},{0,0,0,1},{1,1,1},true };
+
+    auto it = ch.timeline.lower_bound(t);
+    if (it == ch.timeline.begin()) return it->second;
+    if (it == ch.timeline.end())   return ch.timeline.rbegin()->second;
+
+    auto next = it;
+    auto prev = std::prev(it);
+    float t0 = prev->first;
+    float t1 = next->first;
+    float f = (t - t0) / (t1 - t0);
+    BoneTransform r;
+    // 位置
+    r.position.x = prev->second.position.x + (next->second.position.x - prev->second.position.x) * f;
+    r.position.y = prev->second.position.y + (next->second.position.y - prev->second.position.y) * f;
+    r.position.z = prev->second.position.z + (next->second.position.z - prev->second.position.z) * f;
+    // 回転
+    XMVECTOR qa = XMLoadFloat4(&prev->second.rotation);
+    XMVECTOR qb = XMLoadFloat4(&next->second.rotation);
+    XMVECTOR q = XMQuaternionNormalize(XMQuaternionSlerp(qa, qb, f));
+    XMStoreFloat4(&r.rotation, q);
+    // スケール
+    r.scale.x = prev->second.scale.x + (next->second.scale.x - prev->second.scale.x) * f;
+    r.scale.y = prev->second.scale.y + (next->second.scale.y - prev->second.scale.y) * f;
+    r.scale.z = prev->second.scale.z + (next->second.scale.z - prev->second.scale.z) * f;
+    r.isValid = true;
+    return r;
+}
+
+// 最重要: final = InverseBindPose * currentGlobal
 void AnimationComponent::BuildClipPose(int clipIndex, float time,
     std::vector<DirectX::XMFLOAT4X4>& outFinal)
 {
@@ -258,6 +240,7 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
         local[ch.nodeIndex] = BuildMatrix(bt);
     }
 
+    // 正常プロジェクト互換: globalChild = localChild * globalParent
     std::vector<DirectX::XMMATRIX> global(nodeCount, DirectX::XMMatrixIdentity());
     for (size_t i = 0; i < nodeCount; ++i) {
         int parent = sourceClip.nodeHierarchy[i].parentIndex;
@@ -278,17 +261,8 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
         int nodeIdx = bone.nodeIndex;
         if (nodeIdx < 0 || nodeIdx >= (int)global.size()) continue;
 
-        if (b < 10) {
-            std::string nodeName = (nodeIdx >= 0 && nodeIdx < sourceClip.nodeHierarchy.size())
-                ? sourceClip.nodeHierarchy[nodeIdx].name : "INVALID";
-            EditrGUI::GetInstance()->WriteLog(
-                "[BoneMap] Bone[" + std::to_string(b) + "] " + bone.name +
-                " -> Node[" + std::to_string(nodeIdx) + "] " + nodeName);
-        }
-
-        // 正式な LBS 式: currentGlobal * InverseBindPose
-        DirectX::XMMATRIX finalMat =  bone.offset * global[nodeIdx];
-
+        // InverseBindPose (offset) * CurrentGlobal
+        DirectX::XMMATRIX finalMat = bone.offset * global[nodeIdx];
         if (IsValidMatrix(finalMat)) {
             XMStoreFloat4x4(&outFinal[b], finalMat);
             ++applied;
@@ -310,42 +284,6 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
                 "[BuildClipPose] clip=" + clipRuntime.name + " appliedBones=0");
         }
     }
-}
-
-BoneTransform AnimationComponent::InterpChannel(const AnimationChannelRuntime& ch, float t) const {
-    if (ch.timeline.empty())
-        return { {0,0,0},{0,0,0,1},{1,1,1},true };
-
-    auto it = ch.timeline.lower_bound(t);
-    if (it == ch.timeline.begin()) return it->second;
-    if (it == ch.timeline.end())   return ch.timeline.rbegin()->second;
-
-    auto next = it;
-    auto prev = std::prev(it);
-    float t0 = prev->first;
-    float t1 = next->first;
-    float f = (t - t0) / (t1 - t0);
-    BoneTransform r;
-    r.position.x = prev->second.position.x + (next->second.position.x - prev->second.position.x) * f;
-    r.position.y = prev->second.position.y + (next->second.position.y - prev->second.position.y) * f;
-    r.position.z = prev->second.position.z + (next->second.position.z - prev->second.position.z) * f;
-    XMVECTOR qa = XMLoadFloat4(&prev->second.rotation);
-    XMVECTOR qb = XMLoadFloat4(&next->second.rotation);
-    XMVECTOR q = XMQuaternionNormalize(XMQuaternionSlerp(qa, qb, f));
-    XMStoreFloat4(&r.rotation, q);
-    r.scale.x = prev->second.scale.x + (next->second.scale.x - prev->second.scale.x) * f;
-    r.scale.y = prev->second.scale.y + (next->second.scale.y - prev->second.scale.y) * f;
-    r.scale.z = prev->second.scale.z + (next->second.scale.z - prev->second.scale.z) * f;
-    r.isValid = true;
-    return r;
-}
-
-DirectX::XMMATRIX AnimationComponent::BuildMatrix(const BoneTransform& bt) const {
-    XMVECTOR S = XMLoadFloat3(&bt.scale);
-    XMVECTOR R = XMLoadFloat4(&bt.rotation);
-    XMVECTOR P = XMLoadFloat3(&bt.position);
-    R = XMQuaternionNormalize(R);
-    return XMMatrixScalingFromVector(S) * XMMatrixRotationQuaternion(R) * XMMatrixTranslationFromVector(P);
 }
 
 bool AnimationComponent::IsValidMatrix(const XMMATRIX& m) const {
@@ -394,19 +332,6 @@ void AnimationComponent::DrawInspector() {
         if (ImGui::SliderFloat("Scrub", &scrub, 0.0f, dur)) m_time = scrub;
         ImGui::ProgressBar(GetAnimationProgress(), ImVec2(-1, 0));
     }
-
-    const char* bnames[] = { "Instant","Fast","Normal","Smooth","Slow" };
-    int bidx = (int)m_blendMode;
-    if (ImGui::Combo("Blend Mode", &bidx, bnames, 5)) SetBlendMode((BlendMode)bidx);
-    ImGui::SliderFloat("Blend Duration", &m_blendDuration, 0.0f, 2.0f, "%.2f");
-    if (!m_clips.empty() && m_currentClip >= 0) {
-        ImGui::Text("Blend To:");
-        for (int i = 0; i < (int)m_clips.size(); ++i) {
-            if (i == m_currentClip) continue;
-            if (ImGui::Button(m_clips[i].name.c_str()))
-                PlayBlend(i, m_blendDuration);
-        }
-    }
 }
 
 void AnimationComponent::Play() {
@@ -416,24 +341,13 @@ void AnimationComponent::Play() {
 }
 void AnimationComponent::Pause() { m_paused = true; }
 void AnimationComponent::Resume() { m_paused = false; }
-void AnimationComponent::Stop() { m_playing = false; m_paused = false; m_time = 0.f; m_blending = false; }
+void AnimationComponent::Stop() { m_playing = false; m_paused = false; m_time = 0.f; }
 void AnimationComponent::Restart() { m_time = 0.f; m_playing = true; m_paused = false; }
 
 bool AnimationComponent::SetAnimationClip(int clipIndex) {
     if (clipIndex < 0 || clipIndex >= (int)m_clips.size()) return false;
-    m_currentClip = clipIndex; m_time = 0.f; m_blending = false;
+    m_currentClip = clipIndex; m_time = 0.f;
     return true;
-}
-
-void AnimationComponent::SetBlendMode(BlendMode m) {
-    m_blendMode = m;
-    switch (m) {
-    case BlendMode::Instant: m_blendDuration = 0.0f; break;
-    case BlendMode::Fast:    m_blendDuration = 0.1f; break;
-    case BlendMode::Normal:  m_blendDuration = 0.3f; break;
-    case BlendMode::Smooth:  m_blendDuration = 0.5f; break;
-    case BlendMode::Slow:    m_blendDuration = 1.0f; break;
-    }
 }
 
 bool AnimationComponent::IsPlaying() const { return m_playing && !m_paused; }
@@ -448,27 +362,14 @@ float AnimationComponent::GetAnimationProgress() const {
     return d > 0 ? m_time / d : 0.f;
 }
 
-void AnimationComponent::PlayBlend(int targetClip, float duration) {
-    if (targetClip < 0 || targetClip >= (int)m_clips.size()) return;
-    if (targetClip == m_currentClip) return;
-    m_blending = true;
-    m_blendTarget = targetClip;
-    m_blendDuration = duration;
-    m_blendTimer = 0.f;
-    m_sourceBlend = m_boneMatrices;
-}
-
 void AnimationComponent::SaveToFile(std::ostream& out) {
     out << m_currentClip << "\n"
         << (m_loop ? 1 : 0) << "\n"
-        << m_speed << "\n"
-        << (int)m_blendMode << "\n";
+        << m_speed << "\n";
 }
 
 void AnimationComponent::LoadFromFile(std::istream& in) {
     in >> m_currentClip;
     int loop; in >> loop; m_loop = loop != 0;
     in >> m_speed;
-    int bm; in >> bm; m_blendMode = (BlendMode)bm;
-    SetBlendMode(m_blendMode);
 }

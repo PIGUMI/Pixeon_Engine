@@ -182,6 +182,9 @@
     <ClCompile Include="AnimationDebug.cpp">
       <Filter>ソース ファイル\Sys</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationComponentV2.cpp">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -327,6 +330,9 @@
     </ClInclude>
     <ClInclude Include="MatrixUtil.h">
       <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponentV2.h">
+      <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

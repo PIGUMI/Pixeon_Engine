@@ -7,18 +7,21 @@
 #include <string>
 #include <map>
 
+// 単純なキー補間用構造体
 struct BoneTransform {
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT4 rotation;
-    DirectX::XMFLOAT3 scale;
+    DirectX::XMFLOAT3 position{ 0,0,0 };
+    DirectX::XMFLOAT4 rotation{ 0,0,0,1 };
+    DirectX::XMFLOAT3 scale{ 1,1,1 };
     bool isValid = true;
 };
 
+// チャンネル（nodeIndex と 時刻→Transform のマップ）
 struct AnimationChannelRuntime {
     int nodeIndex = -1;
     std::map<float, BoneTransform> timeline;
 };
 
+// クリップランタイム
 struct AnimationClipRuntime {
     std::string name;
     double duration = 0.0;
@@ -29,13 +32,12 @@ struct AnimationClipRuntime {
 
 class AnimationComponent : public Component {
 public:
-    enum class BlendMode { Instant, Fast, Normal, Smooth, Slow };
-
     void Init(Object* owner) override;
     void BeginPlay() override;
     void InGameUpdate() override;
     void DrawInspector() override;
 
+    // 再生制御
     void Play();
     void Pause();
     void Resume();
@@ -45,35 +47,27 @@ public:
     bool SetAnimationClip(int clipIndex);
     void SetPlaybackSpeed(float s) { m_speed = s; }
     void SetLoop(bool b) { m_loop = b; }
-    void SetBlendMode(BlendMode m);
 
     bool IsPlaying() const;
     bool IsPaused()  const;
     bool IsFinished() const;
     float GetAnimationProgress() const;
 
-    void PlayBlend(int targetClip, float duration = 0.3f);
-
     void SaveToFile(std::ostream& out) override;
     void LoadFromFile(std::istream& in) override;
 
 private:
     void UpdateAnimation(float dt);
-    void UpdateBlend(float dt);
     void RebuildBoneMatrices();
     void ApplyToModel();
 
     BoneTransform InterpChannel(const AnimationChannelRuntime& ch, float t) const;
     DirectX::XMMATRIX BuildMatrix(const BoneTransform& bt) const;
 
-    void BuildClipPose(int clipIndex, float time,
-        std::vector<DirectX::XMFLOAT4X4>& outFinal);
+    // 最終ポーズ構築（公式式: final = InverseBindPose * CurrentGlobal）
+    void BuildClipPose(int clipIndex, float time, std::vector<DirectX::XMFLOAT4X4>& outFinal);
 
     bool IsValidMatrix(const DirectX::XMMATRIX& m) const;
-
-    DirectX::XMMATRIX BlendBoneMatrix(const DirectX::XMMATRIX& A,
-        const DirectX::XMMATRIX& B,
-        float f) const;
 
     ModelRenderComponent* GetRenderer();
     std::shared_ptr<ModelSharedResource> GetResource();
@@ -90,15 +84,7 @@ private:
     float m_speed = 1.0f;
     float m_time = 0.0f;
 
-    bool  m_blending = false;
-    int   m_blendTarget = -1;
-    float m_blendTimer = 0.0f;
-    float m_blendDuration = 0.3f;
-    BlendMode m_blendMode = BlendMode::Normal;
-
     std::vector<DirectX::XMFLOAT4X4> m_boneMatrices;
-    std::vector<DirectX::XMFLOAT4X4> m_sourceBlend;
-    std::vector<DirectX::XMFLOAT4X4> m_targetBlend;
 
     std::unordered_map<std::string, int> m_nodeToBone;
 };
