@@ -14,15 +14,15 @@
 
 // ライト用GPU定数バッファ構造体
 struct LightGPU {
-	DirectX::XMFLOAT3 position; 
+	DirectX::XMFLOAT3 position;
 	float intensity;
-	DirectX::XMFLOAT3 direction; 
+	DirectX::XMFLOAT3 direction;
 	float type;      // type: 0=Dir,1=Point,2=Spot
-	DirectX::XMFLOAT3 color;     
+	DirectX::XMFLOAT3 color;
 	float range;
-	float innerCos; 
-	float outerCos; 
-	float enabled; 
+	float innerCos;
+	float outerCos;
+	float enabled;
 	float pad; // 16B アライメント
 };
 
@@ -31,10 +31,10 @@ static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
 // 開放処理
-Scene::~Scene(){
+Scene::~Scene() {
 }
 
-void Scene::Init(){
+void Scene::Init() {
 	// 動的配列の初期化
 	_objects.clear();
 	_ToBeAdded.clear();
@@ -43,7 +43,7 @@ void Scene::Init(){
 	EndPlayCalled = true;
 }
 
-void Scene::BeginPlay(){
+void Scene::BeginPlay() {
 	for (auto& obj : _objects) {
 		if (obj) {
 			Object* cloneObj = obj->Clone();
@@ -52,7 +52,7 @@ void Scene::BeginPlay(){
 	}
 
 	// 物理演算に関するコード
-	
+
 	//
 
 	// BeginPlayを呼び出す
@@ -62,13 +62,13 @@ void Scene::BeginPlay(){
 	EndPlayCalled = false;
 }
 
-void Scene::EditUpdate(){
+void Scene::EditUpdate() {
 	if (!EndPlayCalled)
 	{
 		EndPlayCalled = true;
-		for(auto& obj : _objects)
+		for (auto& obj : _objects)
 		{
-			if(obj) obj->UInit();
+			if (obj) obj->UInit();
 			delete obj;
 		}
 		_objects.clear();
@@ -101,11 +101,11 @@ void Scene::EditUpdate(){
 
 	// カメラコンポーネントの更新
 	int i = 0;
-	for(auto& obj : _objects){
-		if(!obj) continue;
-		for(auto& comp : obj->GetComponents()){
-			if(!comp) continue;
-			if(comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA){
+	for (auto& obj : _objects) {
+		if (!obj) continue;
+		for (auto& comp : obj->GetComponents()) {
+			if (!comp) continue;
+			if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
 				CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
 				cam->SetCameraNumber(i);
 				i++;
@@ -114,14 +114,12 @@ void Scene::EditUpdate(){
 		}
 	}
 
-
-	if(_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
+	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
 	else _MainCameraNumber = -1;
-
 
 	// オブジェクトの更新
 	for (auto& obj : _objects) if (obj)obj->EditUpdate();
-	
+
 	// オブジェクトの削除処理
 	for (auto& obj : _ToBeRemoved) {
 		if (!obj) continue;
@@ -134,7 +132,7 @@ void Scene::EditUpdate(){
 	_ToBeRemoved.clear();
 }
 
-void Scene::PlayUpdate(){
+void Scene::PlayUpdate() {
 	// 非同期追加の処理
 	ProcessThreadSafeAdditions();
 	// オブジェクトの追加処理
@@ -185,7 +183,7 @@ void Scene::Draw() {
 	// オブジェクトの描画
 	std::vector<Object*> sortedList = _objects;
 	if (_MainCamera) {
-			std::sort(sortedList.begin(), sortedList.end(), [this](Object* a, Object* b) {
+		std::sort(sortedList.begin(), sortedList.end(), [this](Object* a, Object* b) {
 			if (!a || !b) return false;
 			// カメラからの距離を計算
 			DirectX::XMFLOAT3 camPos = _MainCamera->GetPosition();
@@ -195,18 +193,17 @@ void Scene::Draw() {
 			float distB = (camPos.x - posB.x) * (camPos.x - posB.x) + (camPos.y - posB.y) * (camPos.y - posB.y) + (camPos.z - posB.z) * (camPos.z - posB.z);
 			// 距離が近い順にソート
 			return distA < distB;
-					});
+			});
 	}
 	for (auto& obj : sortedList) if (obj)obj->Draw();
 }
 
-// シーンの保存　json形式の状態のまま拡張子を.sceneに変更する
-void Scene::SaveToFile(){
+void Scene::SaveToFile() {
 	std::vector<Object*> SaveObjects;
-	if(EngineManager::GetInstance()->IsInGame()){
+	if (EngineManager::GetInstance()->IsInGame()) {
 		SaveObjects = _SaveObjects;
 	}
-	else{
+	else {
 		SaveObjects = _objects;
 	}
 	// 現在時刻の取得
@@ -220,7 +217,7 @@ void Scene::SaveToFile(){
 	SceneData["SceneSettings"]["MainCameraNumber"] = _MainCameraNumber;
 
 	// オブジェクトデータの保存
-	nlohmann::json ObjectArray	= nlohmann::json::array();
+	nlohmann::json ObjectArray = nlohmann::json::array();
 
 	for (const auto& Object : SaveObjects) {
 		if (Object) {
@@ -254,18 +251,18 @@ void Scene::SaveToFile(){
 	std::string File;
 	File = SettingManager::GetInstance()->GetSceneFilePath() + _name + ".scene";
 	std::ofstream outFile(File);
-	if(outFile.is_open()) {
+	if (outFile.is_open()) {
 		outFile << SceneData.dump(4); // インデント幅4で保存
 		outFile.close();
 	}
 }
 
-void Scene::LoadToFile(){
+void Scene::LoadToFile() {
 	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + _name + ".scene";
 	std::ifstream inFile(filePath);
 	if (!inFile.is_open()) {
 		// ファイルが開けなかった場合、falseを返す
-		return ;
+		return;
 	}
 
 	nlohmann::json sceneData;
@@ -294,13 +291,13 @@ void Scene::LoadToFile(){
 			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
 			auto name = compData["Name"].get<std::string>();
 			auto data = compData["Data"].get<std::string>();
-			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj,type);
+			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
 			if (newComp) {
 				newComp->SetComponentName(name);
 				std::istringstream iss(data);
 				newComp->LoadFromFile(iss);
 			}
-			else{
+			else {
 				MessageBox(nullptr, "コンポーネントの追加に失敗しました", "Error", MB_OK);
 			}
 		}
@@ -338,18 +335,18 @@ Object* Scene::FindObjectByName(const char* name)
 	return nullptr;
 }
 
-void Scene::RegisterLight(LightComponent* l){
+void Scene::RegisterLight(LightComponent* l) {
 	if (!l) return;
 	if (std::find(_lights.begin(), _lights.end(), l) == _lights.end())
 		_lights.push_back(l);
 }
 
-void Scene::UnregisterLight(LightComponent* l){
+void Scene::UnregisterLight(LightComponent* l) {
 	auto it = std::remove(_lights.begin(), _lights.end(), l);
 	if (it != _lights.end()) _lights.erase(it, _lights.end());
 }
 
-void Scene::ProcessThreadSafeAdditions(){
+void Scene::ProcessThreadSafeAdditions() {
 	std::lock_guard<std::mutex> lock(_mtx);
 	for (auto& obj : _ToBeAddedBuffer) {
 		if (obj)_ToBeAdded.push_back(obj);
@@ -357,7 +354,7 @@ void Scene::ProcessThreadSafeAdditions(){
 	_ToBeAddedBuffer.clear();
 }
 
-void Scene::UploadLightsToGPU(){
+void Scene::UploadLightsToGPU() {
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	auto ctx = DirectX11::GetInstance()->GetContext();
 	if (!dev || !ctx) return;
@@ -427,19 +424,17 @@ void Scene::UploadLightsToGPU(){
 	ctx->PSSetConstantBuffers(2, 1, cbs2);
 }
 
-// ローカルスレッドでのオブジェクト追加
-void Scene::AddObjectLocal(Object* obj){
+void Scene::AddObjectLocal(Object* obj) {
 	if (obj) {
 		_ToBeAdded.push_back(obj);
 	}
 }
 
-void Scene::RemoveObject(Object* obj){
+void Scene::RemoveObject(Object* obj) {
 	if (!obj) return;
 	_ToBeRemoved.push_back(obj);
 }
 
-// オブジェクトの非同期追加
 bool Scene::AddObject(Object* obj)
 {
 	if (!obj) return false;
@@ -452,6 +447,3 @@ bool Scene::AddObject(Object* obj)
 		}).detach();
 	return true;
 }
-
-
-

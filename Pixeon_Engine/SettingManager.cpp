@@ -25,7 +25,7 @@ void SettingManager::DestroyInstance()
 }
 
 // Configの読み込み
-void SettingManager::LoadConfig(){
+void SettingManager::LoadConfig() {
 	// JSONファイルを読み込む
 	std::ifstream configFile(CONFIG_FILE_PATH);
 	if (!configFile.is_open()) {
@@ -64,7 +64,7 @@ void SettingManager::LoadConfig(){
 	}
 }
 
-void SettingManager::SaveConfig(){
+void SettingManager::SaveConfig() {
 	// 設定項目をJSONオブジェクトに保存
 	nlohmann::json configJson;
 	configJson["AssetsFilePath"] = AssetsFilePath;

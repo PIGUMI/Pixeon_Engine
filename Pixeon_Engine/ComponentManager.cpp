@@ -13,32 +13,31 @@
 
 ComponentManager* ComponentManager::_instance;
 
-ComponentManager* ComponentManager::GetInstance(){
+ComponentManager* ComponentManager::GetInstance() {
 	if (_instance == nullptr) {
 		_instance = new ComponentManager();
 	}
 	return _instance;
 }
 
-void ComponentManager::DestroyInstance(){
+void ComponentManager::DestroyInstance() {
 	if (_instance) {
 		delete _instance;
 		_instance = nullptr;
 	}
 }
 
-void ComponentManager::Init(){
-	_ComponentName[(int)COMPONENT_TYPE::CAMERA]		= "Camera";
-	_ComponentName[(int)COMPONENT_TYPE::GEOMETRY]   = "Geometry";
-	_ComponentName[(int)COMPONENT_TYPE::MODEL]		= "Model";
-	_ComponentName[(int)COMPONENT_TYPE::LIGHT]		= "Light";
-	_ComponentName[(int)COMPONENT_TYPE::IMAGE]		= "ImageRender";
-	_ComponentName[(int)COMPONENT_TYPE::SCRIPT]		= "Script";
+void ComponentManager::Init() {
+	_ComponentName[(int)COMPONENT_TYPE::CAMERA] = "Camera";
+	_ComponentName[(int)COMPONENT_TYPE::GEOMETRY] = "Geometry";
+	_ComponentName[(int)COMPONENT_TYPE::MODEL] = "Model";
+	_ComponentName[(int)COMPONENT_TYPE::LIGHT] = "Light";
+	_ComponentName[(int)COMPONENT_TYPE::IMAGE] = "ImageRender";
+	_ComponentName[(int)COMPONENT_TYPE::SCRIPT] = "Script";
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATION] = "Animation";
 }
 
-Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type){
-
+Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
 	if (!owner) return nullptr;
 
 	Component* component = nullptr;

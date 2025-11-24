@@ -43,7 +43,6 @@ private:
 	void SettingWindow();
 	void ShaderEditorWindow();
 
-
 	void AssetManagerWindow();
 	void TextureManagerWindow();
 	void ModelManagerWindow();
@@ -54,22 +53,21 @@ private:
 	void ShowSceneRenameWindow();
 	void ShowInputDebug();
 
-
-	bool ShowLicense				= false;
-	bool dockNeedsReset				= false;
-	bool ShowSettingsWindow			= false;
-	bool ShowConsoleWindow			= false;
-	bool ShowArchiveWindow			= false;
-	bool ShowExternalToolsWindow	= false;
-	bool ShowShaderEditorWindow		= false;
-	bool ShowShaderListWindow		= false;
-	bool ShowAssetManagerWindow		= false;
-	bool ShowTextureManagerWindow	= false;
-	bool ShowModelManagerWindow		= false;
-	bool ShowSoundManagerWindow		= false;
-	bool ShowSceneCreate			= false;
-	bool ShowSceneRename			= false;
-	bool ShowInPutDebug				= false;
+	bool ShowLicense = false;
+	bool dockNeedsReset = false;
+	bool ShowSettingsWindow = false;
+	bool ShowConsoleWindow = false;
+	bool ShowArchiveWindow = false;
+	bool ShowExternalToolsWindow = false;
+	bool ShowShaderEditorWindow = false;
+	bool ShowShaderListWindow = false;
+	bool ShowAssetManagerWindow = false;
+	bool ShowTextureManagerWindow = false;
+	bool ShowModelManagerWindow = false;
+	bool ShowSoundManagerWindow = false;
+	bool ShowSceneCreate = false;
+	bool ShowSceneRename = false;
+	bool ShowInPutDebug = false;
 
 private:
 	static ID3D11ShaderResourceView* LoadImg(const std::wstring& filename, ID3D11Device* device);
@@ -87,11 +85,10 @@ private:
 	std::string LogBuffer;
 
 private:
-	static EditrGUI*	instance;
-	Object*				SelectedObject = nullptr;
+	static EditrGUI* instance;
+	Object* SelectedObject = nullptr;
 	std::string			SceneRenameNewName_;
 private:
 	EditrGUI() {}
 	~EditrGUI() {}
 };
-

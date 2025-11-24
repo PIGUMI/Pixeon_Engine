@@ -17,4 +17,3 @@ public:
 };
 
 #endif // _ISCRIPT_H_
-

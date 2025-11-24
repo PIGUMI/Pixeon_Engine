@@ -59,9 +59,6 @@
     <ClCompile Include="Object.cpp">
       <Filter>ソース ファイル\BaseClass</Filter>
     </ClCompile>
-    <ClCompile Include="ApplicationFeedbackSystem.cpp">
-      <Filter>ソース ファイル\Other</Filter>
-    </ClCompile>
     <ClCompile Include="StartUp.cpp">
       <Filter>ソース ファイル\App</Filter>
     </ClCompile>
@@ -189,9 +186,6 @@
     </ClInclude>
     <ClInclude Include="Component.h">
       <Filter>ソース ファイル\BaseClass</Filter>
-    </ClInclude>
-    <ClInclude Include="ApplicationFeedbackSystem.h">
-      <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
     <ClInclude Include="System.h">
       <Filter>ソース ファイル\Sys</Filter>

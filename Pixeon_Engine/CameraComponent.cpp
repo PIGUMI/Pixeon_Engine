@@ -5,7 +5,7 @@
 #include "Object.h"
 #include "Scene.h"
 
-void CameraComponent::Init(Object* Prt){
+void CameraComponent::Init(Object* Prt) {
 	_Parent = Prt;
 	_ComponentName = "CameraComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::CAMERA;
@@ -19,27 +19,7 @@ void CameraComponent::Init(Object* Prt){
 	_radius = 10.0f;  // 半径を大きく
 }
 
-void CameraComponent::EditUpdate(){
-
-	if (_IsKeyMove) {
-		// カメラ操作
-	}
-
-	if (_IsChangeCalculation){
-		//　カメラの位置から注視点を計算
-		_Fixation.x = _Position.x - cosf(_Rotation.y) * sinf(_Rotation.x) * _radius;
-		_Fixation.y = _Position.y - sinf(_Rotation.y) * _radius;
-		_Fixation.z = _Position.z - cosf(_Rotation.y) * cosf(_Rotation.x) * _radius;
-	}
-	else {
-		//　注視点からカメラの位置を計算
-		_Position.x = cosf(_Rotation.y) * sinf(_Rotation.x) * _radius + _Fixation.x;
-		_Position.y = sinf(_Rotation.y) * _radius + _Fixation.y;
-		_Position.z = cosf(_Rotation.y) * cosf(_Rotation.x) * _radius + _Fixation.z;
-	}
-}
-
-void CameraComponent::InGameUpdate(){
+void CameraComponent::EditUpdate() {
 	if (_IsKeyMove) {
 		// カメラ操作
 	}
@@ -58,7 +38,26 @@ void CameraComponent::InGameUpdate(){
 	}
 }
 
-void CameraComponent::DrawInspector(){
+void CameraComponent::InGameUpdate() {
+	if (_IsKeyMove) {
+		// カメラ操作
+	}
+
+	if (_IsChangeCalculation) {
+		//　カメラの位置から注視点を計算
+		_Fixation.x = _Position.x - cosf(_Rotation.y) * sinf(_Rotation.x) * _radius;
+		_Fixation.y = _Position.y - sinf(_Rotation.y) * _radius;
+		_Fixation.z = _Position.z - cosf(_Rotation.y) * cosf(_Rotation.x) * _radius;
+	}
+	else {
+		//　注視点からカメラの位置を計算
+		_Position.x = cosf(_Rotation.y) * sinf(_Rotation.x) * _radius + _Fixation.x;
+		_Position.y = sinf(_Rotation.y) * _radius + _Fixation.y;
+		_Position.z = cosf(_Rotation.y) * cosf(_Rotation.x) * _radius + _Fixation.z;
+	}
+}
+
+void CameraComponent::DrawInspector() {
 	std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
 	std::string Ptr = std::to_string((uintptr_t)this);
 	label += "###" + Ptr;
@@ -127,7 +126,7 @@ void CameraComponent::DrawInspector(){
 	}
 }
 
-void CameraComponent::SaveToFile(std::ostream& out){
+void CameraComponent::SaveToFile(std::ostream& out) {
 	out << _Position.x << " " << _Position.y << " " << _Position.z << " ";
 	out << _Rotation.x << " " << _Rotation.y << " " << _Rotation.z << " ";
 	out << _Fixation.x << " " << _Fixation.y << " " << _Fixation.z << " ";
@@ -139,7 +138,7 @@ void CameraComponent::SaveToFile(std::ostream& out){
 	out << _CameraNumber << " ";
 }
 
-void CameraComponent::LoadFromFile(std::istream& in){
+void CameraComponent::LoadFromFile(std::istream& in) {
 	in >> _Position.x >> _Position.y >> _Position.z;
 	in >> _Rotation.x >> _Rotation.y >> _Rotation.z;
 	in >> _Fixation.x >> _Fixation.y >> _Fixation.z;
@@ -151,7 +150,7 @@ void CameraComponent::LoadFromFile(std::istream& in){
 	in >> _CameraNumber;
 }
 
-DirectX::XMFLOAT4X4 CameraComponent::GetViewMatrix(bool transpose){
+DirectX::XMFLOAT4X4 CameraComponent::GetViewMatrix(bool transpose) {
 	DirectX::XMFLOAT4X4 Mat;
 	DirectX::XMMATRIX View;
 
@@ -166,31 +165,31 @@ DirectX::XMFLOAT4X4 CameraComponent::GetViewMatrix(bool transpose){
 	return Mat;
 }
 
-DirectX::XMFLOAT4X4 CameraComponent::GetProjectionMatrix(bool transpose){
+DirectX::XMFLOAT4X4 CameraComponent::GetProjectionMatrix(bool transpose) {
 	DirectX::XMFLOAT4X4 Mat;
 	DirectX::XMMATRIX Proj;
 
-	Proj = DirectX::XMMatrixPerspectiveFovLH(_FOV,_AspectRatio,_NearPlane,_FarPlane);
+	Proj = DirectX::XMMatrixPerspectiveFovLH(_FOV, _AspectRatio, _NearPlane, _FarPlane);
 
 	if (transpose) Proj = DirectX::XMMatrixTranspose(Proj);
 	DirectX::XMStoreFloat4x4(&Mat, Proj);
 	return Mat;
 }
 
-DirectX::XMMATRIX CameraComponent::GetView(){
-	DirectX::XMVECTOR Eye	= DirectX::XMVectorSet(_Position.x,_Position.y, _Position.z, 0.0f);
-	DirectX::XMVECTOR At	= DirectX::XMVectorSet(_Fixation.x, _Fixation.y, _Fixation.z, 0.0f);
-	DirectX::XMVECTOR Up	= DirectX::XMVectorSet(_Up.x, _Up.y, _Up.z, 0.0f);
+DirectX::XMMATRIX CameraComponent::GetView() {
+	DirectX::XMVECTOR Eye = DirectX::XMVectorSet(_Position.x, _Position.y, _Position.z, 0.0f);
+	DirectX::XMVECTOR At = DirectX::XMVectorSet(_Fixation.x, _Fixation.y, _Fixation.z, 0.0f);
+	DirectX::XMVECTOR Up = DirectX::XMVectorSet(_Up.x, _Up.y, _Up.z, 0.0f);
 
 	return DirectX::XMMatrixLookAtLH(Eye, At, Up);
 }
 
-DirectX::XMMATRIX CameraComponent::GetProjection(){
+DirectX::XMMATRIX CameraComponent::GetProjection() {
 	DirectX::XMMATRIX Proj = DirectX::XMMatrixPerspectiveFovLH(_FOV, _AspectRatio, _NearPlane, _FarPlane);
 	return Proj;
 }
 
-DirectX::XMFLOAT3 CameraComponent::GetForwardVector(){
+DirectX::XMFLOAT3 CameraComponent::GetForwardVector() {
 	DirectX::XMFLOAT3 forward;
 	forward.x = cosf(_Rotation.y) * sinf(_Rotation.x);
 	forward.y = sinf(_Rotation.y);
@@ -206,7 +205,7 @@ DirectX::XMFLOAT3 CameraComponent::GetForwardVector(){
 	return forward;
 }
 
-DirectX::XMFLOAT3 CameraComponent::GetRightVector(){
+DirectX::XMFLOAT3 CameraComponent::GetRightVector() {
 	// 上方向はワールドのY軸
 	DirectX::XMFLOAT3 up = _Up;
 	DirectX::XMFLOAT3 forward = GetForwardVector();

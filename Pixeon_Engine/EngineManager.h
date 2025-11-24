@@ -7,12 +7,12 @@
 
 #include <Windows.h>
 #include <d3d11.h>
-#include <string> 
+#include <string>
 #include <vector>
 
 class GameRenderTarget;
 
-class EngineManager{
+class EngineManager {
 public:
 	struct EngineConfig {
 		HWND		wnd;
@@ -52,7 +52,7 @@ private:
 
 	EngineManager() {};
 	~EngineManager() {};
-	
+
 private:
 	static EngineManager* instance_;
 
@@ -63,7 +63,7 @@ private:
 
 	HWND m_hWnd_;
 	GameRenderTarget* m_gameRenderTarget_;
-	// ƒQ[ƒ€’†”»’è	
+	// ƒQ[ƒ€’†”»’è
 	bool m_bInGame_;
 	// GUI•\¦”»’è
 	bool m_bIsShowGUI_;
@@ -71,4 +71,3 @@ private:
 };
 
 #endif // !ENGINE_MANAGER_H
-

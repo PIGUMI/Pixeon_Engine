@@ -8,17 +8,17 @@
 
 class ResourceService {
 public:
-    static ResourceService& Instance();
+	static ResourceService& Instance();
 	static void DeleteInstance();
-    std::shared_ptr<TextureResource> GetTexture(const std::string& name);
-    std::shared_ptr<ModelSharedResource> GetModel(const std::string& name);
-    std::shared_ptr<SoundResource> GetSound(const std::string& name, bool streaming = false);
+	std::shared_ptr<TextureResource> GetTexture(const std::string& name);
+	std::shared_ptr<ModelSharedResource> GetModel(const std::string& name);
+	std::shared_ptr<SoundResource> GetSound(const std::string& name, bool streaming = false);
 
-    // 拡張子から自動ディスパッチ（例: ".fbx" → Model / ".png" → Texture）
-    bool AutoResolve(const std::string& name);
+	// 拡張子から自動ディスパッチ（例: ".fbx" → Model / ".png" → Texture）
+	bool AutoResolve(const std::string& name);
 
 private:
-    ResourceService() = default;
+	ResourceService() = default;
 	static ResourceService* s_instance;
 };
 

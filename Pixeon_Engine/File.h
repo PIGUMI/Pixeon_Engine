@@ -14,5 +14,4 @@ public:
 	static bool RenameFileInDirectory(const std::string& oldName, const std::string& newName);
 };
 
-#endif 
-
+#endif

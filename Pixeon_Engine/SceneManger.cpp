@@ -22,22 +22,22 @@ void SceneManger::DestroyInstance()
 	}
 }
 
-void SceneManger::Init(){
+void SceneManger::Init() {
 	_StartSceneName = "SampleScene";
 	_sceneList = ListSceneFiles();
 	for (const auto& fileName : _sceneList)
 	{
 		std::string sceneName = fileName.substr(0, fileName.find_last_of('.'));
-		if (CreateAndRegisterDefaultScene(sceneName)){
+		if (CreateAndRegisterDefaultScene(sceneName)) {
 		}
-		else{
+		else {
 		}
 	}
 	ChangeScene(_StartSceneName);
 }
 
 // シーン開始
-void SceneManger::BeginPlay(){
+void SceneManger::BeginPlay() {
 	if (_currentScene) {
 		_currentScene->SaveToFile();
 		_currentScene->BeginPlay();
@@ -45,7 +45,7 @@ void SceneManger::BeginPlay(){
 }
 
 // 更新
-void SceneManger::EditUpdate(){
+void SceneManger::EditUpdate() {
 	//// シーンの切り替え
 	if (_nextScene) {
 		if (_currentScene)delete _currentScene;
@@ -67,7 +67,7 @@ void SceneManger::EditUpdate(){
 }
 
 // 更新
-void SceneManger::PlayUpdate(){
+void SceneManger::PlayUpdate() {
 	if (_nextScene) {
 		if (_currentScene)delete _currentScene;
 		_currentScene = _nextScene;
@@ -80,14 +80,14 @@ void SceneManger::PlayUpdate(){
 }
 
 // 描画
-void SceneManger::Draw(){
+void SceneManger::Draw() {
 	if (_currentScene)_currentScene->Draw();
 }
 
 // シーンの変更
-void SceneManger::ChangeScene(std::string SceneName){
+void SceneManger::ChangeScene(std::string SceneName) {
 	auto it = _SceneCreators.find(SceneName);
-	
+
 	if (it != _SceneCreators.end()) {
 		_nextScene = it->second();
 	}
@@ -95,9 +95,8 @@ void SceneManger::ChangeScene(std::string SceneName){
 
 // 新規シーンの作成と登録 作成時にセーブを行う
 bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
-
-	for (const auto& Name : _sceneList){
-		if (Name == SceneName){
+	for (const auto& Name : _sceneList) {
+		if (Name == SceneName) {
 			return false;
 		}
 	}
@@ -106,7 +105,7 @@ bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
 		Scene* newScene = new Scene();
 		newScene->SetName(SceneName);
 		return newScene;
-	});
+		});
 
 	Scene* scene = new Scene();
 	scene->SetName(SceneName);
@@ -135,12 +134,12 @@ bool SceneManger::CreateAndRegisterDefaultScene(std::string SceneName)
 }
 
 // シーンの登録
-void SceneManger::RegisterScene(std::string Name, std::function<Scene* ()> creator){
+void SceneManger::RegisterScene(std::string Name, std::function<Scene* ()> creator) {
 	_SceneCreators[Name] = creator;
 }
 
 // ファイル名の取得
-std::vector<std::string> SceneManger::ListSceneFiles(){
+std::vector<std::string> SceneManger::ListSceneFiles() {
 	std::vector<std::string> sceneFiles;
 	std::string sceneDir = SettingManager::GetInstance()->GetSceneFilePath();
 	std::string searchPath = sceneDir + "\\*.scene";
@@ -149,7 +148,7 @@ std::vector<std::string> SceneManger::ListSceneFiles(){
 
 	if (hFind == INVALID_HANDLE_VALUE) {
 		// シーンファイルが見つからない場合
-		MessageBox(nullptr, "シーンが見つからないため\n自動作成を行います", "Info", MB_OK);	
+		MessageBox(nullptr, "シーンが見つからないため\n自動作成を行います", "Info", MB_OK);
 		if (!CreateAndRegisterScene("SampleScene")) {
 			MessageBox(nullptr, "正常に作成ができませんでした", "Error", MB_OK);
 		}
@@ -170,15 +169,15 @@ SceneManger::SceneManger()
 {
 }
 
-SceneManger::~SceneManger(){
-	if (_currentScene){
+SceneManger::~SceneManger() {
+	if (_currentScene) {
 		delete _currentScene;
 		_currentScene = nullptr;
 	}
 }
 
 // ファイル名の変更
-bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::string& newName){
+bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::string& newName) {
 	std::string oldPath = SettingManager::GetInstance()->GetSceneFilePath() + oldName;
 	std::string newPath = SettingManager::GetInstance()->GetSceneFilePath() + newName;
 	oldPath += ".scene";
@@ -190,8 +189,8 @@ bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::s
 	return true;
 }
 
-void SceneManger::Save(){
-	if (_currentScene){
+void SceneManger::Save() {
+	if (_currentScene) {
 		_currentScene->SaveToFile();
 	}
 	/*  ビルド処理を制作する際に処理を変えてください */
@@ -214,15 +213,14 @@ void SceneManger::Save(){
 	{
 		configFile << configJson.dump(4);
 	}
-
 }
 
-void SceneManger::Load(){
+void SceneManger::Load() {
 	std::string PATH = SettingManager::GetInstance()->GetSceneFilePath();
 	PATH += "SceneConfig.sceneconfig";
 
 	std::ifstream configFile(PATH);
-	if(!configFile.is_open()) {
+	if (!configFile.is_open()) {
 		MessageBox(nullptr, "シーン設定ファイルが見つからないため\nデフォルトのシーンを読み込みます", "Info", MB_OK);
 		_StartSceneName = "SampleScene";
 		return;
