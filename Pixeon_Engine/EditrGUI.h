@@ -26,6 +26,8 @@ public:
 public:
 	std::string ShiftJISToUTF8(const std::string& str);
 	ImTextureID GetAssetIcon(EditrGUI* gui, const std::string& name);
+	void WriteLog(std::string Log);
+	void WriteLogBuffer();
 private:
 	void WindowGUI();
 
@@ -82,6 +84,7 @@ private:
 	ID3D11ShaderResourceView* JsonIcon;
 	ID3D11ShaderResourceView* archiveIcon;
 	ID3D11ShaderResourceView* ExeIcon;
+	std::string LogBuffer;
 
 private:
 	static EditrGUI*	instance;

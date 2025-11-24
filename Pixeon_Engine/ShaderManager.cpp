@@ -202,6 +202,7 @@ ID3D11VertexShader* ShaderManager::GetVertexShader(const std::string& name) {
     auto it = m_vsShaders.find(name);
     return (it != m_vsShaders.end()) ? it->second : nullptr;
 }
+
 ID3D11PixelShader* ShaderManager::GetPixelShader(const std::string& name) {
     auto it = m_psShaders.find(name);
     return (it != m_psShaders.end()) ? it->second : nullptr;

@@ -106,7 +106,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PiexonEngineAPI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PixeonEngine_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -136,16 +136,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationManager.h" />
+    <ClInclude Include="AnimationComponent.h" />
+    <ClInclude Include="AnimationDebug.h" />
     <ClInclude Include="API.h" />
     <ClInclude Include="ApplicationFeedbackSystem.h" />
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
+    <ClInclude Include="BoneNodeMapping.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
-    <ClInclude Include="content_Item.h" />
     <ClInclude Include="EditrGUI.h" />
     <ClInclude Include="EngineManager.h" />
     <ClInclude Include="ErrorLog.h" />
@@ -165,7 +166,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IScript.h" />
     <ClInclude Include="LightComponent.h" />
-    <ClInclude Include="ModelAnimation.h" />
+    <ClInclude Include="MatrixUtil.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
     <ClInclude Include="Object.h" />
@@ -182,15 +183,16 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="WeightFix.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationManager.cpp" />
+    <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="AnimationDebug.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="ApplicationFeedbackSystem.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
-    <ClCompile Include="content_Item.cpp" />
     <ClCompile Include="EditrGUI.cpp" />
     <ClCompile Include="EditrGUI_Content.cpp" />
     <ClCompile Include="EditrGUI_Hierarchy.cpp" />
@@ -212,7 +214,6 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IScript.cpp" />
     <ClCompile Include="LightComponent.cpp" />
-    <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelRender.cpp" />
     <ClCompile Include="Object.cpp" />

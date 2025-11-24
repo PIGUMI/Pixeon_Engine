@@ -16,6 +16,7 @@ extern "C" {
 		currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (currentScene == nullptr) return PN_ERROR_NULL_POINTER;
 		*outHandle = reinterpret_cast<SceneHandle*>(currentScene);
+		return PN_SUCCESS;
 	}
 		/* ゲームオブジェクトの取得 */
 	PIXEON_API APIResult GetGameObject(SceneHandle scene, const char* objectname, GameObjectHandle* outObject)

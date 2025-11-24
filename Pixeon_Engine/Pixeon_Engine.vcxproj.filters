@@ -21,9 +21,6 @@
     <Filter Include="ソース ファイル\GUI\View">
       <UniqueIdentifier>{306ee381-2d50-4435-99d5-f6e344be05b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\GUI\Ohter">
-      <UniqueIdentifier>{db601874-c5f0-415d-a0e8-b065767540fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Other">
       <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
     </Filter>
@@ -59,9 +56,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="content_Item.cpp">
-      <Filter>ソース ファイル\GUI\Ohter</Filter>
-    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>ソース ファイル\BaseClass</Filter>
     </ClCompile>
@@ -182,17 +176,14 @@
     <ClCompile Include="API.cpp">
       <Filter>ソース ファイル\Other</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationManager.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
+    <ClCompile Include="AnimationDebug.cpp">
+      <Filter>ソース ファイル\Sys</Filter>
     </ClCompile>
-    <ClCompile Include="ModelAnimation.cpp">
+    <ClCompile Include="AnimationComponent.cpp">
       <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="content_Item.h">
-      <Filter>ソース ファイル\GUI\Ohter</Filter>
-    </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>ソース ファイル\BaseClass</Filter>
     </ClInclude>
@@ -322,10 +313,19 @@
     <ClInclude Include="API.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationManager.h">
-      <Filter>ソース ファイル\Manager</Filter>
+    <ClInclude Include="BoneNodeMapping.h">
+      <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
-    <ClInclude Include="ModelAnimation.h">
+    <ClInclude Include="WeightFix.h">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationDebug.h">
+      <Filter>ソース ファイル\Sys</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixUtil.h">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
       <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>

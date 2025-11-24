@@ -45,6 +45,11 @@ public:
     void SaveToFile(std::ostream& out) override;
     void LoadFromFile(std::istream& in) override;
 
+    void SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices);
+    const std::vector<DirectX::XMFLOAT4X4>& GetBoneMatrices() const { return m_boneMatrices; }
+    bool HasBoneMatrices() const { return !m_boneMatrices.empty(); }
+    void SetupBoneMatricesForShader(ID3D11DeviceContext* ctx);
+
 private:
     struct CBData {
         DirectX::XMMATRIX World;
@@ -104,4 +109,7 @@ private:
     bool m_ready = false;
     bool m_openTexPopup = false;
     int  m_texPopupMatIndex = -1;
+
+    std::vector<DirectX::XMFLOAT4X4> m_boneMatrices;
+    bool m_useBoneMatrices = false;
 };

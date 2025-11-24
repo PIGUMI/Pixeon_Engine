@@ -5,9 +5,6 @@
 #include "EngineManager.h"
 #include "SettingManager.h"
 
-// DirectX11 class
-
-// Instance
 DirectX11* DirectX11::instance;
 
 DirectX11* DirectX11::GetInstance()

@@ -1,0 +1,773 @@
+[Integrity] bones=28 clips=1 boneMismatch=0
+[MappingDump] ---- Bones ----
+[Bone] idx=0 name=mixamorig:LeftHandIndex1 nodeIndex=13 hierarchyName=mixamorig:LeftHandIndex1 status=OK
+[Bone] idx=1 name=mixamorig:LeftHandIndex2 nodeIndex=14 hierarchyName=mixamorig:LeftHandIndex2 status=OK
+[Bone] idx=2 name=mixamorig:LeftHandIndex3 nodeIndex=15 hierarchyName=mixamorig:LeftHandIndex3 status=OK
+[Bone] idx=3 name=mixamorig:LeftForeArm nodeIndex=11 hierarchyName=mixamorig:LeftForeArm status=OK
+[Bone] idx=4 name=mixamorig:LeftHand nodeIndex=12 hierarchyName=mixamorig:LeftHand status=OK
+[Bone] idx=5 name=mixamorig:LeftArm nodeIndex=10 hierarchyName=mixamorig:LeftArm status=OK
+[Bone] idx=6 name=mixamorig:Spine2 nodeIndex=5 hierarchyName=mixamorig:Spine2 status=OK
+[Bone] idx=7 name=mixamorig:LeftShoulder nodeIndex=9 hierarchyName=mixamorig:LeftShoulder status=OK
+[Bone] idx=8 name=mixamorig:Spine nodeIndex=3 hierarchyName=mixamorig:Spine status=OK
+[Bone] idx=9 name=mixamorig:Spine1 nodeIndex=4 hierarchyName=mixamorig:Spine1 status=OK
+[Bone] idx=10 name=mixamorig:RightHandIndex1 nodeIndex=21 hierarchyName=mixamorig:RightHandIndex1 status=OK
+[Bone] idx=11 name=mixamorig:RightHandIndex2 nodeIndex=22 hierarchyName=mixamorig:RightHandIndex2 status=OK
+[Bone] idx=12 name=mixamorig:RightHandIndex3 nodeIndex=23 hierarchyName=mixamorig:RightHandIndex3 status=OK
+[Bone] idx=13 name=mixamorig:RightHand nodeIndex=20 hierarchyName=mixamorig:RightHand status=OK
+[Bone] idx=14 name=mixamorig:RightForeArm nodeIndex=19 hierarchyName=mixamorig:RightForeArm status=OK
+[Bone] idx=15 name=mixamorig:RightArm nodeIndex=18 hierarchyName=mixamorig:RightArm status=OK
+[Bone] idx=16 name=mixamorig:RightShoulder nodeIndex=17 hierarchyName=mixamorig:RightShoulder status=OK
+[Bone] idx=17 name=mixamorig:Neck nodeIndex=6 hierarchyName=mixamorig:Neck status=OK
+[Bone] idx=18 name=mixamorig:Head nodeIndex=7 hierarchyName=mixamorig:Head status=OK
+[Bone] idx=19 name=mixamorig:Hips nodeIndex=2 hierarchyName=mixamorig:Hips status=OK
+[Bone] idx=20 name=mixamorig:LeftUpLeg nodeIndex=25 hierarchyName=mixamorig:LeftUpLeg status=OK
+[Bone] idx=21 name=mixamorig:LeftLeg nodeIndex=26 hierarchyName=mixamorig:LeftLeg status=OK
+[Bone] idx=22 name=mixamorig:LeftFoot nodeIndex=27 hierarchyName=mixamorig:LeftFoot status=OK
+[Bone] idx=23 name=mixamorig:LeftToeBase nodeIndex=28 hierarchyName=mixamorig:LeftToeBase status=OK
+[Bone] idx=24 name=mixamorig:RightUpLeg nodeIndex=30 hierarchyName=mixamorig:RightUpLeg status=OK
+[Bone] idx=25 name=mixamorig:RightLeg nodeIndex=31 hierarchyName=mixamorig:RightLeg status=OK
+[Bone] idx=26 name=mixamorig:RightFoot nodeIndex=32 hierarchyName=mixamorig:RightFoot status=OK
+[Bone] idx=27 name=mixamorig:RightToeBase nodeIndex=33 hierarchyName=mixamorig:RightToeBase status=OK
+[MappingDump] ---- Channels (all clips) ----
+[Channel] clip=mixamo.com idx=0 nodeName=mixamorig:Head nodeIndex=7 hierarchyName=mixamorig:Head expected=7 status=OK
+[Channel] clip=mixamo.com idx=1 nodeName=mixamorig:Hips nodeIndex=2 hierarchyName=mixamorig:Hips expected=2 status=OK
+[Channel] clip=mixamo.com idx=2 nodeName=mixamorig:LeftArm nodeIndex=10 hierarchyName=mixamorig:LeftArm expected=10 status=OK
+[Channel] clip=mixamo.com idx=3 nodeName=mixamorig:LeftFoot nodeIndex=27 hierarchyName=mixamorig:LeftFoot expected=27 status=OK
+[Channel] clip=mixamo.com idx=4 nodeName=mixamorig:LeftForeArm nodeIndex=11 hierarchyName=mixamorig:LeftForeArm expected=11 status=OK
+[Channel] clip=mixamo.com idx=5 nodeName=mixamorig:LeftHand nodeIndex=12 hierarchyName=mixamorig:LeftHand expected=12 status=OK
+[Channel] clip=mixamo.com idx=6 nodeName=mixamorig:LeftHandIndex1 nodeIndex=13 hierarchyName=mixamorig:LeftHandIndex1 expected=13 status=OK
+[Channel] clip=mixamo.com idx=7 nodeName=mixamorig:LeftHandIndex2 nodeIndex=14 hierarchyName=mixamorig:LeftHandIndex2 expected=14 status=OK
+[Channel] clip=mixamo.com idx=8 nodeName=mixamorig:LeftHandIndex3 nodeIndex=15 hierarchyName=mixamorig:LeftHandIndex3 expected=15 status=OK
+[Channel] clip=mixamo.com idx=9 nodeName=mixamorig:LeftLeg nodeIndex=26 hierarchyName=mixamorig:LeftLeg expected=26 status=OK
+[Channel] clip=mixamo.com idx=10 nodeName=mixamorig:LeftShoulder nodeIndex=9 hierarchyName=mixamorig:LeftShoulder expected=9 status=OK
+[Channel] clip=mixamo.com idx=11 nodeName=mixamorig:LeftToeBase nodeIndex=28 hierarchyName=mixamorig:LeftToeBase expected=28 status=OK
+[Channel] clip=mixamo.com idx=12 nodeName=mixamorig:LeftUpLeg nodeIndex=25 hierarchyName=mixamorig:LeftUpLeg expected=25 status=OK
+[Channel] clip=mixamo.com idx=13 nodeName=mixamorig:Neck nodeIndex=6 hierarchyName=mixamorig:Neck expected=6 status=OK
+[Channel] clip=mixamo.com idx=14 nodeName=mixamorig:RightArm nodeIndex=18 hierarchyName=mixamorig:RightArm expected=18 status=OK
+[Channel] clip=mixamo.com idx=15 nodeName=mixamorig:RightFoot nodeIndex=32 hierarchyName=mixamorig:RightFoot expected=32 status=OK
+[Channel] clip=mixamo.com idx=16 nodeName=mixamorig:RightForeArm nodeIndex=19 hierarchyName=mixamorig:RightForeArm expected=19 status=OK
+[Channel] clip=mixamo.com idx=17 nodeName=mixamorig:RightHand nodeIndex=20 hierarchyName=mixamorig:RightHand expected=20 status=OK
+[Channel] clip=mixamo.com idx=18 nodeName=mixamorig:RightHandIndex1 nodeIndex=21 hierarchyName=mixamorig:RightHandIndex1 expected=21 status=OK
+[Channel] clip=mixamo.com idx=19 nodeName=mixamorig:RightHandIndex2 nodeIndex=22 hierarchyName=mixamorig:RightHandIndex2 expected=22 status=OK
+[Channel] clip=mixamo.com idx=20 nodeName=mixamorig:RightHandIndex3 nodeIndex=23 hierarchyName=mixamorig:RightHandIndex3 expected=23 status=OK
+[Channel] clip=mixamo.com idx=21 nodeName=mixamorig:RightLeg nodeIndex=31 hierarchyName=mixamorig:RightLeg expected=31 status=OK
+[Channel] clip=mixamo.com idx=22 nodeName=mixamorig:RightShoulder nodeIndex=17 hierarchyName=mixamorig:RightShoulder expected=17 status=OK
+[Channel] clip=mixamo.com idx=23 nodeName=mixamorig:RightToeBase nodeIndex=33 hierarchyName=mixamorig:RightToeBase expected=33 status=OK
+[Channel] clip=mixamo.com idx=24 nodeName=mixamorig:RightUpLeg nodeIndex=30 hierarchyName=mixamorig:RightUpLeg expected=30 status=OK
+[Channel] clip=mixamo.com idx=25 nodeName=mixamorig:Spine nodeIndex=3 hierarchyName=mixamorig:Spine expected=3 status=OK
+[Channel] clip=mixamo.com idx=26 nodeName=mixamorig:Spine1 nodeIndex=4 hierarchyName=mixamorig:Spine1 expected=4 status=OK
+[Channel] clip=mixamo.com idx=27 nodeName=mixamorig:Spine2 nodeIndex=5 hierarchyName=mixamorig:Spine2 expected=5 status=OK
+[Integrity] bones=28 clips=1 boneMismatch=0
+[Integrity] bones=83 clips=1 boneMismatch=0
+[MappingDump] ---- Bones ----
+[Bone] idx=0 name=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip status=OK
+[Bone] idx=1 name=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 status=OK
+[Bone] idx=2 name=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 status=OK
+[Bone] idx=3 name=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 status=OK
+[Bone] idx=4 name=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck status=OK
+[Bone] idx=5 name=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head status=OK
+[Bone] idx=6 name=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 status=OK
+[Bone] idx=7 name=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 status=OK
+[Bone] idx=8 name=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 status=OK
+[Bone] idx=9 name=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 status=OK
+[Bone] idx=10 name=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star status=OK
+[Bone] idx=11 name=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder status=OK
+[Bone] idx=12 name=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm status=OK
+[Bone] idx=13 name=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm status=OK
+[Bone] idx=14 name=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll status=OK
+[Bone] idx=15 name=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 status=OK
+[Bone] idx=16 name=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder status=OK
+[Bone] idx=17 name=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm status=OK
+[Bone] idx=18 name=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm status=OK
+[Bone] idx=19 name=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll status=OK
+[Bone] idx=20 name=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand status=OK
+[Bone] idx=21 name=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 status=OK
+[Bone] idx=22 name=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 status=OK
+[Bone] idx=23 name=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 status=OK
+[Bone] idx=24 name=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 status=OK
+[Bone] idx=25 name=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 status=OK
+[Bone] idx=26 name=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 status=OK
+[Bone] idx=27 name=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 status=OK
+[Bone] idx=28 name=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 status=OK
+[Bone] idx=29 name=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 status=OK
+[Bone] idx=30 name=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 status=OK
+[Bone] idx=31 name=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 status=OK
+[Bone] idx=32 name=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 status=OK
+[Bone] idx=33 name=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root status=OK
+[Bone] idx=34 name=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 status=OK
+[Bone] idx=35 name=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 status=OK
+[Bone] idx=36 name=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 status=OK
+[Bone] idx=37 name=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 status=OK
+[Bone] idx=38 name=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 status=OK
+[Bone] idx=39 name=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 status=OK
+[Bone] idx=40 name=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 status=OK
+[Bone] idx=41 name=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 status=OK
+[Bone] idx=42 name=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 status=OK
+[Bone] idx=43 name=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand status=OK
+[Bone] idx=44 name=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 status=OK
+[Bone] idx=45 name=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 status=OK
+[Bone] idx=46 name=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 status=OK
+[Bone] idx=47 name=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 status=OK
+[Bone] idx=48 name=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 status=OK
+[Bone] idx=49 name=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 status=OK
+[Bone] idx=50 name=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 status=OK
+[Bone] idx=51 name=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 status=OK
+[Bone] idx=52 name=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 status=OK
+[Bone] idx=53 name=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 status=OK
+[Bone] idx=54 name=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 status=OK
+[Bone] idx=55 name=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 status=OK
+[Bone] idx=56 name=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 status=OK
+[Bone] idx=57 name=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 status=OK
+[Bone] idx=58 name=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 status=OK
+[Bone] idx=59 name=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 status=OK
+[Bone] idx=60 name=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 status=OK
+[Bone] idx=61 name=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 status=OK
+[Bone] idx=62 name=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 status=OK
+[Bone] idx=63 name=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 status=OK
+[Bone] idx=64 name=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 status=OK
+[Bone] idx=65 name=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 status=OK
+[Bone] idx=66 name=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 status=OK
+[Bone] idx=67 name=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 status=OK
+[Bone] idx=68 name=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 status=OK
+[Bone] idx=69 name=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 status=OK
+[Bone] idx=70 name=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 status=OK
+[Bone] idx=71 name=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 status=OK
+[Bone] idx=72 name=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 status=OK
+[Bone] idx=73 name=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 status=OK
+[Bone] idx=74 name=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg status=OK
+[Bone] idx=75 name=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee status=OK
+[Bone] idx=76 name=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot status=OK
+[Bone] idx=77 name=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg status=OK
+[Bone] idx=78 name=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee status=OK
+[Bone] idx=79 name=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot status=OK
+[Bone] idx=80 name=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen status=OK
+[Bone] idx=81 name=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 status=OK
+[Bone] idx=82 name=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root status=OK
+[MappingDump] ---- Channels (all clips) ----
+[Channel] clip=Take 001 idx=0 nodeName=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 expected=14 status=OK
+[Channel] clip=Take 001 idx=1 nodeName=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 expected=15 status=OK
+[Channel] clip=Take 001 idx=2 nodeName=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 expected=16 status=OK
+[Channel] clip=Take 001 idx=3 nodeName=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 expected=17 status=OK
+[Channel] clip=Take 001 idx=4 nodeName=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head expected=13 status=OK
+[Channel] clip=Take 001 idx=5 nodeName=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip expected=8 status=OK
+[Channel] clip=Take 001 idx=6 nodeName=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck expected=12 status=OK
+[Channel] clip=Take 001 idx=7 nodeName=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root expected=78 status=OK
+[Channel] clip=Take 001 idx=8 nodeName=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root expected=7 status=OK
+[Channel] clip=Take 001 idx=9 nodeName=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 expected=9 status=OK
+[Channel] clip=Take 001 idx=10 nodeName=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 expected=10 status=OK
+[Channel] clip=Take 001 idx=11 nodeName=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 expected=11 status=OK
+[Channel] clip=Take 001 idx=12 nodeName=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star expected=18 status=OK
+[Channel] clip=Take 001 idx=13 nodeName=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 expected=82 status=OK
+[Channel] clip=Take 001 idx=14 nodeName=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 expected=83 status=OK
+[Channel] clip=Take 001 idx=15 nodeName=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 expected=84 status=OK
+[Channel] clip=Take 001 idx=16 nodeName=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen expected=88 status=OK
+[Channel] clip=Take 001 idx=17 nodeName=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 expected=89 status=OK
+[Channel] clip=Take 001 idx=18 nodeName=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm expected=20 status=OK
+[Channel] clip=Take 001 idx=19 nodeName=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll expected=22 status=OK
+[Channel] clip=Take 001 idx=20 nodeName=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot expected=74 status=OK
+[Channel] clip=Take 001 idx=21 nodeName=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm expected=21 status=OK
+[Channel] clip=Take 001 idx=22 nodeName=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand expected=23 status=OK
+[Channel] clip=Take 001 idx=23 nodeName=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 expected=28 status=OK
+[Channel] clip=Take 001 idx=24 nodeName=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 expected=29 status=OK
+[Channel] clip=Take 001 idx=25 nodeName=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 expected=30 status=OK
+[Channel] clip=Take 001 idx=26 nodeName=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 expected=31 status=OK
+[Channel] clip=Take 001 idx=27 nodeName=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee expected=73 status=OK
+[Channel] clip=Take 001 idx=28 nodeName=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg expected=72 status=OK
+[Channel] clip=Take 001 idx=29 nodeName=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 expected=32 status=OK
+[Channel] clip=Take 001 idx=30 nodeName=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 expected=33 status=OK
+[Channel] clip=Take 001 idx=31 nodeName=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 expected=34 status=OK
+[Channel] clip=Take 001 idx=32 nodeName=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 expected=35 status=OK
+[Channel] clip=Take 001 idx=33 nodeName=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 expected=40 status=OK
+[Channel] clip=Take 001 idx=34 nodeName=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 expected=41 status=OK
+[Channel] clip=Take 001 idx=35 nodeName=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 expected=42 status=OK
+[Channel] clip=Take 001 idx=36 nodeName=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 expected=43 status=OK
+[Channel] clip=Take 001 idx=37 nodeName=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 expected=36 status=OK
+[Channel] clip=Take 001 idx=38 nodeName=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 expected=37 status=OK
+[Channel] clip=Take 001 idx=39 nodeName=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 expected=38 status=OK
+[Channel] clip=Take 001 idx=40 nodeName=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 expected=39 status=OK
+[Channel] clip=Take 001 idx=41 nodeName=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 expected=79 status=OK
+[Channel] clip=Take 001 idx=42 nodeName=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 expected=80 status=OK
+[Channel] clip=Take 001 idx=43 nodeName=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 expected=81 status=OK
+[Channel] clip=Take 001 idx=44 nodeName=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder expected=19 status=OK
+[Channel] clip=Take 001 idx=45 nodeName=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 expected=44 status=OK
+[Channel] clip=Take 001 idx=46 nodeName=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 expected=24 status=OK
+[Channel] clip=Take 001 idx=47 nodeName=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 expected=25 status=OK
+[Channel] clip=Take 001 idx=48 nodeName=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 expected=26 status=OK
+[Channel] clip=Take 001 idx=49 nodeName=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 expected=27 status=OK
+[Channel] clip=Take 001 idx=50 nodeName=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm expected=46 status=OK
+[Channel] clip=Take 001 idx=51 nodeName=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll expected=48 status=OK
+[Channel] clip=Take 001 idx=52 nodeName=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot expected=77 status=OK
+[Channel] clip=Take 001 idx=53 nodeName=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm expected=47 status=OK
+[Channel] clip=Take 001 idx=54 nodeName=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand expected=49 status=OK
+[Channel] clip=Take 001 idx=55 nodeName=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 expected=54 status=OK
+[Channel] clip=Take 001 idx=56 nodeName=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 expected=55 status=OK
+[Channel] clip=Take 001 idx=57 nodeName=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 expected=56 status=OK
+[Channel] clip=Take 001 idx=58 nodeName=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 expected=57 status=OK
+[Channel] clip=Take 001 idx=59 nodeName=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee expected=76 status=OK
+[Channel] clip=Take 001 idx=60 nodeName=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg expected=75 status=OK
+[Channel] clip=Take 001 idx=61 nodeName=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 expected=58 status=OK
+[Channel] clip=Take 001 idx=62 nodeName=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 expected=59 status=OK
+[Channel] clip=Take 001 idx=63 nodeName=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 expected=60 status=OK
+[Channel] clip=Take 001 idx=64 nodeName=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 expected=61 status=OK
+[Channel] clip=Take 001 idx=65 nodeName=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 expected=66 status=OK
+[Channel] clip=Take 001 idx=66 nodeName=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 expected=67 status=OK
+[Channel] clip=Take 001 idx=67 nodeName=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 expected=68 status=OK
+[Channel] clip=Take 001 idx=68 nodeName=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 expected=69 status=OK
+[Channel] clip=Take 001 idx=69 nodeName=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 expected=62 status=OK
+[Channel] clip=Take 001 idx=70 nodeName=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 expected=63 status=OK
+[Channel] clip=Take 001 idx=71 nodeName=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 expected=64 status=OK
+[Channel] clip=Take 001 idx=72 nodeName=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 expected=65 status=OK
+[Channel] clip=Take 001 idx=73 nodeName=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 expected=85 status=OK
+[Channel] clip=Take 001 idx=74 nodeName=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 expected=86 status=OK
+[Channel] clip=Take 001 idx=75 nodeName=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 expected=87 status=OK
+[Channel] clip=Take 001 idx=76 nodeName=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder expected=45 status=OK
+[Channel] clip=Take 001 idx=77 nodeName=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 expected=70 status=OK
+[Channel] clip=Take 001 idx=78 nodeName=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 expected=71 status=OK
+[Channel] clip=Take 001 idx=79 nodeName=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 expected=50 status=OK
+[Channel] clip=Take 001 idx=80 nodeName=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 expected=51 status=OK
+[Channel] clip=Take 001 idx=81 nodeName=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 expected=52 status=OK
+[Channel] clip=Take 001 idx=82 nodeName=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 expected=53 status=OK
+[Integrity] bones=83 clips=1 boneMismatch=0
+[Integrity] bones=83 clips=1 boneMismatch=0
+[MappingDump] ---- Bones ----
+[Bone] idx=0 name=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip status=OK
+[Bone] idx=1 name=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 status=OK
+[Bone] idx=2 name=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 status=OK
+[Bone] idx=3 name=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 status=OK
+[Bone] idx=4 name=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck status=OK
+[Bone] idx=5 name=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head status=OK
+[Bone] idx=6 name=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 status=OK
+[Bone] idx=7 name=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 status=OK
+[Bone] idx=8 name=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 status=OK
+[Bone] idx=9 name=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 status=OK
+[Bone] idx=10 name=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star status=OK
+[Bone] idx=11 name=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder status=OK
+[Bone] idx=12 name=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm status=OK
+[Bone] idx=13 name=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm status=OK
+[Bone] idx=14 name=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll status=OK
+[Bone] idx=15 name=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 status=OK
+[Bone] idx=16 name=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder status=OK
+[Bone] idx=17 name=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm status=OK
+[Bone] idx=18 name=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm status=OK
+[Bone] idx=19 name=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll status=OK
+[Bone] idx=20 name=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand status=OK
+[Bone] idx=21 name=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 status=OK
+[Bone] idx=22 name=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 status=OK
+[Bone] idx=23 name=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 status=OK
+[Bone] idx=24 name=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 status=OK
+[Bone] idx=25 name=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 status=OK
+[Bone] idx=26 name=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 status=OK
+[Bone] idx=27 name=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 status=OK
+[Bone] idx=28 name=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 status=OK
+[Bone] idx=29 name=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 status=OK
+[Bone] idx=30 name=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 status=OK
+[Bone] idx=31 name=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 status=OK
+[Bone] idx=32 name=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 status=OK
+[Bone] idx=33 name=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root status=OK
+[Bone] idx=34 name=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 status=OK
+[Bone] idx=35 name=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 status=OK
+[Bone] idx=36 name=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 status=OK
+[Bone] idx=37 name=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 status=OK
+[Bone] idx=38 name=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 status=OK
+[Bone] idx=39 name=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 status=OK
+[Bone] idx=40 name=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 status=OK
+[Bone] idx=41 name=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 status=OK
+[Bone] idx=42 name=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 status=OK
+[Bone] idx=43 name=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand status=OK
+[Bone] idx=44 name=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 status=OK
+[Bone] idx=45 name=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 status=OK
+[Bone] idx=46 name=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 status=OK
+[Bone] idx=47 name=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 status=OK
+[Bone] idx=48 name=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 status=OK
+[Bone] idx=49 name=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 status=OK
+[Bone] idx=50 name=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 status=OK
+[Bone] idx=51 name=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 status=OK
+[Bone] idx=52 name=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 status=OK
+[Bone] idx=53 name=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 status=OK
+[Bone] idx=54 name=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 status=OK
+[Bone] idx=55 name=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 status=OK
+[Bone] idx=56 name=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 status=OK
+[Bone] idx=57 name=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 status=OK
+[Bone] idx=58 name=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 status=OK
+[Bone] idx=59 name=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 status=OK
+[Bone] idx=60 name=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 status=OK
+[Bone] idx=61 name=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 status=OK
+[Bone] idx=62 name=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 status=OK
+[Bone] idx=63 name=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 status=OK
+[Bone] idx=64 name=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 status=OK
+[Bone] idx=65 name=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 status=OK
+[Bone] idx=66 name=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 status=OK
+[Bone] idx=67 name=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 status=OK
+[Bone] idx=68 name=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 status=OK
+[Bone] idx=69 name=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 status=OK
+[Bone] idx=70 name=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 status=OK
+[Bone] idx=71 name=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 status=OK
+[Bone] idx=72 name=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 status=OK
+[Bone] idx=73 name=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 status=OK
+[Bone] idx=74 name=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg status=OK
+[Bone] idx=75 name=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee status=OK
+[Bone] idx=76 name=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot status=OK
+[Bone] idx=77 name=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg status=OK
+[Bone] idx=78 name=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee status=OK
+[Bone] idx=79 name=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot status=OK
+[Bone] idx=80 name=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen status=OK
+[Bone] idx=81 name=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 status=OK
+[Bone] idx=82 name=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root status=OK
+[MappingDump] ---- Channels (all clips) ----
+[Channel] clip=Take 001 idx=0 nodeName=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 expected=14 status=OK
+[Channel] clip=Take 001 idx=1 nodeName=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 expected=15 status=OK
+[Channel] clip=Take 001 idx=2 nodeName=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 expected=16 status=OK
+[Channel] clip=Take 001 idx=3 nodeName=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 expected=17 status=OK
+[Channel] clip=Take 001 idx=4 nodeName=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head expected=13 status=OK
+[Channel] clip=Take 001 idx=5 nodeName=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip expected=8 status=OK
+[Channel] clip=Take 001 idx=6 nodeName=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck expected=12 status=OK
+[Channel] clip=Take 001 idx=7 nodeName=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root expected=78 status=OK
+[Channel] clip=Take 001 idx=8 nodeName=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root expected=7 status=OK
+[Channel] clip=Take 001 idx=9 nodeName=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 expected=9 status=OK
+[Channel] clip=Take 001 idx=10 nodeName=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 expected=10 status=OK
+[Channel] clip=Take 001 idx=11 nodeName=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 expected=11 status=OK
+[Channel] clip=Take 001 idx=12 nodeName=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star expected=18 status=OK
+[Channel] clip=Take 001 idx=13 nodeName=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 expected=82 status=OK
+[Channel] clip=Take 001 idx=14 nodeName=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 expected=83 status=OK
+[Channel] clip=Take 001 idx=15 nodeName=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 expected=84 status=OK
+[Channel] clip=Take 001 idx=16 nodeName=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen expected=88 status=OK
+[Channel] clip=Take 001 idx=17 nodeName=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 expected=89 status=OK
+[Channel] clip=Take 001 idx=18 nodeName=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm expected=20 status=OK
+[Channel] clip=Take 001 idx=19 nodeName=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll expected=22 status=OK
+[Channel] clip=Take 001 idx=20 nodeName=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot expected=74 status=OK
+[Channel] clip=Take 001 idx=21 nodeName=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm expected=21 status=OK
+[Channel] clip=Take 001 idx=22 nodeName=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand expected=23 status=OK
+[Channel] clip=Take 001 idx=23 nodeName=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 expected=28 status=OK
+[Channel] clip=Take 001 idx=24 nodeName=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 expected=29 status=OK
+[Channel] clip=Take 001 idx=25 nodeName=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 expected=30 status=OK
+[Channel] clip=Take 001 idx=26 nodeName=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 expected=31 status=OK
+[Channel] clip=Take 001 idx=27 nodeName=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee expected=73 status=OK
+[Channel] clip=Take 001 idx=28 nodeName=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg expected=72 status=OK
+[Channel] clip=Take 001 idx=29 nodeName=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 expected=32 status=OK
+[Channel] clip=Take 001 idx=30 nodeName=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 expected=33 status=OK
+[Channel] clip=Take 001 idx=31 nodeName=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 expected=34 status=OK
+[Channel] clip=Take 001 idx=32 nodeName=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 expected=35 status=OK
+[Channel] clip=Take 001 idx=33 nodeName=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 expected=40 status=OK
+[Channel] clip=Take 001 idx=34 nodeName=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 expected=41 status=OK
+[Channel] clip=Take 001 idx=35 nodeName=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 expected=42 status=OK
+[Channel] clip=Take 001 idx=36 nodeName=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 expected=43 status=OK
+[Channel] clip=Take 001 idx=37 nodeName=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 expected=36 status=OK
+[Channel] clip=Take 001 idx=38 nodeName=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 expected=37 status=OK
+[Channel] clip=Take 001 idx=39 nodeName=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 expected=38 status=OK
+[Channel] clip=Take 001 idx=40 nodeName=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 expected=39 status=OK
+[Channel] clip=Take 001 idx=41 nodeName=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 expected=79 status=OK
+[Channel] clip=Take 001 idx=42 nodeName=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 expected=80 status=OK
+[Channel] clip=Take 001 idx=43 nodeName=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 expected=81 status=OK
+[Channel] clip=Take 001 idx=44 nodeName=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder expected=19 status=OK
+[Channel] clip=Take 001 idx=45 nodeName=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 expected=44 status=OK
+[Channel] clip=Take 001 idx=46 nodeName=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 expected=24 status=OK
+[Channel] clip=Take 001 idx=47 nodeName=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 expected=25 status=OK
+[Channel] clip=Take 001 idx=48 nodeName=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 expected=26 status=OK
+[Channel] clip=Take 001 idx=49 nodeName=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 expected=27 status=OK
+[Channel] clip=Take 001 idx=50 nodeName=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm expected=46 status=OK
+[Channel] clip=Take 001 idx=51 nodeName=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll expected=48 status=OK
+[Channel] clip=Take 001 idx=52 nodeName=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot expected=77 status=OK
+[Channel] clip=Take 001 idx=53 nodeName=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm expected=47 status=OK
+[Channel] clip=Take 001 idx=54 nodeName=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand expected=49 status=OK
+[Channel] clip=Take 001 idx=55 nodeName=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 expected=54 status=OK
+[Channel] clip=Take 001 idx=56 nodeName=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 expected=55 status=OK
+[Channel] clip=Take 001 idx=57 nodeName=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 expected=56 status=OK
+[Channel] clip=Take 001 idx=58 nodeName=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 expected=57 status=OK
+[Channel] clip=Take 001 idx=59 nodeName=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee expected=76 status=OK
+[Channel] clip=Take 001 idx=60 nodeName=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg expected=75 status=OK
+[Channel] clip=Take 001 idx=61 nodeName=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 expected=58 status=OK
+[Channel] clip=Take 001 idx=62 nodeName=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 expected=59 status=OK
+[Channel] clip=Take 001 idx=63 nodeName=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 expected=60 status=OK
+[Channel] clip=Take 001 idx=64 nodeName=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 expected=61 status=OK
+[Channel] clip=Take 001 idx=65 nodeName=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 expected=66 status=OK
+[Channel] clip=Take 001 idx=66 nodeName=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 expected=67 status=OK
+[Channel] clip=Take 001 idx=67 nodeName=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 expected=68 status=OK
+[Channel] clip=Take 001 idx=68 nodeName=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 expected=69 status=OK
+[Channel] clip=Take 001 idx=69 nodeName=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 expected=62 status=OK
+[Channel] clip=Take 001 idx=70 nodeName=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 expected=63 status=OK
+[Channel] clip=Take 001 idx=71 nodeName=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 expected=64 status=OK
+[Channel] clip=Take 001 idx=72 nodeName=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 expected=65 status=OK
+[Channel] clip=Take 001 idx=73 nodeName=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 expected=85 status=OK
+[Channel] clip=Take 001 idx=74 nodeName=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 expected=86 status=OK
+[Channel] clip=Take 001 idx=75 nodeName=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 expected=87 status=OK
+[Channel] clip=Take 001 idx=76 nodeName=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder expected=45 status=OK
+[Channel] clip=Take 001 idx=77 nodeName=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 expected=70 status=OK
+[Channel] clip=Take 001 idx=78 nodeName=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 expected=71 status=OK
+[Channel] clip=Take 001 idx=79 nodeName=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 expected=50 status=OK
+[Channel] clip=Take 001 idx=80 nodeName=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 expected=51 status=OK
+[Channel] clip=Take 001 idx=81 nodeName=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 expected=52 status=OK
+[Channel] clip=Take 001 idx=82 nodeName=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 expected=53 status=OK
+[Integrity] bones=83 clips=1 boneMismatch=0
+[Animation BeginPlay] clips=1 bones=83 boneMissingNodeIndex=0
+[Animation Update] clip=Take 001 time=1.920001
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.819583,2.966141,-0.392937)
+[Animation Update] clip=Take 001 time=3.840005
+[BoneUpload] count=83 b0T(0.819583,2.966141,-0.392937) b1T(0.819583,2.966142,-0.392937) b2T(0.819583,2.966142,-0.392937)
+[Animation Update] clip=Take 001 time=1.626671
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.331261,2.912637,-0.348108)
+[Animation Update] clip=Take 001 time=3.546674
+[BoneUpload] count=83 b0T(0.331261,2.912637,-0.348108) b1T(0.331261,2.912637,-0.348108) b2T(0.331261,2.912637,-0.348108)
+[Animation Update] clip=Take 001 time=1.333340
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.176469,2.905642,-0.348625)
+[Animation Update] clip=Take 001 time=3.253344
+[BoneUpload] count=83 b0T(0.176469,2.905642,-0.348625) b1T(0.176469,2.905642,-0.348625) b2T(0.176469,2.905642,-0.348625)
+[Animation Update] clip=Take 001 time=1.040010
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.563104,3.129185,-0.401579)
+[Animation Update] clip=Take 001 time=2.960014
+[BoneUpload] count=83 b0T(1.563104,3.129185,-0.401579) b1T(1.563104,3.129185,-0.401579) b2T(1.563104,3.129185,-0.401579)
+[Animation Update] clip=Take 001 time=0.746681
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.860245,3.226228,-0.421095)
+[Animation Update] clip=Take 001 time=2.666684
+[BoneUpload] count=83 b0T(1.860245,3.226228,-0.421095) b1T(1.860245,3.226228,-0.421095) b2T(1.860245,3.226227,-0.421095)
+[Animation Update] clip=Take 001 time=0.453352
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.268531,2.991621,-0.214618)
+[Animation Update] clip=Take 001 time=2.373353
+[BoneUpload] count=83 b0T(1.268531,2.991621,-0.214618) b1T(1.268531,2.991621,-0.214618) b2T(1.268531,2.991621,-0.214618)
+[Animation Update] clip=Take 001 time=0.160022
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.824596,2.685776,-0.141996)
+[Animation Update] clip=Take 001 time=2.080023
+[BoneUpload] count=83 b0T(0.824596,2.685776,-0.141996) b1T(0.824596,2.685776,-0.141996) b2T(0.824596,2.685776,-0.141996)
+[Animation Update] clip=Take 001 time=4.000027
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.952123,2.355442,0.392033)
+[Animation Update] clip=Take 001 time=1.786693
+[BoneUpload] count=83 b0T(0.952123,2.355442,0.392033) b1T(0.952123,2.355442,0.392033) b2T(0.952123,2.355442,0.392033)
+[Animation Update] clip=Take 001 time=3.706697
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.829351,2.127367,0.396496)
+[Animation Update] clip=Take 001 time=1.493363
+[BoneUpload] count=83 b0T(1.829351,2.127367,0.396496) b1T(1.829351,2.127367,0.396496) b2T(1.829351,2.127366,0.396496)
+[Animation Update] clip=Take 001 time=3.413367
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.027957,1.731457,-0.641021)
+[Animation Update] clip=Take 001 time=1.200032
+[BoneUpload] count=83 b0T(2.027957,1.731457,-0.641021) b1T(2.027957,1.731457,-0.641021) b2T(2.027957,1.731457,-0.641021)
+[Animation Update] clip=Take 001 time=3.120036
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.948913,1.012788,-1.041079)
+[Animation Update] clip=Take 001 time=0.906702
+[BoneUpload] count=83 b0T(0.948913,1.012788,-1.041079) b1T(0.948913,1.012788,-1.041079) b2T(0.948913,1.012788,-1.041079)
+[Animation Update] clip=Take 001 time=2.826706
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.232676,0.425475,-0.105550)
+[Animation Update] clip=Take 001 time=0.613373
+[BoneUpload] count=83 b0T(0.232676,0.425475,-0.105550) b1T(0.232676,0.425475,-0.105550) b2T(0.232676,0.425475,-0.105550)
+[Animation Update] clip=Take 001 time=2.533376
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.488506,0.186829,0.672653)
+[Animation Update] clip=Take 001 time=0.320044
+[BoneUpload] count=83 b0T(0.488506,0.186829,0.672653) b1T(0.488506,0.186829,0.672653) b2T(0.488506,0.186829,0.672653)
+[Animation Update] clip=Take 001 time=2.240046
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.015887,0.001211,0.013335)
+[Animation Update] clip=Take 001 time=0.026714
+[BoneUpload] count=83 b0T(0.015887,0.001211,0.013335) b1T(0.015887,0.001210,0.013335) b2T(0.015887,0.001210,0.013335)
+[Animation Update] clip=Take 001 time=1.946715
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.861147,2.972719,-0.396638)
+[Animation Update] clip=Take 001 time=3.866719
+[BoneUpload] count=83 b0T(0.861147,2.972719,-0.396638) b1T(0.861147,2.972719,-0.396638) b2T(0.861147,2.972719,-0.396638)
+[Animation Update] clip=Take 001 time=1.653385
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.648074,1.443310,-0.999358)
+[Animation Update] clip=Take 001 time=1.073973
+[BoneUpload] count=83 b0T(1.648074,1.443310,-0.999358) b1T(1.648074,1.443310,-0.999358) b2T(1.648074,1.443311,-0.999358)
+[Animation Update] clip=Take 001 time=0.528320
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.323094,2.912111,-0.347337)
+[Animation Update] clip=Take 001 time=3.541120
+[BoneUpload] count=83 b0T(0.323094,2.912111,-0.347337) b1T(0.323094,2.912111,-0.347337) b2T(0.323094,2.912111,-0.347337)
+[Animation Update] clip=Take 001 time=2.091946
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.268954,0.309019,0.308816)
+[Animation Update] clip=Take 001 time=0.505016
+[BoneUpload] count=83 b0T(0.268954,0.309019,0.308816) b1T(0.268954,0.309019,0.308816) b2T(0.268954,0.309019,0.308816)
+[Animation Update] clip=Take 001 time=2.814454
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.231158,0.364953,0.091972)
+[Animation Update] clip=Take 001 time=0.563361
+[BoneUpload] count=83 b0T(0.231158,0.364953,0.091972) b1T(0.231158,0.364952,0.091972) b2T(0.231158,0.364952,0.091972)
+[Animation Update] clip=Take 001 time=1.533280
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.810123,2.448953,0.212182)
+[Animation Update] clip=Take 001 time=1.878559
+[BoneUpload] count=83 b0T(0.810123,2.448953,0.212182) b1T(0.810123,2.448953,0.212182) b2T(0.810123,2.448953,0.212182)
+[Animation Update] clip=Take 001 time=2.148638
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.161209,2.937137,-0.232580)
+[Animation Update] clip=Take 001 time=2.312005
+[BoneUpload] count=83 b0T(1.161209,2.937137,-0.232580) b1T(1.161210,2.937137,-0.232580) b2T(1.161209,2.937137,-0.232580)
+[Animation Update] clip=Take 001 time=2.446415
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.672723,3.159603,-0.393522)
+[Animation Update] clip=Take 001 time=2.580826
+[BoneUpload] count=83 b0T(1.672723,3.159603,-0.393522) b1T(1.672723,3.159603,-0.393522) b2T(1.672723,3.159603,-0.393522)
+[Animation Update] clip=Take 001 time=2.715237
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.949635,3.249556,-0.286975)
+[Animation Update] clip=Take 001 time=2.849648
+[BoneUpload] count=83 b0T(1.949635,3.249556,-0.286975) b1T(1.949635,3.249556,-0.286975) b2T(1.949635,3.249556,-0.286975)
+[Animation Update] clip=Take 001 time=2.984059
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.698296,2.956033,-0.475912)
+[Animation Update] clip=Take 001 time=3.118470
+[BoneUpload] count=83 b0T(0.698296,2.956033,-0.475912) b1T(0.698296,2.956033,-0.475912) b2T(0.698296,2.956033,-0.475912)
+[Animation Update] clip=Take 001 time=3.252881
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.156048,2.903990,-0.331427)
+[Animation Update] clip=Take 001 time=3.387291
+[BoneUpload] count=83 b0T(0.156048,2.903990,-0.331427) b1T(0.156048,2.903990,-0.331427) b2T(0.156048,2.903991,-0.331427)
+[Animation Update] clip=Take 001 time=3.521702
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.506675,2.926848,-0.364494)
+[Animation Update] clip=Take 001 time=3.656113
+[BoneUpload] count=83 b0T(0.506675,2.926848,-0.364494) b1T(0.506675,2.926848,-0.364494) b2T(0.506675,2.926848,-0.364494)
+[Animation Update] clip=Take 001 time=3.790524
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.942723,2.986567,-0.403851)
+[Animation Update] clip=Take 001 time=3.924935
+[BoneUpload] count=83 b0T(0.942723,2.986567,-0.403851) b1T(0.942723,2.986567,-0.403851) b2T(0.942723,2.986567,-0.403851)
+[Animation Update] clip=Take 001 time=4.059346
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.063464,0.005608,0.054404)
+[Animation Update] clip=Take 001 time=0.060419
+[BoneUpload] count=83 b0T(0.063464,0.005608,0.054404) b1T(0.063464,0.005608,0.054404) b2T(0.063464,0.005607,0.054404)
+[Animation Update] clip=Take 001 time=0.194819
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.484210,0.193951,0.678734)
+[Animation Update] clip=Take 001 time=0.329219
+[BoneUpload] count=83 b0T(0.484210,0.193951,0.678734) b1T(0.484210,0.193951,0.678734) b2T(0.484210,0.193950,0.678734)
+[Animation Update] clip=Take 001 time=0.463619
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.228574,0.405509,-0.043997)
+[Animation Update] clip=Take 001 time=0.598017
+[BoneUpload] count=83 b0T(0.228574,0.405509,-0.043997) b1T(0.228574,0.405509,-0.043997) b2T(0.228574,0.405510,-0.043997)
+[Animation Update] clip=Take 001 time=0.732413
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.790538,0.913457,-0.972371)
+[Animation Update] clip=Take 001 time=0.866810
+[BoneUpload] count=83 b0T(0.790538,0.913457,-0.972371) b1T(0.790538,0.913457,-0.972371) b2T(0.790538,0.913457,-0.972371)
+[Animation Update] clip=Take 001 time=1.001206
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.862345,1.591544,-0.852322)
+[Animation Update] clip=Take 001 time=1.135603
+[BoneUpload] count=83 b0T(1.862345,1.591544,-0.852322) b1T(1.862345,1.591544,-0.852322) b2T(1.862345,1.591544,-0.852322)
+[Animation Update] clip=Take 001 time=1.269999
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.042085,2.044877,0.144904)
+[Animation Update] clip=Take 001 time=1.404396
+[BoneUpload] count=83 b0T(2.042085,2.044877,0.144904) b1T(2.042085,2.044877,0.144904) b2T(2.042085,2.044876,0.144904)
+[Animation Update] clip=Take 001 time=1.538792
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.250963,2.259722,0.533843)
+[Animation Update] clip=Take 001 time=1.673189
+[BoneUpload] count=83 b0T(1.250963,2.259722,0.533843) b1T(1.250963,2.259722,0.533843) b2T(1.250963,2.259721,0.533843)
+[Animation Update] clip=Take 001 time=1.807585
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.770016,2.520720,0.082832)
+[Animation Update] clip=Take 001 time=1.941982
+[BoneUpload] count=83 b0T(0.770016,2.520720,0.082832) b1T(0.770016,2.520720,0.082832) b2T(0.770015,2.520720,0.082832)
+[Animation Update] clip=Take 001 time=2.076387
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.994242,2.835380,-0.234772)
+[Animation Update] clip=Take 001 time=2.210798
+[BoneUpload] count=83 b0T(0.994242,2.835380,-0.234772) b1T(0.994242,2.835380,-0.234772) b2T(0.994242,2.835380,-0.234773)
+[Animation Update] clip=Take 001 time=2.345208
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.461492,3.073485,-0.204921)
+[Animation Update] clip=Take 001 time=2.479619
+[BoneUpload] count=83 b0T(1.461492,3.073485,-0.204921) b1T(1.461492,3.073485,-0.204921) b2T(1.461491,3.073485,-0.204921)
+[Animation Update] clip=Take 001 time=2.614030
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.977774,3.261183,-0.306304)
+[Animation Update] clip=Take 001 time=2.748441
+[BoneUpload] count=83 b0T(1.977774,3.261183,-0.306304) b1T(1.977773,3.261182,-0.306304) b2T(1.977774,3.261182,-0.306304)
+[Animation Update] clip=Take 001 time=2.882852
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.263558,3.055711,-0.461652)
+[Animation Update] clip=Take 001 time=3.017263
+[BoneUpload] count=83 b0T(1.263558,3.055711,-0.461652) b1T(1.263558,3.055711,-0.461652) b2T(1.263558,3.055711,-0.461652)
+[Animation Update] clip=Take 001 time=3.151674
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.135369,2.903519,-0.332551)
+[Animation Update] clip=Take 001 time=3.286084
+[BoneUpload] count=83 b0T(0.135369,2.903519,-0.332551) b1T(0.135369,2.903519,-0.332551) b2T(0.135369,2.903519,-0.332551)
+[Animation Update] clip=Take 001 time=3.420495
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.343363,2.913438,-0.349248)
+[Animation Update] clip=Take 001 time=3.554906
+[BoneUpload] count=83 b0T(0.343363,2.913438,-0.349248) b1T(0.343363,2.913438,-0.349248) b2T(0.343363,2.913438,-0.349248)
+[Animation Update] clip=Take 001 time=3.689317
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.793487,2.962174,-0.390604)
+[Animation Update] clip=Take 001 time=3.823728
+[BoneUpload] count=83 b0T(0.793487,2.962174,-0.390604) b1T(0.793487,2.962174,-0.390604) b2T(0.793487,2.962174,-0.390604)
+[Animation Update] clip=Take 001 time=3.958139
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.085624,3.013840,-0.416313)
+[Animation Update] clip=Take 001 time=4.092549
+[BoneUpload] count=83 b0T(1.085624,3.013840,-0.416313) b1T(1.085624,3.013840,-0.416313) b2T(1.085624,3.013840,-0.416313)
+[Animation Update] clip=Take 001 time=0.093620
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.449126,0.106292,0.508854)
+[Animation Update] clip=Take 001 time=0.228020
+[BoneUpload] count=83 b0T(0.449126,0.106292,0.508854) b1T(0.449126,0.106292,0.508854) b2T(0.449126,0.106291,0.508854)
+[Animation Update] clip=Take 001 time=0.362420
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.277287,0.302302,0.337742)
+[Animation Update] clip=Take 001 time=0.496820
+[BoneUpload] count=83 b0T(0.277287,0.302302,0.337742) b1T(0.277287,0.302302,0.337742) b2T(0.277287,0.302302,0.337742)
+[Animation Update] clip=Take 001 time=0.631217
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.460712,0.684318,-0.690101)
+[Animation Update] clip=Take 001 time=0.765613
+[BoneUpload] count=83 b0T(0.460712,0.684318,-0.690101) b1T(0.460712,0.684318,-0.690101) b2T(0.460712,0.684317,-0.690101)
+[Animation Update] clip=Take 001 time=0.900010
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.490548,1.343065,-1.058728)
+[Animation Update] clip=Take 001 time=1.034406
+[BoneUpload] count=83 b0T(1.490548,1.343065,-1.058728) b1T(1.490548,1.343065,-1.058728) b2T(1.490547,1.343065,-1.058728)
+[Animation Update] clip=Take 001 time=1.168803
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.134757,1.914761,-0.237379)
+[Animation Update] clip=Take 001 time=1.303199
+[BoneUpload] count=83 b0T(2.134757,1.914761,-0.237379) b1T(2.134758,1.914762,-0.237379) b2T(2.134758,1.914761,-0.237379)
+[Animation Update] clip=Take 001 time=1.437596
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.581851,2.186492,0.520199)
+[Animation Update] clip=Take 001 time=1.571992
+[BoneUpload] count=83 b0T(1.581851,2.186492,0.520199) b1T(1.581851,2.186492,0.520199) b2T(1.581851,2.186492,0.520199)
+[Animation Update] clip=Take 001 time=1.706389
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.856241,2.408813,0.289320)
+[Animation Update] clip=Take 001 time=1.840786
+[BoneUpload] count=83 b0T(0.856241,2.408813,0.289320) b1T(0.856241,2.408813,0.289320) b2T(0.856241,2.408813,0.289320)
+[Animation Update] clip=Take 001 time=1.975182
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.855626,2.720891,-0.174053)
+[Animation Update] clip=Take 001 time=2.109590
+[BoneUpload] count=83 b0T(0.855626,2.720891,-0.174053) b1T(0.855626,2.720891,-0.174053) b2T(0.855626,2.720891,-0.174053)
+[Animation Update] clip=Take 001 time=2.244001
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.277555,2.995784,-0.213071)
+[Animation Update] clip=Take 001 time=2.378412
+[BoneUpload] count=83 b0T(1.277555,2.995784,-0.213071) b1T(1.277555,2.995784,-0.213071) b2T(1.277555,2.995784,-0.213071)
+[Animation Update] clip=Take 001 time=2.512823
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.819890,3.213150,-0.433215)
+[Animation Update] clip=Take 001 time=2.647234
+[BoneUpload] count=83 b0T(1.819890,3.213150,-0.433215) b1T(1.819890,3.213150,-0.433215) b2T(1.819890,3.213150,-0.433215)
+[Animation Update] clip=Take 001 time=2.781645
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.754313,3.184812,-0.348646)
+[Animation Update] clip=Take 001 time=2.916055
+[BoneUpload] count=83 b0T(1.754313,3.184812,-0.348646) b1T(1.754313,3.184812,-0.348646) b2T(1.754313,3.184812,-0.348646)
+[Animation Update] clip=Take 001 time=3.050466
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.384152,2.920698,-0.416404)
+[Animation Update] clip=Take 001 time=3.184877
+[BoneUpload] count=83 b0T(0.384152,2.920698,-0.416404) b1T(0.384152,2.920699,-0.416404) b2T(0.384152,2.920699,-0.416404)
+[Animation Update] clip=Take 001 time=3.319288
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.213243,2.906205,-0.336905)
+[Animation Update] clip=Take 001 time=3.453699
+[BoneUpload] count=83 b0T(0.213243,2.906205,-0.336905) b1T(0.213243,2.906205,-0.336905) b2T(0.213243,2.906204,-0.336905)
+[Animation Update] clip=Take 001 time=3.588110
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.621684,2.939204,-0.375066)
+[Animation Update] clip=Take 001 time=3.722521
+[BoneUpload] count=83 b0T(0.621684,2.939204,-0.375066) b1T(0.621684,2.939203,-0.375066) b2T(0.621684,2.939203,-0.375066)
+[Animation Update] clip=Take 001 time=3.856931
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.018509,3.000550,-0.410487)
+[Animation Update] clip=Take 001 time=3.991342
+[BoneUpload] count=83 b0T(1.018509,3.000550,-0.410487) b1T(1.018509,3.000550,-0.410487) b2T(1.018509,3.000549,-0.410487)
+[Animation Update] clip=Take 001 time=4.125753
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.221394,0.029018,0.206128)
+[Animation Update] clip=Take 001 time=0.126820
+[BoneUpload] count=83 b0T(0.221394,0.029018,0.206128) b1T(0.221394,0.029018,0.206128) b2T(0.221394,0.029018,0.206128)
+[Animation Update] clip=Take 001 time=0.261221
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.412333,0.236845,0.626832)
+[Animation Update] clip=Take 001 time=0.395621
+[BoneUpload] count=83 b0T(0.412333,0.236845,0.626832) b1T(0.412333,0.236846,0.626832) b2T(0.412333,0.236846,0.626832)
+[Animation Update] clip=Take 001 time=0.530020
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.270552,0.499527,-0.309939)
+[Animation Update] clip=Take 001 time=0.664417
+[BoneUpload] count=83 b0T(0.270552,0.499527,-0.309939) b1T(0.270552,0.499527,-0.309939) b2T(0.270552,0.499527,-0.309939)
+[Animation Update] clip=Take 001 time=0.798813
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.059546,1.080478,-1.070999)
+[Animation Update] clip=Take 001 time=0.933210
+[BoneUpload] count=83 b0T(1.059546,1.080478,-1.070999) b1T(1.059546,1.080478,-1.070999) b2T(1.059546,1.080478,-1.070999)
+[Animation Update] clip=Take 001 time=1.067606
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.031806,1.735411,-0.633850)
+[Animation Update] clip=Take 001 time=1.202003
+[BoneUpload] count=83 b0T(2.031806,1.735411,-0.633850) b1T(2.031806,1.735411,-0.633850) b2T(2.031806,1.735411,-0.633850)
+[Animation Update] clip=Take 001 time=1.336399
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.892201,2.108555,0.343056)
+[Animation Update] clip=Take 001 time=1.470796
+[BoneUpload] count=83 b0T(1.892201,2.108555,0.343056) b1T(1.892201,2.108555,0.343056) b2T(1.892201,2.108555,0.343056)
+[Animation Update] clip=Take 001 time=1.605192
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.061655,2.313178,0.466435)
+[Animation Update] clip=Take 001 time=1.739589
+[BoneUpload] count=83 b0T(1.061655,2.313178,0.466435) b1T(1.061655,2.313178,0.466435) b2T(1.061655,2.313177,0.466435)
+[Animation Update] clip=Take 001 time=1.873986
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.774856,2.599618,-0.039098)
+[Animation Update] clip=Take 001 time=2.008383
+[BoneUpload] count=83 b0T(0.774856,2.599618,-0.039098) b1T(0.774856,2.599618,-0.039098) b2T(0.774856,2.599618,-0.039098)
+[Animation Update] clip=Take 001 time=2.142794
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.101930,2.903801,-0.238691)
+[Animation Update] clip=Take 001 time=2.277205
+[BoneUpload] count=83 b0T(1.101930,2.903801,-0.238691) b1T(1.101930,2.903801,-0.238691) b2T(1.101930,2.903801,-0.238691)
+[Animation Update] clip=Take 001 time=2.411616
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.595830,3.128113,-0.323336)
+[Animation Update] clip=Take 001 time=2.546026
+[BoneUpload] count=83 b0T(1.595830,3.128113,-0.323336) b1T(1.595830,3.128112,-0.323336) b2T(1.595830,3.128113,-0.323336)
+[Animation Update] clip=Take 001 time=2.680437
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.993630,3.265316,-0.272320)
+[Animation Update] clip=Take 001 time=2.814848
+[BoneUpload] count=83 b0T(1.993630,3.265316,-0.272320) b1T(1.993630,3.265316,-0.272320) b2T(1.993630,3.265316,-0.272320)
+[Animation Update] clip=Take 001 time=2.949259
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.888696,2.984363,-0.487579)
+[Animation Update] clip=Take 001 time=3.083670
+[BoneUpload] count=83 b0T(0.888696,2.984363,-0.487579) b1T(0.888696,2.984363,-0.487579) b2T(0.888696,2.984363,-0.487579)
+[Animation Update] clip=Take 001 time=3.218081
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.137448,2.903397,-0.329637)
+[Animation Update] clip=Take 001 time=3.352492
+[BoneUpload] count=83 b0T(0.137448,2.903397,-0.329637) b1T(0.137448,2.903397,-0.329637) b2T(0.137448,2.903397,-0.329637)
+[Animation Update] clip=Take 001 time=3.486902
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.448104,2.921483,-0.359057)
+[Animation Update] clip=Take 001 time=3.621313
+[BoneUpload] count=83 b0T(0.448104,2.921483,-0.359057) b1T(0.448104,2.921483,-0.359057) b2T(0.448104,2.921483,-0.359057)
+[Animation Update] clip=Take 001 time=3.755724
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.895205,2.978349,-0.399658)
+[Animation Update] clip=Take 001 time=3.890135
+[BoneUpload] count=83 b0T(0.895205,2.978349,-0.399658) b1T(0.895205,2.978349,-0.399658) b2T(0.895205,2.978349,-0.399658)
+[Animation Update] clip=Take 001 time=4.024546
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.015240,0.001159,0.012787)
+[Animation Update] clip=Take 001 time=0.025621
+[BoneUpload] count=83 b0T(0.015240,0.001159,0.012787) b1T(0.015240,0.001159,0.012787) b2T(0.015240,0.001159,0.012787)
+[Animation Update] clip=Take 001 time=0.160021
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.496401,0.166309,0.649751)
+[Animation Update] clip=Take 001 time=0.294422
+[BoneUpload] count=83 b0T(0.496401,0.166309,0.649751) b1T(0.496401,0.166309,0.649751) b2T(0.496401,0.166309,0.649751)
+[Animation Update] clip=Take 001 time=0.428822
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.231200,0.364802,0.092509)
+[Animation Update] clip=Take 001 time=0.563220
+[BoneUpload] count=83 b0T(0.231200,0.364802,0.092509) b1T(0.231200,0.364802,0.092509) b2T(0.231200,0.364802,0.092509)
+[Animation Update] clip=Take 001 time=0.697617
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.663774,0.830479,-0.890996)
+[Animation Update] clip=Take 001 time=0.832013
+[BoneUpload] count=83 b0T(0.663774,0.830479,-0.890996) b1T(0.663774,0.830479,-0.890996) b2T(0.663774,0.830479,-0.890996)
+[Animation Update] clip=Take 001 time=0.966410
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.747068,1.509315,-0.943104)
+[Animation Update] clip=Take 001 time=1.100806
+[BoneUpload] count=83 b0T(1.747068,1.509315,-0.943104) b1T(1.747068,1.509315,-0.943104) b2T(1.747068,1.509315,-0.943104)
+[Animation Update] clip=Take 001 time=1.235203
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.094603,2.005246,0.021327)
+[Animation Update] clip=Take 001 time=1.369599
+[BoneUpload] count=83 b0T(2.094603,2.005246,0.021327) b1T(2.094603,2.005245,0.021327) b2T(2.094603,2.005245,0.021327)
+[Animation Update] clip=Take 001 time=1.503996
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.361638,2.233920,0.546678)
+[Animation Update] clip=Take 001 time=1.638393
+[BoneUpload] count=83 b0T(1.361638,2.233920,0.546678) b1T(1.361638,2.233920,0.546678) b2T(1.361638,2.233920,0.546678)
+[Animation Update] clip=Take 001 time=1.772789
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.786140,2.480764,0.153018)
+[Animation Update] clip=Take 001 time=1.907186
+[BoneUpload] count=83 b0T(0.786140,2.480764,0.153018) b1T(0.786140,2.480764,0.153018) b2T(0.786140,2.480764,0.153018)
+[Animation Update] clip=Take 001 time=2.041587
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.942096,2.797243,-0.222147)
+[Animation Update] clip=Take 001 time=2.175997
+[BoneUpload] count=83 b0T(0.942096,2.797243,-0.222147) b1T(0.942096,2.797243,-0.222147) b2T(0.942096,2.797243,-0.222147)
+[Animation Update] clip=Take 001 time=2.310408
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.397039,3.047887,-0.195894)
+[Animation Update] clip=Take 001 time=2.444819
+[BoneUpload] count=83 b0T(1.397039,3.047887,-0.195894) b1T(1.397039,3.047887,-0.195894) b2T(1.397039,3.047886,-0.195894)
+[Animation Update] clip=Take 001 time=2.579230
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.937962,3.249388,-0.354911)
+[Animation Update] clip=Take 001 time=2.713641
+[BoneUpload] count=83 b0T(1.937962,3.249388,-0.354911) b1T(1.937962,3.249388,-0.354911) b2T(1.937962,3.249388,-0.354911)
+[Animation Update] clip=Take 001 time=2.848052
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.450368,3.099651,-0.427547)
+[Animation Update] clip=Take 001 time=2.982463
+[BoneUpload] count=83 b0T(1.450368,3.099651,-0.427547) b1T(1.450368,3.099651,-0.427547) b2T(1.450368,3.099652,-0.427547)
+[Animation Update] clip=Take 001 time=3.116874
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.180659,2.905876,-0.350227)
+[Animation Update] clip=Take 001 time=3.251284
+[BoneUpload] count=83 b0T(0.180659,2.905876,-0.350227) b1T(0.180659,2.905875,-0.350227) b2T(0.180659,2.905875,-0.350227)
+[Animation Update] clip=Take 001 time=3.385695
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.293822,2.910325,-0.344570)
+[Animation Update] clip=Take 001 time=3.520106
+[BoneUpload] count=83 b0T(0.293822,2.910325,-0.344570) b1T(0.293822,2.910325,-0.344570) b2T(0.293822,2.910324,-0.344570)
+[Animation Update] clip=Take 001 time=3.654517
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.735906,2.953869,-0.385430)
+[Animation Update] clip=Take 001 time=3.788928
+[BoneUpload] count=83 b0T(0.735906,2.953869,-0.385430) b1T(0.735906,2.953869,-0.385430) b2T(0.735906,2.953869,-0.385430)
+[Animation Update] clip=Take 001 time=3.923339
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.070076,3.010684,-0.414968)
+[Animation Update] clip=Take 001 time=4.057749
+[BoneUpload] count=83 b0T(1.070076,3.010684,-0.414968) b1T(1.070076,3.010684,-0.414968) b2T(1.070076,3.010684,-0.414968)
+[Animation Update] clip=Take 001 time=0.058822
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.386430,0.075388,0.406627)
+[Animation Update] clip=Take 001 time=0.193222
+[BoneUpload] count=83 b0T(0.386430,0.075388,0.406627) b1T(0.386430,0.075388,0.406627) b2T(0.386430,0.075388,0.406627)
+[Animation Update] clip=Take 001 time=0.327622
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.319322,0.276881,0.454422)
+[Animation Update] clip=Take 001 time=0.462023
+[BoneUpload] count=83 b0T(0.319322,0.276881,0.454422) b1T(0.319322,0.276881,0.454422) b2T(0.319322,0.276882,0.454422)
+[Animation Update] clip=Take 001 time=0.596420
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.378189,0.615287,-0.566561)
+[Animation Update] clip=Take 001 time=0.730817
+[BoneUpload] count=83 b0T(0.378189,0.615287,-0.566561) b1T(0.378189,0.615287,-0.566561) b2T(0.378189,0.615287,-0.566561)
+[Animation Update] clip=Take 001 time=0.865213
+[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.344148,1.253010,-1.085878)
+[Animation Update] clip=Take 001 time=0.999610
+[BoneUpload] count=83 b0T(1.344148,1.253010,-1.085878) b1T(1.344148,1.253009,-1.085878) b2T(1.344148,1.253009,-1.085878)

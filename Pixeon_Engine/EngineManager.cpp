@@ -93,6 +93,7 @@ void EngineManager::UnInit() {
 	SceneManger::GetInstance()->Save();
 	SettingManager::GetInstance()->SaveConfig();
 	// ”jŠüˆ—
+	EditrGUI::DestroyInstance();
 	AssetManager::DeleteInstance();
 	ComponentManager::DestroyInstance();
 	SceneManger::DestroyInstance();
