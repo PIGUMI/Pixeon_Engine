@@ -18,6 +18,7 @@ void AnimationComponent::Init(Object* owner) {
 ModelRenderComponent* AnimationComponent::GetRenderer() {
     return _Parent ? _Parent->GetComponent<ModelRenderComponent>() : nullptr;
 }
+
 std::shared_ptr<ModelSharedResource> AnimationComponent::GetResource() {
     return m_renderer ? ModelManager::Instance()->LoadOrGet(m_renderer->GetModelPath()) : nullptr;
 }
@@ -141,29 +142,21 @@ void AnimationComponent::BeginPlay() {
     m_nodeToBone.clear();
     for (size_t i = 0; i < m_resource->bones.size(); ++i)
         m_nodeToBone[m_resource->bones[i].name] = (int)i;
+	Play();
+}
 
-    // スキンモデルなら VS を差し替え（ModelRender 側で使う想定）
-    if (m_renderer && m_resource->hasSkin) {
-        // ModelRenderComponent の VS 名をスキン用に変更する処理を追加してもよい
-        // （現在は ModelRenderComponent 側のインスペクターで手動設定）
-    }
+void AnimationComponent::EditUpdate()
+{
 }
 
 void AnimationComponent::InGameUpdate() {
     if (!m_playing || m_paused) return;
     if (m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return;
 
-    float dt = 0.016f; // 固定フレーム
+    float dt = 1.0f / 60.0f; // 固定フレーム
     UpdateAnimation(dt);
     RebuildBoneMatrices();
     ApplyToModel();
-
-    static int frameCounter = 0;
-    if (++frameCounter % 120 == 0) {
-        EditrGUI::GetInstance()->WriteLog("[Animation Update] clip=" +
-            (m_currentClip >= 0 ? m_clips[m_currentClip].name : "NONE") +
-            " time=" + std::to_string(m_time));
-    }
 }
 
 void AnimationComponent::UpdateAnimation(float dt) {
@@ -219,7 +212,6 @@ BoneTransform AnimationComponent::InterpChannel(const AnimationChannelRuntime& c
     return r;
 }
 
-// 最重要: final = InverseBindPose * currentGlobal
 void AnimationComponent::BuildClipPose(int clipIndex, float time,
     std::vector<DirectX::XMFLOAT4X4>& outFinal)
 {
@@ -386,9 +378,13 @@ void AnimationComponent::Play() {
     if (m_currentClip < 0) return;
     m_playing = true; m_paused = false;
 }
+
 void AnimationComponent::Pause() { m_paused = true; }
+
 void AnimationComponent::Resume() { m_paused = false; }
+
 void AnimationComponent::Stop() { m_playing = false; m_paused = false; m_time = 0.f; }
+
 void AnimationComponent::Restart() { m_time = 0.f; m_playing = true; m_paused = false; }
 
 bool AnimationComponent::SetAnimationClip(int clipIndex) {
@@ -398,11 +394,14 @@ bool AnimationComponent::SetAnimationClip(int clipIndex) {
 }
 
 bool AnimationComponent::IsPlaying() const { return m_playing && !m_paused; }
+
 bool AnimationComponent::IsPaused()  const { return m_paused; }
+
 bool AnimationComponent::IsFinished() const {
     if (m_loop || m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return false;
     return m_time >= (float)m_clips[m_currentClip].duration;
 }
+
 float AnimationComponent::GetAnimationProgress() const {
     if (m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return 0.f;
     float d = (float)m_clips[m_currentClip].duration;

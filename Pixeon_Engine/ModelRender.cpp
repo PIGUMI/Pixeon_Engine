@@ -422,67 +422,95 @@ void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4
 }
 
 void ModelRenderComponent::DrawInspector() {
+	// ImGui 表示用
     auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
-    if (!ImGui::CollapsingHeader("ModelRenderComponent", ImGuiTreeNodeFlags_DefaultOpen))
-        return;
+    std::string title;
+	title = "ModelRenderComponent##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+    if (!ImGui::CollapsingHeader(title.c_str(), ImGuiTreeNodeFlags_DefaultOpen))return;
+	title = "ModelTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+    if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV))return;
 
-    ImGui::Text("%s %s", SJ("モデル:").c_str(), m_modelPath.c_str());
+    ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("描画モデル").c_str());
+	ImGui::TableSetColumnIndex(1); ImGui::Text("%s", m_modelPath.c_str());
+
+	ImGui::TableNextRow();
+
     static char pathBuf[256];
     std::snprintf(pathBuf, sizeof(pathBuf), "%s", m_modelPath.c_str());
-    ImGui::InputText("Path", pathBuf, sizeof(pathBuf));
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("モデルの設定").c_str());
+	ImGui::TableSetColumnIndex(1); 
     if (ImGui::Button(SJ("再読込/適用").c_str())) SetModel(pathBuf);
-
-    ImGui::SameLine();
-    if (ImGui::Button(SJ("モデル選択...").c_str())) ImGui::OpenPopup("ModelSelectPopup");
+	ImGui::SameLine();
+    if (ImGui::Button(SJ("モデル選択").c_str())) ImGui::OpenPopup("ModelSelectPopup");
     ShowModelSelectPopup();
 
-    if (ImGui::TreeNode(SJ("シェーダ設定").c_str())) {
-        auto* sm = ShaderManager::GetInstance();
-        static std::vector<std::string> vsList;
-        static std::vector<std::string> psList;
-        if (ImGui::Button(SJ("更新(一覧)").c_str())) {
-            vsList = sm->GetShaderList("VS");
-            psList = sm->GetShaderList("PS");
-        }
-        if (vsList.empty()) vsList = sm->GetShaderList("VS");
-        if (psList.empty()) psList = sm->GetShaderList("PS");
+    ImGui::TableNextRow();
 
-        if (ImGui::BeginCombo("VS", m_vsName.c_str())) {
-            for (auto& n : vsList) {
-                bool sel = (n == m_vsName);
-                if (ImGui::Selectable(n.c_str(), sel)) {
-                    m_vsName = n;
-                    EnsureShaders(true);
-                }
-                if (sel) ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-        if (ImGui::BeginCombo("PS", m_psName.c_str())) {
-            for (auto& n : psList) {
-                bool sel = (n == m_psName);
-                if (ImGui::Selectable(n.c_str(), sel)) {
-                    m_psName = n;
-                    EnsureShaders(false);
-                }
-                if (sel) ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-        ImGui::TreePop();
+    auto* sm = ShaderManager::GetInstance();
+    static std::vector<std::string> vsList;
+    static std::vector<std::string> psList;
+    if (vsList.empty()) vsList = sm->GetShaderList("VS");
+    if (psList.empty()) psList = sm->GetShaderList("PS");
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("シェーダの再読み込み").c_str());
+	ImGui::TableSetColumnIndex(1);
+    if (ImGui::Button(SJ("更新(一覧)").c_str())) {
+        vsList = sm->GetShaderList("VS");
+        psList = sm->GetShaderList("PS");
     }
 
-    ImGui::ColorEdit4("Color", (float*)&m_color);
-    ImGui::Separator();
-    ImGui::Text("%s %zu", SJ("マテリアル数:").c_str(), m_materials.size());
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("頂点シェーダー").c_str());
+	ImGui::TableSetColumnIndex(1);
+    if (ImGui::BeginCombo("VS", m_vsName.c_str())) {
+        for (auto& n : vsList) {
+            bool sel = (n == m_vsName);
+            if (ImGui::Selectable(n.c_str(), sel)) {
+                m_vsName = n;
+                EnsureShaders(true);
+            }
+            if (sel) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
 
-    for (size_t i = 0; i < m_materials.size(); ++i) {
-        ImGui::PushID((int)i);
-        ImGui::Text("Mat %zu", i);
-        ImGui::SameLine();
-        std::string shown = m_materials[i].texName.empty() ? SJ("(なし)") : m_materials[i].texName;
-        ImGui::Text("tex=%s", shown.c_str());
-        ImGui::PopID();
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ピクセルシェーダー").c_str());
+	ImGui::TableSetColumnIndex(1);
+    if (ImGui::BeginCombo("PS", m_psName.c_str())) {
+        for (auto& n : psList) {
+            bool sel = (n == m_psName);
+            if (ImGui::Selectable(n.c_str(), sel)) {
+                m_psName = n;
+                EnsureShaders(false);
+            }
+            if (sel) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
+
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("簡易色設定").c_str());
+	ImGui::TableSetColumnIndex(1);ImGui::ColorEdit4("Color", (float*)&m_color);
+
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0);
+    ImGui::EndTable();
+	title = "マテリアル一覧##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+    if (ImGui::TreeNode(SJ(title.c_str()).c_str())) {
+ 
+        ImGui::Text("%s %zu", SJ("マテリアル数:").c_str(), m_materials.size());
+
+        for (size_t i = 0; i < m_materials.size(); ++i) {
+            ImGui::PushID((int)i);
+            ImGui::Text("Mat %zu", i);
+            ImGui::SameLine();
+            std::string shown = m_materials[i].texName.empty() ? SJ("(なし)") : m_materials[i].texName;
+            ImGui::Text("tex=%s", shown.c_str());
+            ImGui::PopID();
+        }
+   
+        ImGui::TreePop();
     }
 }
 

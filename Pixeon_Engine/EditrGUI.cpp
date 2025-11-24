@@ -32,7 +32,7 @@ EditrGUI* EditrGUI::GetInstance()
 
 void EditrGUI::DestroyInstance(){
     if (instance) {
-        instance->WriteLogBuffer();
+        //instance->WriteLogBuffer();
         delete instance;
         instance = nullptr;
     }

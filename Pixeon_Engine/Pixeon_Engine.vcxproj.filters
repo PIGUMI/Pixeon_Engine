@@ -27,9 +27,6 @@
     <Filter Include="ソース ファイル\App">
       <UniqueIdentifier>{5a1d980f-b464-49e8-b984-996914f8d0cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Sys">
-      <UniqueIdentifier>{db6a1d7e-36d0-4766-a177-40a57d57ba05}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Manager">
       <UniqueIdentifier>{a767e929-0ea9-4db3-922d-cf813b1b6179}</UniqueIdentifier>
     </Filter>
@@ -53,6 +50,9 @@
     </Filter>
     <Filter Include="ソース ファイル\BaseClass">
       <UniqueIdentifier>{9a907b63-a5b3-4191-b9c2-d7e18ab2d61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Sys">
+      <UniqueIdentifier>{db6a1d7e-36d0-4766-a177-40a57d57ba05}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
