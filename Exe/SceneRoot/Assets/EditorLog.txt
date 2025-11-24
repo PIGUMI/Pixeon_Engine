@@ -58,716 +58,1448 @@
 [Channel] clip=mixamo.com idx=26 nodeName=mixamorig:Spine1 nodeIndex=4 hierarchyName=mixamorig:Spine1 expected=4 status=OK
 [Channel] clip=mixamo.com idx=27 nodeName=mixamorig:Spine2 nodeIndex=5 hierarchyName=mixamorig:Spine2 expected=5 status=OK
 [Integrity] bones=28 clips=1 boneMismatch=0
-[Integrity] bones=83 clips=1 boneMismatch=0
+[Integrity] bones=28 clips=1 boneMismatch=0
 [MappingDump] ---- Bones ----
-[Bone] idx=0 name=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip status=OK
-[Bone] idx=1 name=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 status=OK
-[Bone] idx=2 name=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 status=OK
-[Bone] idx=3 name=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 status=OK
-[Bone] idx=4 name=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck status=OK
-[Bone] idx=5 name=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head status=OK
-[Bone] idx=6 name=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 status=OK
-[Bone] idx=7 name=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 status=OK
-[Bone] idx=8 name=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 status=OK
-[Bone] idx=9 name=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 status=OK
-[Bone] idx=10 name=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star status=OK
-[Bone] idx=11 name=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder status=OK
-[Bone] idx=12 name=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm status=OK
-[Bone] idx=13 name=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm status=OK
-[Bone] idx=14 name=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll status=OK
-[Bone] idx=15 name=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 status=OK
-[Bone] idx=16 name=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder status=OK
-[Bone] idx=17 name=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm status=OK
-[Bone] idx=18 name=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm status=OK
-[Bone] idx=19 name=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll status=OK
-[Bone] idx=20 name=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand status=OK
-[Bone] idx=21 name=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 status=OK
-[Bone] idx=22 name=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 status=OK
-[Bone] idx=23 name=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 status=OK
-[Bone] idx=24 name=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 status=OK
-[Bone] idx=25 name=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 status=OK
-[Bone] idx=26 name=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 status=OK
-[Bone] idx=27 name=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 status=OK
-[Bone] idx=28 name=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 status=OK
-[Bone] idx=29 name=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 status=OK
-[Bone] idx=30 name=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 status=OK
-[Bone] idx=31 name=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 status=OK
-[Bone] idx=32 name=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 status=OK
-[Bone] idx=33 name=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root status=OK
-[Bone] idx=34 name=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 status=OK
-[Bone] idx=35 name=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 status=OK
-[Bone] idx=36 name=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 status=OK
-[Bone] idx=37 name=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 status=OK
-[Bone] idx=38 name=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 status=OK
-[Bone] idx=39 name=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 status=OK
-[Bone] idx=40 name=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 status=OK
-[Bone] idx=41 name=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 status=OK
-[Bone] idx=42 name=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 status=OK
-[Bone] idx=43 name=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand status=OK
-[Bone] idx=44 name=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 status=OK
-[Bone] idx=45 name=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 status=OK
-[Bone] idx=46 name=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 status=OK
-[Bone] idx=47 name=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 status=OK
-[Bone] idx=48 name=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 status=OK
-[Bone] idx=49 name=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 status=OK
-[Bone] idx=50 name=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 status=OK
-[Bone] idx=51 name=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 status=OK
-[Bone] idx=52 name=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 status=OK
-[Bone] idx=53 name=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 status=OK
-[Bone] idx=54 name=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 status=OK
-[Bone] idx=55 name=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 status=OK
-[Bone] idx=56 name=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 status=OK
-[Bone] idx=57 name=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 status=OK
-[Bone] idx=58 name=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 status=OK
-[Bone] idx=59 name=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 status=OK
-[Bone] idx=60 name=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 status=OK
-[Bone] idx=61 name=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 status=OK
-[Bone] idx=62 name=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 status=OK
-[Bone] idx=63 name=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 status=OK
-[Bone] idx=64 name=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 status=OK
-[Bone] idx=65 name=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 status=OK
-[Bone] idx=66 name=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 status=OK
-[Bone] idx=67 name=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 status=OK
-[Bone] idx=68 name=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 status=OK
-[Bone] idx=69 name=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 status=OK
-[Bone] idx=70 name=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 status=OK
-[Bone] idx=71 name=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 status=OK
-[Bone] idx=72 name=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 status=OK
-[Bone] idx=73 name=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 status=OK
-[Bone] idx=74 name=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg status=OK
-[Bone] idx=75 name=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee status=OK
-[Bone] idx=76 name=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot status=OK
-[Bone] idx=77 name=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg status=OK
-[Bone] idx=78 name=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee status=OK
-[Bone] idx=79 name=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot status=OK
-[Bone] idx=80 name=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen status=OK
-[Bone] idx=81 name=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 status=OK
-[Bone] idx=82 name=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root status=OK
+[Bone] idx=0 name=mixamorig:LeftHandIndex1 nodeIndex=13 hierarchyName=mixamorig:LeftHandIndex1 status=OK
+[Bone] idx=1 name=mixamorig:LeftHandIndex2 nodeIndex=14 hierarchyName=mixamorig:LeftHandIndex2 status=OK
+[Bone] idx=2 name=mixamorig:LeftHandIndex3 nodeIndex=15 hierarchyName=mixamorig:LeftHandIndex3 status=OK
+[Bone] idx=3 name=mixamorig:LeftForeArm nodeIndex=11 hierarchyName=mixamorig:LeftForeArm status=OK
+[Bone] idx=4 name=mixamorig:LeftHand nodeIndex=12 hierarchyName=mixamorig:LeftHand status=OK
+[Bone] idx=5 name=mixamorig:LeftArm nodeIndex=10 hierarchyName=mixamorig:LeftArm status=OK
+[Bone] idx=6 name=mixamorig:Spine2 nodeIndex=5 hierarchyName=mixamorig:Spine2 status=OK
+[Bone] idx=7 name=mixamorig:LeftShoulder nodeIndex=9 hierarchyName=mixamorig:LeftShoulder status=OK
+[Bone] idx=8 name=mixamorig:Spine nodeIndex=3 hierarchyName=mixamorig:Spine status=OK
+[Bone] idx=9 name=mixamorig:Spine1 nodeIndex=4 hierarchyName=mixamorig:Spine1 status=OK
+[Bone] idx=10 name=mixamorig:RightHandIndex1 nodeIndex=21 hierarchyName=mixamorig:RightHandIndex1 status=OK
+[Bone] idx=11 name=mixamorig:RightHandIndex2 nodeIndex=22 hierarchyName=mixamorig:RightHandIndex2 status=OK
+[Bone] idx=12 name=mixamorig:RightHandIndex3 nodeIndex=23 hierarchyName=mixamorig:RightHandIndex3 status=OK
+[Bone] idx=13 name=mixamorig:RightHand nodeIndex=20 hierarchyName=mixamorig:RightHand status=OK
+[Bone] idx=14 name=mixamorig:RightForeArm nodeIndex=19 hierarchyName=mixamorig:RightForeArm status=OK
+[Bone] idx=15 name=mixamorig:RightArm nodeIndex=18 hierarchyName=mixamorig:RightArm status=OK
+[Bone] idx=16 name=mixamorig:RightShoulder nodeIndex=17 hierarchyName=mixamorig:RightShoulder status=OK
+[Bone] idx=17 name=mixamorig:Neck nodeIndex=6 hierarchyName=mixamorig:Neck status=OK
+[Bone] idx=18 name=mixamorig:Head nodeIndex=7 hierarchyName=mixamorig:Head status=OK
+[Bone] idx=19 name=mixamorig:Hips nodeIndex=2 hierarchyName=mixamorig:Hips status=OK
+[Bone] idx=20 name=mixamorig:LeftUpLeg nodeIndex=25 hierarchyName=mixamorig:LeftUpLeg status=OK
+[Bone] idx=21 name=mixamorig:LeftLeg nodeIndex=26 hierarchyName=mixamorig:LeftLeg status=OK
+[Bone] idx=22 name=mixamorig:LeftFoot nodeIndex=27 hierarchyName=mixamorig:LeftFoot status=OK
+[Bone] idx=23 name=mixamorig:LeftToeBase nodeIndex=28 hierarchyName=mixamorig:LeftToeBase status=OK
+[Bone] idx=24 name=mixamorig:RightUpLeg nodeIndex=30 hierarchyName=mixamorig:RightUpLeg status=OK
+[Bone] idx=25 name=mixamorig:RightLeg nodeIndex=31 hierarchyName=mixamorig:RightLeg status=OK
+[Bone] idx=26 name=mixamorig:RightFoot nodeIndex=32 hierarchyName=mixamorig:RightFoot status=OK
+[Bone] idx=27 name=mixamorig:RightToeBase nodeIndex=33 hierarchyName=mixamorig:RightToeBase status=OK
 [MappingDump] ---- Channels (all clips) ----
-[Channel] clip=Take 001 idx=0 nodeName=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 expected=14 status=OK
-[Channel] clip=Take 001 idx=1 nodeName=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 expected=15 status=OK
-[Channel] clip=Take 001 idx=2 nodeName=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 expected=16 status=OK
-[Channel] clip=Take 001 idx=3 nodeName=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 expected=17 status=OK
-[Channel] clip=Take 001 idx=4 nodeName=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head expected=13 status=OK
-[Channel] clip=Take 001 idx=5 nodeName=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip expected=8 status=OK
-[Channel] clip=Take 001 idx=6 nodeName=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck expected=12 status=OK
-[Channel] clip=Take 001 idx=7 nodeName=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root expected=78 status=OK
-[Channel] clip=Take 001 idx=8 nodeName=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root expected=7 status=OK
-[Channel] clip=Take 001 idx=9 nodeName=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 expected=9 status=OK
-[Channel] clip=Take 001 idx=10 nodeName=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 expected=10 status=OK
-[Channel] clip=Take 001 idx=11 nodeName=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 expected=11 status=OK
-[Channel] clip=Take 001 idx=12 nodeName=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star expected=18 status=OK
-[Channel] clip=Take 001 idx=13 nodeName=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 expected=82 status=OK
-[Channel] clip=Take 001 idx=14 nodeName=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 expected=83 status=OK
-[Channel] clip=Take 001 idx=15 nodeName=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 expected=84 status=OK
-[Channel] clip=Take 001 idx=16 nodeName=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen expected=88 status=OK
-[Channel] clip=Take 001 idx=17 nodeName=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 expected=89 status=OK
-[Channel] clip=Take 001 idx=18 nodeName=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm expected=20 status=OK
-[Channel] clip=Take 001 idx=19 nodeName=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll expected=22 status=OK
-[Channel] clip=Take 001 idx=20 nodeName=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot expected=74 status=OK
-[Channel] clip=Take 001 idx=21 nodeName=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm expected=21 status=OK
-[Channel] clip=Take 001 idx=22 nodeName=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand expected=23 status=OK
-[Channel] clip=Take 001 idx=23 nodeName=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 expected=28 status=OK
-[Channel] clip=Take 001 idx=24 nodeName=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 expected=29 status=OK
-[Channel] clip=Take 001 idx=25 nodeName=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 expected=30 status=OK
-[Channel] clip=Take 001 idx=26 nodeName=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 expected=31 status=OK
-[Channel] clip=Take 001 idx=27 nodeName=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee expected=73 status=OK
-[Channel] clip=Take 001 idx=28 nodeName=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg expected=72 status=OK
-[Channel] clip=Take 001 idx=29 nodeName=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 expected=32 status=OK
-[Channel] clip=Take 001 idx=30 nodeName=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 expected=33 status=OK
-[Channel] clip=Take 001 idx=31 nodeName=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 expected=34 status=OK
-[Channel] clip=Take 001 idx=32 nodeName=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 expected=35 status=OK
-[Channel] clip=Take 001 idx=33 nodeName=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 expected=40 status=OK
-[Channel] clip=Take 001 idx=34 nodeName=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 expected=41 status=OK
-[Channel] clip=Take 001 idx=35 nodeName=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 expected=42 status=OK
-[Channel] clip=Take 001 idx=36 nodeName=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 expected=43 status=OK
-[Channel] clip=Take 001 idx=37 nodeName=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 expected=36 status=OK
-[Channel] clip=Take 001 idx=38 nodeName=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 expected=37 status=OK
-[Channel] clip=Take 001 idx=39 nodeName=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 expected=38 status=OK
-[Channel] clip=Take 001 idx=40 nodeName=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 expected=39 status=OK
-[Channel] clip=Take 001 idx=41 nodeName=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 expected=79 status=OK
-[Channel] clip=Take 001 idx=42 nodeName=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 expected=80 status=OK
-[Channel] clip=Take 001 idx=43 nodeName=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 expected=81 status=OK
-[Channel] clip=Take 001 idx=44 nodeName=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder expected=19 status=OK
-[Channel] clip=Take 001 idx=45 nodeName=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 expected=44 status=OK
-[Channel] clip=Take 001 idx=46 nodeName=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 expected=24 status=OK
-[Channel] clip=Take 001 idx=47 nodeName=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 expected=25 status=OK
-[Channel] clip=Take 001 idx=48 nodeName=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 expected=26 status=OK
-[Channel] clip=Take 001 idx=49 nodeName=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 expected=27 status=OK
-[Channel] clip=Take 001 idx=50 nodeName=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm expected=46 status=OK
-[Channel] clip=Take 001 idx=51 nodeName=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll expected=48 status=OK
-[Channel] clip=Take 001 idx=52 nodeName=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot expected=77 status=OK
-[Channel] clip=Take 001 idx=53 nodeName=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm expected=47 status=OK
-[Channel] clip=Take 001 idx=54 nodeName=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand expected=49 status=OK
-[Channel] clip=Take 001 idx=55 nodeName=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 expected=54 status=OK
-[Channel] clip=Take 001 idx=56 nodeName=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 expected=55 status=OK
-[Channel] clip=Take 001 idx=57 nodeName=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 expected=56 status=OK
-[Channel] clip=Take 001 idx=58 nodeName=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 expected=57 status=OK
-[Channel] clip=Take 001 idx=59 nodeName=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee expected=76 status=OK
-[Channel] clip=Take 001 idx=60 nodeName=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg expected=75 status=OK
-[Channel] clip=Take 001 idx=61 nodeName=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 expected=58 status=OK
-[Channel] clip=Take 001 idx=62 nodeName=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 expected=59 status=OK
-[Channel] clip=Take 001 idx=63 nodeName=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 expected=60 status=OK
-[Channel] clip=Take 001 idx=64 nodeName=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 expected=61 status=OK
-[Channel] clip=Take 001 idx=65 nodeName=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 expected=66 status=OK
-[Channel] clip=Take 001 idx=66 nodeName=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 expected=67 status=OK
-[Channel] clip=Take 001 idx=67 nodeName=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 expected=68 status=OK
-[Channel] clip=Take 001 idx=68 nodeName=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 expected=69 status=OK
-[Channel] clip=Take 001 idx=69 nodeName=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 expected=62 status=OK
-[Channel] clip=Take 001 idx=70 nodeName=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 expected=63 status=OK
-[Channel] clip=Take 001 idx=71 nodeName=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 expected=64 status=OK
-[Channel] clip=Take 001 idx=72 nodeName=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 expected=65 status=OK
-[Channel] clip=Take 001 idx=73 nodeName=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 expected=85 status=OK
-[Channel] clip=Take 001 idx=74 nodeName=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 expected=86 status=OK
-[Channel] clip=Take 001 idx=75 nodeName=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 expected=87 status=OK
-[Channel] clip=Take 001 idx=76 nodeName=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder expected=45 status=OK
-[Channel] clip=Take 001 idx=77 nodeName=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 expected=70 status=OK
-[Channel] clip=Take 001 idx=78 nodeName=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 expected=71 status=OK
-[Channel] clip=Take 001 idx=79 nodeName=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 expected=50 status=OK
-[Channel] clip=Take 001 idx=80 nodeName=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 expected=51 status=OK
-[Channel] clip=Take 001 idx=81 nodeName=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 expected=52 status=OK
-[Channel] clip=Take 001 idx=82 nodeName=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 expected=53 status=OK
-[Integrity] bones=83 clips=1 boneMismatch=0
-[Integrity] bones=83 clips=1 boneMismatch=0
-[MappingDump] ---- Bones ----
-[Bone] idx=0 name=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip status=OK
-[Bone] idx=1 name=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 status=OK
-[Bone] idx=2 name=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 status=OK
-[Bone] idx=3 name=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 status=OK
-[Bone] idx=4 name=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck status=OK
-[Bone] idx=5 name=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head status=OK
-[Bone] idx=6 name=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 status=OK
-[Bone] idx=7 name=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 status=OK
-[Bone] idx=8 name=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 status=OK
-[Bone] idx=9 name=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 status=OK
-[Bone] idx=10 name=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star status=OK
-[Bone] idx=11 name=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder status=OK
-[Bone] idx=12 name=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm status=OK
-[Bone] idx=13 name=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm status=OK
-[Bone] idx=14 name=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll status=OK
-[Bone] idx=15 name=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 status=OK
-[Bone] idx=16 name=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder status=OK
-[Bone] idx=17 name=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm status=OK
-[Bone] idx=18 name=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm status=OK
-[Bone] idx=19 name=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll status=OK
-[Bone] idx=20 name=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand status=OK
-[Bone] idx=21 name=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 status=OK
-[Bone] idx=22 name=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 status=OK
-[Bone] idx=23 name=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 status=OK
-[Bone] idx=24 name=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 status=OK
-[Bone] idx=25 name=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 status=OK
-[Bone] idx=26 name=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 status=OK
-[Bone] idx=27 name=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 status=OK
-[Bone] idx=28 name=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 status=OK
-[Bone] idx=29 name=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 status=OK
-[Bone] idx=30 name=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 status=OK
-[Bone] idx=31 name=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 status=OK
-[Bone] idx=32 name=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 status=OK
-[Bone] idx=33 name=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root status=OK
-[Bone] idx=34 name=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 status=OK
-[Bone] idx=35 name=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 status=OK
-[Bone] idx=36 name=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 status=OK
-[Bone] idx=37 name=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 status=OK
-[Bone] idx=38 name=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 status=OK
-[Bone] idx=39 name=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 status=OK
-[Bone] idx=40 name=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 status=OK
-[Bone] idx=41 name=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 status=OK
-[Bone] idx=42 name=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 status=OK
-[Bone] idx=43 name=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand status=OK
-[Bone] idx=44 name=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 status=OK
-[Bone] idx=45 name=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 status=OK
-[Bone] idx=46 name=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 status=OK
-[Bone] idx=47 name=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 status=OK
-[Bone] idx=48 name=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 status=OK
-[Bone] idx=49 name=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 status=OK
-[Bone] idx=50 name=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 status=OK
-[Bone] idx=51 name=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 status=OK
-[Bone] idx=52 name=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 status=OK
-[Bone] idx=53 name=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 status=OK
-[Bone] idx=54 name=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 status=OK
-[Bone] idx=55 name=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 status=OK
-[Bone] idx=56 name=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 status=OK
-[Bone] idx=57 name=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 status=OK
-[Bone] idx=58 name=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 status=OK
-[Bone] idx=59 name=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 status=OK
-[Bone] idx=60 name=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 status=OK
-[Bone] idx=61 name=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 status=OK
-[Bone] idx=62 name=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 status=OK
-[Bone] idx=63 name=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 status=OK
-[Bone] idx=64 name=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 status=OK
-[Bone] idx=65 name=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 status=OK
-[Bone] idx=66 name=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 status=OK
-[Bone] idx=67 name=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 status=OK
-[Bone] idx=68 name=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 status=OK
-[Bone] idx=69 name=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 status=OK
-[Bone] idx=70 name=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 status=OK
-[Bone] idx=71 name=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 status=OK
-[Bone] idx=72 name=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 status=OK
-[Bone] idx=73 name=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 status=OK
-[Bone] idx=74 name=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg status=OK
-[Bone] idx=75 name=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee status=OK
-[Bone] idx=76 name=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot status=OK
-[Bone] idx=77 name=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg status=OK
-[Bone] idx=78 name=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee status=OK
-[Bone] idx=79 name=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot status=OK
-[Bone] idx=80 name=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen status=OK
-[Bone] idx=81 name=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 status=OK
-[Bone] idx=82 name=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root status=OK
-[MappingDump] ---- Channels (all clips) ----
-[Channel] clip=Take 001 idx=0 nodeName=Char_Linie:Hat_01 nodeIndex=14 hierarchyName=Char_Linie:Hat_01 expected=14 status=OK
-[Channel] clip=Take 001 idx=1 nodeName=Char_Linie:Hat_02 nodeIndex=15 hierarchyName=Char_Linie:Hat_02 expected=15 status=OK
-[Channel] clip=Take 001 idx=2 nodeName=Char_Linie:Hat_03 nodeIndex=16 hierarchyName=Char_Linie:Hat_03 expected=16 status=OK
-[Channel] clip=Take 001 idx=3 nodeName=Char_Linie:Hat_04 nodeIndex=17 hierarchyName=Char_Linie:Hat_04 expected=17 status=OK
-[Channel] clip=Take 001 idx=4 nodeName=Char_Linie:Head nodeIndex=13 hierarchyName=Char_Linie:Head expected=13 status=OK
-[Channel] clip=Take 001 idx=5 nodeName=Char_Linie:Hip nodeIndex=8 hierarchyName=Char_Linie:Hip expected=8 status=OK
-[Channel] clip=Take 001 idx=6 nodeName=Char_Linie:Neck nodeIndex=12 hierarchyName=Char_Linie:Neck expected=12 status=OK
-[Channel] clip=Take 001 idx=7 nodeName=Char_Linie:Robe_Root nodeIndex=78 hierarchyName=Char_Linie:Robe_Root expected=78 status=OK
-[Channel] clip=Take 001 idx=8 nodeName=Char_Linie:Root nodeIndex=7 hierarchyName=Char_Linie:Root expected=7 status=OK
-[Channel] clip=Take 001 idx=9 nodeName=Char_Linie:Spine01 nodeIndex=9 hierarchyName=Char_Linie:Spine01 expected=9 status=OK
-[Channel] clip=Take 001 idx=10 nodeName=Char_Linie:Spine02 nodeIndex=10 hierarchyName=Char_Linie:Spine02 expected=10 status=OK
-[Channel] clip=Take 001 idx=11 nodeName=Char_Linie:Spine03 nodeIndex=11 hierarchyName=Char_Linie:Spine03 expected=11 status=OK
-[Channel] clip=Take 001 idx=12 nodeName=Char_Linie:Star nodeIndex=18 hierarchyName=Char_Linie:Star expected=18 status=OK
-[Channel] clip=Take 001 idx=13 nodeName=Char_Linie:front_Robe_01 nodeIndex=82 hierarchyName=Char_Linie:front_Robe_01 expected=82 status=OK
-[Channel] clip=Take 001 idx=14 nodeName=Char_Linie:front_Robe_02 nodeIndex=83 hierarchyName=Char_Linie:front_Robe_02 expected=83 status=OK
-[Channel] clip=Take 001 idx=15 nodeName=Char_Linie:front_Robe_03 nodeIndex=84 hierarchyName=Char_Linie:front_Robe_03 expected=84 status=OK
-[Channel] clip=Take 001 idx=16 nodeName=Char_Linie:jnt_FountainPen nodeIndex=88 hierarchyName=Char_Linie:jnt_FountainPen expected=88 status=OK
-[Channel] clip=Take 001 idx=17 nodeName=Char_Linie:jnt_FountainPen1 nodeIndex=89 hierarchyName=Char_Linie:jnt_FountainPen1 expected=89 status=OK
-[Channel] clip=Take 001 idx=18 nodeName=Char_Linie:left_Arm nodeIndex=20 hierarchyName=Char_Linie:left_Arm expected=20 status=OK
-[Channel] clip=Take 001 idx=19 nodeName=Char_Linie:left_ArmRoll nodeIndex=22 hierarchyName=Char_Linie:left_ArmRoll expected=22 status=OK
-[Channel] clip=Take 001 idx=20 nodeName=Char_Linie:left_Foot nodeIndex=74 hierarchyName=Char_Linie:left_Foot expected=74 status=OK
-[Channel] clip=Take 001 idx=21 nodeName=Char_Linie:left_ForeArm nodeIndex=21 hierarchyName=Char_Linie:left_ForeArm expected=21 status=OK
-[Channel] clip=Take 001 idx=22 nodeName=Char_Linie:left_Hand nodeIndex=23 hierarchyName=Char_Linie:left_Hand expected=23 status=OK
-[Channel] clip=Take 001 idx=23 nodeName=Char_Linie:left_Index_01 nodeIndex=28 hierarchyName=Char_Linie:left_Index_01 expected=28 status=OK
-[Channel] clip=Take 001 idx=24 nodeName=Char_Linie:left_Index_02 nodeIndex=29 hierarchyName=Char_Linie:left_Index_02 expected=29 status=OK
-[Channel] clip=Take 001 idx=25 nodeName=Char_Linie:left_Index_03 nodeIndex=30 hierarchyName=Char_Linie:left_Index_03 expected=30 status=OK
-[Channel] clip=Take 001 idx=26 nodeName=Char_Linie:left_Index_04 nodeIndex=31 hierarchyName=Char_Linie:left_Index_04 expected=31 status=OK
-[Channel] clip=Take 001 idx=27 nodeName=Char_Linie:left_Knee nodeIndex=73 hierarchyName=Char_Linie:left_Knee expected=73 status=OK
-[Channel] clip=Take 001 idx=28 nodeName=Char_Linie:left_Leg nodeIndex=72 hierarchyName=Char_Linie:left_Leg expected=72 status=OK
-[Channel] clip=Take 001 idx=29 nodeName=Char_Linie:left_Middle_01 nodeIndex=32 hierarchyName=Char_Linie:left_Middle_01 expected=32 status=OK
-[Channel] clip=Take 001 idx=30 nodeName=Char_Linie:left_Middle_02 nodeIndex=33 hierarchyName=Char_Linie:left_Middle_02 expected=33 status=OK
-[Channel] clip=Take 001 idx=31 nodeName=Char_Linie:left_Middle_03 nodeIndex=34 hierarchyName=Char_Linie:left_Middle_03 expected=34 status=OK
-[Channel] clip=Take 001 idx=32 nodeName=Char_Linie:left_Middle_04 nodeIndex=35 hierarchyName=Char_Linie:left_Middle_04 expected=35 status=OK
-[Channel] clip=Take 001 idx=33 nodeName=Char_Linie:left_Pinky_01 nodeIndex=40 hierarchyName=Char_Linie:left_Pinky_01 expected=40 status=OK
-[Channel] clip=Take 001 idx=34 nodeName=Char_Linie:left_Pinky_02 nodeIndex=41 hierarchyName=Char_Linie:left_Pinky_02 expected=41 status=OK
-[Channel] clip=Take 001 idx=35 nodeName=Char_Linie:left_Pinky_03 nodeIndex=42 hierarchyName=Char_Linie:left_Pinky_03 expected=42 status=OK
-[Channel] clip=Take 001 idx=36 nodeName=Char_Linie:left_Pinky_04 nodeIndex=43 hierarchyName=Char_Linie:left_Pinky_04 expected=43 status=OK
-[Channel] clip=Take 001 idx=37 nodeName=Char_Linie:left_Ring_01 nodeIndex=36 hierarchyName=Char_Linie:left_Ring_01 expected=36 status=OK
-[Channel] clip=Take 001 idx=38 nodeName=Char_Linie:left_Ring_02 nodeIndex=37 hierarchyName=Char_Linie:left_Ring_02 expected=37 status=OK
-[Channel] clip=Take 001 idx=39 nodeName=Char_Linie:left_Ring_03 nodeIndex=38 hierarchyName=Char_Linie:left_Ring_03 expected=38 status=OK
-[Channel] clip=Take 001 idx=40 nodeName=Char_Linie:left_Ring_04 nodeIndex=39 hierarchyName=Char_Linie:left_Ring_04 expected=39 status=OK
-[Channel] clip=Take 001 idx=41 nodeName=Char_Linie:left_Robe_01 nodeIndex=79 hierarchyName=Char_Linie:left_Robe_01 expected=79 status=OK
-[Channel] clip=Take 001 idx=42 nodeName=Char_Linie:left_Robe_02 nodeIndex=80 hierarchyName=Char_Linie:left_Robe_02 expected=80 status=OK
-[Channel] clip=Take 001 idx=43 nodeName=Char_Linie:left_Robe_03 nodeIndex=81 hierarchyName=Char_Linie:left_Robe_03 expected=81 status=OK
-[Channel] clip=Take 001 idx=44 nodeName=Char_Linie:left_Shoulder nodeIndex=19 hierarchyName=Char_Linie:left_Shoulder expected=19 status=OK
-[Channel] clip=Take 001 idx=45 nodeName=Char_Linie:left_Sleeve_02 nodeIndex=44 hierarchyName=Char_Linie:left_Sleeve_02 expected=44 status=OK
-[Channel] clip=Take 001 idx=46 nodeName=Char_Linie:left_Thumb_01 nodeIndex=24 hierarchyName=Char_Linie:left_Thumb_01 expected=24 status=OK
-[Channel] clip=Take 001 idx=47 nodeName=Char_Linie:left_Thumb_02 nodeIndex=25 hierarchyName=Char_Linie:left_Thumb_02 expected=25 status=OK
-[Channel] clip=Take 001 idx=48 nodeName=Char_Linie:left_Thumb_03 nodeIndex=26 hierarchyName=Char_Linie:left_Thumb_03 expected=26 status=OK
-[Channel] clip=Take 001 idx=49 nodeName=Char_Linie:left_Thumb_04 nodeIndex=27 hierarchyName=Char_Linie:left_Thumb_04 expected=27 status=OK
-[Channel] clip=Take 001 idx=50 nodeName=Char_Linie:right_Arm nodeIndex=46 hierarchyName=Char_Linie:right_Arm expected=46 status=OK
-[Channel] clip=Take 001 idx=51 nodeName=Char_Linie:right_ArmRoll nodeIndex=48 hierarchyName=Char_Linie:right_ArmRoll expected=48 status=OK
-[Channel] clip=Take 001 idx=52 nodeName=Char_Linie:right_Foot nodeIndex=77 hierarchyName=Char_Linie:right_Foot expected=77 status=OK
-[Channel] clip=Take 001 idx=53 nodeName=Char_Linie:right_ForeArm nodeIndex=47 hierarchyName=Char_Linie:right_ForeArm expected=47 status=OK
-[Channel] clip=Take 001 idx=54 nodeName=Char_Linie:right_Hand nodeIndex=49 hierarchyName=Char_Linie:right_Hand expected=49 status=OK
-[Channel] clip=Take 001 idx=55 nodeName=Char_Linie:right_Index_01 nodeIndex=54 hierarchyName=Char_Linie:right_Index_01 expected=54 status=OK
-[Channel] clip=Take 001 idx=56 nodeName=Char_Linie:right_Index_02 nodeIndex=55 hierarchyName=Char_Linie:right_Index_02 expected=55 status=OK
-[Channel] clip=Take 001 idx=57 nodeName=Char_Linie:right_Index_03 nodeIndex=56 hierarchyName=Char_Linie:right_Index_03 expected=56 status=OK
-[Channel] clip=Take 001 idx=58 nodeName=Char_Linie:right_Index_04 nodeIndex=57 hierarchyName=Char_Linie:right_Index_04 expected=57 status=OK
-[Channel] clip=Take 001 idx=59 nodeName=Char_Linie:right_Knee nodeIndex=76 hierarchyName=Char_Linie:right_Knee expected=76 status=OK
-[Channel] clip=Take 001 idx=60 nodeName=Char_Linie:right_Leg nodeIndex=75 hierarchyName=Char_Linie:right_Leg expected=75 status=OK
-[Channel] clip=Take 001 idx=61 nodeName=Char_Linie:right_Middle_01 nodeIndex=58 hierarchyName=Char_Linie:right_Middle_01 expected=58 status=OK
-[Channel] clip=Take 001 idx=62 nodeName=Char_Linie:right_Middle_02 nodeIndex=59 hierarchyName=Char_Linie:right_Middle_02 expected=59 status=OK
-[Channel] clip=Take 001 idx=63 nodeName=Char_Linie:right_Middle_03 nodeIndex=60 hierarchyName=Char_Linie:right_Middle_03 expected=60 status=OK
-[Channel] clip=Take 001 idx=64 nodeName=Char_Linie:right_Middle_04 nodeIndex=61 hierarchyName=Char_Linie:right_Middle_04 expected=61 status=OK
-[Channel] clip=Take 001 idx=65 nodeName=Char_Linie:right_Pinky_01 nodeIndex=66 hierarchyName=Char_Linie:right_Pinky_01 expected=66 status=OK
-[Channel] clip=Take 001 idx=66 nodeName=Char_Linie:right_Pinky_02 nodeIndex=67 hierarchyName=Char_Linie:right_Pinky_02 expected=67 status=OK
-[Channel] clip=Take 001 idx=67 nodeName=Char_Linie:right_Pinky_03 nodeIndex=68 hierarchyName=Char_Linie:right_Pinky_03 expected=68 status=OK
-[Channel] clip=Take 001 idx=68 nodeName=Char_Linie:right_Pinky_04 nodeIndex=69 hierarchyName=Char_Linie:right_Pinky_04 expected=69 status=OK
-[Channel] clip=Take 001 idx=69 nodeName=Char_Linie:right_Ring_01 nodeIndex=62 hierarchyName=Char_Linie:right_Ring_01 expected=62 status=OK
-[Channel] clip=Take 001 idx=70 nodeName=Char_Linie:right_Ring_02 nodeIndex=63 hierarchyName=Char_Linie:right_Ring_02 expected=63 status=OK
-[Channel] clip=Take 001 idx=71 nodeName=Char_Linie:right_Ring_03 nodeIndex=64 hierarchyName=Char_Linie:right_Ring_03 expected=64 status=OK
-[Channel] clip=Take 001 idx=72 nodeName=Char_Linie:right_Ring_04 nodeIndex=65 hierarchyName=Char_Linie:right_Ring_04 expected=65 status=OK
-[Channel] clip=Take 001 idx=73 nodeName=Char_Linie:right_Robe_01 nodeIndex=85 hierarchyName=Char_Linie:right_Robe_01 expected=85 status=OK
-[Channel] clip=Take 001 idx=74 nodeName=Char_Linie:right_Robe_02 nodeIndex=86 hierarchyName=Char_Linie:right_Robe_02 expected=86 status=OK
-[Channel] clip=Take 001 idx=75 nodeName=Char_Linie:right_Robe_03 nodeIndex=87 hierarchyName=Char_Linie:right_Robe_03 expected=87 status=OK
-[Channel] clip=Take 001 idx=76 nodeName=Char_Linie:right_Shoulder nodeIndex=45 hierarchyName=Char_Linie:right_Shoulder expected=45 status=OK
-[Channel] clip=Take 001 idx=77 nodeName=Char_Linie:right_Sleeve_02 nodeIndex=70 hierarchyName=Char_Linie:right_Sleeve_02 expected=70 status=OK
-[Channel] clip=Take 001 idx=78 nodeName=Char_Linie:right_Sleeve_03 nodeIndex=71 hierarchyName=Char_Linie:right_Sleeve_03 expected=71 status=OK
-[Channel] clip=Take 001 idx=79 nodeName=Char_Linie:right_Thumb_01 nodeIndex=50 hierarchyName=Char_Linie:right_Thumb_01 expected=50 status=OK
-[Channel] clip=Take 001 idx=80 nodeName=Char_Linie:right_Thumb_02 nodeIndex=51 hierarchyName=Char_Linie:right_Thumb_02 expected=51 status=OK
-[Channel] clip=Take 001 idx=81 nodeName=Char_Linie:right_Thumb_03 nodeIndex=52 hierarchyName=Char_Linie:right_Thumb_03 expected=52 status=OK
-[Channel] clip=Take 001 idx=82 nodeName=Char_Linie:right_Thumb_04 nodeIndex=53 hierarchyName=Char_Linie:right_Thumb_04 expected=53 status=OK
-[Integrity] bones=83 clips=1 boneMismatch=0
-[Animation BeginPlay] clips=1 bones=83 boneMissingNodeIndex=0
-[Animation Update] clip=Take 001 time=1.920001
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.819583,2.966141,-0.392937)
-[Animation Update] clip=Take 001 time=3.840005
-[BoneUpload] count=83 b0T(0.819583,2.966141,-0.392937) b1T(0.819583,2.966142,-0.392937) b2T(0.819583,2.966142,-0.392937)
-[Animation Update] clip=Take 001 time=1.626671
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.331261,2.912637,-0.348108)
-[Animation Update] clip=Take 001 time=3.546674
-[BoneUpload] count=83 b0T(0.331261,2.912637,-0.348108) b1T(0.331261,2.912637,-0.348108) b2T(0.331261,2.912637,-0.348108)
-[Animation Update] clip=Take 001 time=1.333340
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.176469,2.905642,-0.348625)
-[Animation Update] clip=Take 001 time=3.253344
-[BoneUpload] count=83 b0T(0.176469,2.905642,-0.348625) b1T(0.176469,2.905642,-0.348625) b2T(0.176469,2.905642,-0.348625)
-[Animation Update] clip=Take 001 time=1.040010
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.563104,3.129185,-0.401579)
-[Animation Update] clip=Take 001 time=2.960014
-[BoneUpload] count=83 b0T(1.563104,3.129185,-0.401579) b1T(1.563104,3.129185,-0.401579) b2T(1.563104,3.129185,-0.401579)
-[Animation Update] clip=Take 001 time=0.746681
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.860245,3.226228,-0.421095)
-[Animation Update] clip=Take 001 time=2.666684
-[BoneUpload] count=83 b0T(1.860245,3.226228,-0.421095) b1T(1.860245,3.226228,-0.421095) b2T(1.860245,3.226227,-0.421095)
-[Animation Update] clip=Take 001 time=0.453352
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.268531,2.991621,-0.214618)
-[Animation Update] clip=Take 001 time=2.373353
-[BoneUpload] count=83 b0T(1.268531,2.991621,-0.214618) b1T(1.268531,2.991621,-0.214618) b2T(1.268531,2.991621,-0.214618)
-[Animation Update] clip=Take 001 time=0.160022
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.824596,2.685776,-0.141996)
-[Animation Update] clip=Take 001 time=2.080023
-[BoneUpload] count=83 b0T(0.824596,2.685776,-0.141996) b1T(0.824596,2.685776,-0.141996) b2T(0.824596,2.685776,-0.141996)
-[Animation Update] clip=Take 001 time=4.000027
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.952123,2.355442,0.392033)
-[Animation Update] clip=Take 001 time=1.786693
-[BoneUpload] count=83 b0T(0.952123,2.355442,0.392033) b1T(0.952123,2.355442,0.392033) b2T(0.952123,2.355442,0.392033)
-[Animation Update] clip=Take 001 time=3.706697
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.829351,2.127367,0.396496)
-[Animation Update] clip=Take 001 time=1.493363
-[BoneUpload] count=83 b0T(1.829351,2.127367,0.396496) b1T(1.829351,2.127367,0.396496) b2T(1.829351,2.127366,0.396496)
-[Animation Update] clip=Take 001 time=3.413367
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.027957,1.731457,-0.641021)
-[Animation Update] clip=Take 001 time=1.200032
-[BoneUpload] count=83 b0T(2.027957,1.731457,-0.641021) b1T(2.027957,1.731457,-0.641021) b2T(2.027957,1.731457,-0.641021)
-[Animation Update] clip=Take 001 time=3.120036
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.948913,1.012788,-1.041079)
-[Animation Update] clip=Take 001 time=0.906702
-[BoneUpload] count=83 b0T(0.948913,1.012788,-1.041079) b1T(0.948913,1.012788,-1.041079) b2T(0.948913,1.012788,-1.041079)
-[Animation Update] clip=Take 001 time=2.826706
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.232676,0.425475,-0.105550)
-[Animation Update] clip=Take 001 time=0.613373
-[BoneUpload] count=83 b0T(0.232676,0.425475,-0.105550) b1T(0.232676,0.425475,-0.105550) b2T(0.232676,0.425475,-0.105550)
-[Animation Update] clip=Take 001 time=2.533376
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.488506,0.186829,0.672653)
-[Animation Update] clip=Take 001 time=0.320044
-[BoneUpload] count=83 b0T(0.488506,0.186829,0.672653) b1T(0.488506,0.186829,0.672653) b2T(0.488506,0.186829,0.672653)
-[Animation Update] clip=Take 001 time=2.240046
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.015887,0.001211,0.013335)
-[Animation Update] clip=Take 001 time=0.026714
-[BoneUpload] count=83 b0T(0.015887,0.001211,0.013335) b1T(0.015887,0.001210,0.013335) b2T(0.015887,0.001210,0.013335)
-[Animation Update] clip=Take 001 time=1.946715
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.861147,2.972719,-0.396638)
-[Animation Update] clip=Take 001 time=3.866719
-[BoneUpload] count=83 b0T(0.861147,2.972719,-0.396638) b1T(0.861147,2.972719,-0.396638) b2T(0.861147,2.972719,-0.396638)
-[Animation Update] clip=Take 001 time=1.653385
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.648074,1.443310,-0.999358)
-[Animation Update] clip=Take 001 time=1.073973
-[BoneUpload] count=83 b0T(1.648074,1.443310,-0.999358) b1T(1.648074,1.443310,-0.999358) b2T(1.648074,1.443311,-0.999358)
-[Animation Update] clip=Take 001 time=0.528320
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.323094,2.912111,-0.347337)
-[Animation Update] clip=Take 001 time=3.541120
-[BoneUpload] count=83 b0T(0.323094,2.912111,-0.347337) b1T(0.323094,2.912111,-0.347337) b2T(0.323094,2.912111,-0.347337)
-[Animation Update] clip=Take 001 time=2.091946
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.268954,0.309019,0.308816)
-[Animation Update] clip=Take 001 time=0.505016
-[BoneUpload] count=83 b0T(0.268954,0.309019,0.308816) b1T(0.268954,0.309019,0.308816) b2T(0.268954,0.309019,0.308816)
-[Animation Update] clip=Take 001 time=2.814454
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.231158,0.364953,0.091972)
-[Animation Update] clip=Take 001 time=0.563361
-[BoneUpload] count=83 b0T(0.231158,0.364953,0.091972) b1T(0.231158,0.364952,0.091972) b2T(0.231158,0.364952,0.091972)
-[Animation Update] clip=Take 001 time=1.533280
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.810123,2.448953,0.212182)
-[Animation Update] clip=Take 001 time=1.878559
-[BoneUpload] count=83 b0T(0.810123,2.448953,0.212182) b1T(0.810123,2.448953,0.212182) b2T(0.810123,2.448953,0.212182)
-[Animation Update] clip=Take 001 time=2.148638
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.161209,2.937137,-0.232580)
-[Animation Update] clip=Take 001 time=2.312005
-[BoneUpload] count=83 b0T(1.161209,2.937137,-0.232580) b1T(1.161210,2.937137,-0.232580) b2T(1.161209,2.937137,-0.232580)
-[Animation Update] clip=Take 001 time=2.446415
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.672723,3.159603,-0.393522)
-[Animation Update] clip=Take 001 time=2.580826
-[BoneUpload] count=83 b0T(1.672723,3.159603,-0.393522) b1T(1.672723,3.159603,-0.393522) b2T(1.672723,3.159603,-0.393522)
-[Animation Update] clip=Take 001 time=2.715237
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.949635,3.249556,-0.286975)
-[Animation Update] clip=Take 001 time=2.849648
-[BoneUpload] count=83 b0T(1.949635,3.249556,-0.286975) b1T(1.949635,3.249556,-0.286975) b2T(1.949635,3.249556,-0.286975)
-[Animation Update] clip=Take 001 time=2.984059
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.698296,2.956033,-0.475912)
-[Animation Update] clip=Take 001 time=3.118470
-[BoneUpload] count=83 b0T(0.698296,2.956033,-0.475912) b1T(0.698296,2.956033,-0.475912) b2T(0.698296,2.956033,-0.475912)
-[Animation Update] clip=Take 001 time=3.252881
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.156048,2.903990,-0.331427)
-[Animation Update] clip=Take 001 time=3.387291
-[BoneUpload] count=83 b0T(0.156048,2.903990,-0.331427) b1T(0.156048,2.903990,-0.331427) b2T(0.156048,2.903991,-0.331427)
-[Animation Update] clip=Take 001 time=3.521702
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.506675,2.926848,-0.364494)
-[Animation Update] clip=Take 001 time=3.656113
-[BoneUpload] count=83 b0T(0.506675,2.926848,-0.364494) b1T(0.506675,2.926848,-0.364494) b2T(0.506675,2.926848,-0.364494)
-[Animation Update] clip=Take 001 time=3.790524
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.942723,2.986567,-0.403851)
-[Animation Update] clip=Take 001 time=3.924935
-[BoneUpload] count=83 b0T(0.942723,2.986567,-0.403851) b1T(0.942723,2.986567,-0.403851) b2T(0.942723,2.986567,-0.403851)
-[Animation Update] clip=Take 001 time=4.059346
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.063464,0.005608,0.054404)
-[Animation Update] clip=Take 001 time=0.060419
-[BoneUpload] count=83 b0T(0.063464,0.005608,0.054404) b1T(0.063464,0.005608,0.054404) b2T(0.063464,0.005607,0.054404)
-[Animation Update] clip=Take 001 time=0.194819
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.484210,0.193951,0.678734)
-[Animation Update] clip=Take 001 time=0.329219
-[BoneUpload] count=83 b0T(0.484210,0.193951,0.678734) b1T(0.484210,0.193951,0.678734) b2T(0.484210,0.193950,0.678734)
-[Animation Update] clip=Take 001 time=0.463619
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.228574,0.405509,-0.043997)
-[Animation Update] clip=Take 001 time=0.598017
-[BoneUpload] count=83 b0T(0.228574,0.405509,-0.043997) b1T(0.228574,0.405509,-0.043997) b2T(0.228574,0.405510,-0.043997)
-[Animation Update] clip=Take 001 time=0.732413
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.790538,0.913457,-0.972371)
-[Animation Update] clip=Take 001 time=0.866810
-[BoneUpload] count=83 b0T(0.790538,0.913457,-0.972371) b1T(0.790538,0.913457,-0.972371) b2T(0.790538,0.913457,-0.972371)
-[Animation Update] clip=Take 001 time=1.001206
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.862345,1.591544,-0.852322)
-[Animation Update] clip=Take 001 time=1.135603
-[BoneUpload] count=83 b0T(1.862345,1.591544,-0.852322) b1T(1.862345,1.591544,-0.852322) b2T(1.862345,1.591544,-0.852322)
-[Animation Update] clip=Take 001 time=1.269999
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.042085,2.044877,0.144904)
-[Animation Update] clip=Take 001 time=1.404396
-[BoneUpload] count=83 b0T(2.042085,2.044877,0.144904) b1T(2.042085,2.044877,0.144904) b2T(2.042085,2.044876,0.144904)
-[Animation Update] clip=Take 001 time=1.538792
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.250963,2.259722,0.533843)
-[Animation Update] clip=Take 001 time=1.673189
-[BoneUpload] count=83 b0T(1.250963,2.259722,0.533843) b1T(1.250963,2.259722,0.533843) b2T(1.250963,2.259721,0.533843)
-[Animation Update] clip=Take 001 time=1.807585
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.770016,2.520720,0.082832)
-[Animation Update] clip=Take 001 time=1.941982
-[BoneUpload] count=83 b0T(0.770016,2.520720,0.082832) b1T(0.770016,2.520720,0.082832) b2T(0.770015,2.520720,0.082832)
-[Animation Update] clip=Take 001 time=2.076387
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.994242,2.835380,-0.234772)
-[Animation Update] clip=Take 001 time=2.210798
-[BoneUpload] count=83 b0T(0.994242,2.835380,-0.234772) b1T(0.994242,2.835380,-0.234772) b2T(0.994242,2.835380,-0.234773)
-[Animation Update] clip=Take 001 time=2.345208
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.461492,3.073485,-0.204921)
-[Animation Update] clip=Take 001 time=2.479619
-[BoneUpload] count=83 b0T(1.461492,3.073485,-0.204921) b1T(1.461492,3.073485,-0.204921) b2T(1.461491,3.073485,-0.204921)
-[Animation Update] clip=Take 001 time=2.614030
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.977774,3.261183,-0.306304)
-[Animation Update] clip=Take 001 time=2.748441
-[BoneUpload] count=83 b0T(1.977774,3.261183,-0.306304) b1T(1.977773,3.261182,-0.306304) b2T(1.977774,3.261182,-0.306304)
-[Animation Update] clip=Take 001 time=2.882852
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.263558,3.055711,-0.461652)
-[Animation Update] clip=Take 001 time=3.017263
-[BoneUpload] count=83 b0T(1.263558,3.055711,-0.461652) b1T(1.263558,3.055711,-0.461652) b2T(1.263558,3.055711,-0.461652)
-[Animation Update] clip=Take 001 time=3.151674
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.135369,2.903519,-0.332551)
-[Animation Update] clip=Take 001 time=3.286084
-[BoneUpload] count=83 b0T(0.135369,2.903519,-0.332551) b1T(0.135369,2.903519,-0.332551) b2T(0.135369,2.903519,-0.332551)
-[Animation Update] clip=Take 001 time=3.420495
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.343363,2.913438,-0.349248)
-[Animation Update] clip=Take 001 time=3.554906
-[BoneUpload] count=83 b0T(0.343363,2.913438,-0.349248) b1T(0.343363,2.913438,-0.349248) b2T(0.343363,2.913438,-0.349248)
-[Animation Update] clip=Take 001 time=3.689317
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.793487,2.962174,-0.390604)
-[Animation Update] clip=Take 001 time=3.823728
-[BoneUpload] count=83 b0T(0.793487,2.962174,-0.390604) b1T(0.793487,2.962174,-0.390604) b2T(0.793487,2.962174,-0.390604)
-[Animation Update] clip=Take 001 time=3.958139
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.085624,3.013840,-0.416313)
-[Animation Update] clip=Take 001 time=4.092549
-[BoneUpload] count=83 b0T(1.085624,3.013840,-0.416313) b1T(1.085624,3.013840,-0.416313) b2T(1.085624,3.013840,-0.416313)
-[Animation Update] clip=Take 001 time=0.093620
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.449126,0.106292,0.508854)
-[Animation Update] clip=Take 001 time=0.228020
-[BoneUpload] count=83 b0T(0.449126,0.106292,0.508854) b1T(0.449126,0.106292,0.508854) b2T(0.449126,0.106291,0.508854)
-[Animation Update] clip=Take 001 time=0.362420
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.277287,0.302302,0.337742)
-[Animation Update] clip=Take 001 time=0.496820
-[BoneUpload] count=83 b0T(0.277287,0.302302,0.337742) b1T(0.277287,0.302302,0.337742) b2T(0.277287,0.302302,0.337742)
-[Animation Update] clip=Take 001 time=0.631217
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.460712,0.684318,-0.690101)
-[Animation Update] clip=Take 001 time=0.765613
-[BoneUpload] count=83 b0T(0.460712,0.684318,-0.690101) b1T(0.460712,0.684318,-0.690101) b2T(0.460712,0.684317,-0.690101)
-[Animation Update] clip=Take 001 time=0.900010
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.490548,1.343065,-1.058728)
-[Animation Update] clip=Take 001 time=1.034406
-[BoneUpload] count=83 b0T(1.490548,1.343065,-1.058728) b1T(1.490548,1.343065,-1.058728) b2T(1.490547,1.343065,-1.058728)
-[Animation Update] clip=Take 001 time=1.168803
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.134757,1.914761,-0.237379)
-[Animation Update] clip=Take 001 time=1.303199
-[BoneUpload] count=83 b0T(2.134757,1.914761,-0.237379) b1T(2.134758,1.914762,-0.237379) b2T(2.134758,1.914761,-0.237379)
-[Animation Update] clip=Take 001 time=1.437596
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.581851,2.186492,0.520199)
-[Animation Update] clip=Take 001 time=1.571992
-[BoneUpload] count=83 b0T(1.581851,2.186492,0.520199) b1T(1.581851,2.186492,0.520199) b2T(1.581851,2.186492,0.520199)
-[Animation Update] clip=Take 001 time=1.706389
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.856241,2.408813,0.289320)
-[Animation Update] clip=Take 001 time=1.840786
-[BoneUpload] count=83 b0T(0.856241,2.408813,0.289320) b1T(0.856241,2.408813,0.289320) b2T(0.856241,2.408813,0.289320)
-[Animation Update] clip=Take 001 time=1.975182
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.855626,2.720891,-0.174053)
-[Animation Update] clip=Take 001 time=2.109590
-[BoneUpload] count=83 b0T(0.855626,2.720891,-0.174053) b1T(0.855626,2.720891,-0.174053) b2T(0.855626,2.720891,-0.174053)
-[Animation Update] clip=Take 001 time=2.244001
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.277555,2.995784,-0.213071)
-[Animation Update] clip=Take 001 time=2.378412
-[BoneUpload] count=83 b0T(1.277555,2.995784,-0.213071) b1T(1.277555,2.995784,-0.213071) b2T(1.277555,2.995784,-0.213071)
-[Animation Update] clip=Take 001 time=2.512823
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.819890,3.213150,-0.433215)
-[Animation Update] clip=Take 001 time=2.647234
-[BoneUpload] count=83 b0T(1.819890,3.213150,-0.433215) b1T(1.819890,3.213150,-0.433215) b2T(1.819890,3.213150,-0.433215)
-[Animation Update] clip=Take 001 time=2.781645
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.754313,3.184812,-0.348646)
-[Animation Update] clip=Take 001 time=2.916055
-[BoneUpload] count=83 b0T(1.754313,3.184812,-0.348646) b1T(1.754313,3.184812,-0.348646) b2T(1.754313,3.184812,-0.348646)
-[Animation Update] clip=Take 001 time=3.050466
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.384152,2.920698,-0.416404)
-[Animation Update] clip=Take 001 time=3.184877
-[BoneUpload] count=83 b0T(0.384152,2.920698,-0.416404) b1T(0.384152,2.920699,-0.416404) b2T(0.384152,2.920699,-0.416404)
-[Animation Update] clip=Take 001 time=3.319288
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.213243,2.906205,-0.336905)
-[Animation Update] clip=Take 001 time=3.453699
-[BoneUpload] count=83 b0T(0.213243,2.906205,-0.336905) b1T(0.213243,2.906205,-0.336905) b2T(0.213243,2.906204,-0.336905)
-[Animation Update] clip=Take 001 time=3.588110
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.621684,2.939204,-0.375066)
-[Animation Update] clip=Take 001 time=3.722521
-[BoneUpload] count=83 b0T(0.621684,2.939204,-0.375066) b1T(0.621684,2.939203,-0.375066) b2T(0.621684,2.939203,-0.375066)
-[Animation Update] clip=Take 001 time=3.856931
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.018509,3.000550,-0.410487)
-[Animation Update] clip=Take 001 time=3.991342
-[BoneUpload] count=83 b0T(1.018509,3.000550,-0.410487) b1T(1.018509,3.000550,-0.410487) b2T(1.018509,3.000549,-0.410487)
-[Animation Update] clip=Take 001 time=4.125753
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.221394,0.029018,0.206128)
-[Animation Update] clip=Take 001 time=0.126820
-[BoneUpload] count=83 b0T(0.221394,0.029018,0.206128) b1T(0.221394,0.029018,0.206128) b2T(0.221394,0.029018,0.206128)
-[Animation Update] clip=Take 001 time=0.261221
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.412333,0.236845,0.626832)
-[Animation Update] clip=Take 001 time=0.395621
-[BoneUpload] count=83 b0T(0.412333,0.236845,0.626832) b1T(0.412333,0.236846,0.626832) b2T(0.412333,0.236846,0.626832)
-[Animation Update] clip=Take 001 time=0.530020
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.270552,0.499527,-0.309939)
-[Animation Update] clip=Take 001 time=0.664417
-[BoneUpload] count=83 b0T(0.270552,0.499527,-0.309939) b1T(0.270552,0.499527,-0.309939) b2T(0.270552,0.499527,-0.309939)
-[Animation Update] clip=Take 001 time=0.798813
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.059546,1.080478,-1.070999)
-[Animation Update] clip=Take 001 time=0.933210
-[BoneUpload] count=83 b0T(1.059546,1.080478,-1.070999) b1T(1.059546,1.080478,-1.070999) b2T(1.059546,1.080478,-1.070999)
-[Animation Update] clip=Take 001 time=1.067606
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.031806,1.735411,-0.633850)
-[Animation Update] clip=Take 001 time=1.202003
-[BoneUpload] count=83 b0T(2.031806,1.735411,-0.633850) b1T(2.031806,1.735411,-0.633850) b2T(2.031806,1.735411,-0.633850)
-[Animation Update] clip=Take 001 time=1.336399
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.892201,2.108555,0.343056)
-[Animation Update] clip=Take 001 time=1.470796
-[BoneUpload] count=83 b0T(1.892201,2.108555,0.343056) b1T(1.892201,2.108555,0.343056) b2T(1.892201,2.108555,0.343056)
-[Animation Update] clip=Take 001 time=1.605192
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.061655,2.313178,0.466435)
-[Animation Update] clip=Take 001 time=1.739589
-[BoneUpload] count=83 b0T(1.061655,2.313178,0.466435) b1T(1.061655,2.313178,0.466435) b2T(1.061655,2.313177,0.466435)
-[Animation Update] clip=Take 001 time=1.873986
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.774856,2.599618,-0.039098)
-[Animation Update] clip=Take 001 time=2.008383
-[BoneUpload] count=83 b0T(0.774856,2.599618,-0.039098) b1T(0.774856,2.599618,-0.039098) b2T(0.774856,2.599618,-0.039098)
-[Animation Update] clip=Take 001 time=2.142794
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.101930,2.903801,-0.238691)
-[Animation Update] clip=Take 001 time=2.277205
-[BoneUpload] count=83 b0T(1.101930,2.903801,-0.238691) b1T(1.101930,2.903801,-0.238691) b2T(1.101930,2.903801,-0.238691)
-[Animation Update] clip=Take 001 time=2.411616
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.595830,3.128113,-0.323336)
-[Animation Update] clip=Take 001 time=2.546026
-[BoneUpload] count=83 b0T(1.595830,3.128113,-0.323336) b1T(1.595830,3.128112,-0.323336) b2T(1.595830,3.128113,-0.323336)
-[Animation Update] clip=Take 001 time=2.680437
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.993630,3.265316,-0.272320)
-[Animation Update] clip=Take 001 time=2.814848
-[BoneUpload] count=83 b0T(1.993630,3.265316,-0.272320) b1T(1.993630,3.265316,-0.272320) b2T(1.993630,3.265316,-0.272320)
-[Animation Update] clip=Take 001 time=2.949259
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.888696,2.984363,-0.487579)
-[Animation Update] clip=Take 001 time=3.083670
-[BoneUpload] count=83 b0T(0.888696,2.984363,-0.487579) b1T(0.888696,2.984363,-0.487579) b2T(0.888696,2.984363,-0.487579)
-[Animation Update] clip=Take 001 time=3.218081
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.137448,2.903397,-0.329637)
-[Animation Update] clip=Take 001 time=3.352492
-[BoneUpload] count=83 b0T(0.137448,2.903397,-0.329637) b1T(0.137448,2.903397,-0.329637) b2T(0.137448,2.903397,-0.329637)
-[Animation Update] clip=Take 001 time=3.486902
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.448104,2.921483,-0.359057)
-[Animation Update] clip=Take 001 time=3.621313
-[BoneUpload] count=83 b0T(0.448104,2.921483,-0.359057) b1T(0.448104,2.921483,-0.359057) b2T(0.448104,2.921483,-0.359057)
-[Animation Update] clip=Take 001 time=3.755724
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.895205,2.978349,-0.399658)
-[Animation Update] clip=Take 001 time=3.890135
-[BoneUpload] count=83 b0T(0.895205,2.978349,-0.399658) b1T(0.895205,2.978349,-0.399658) b2T(0.895205,2.978349,-0.399658)
-[Animation Update] clip=Take 001 time=4.024546
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.015240,0.001159,0.012787)
-[Animation Update] clip=Take 001 time=0.025621
-[BoneUpload] count=83 b0T(0.015240,0.001159,0.012787) b1T(0.015240,0.001159,0.012787) b2T(0.015240,0.001159,0.012787)
-[Animation Update] clip=Take 001 time=0.160021
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.496401,0.166309,0.649751)
-[Animation Update] clip=Take 001 time=0.294422
-[BoneUpload] count=83 b0T(0.496401,0.166309,0.649751) b1T(0.496401,0.166309,0.649751) b2T(0.496401,0.166309,0.649751)
-[Animation Update] clip=Take 001 time=0.428822
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.231200,0.364802,0.092509)
-[Animation Update] clip=Take 001 time=0.563220
-[BoneUpload] count=83 b0T(0.231200,0.364802,0.092509) b1T(0.231200,0.364802,0.092509) b2T(0.231200,0.364802,0.092509)
-[Animation Update] clip=Take 001 time=0.697617
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.663774,0.830479,-0.890996)
-[Animation Update] clip=Take 001 time=0.832013
-[BoneUpload] count=83 b0T(0.663774,0.830479,-0.890996) b1T(0.663774,0.830479,-0.890996) b2T(0.663774,0.830479,-0.890996)
-[Animation Update] clip=Take 001 time=0.966410
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.747068,1.509315,-0.943104)
-[Animation Update] clip=Take 001 time=1.100806
-[BoneUpload] count=83 b0T(1.747068,1.509315,-0.943104) b1T(1.747068,1.509315,-0.943104) b2T(1.747068,1.509315,-0.943104)
-[Animation Update] clip=Take 001 time=1.235203
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(2.094603,2.005246,0.021327)
-[Animation Update] clip=Take 001 time=1.369599
-[BoneUpload] count=83 b0T(2.094603,2.005246,0.021327) b1T(2.094603,2.005245,0.021327) b2T(2.094603,2.005245,0.021327)
-[Animation Update] clip=Take 001 time=1.503996
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.361638,2.233920,0.546678)
-[Animation Update] clip=Take 001 time=1.638393
-[BoneUpload] count=83 b0T(1.361638,2.233920,0.546678) b1T(1.361638,2.233920,0.546678) b2T(1.361638,2.233920,0.546678)
-[Animation Update] clip=Take 001 time=1.772789
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.786140,2.480764,0.153018)
-[Animation Update] clip=Take 001 time=1.907186
-[BoneUpload] count=83 b0T(0.786140,2.480764,0.153018) b1T(0.786140,2.480764,0.153018) b2T(0.786140,2.480764,0.153018)
-[Animation Update] clip=Take 001 time=2.041587
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.942096,2.797243,-0.222147)
-[Animation Update] clip=Take 001 time=2.175997
-[BoneUpload] count=83 b0T(0.942096,2.797243,-0.222147) b1T(0.942096,2.797243,-0.222147) b2T(0.942096,2.797243,-0.222147)
-[Animation Update] clip=Take 001 time=2.310408
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.397039,3.047887,-0.195894)
-[Animation Update] clip=Take 001 time=2.444819
-[BoneUpload] count=83 b0T(1.397039,3.047887,-0.195894) b1T(1.397039,3.047887,-0.195894) b2T(1.397039,3.047886,-0.195894)
-[Animation Update] clip=Take 001 time=2.579230
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.937962,3.249388,-0.354911)
-[Animation Update] clip=Take 001 time=2.713641
-[BoneUpload] count=83 b0T(1.937962,3.249388,-0.354911) b1T(1.937962,3.249388,-0.354911) b2T(1.937962,3.249388,-0.354911)
-[Animation Update] clip=Take 001 time=2.848052
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.450368,3.099651,-0.427547)
-[Animation Update] clip=Take 001 time=2.982463
-[BoneUpload] count=83 b0T(1.450368,3.099651,-0.427547) b1T(1.450368,3.099651,-0.427547) b2T(1.450368,3.099652,-0.427547)
-[Animation Update] clip=Take 001 time=3.116874
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.180659,2.905876,-0.350227)
-[Animation Update] clip=Take 001 time=3.251284
-[BoneUpload] count=83 b0T(0.180659,2.905876,-0.350227) b1T(0.180659,2.905875,-0.350227) b2T(0.180659,2.905875,-0.350227)
-[Animation Update] clip=Take 001 time=3.385695
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.293822,2.910325,-0.344570)
-[Animation Update] clip=Take 001 time=3.520106
-[BoneUpload] count=83 b0T(0.293822,2.910325,-0.344570) b1T(0.293822,2.910325,-0.344570) b2T(0.293822,2.910324,-0.344570)
-[Animation Update] clip=Take 001 time=3.654517
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.735906,2.953869,-0.385430)
-[Animation Update] clip=Take 001 time=3.788928
-[BoneUpload] count=83 b0T(0.735906,2.953869,-0.385430) b1T(0.735906,2.953869,-0.385430) b2T(0.735906,2.953869,-0.385430)
-[Animation Update] clip=Take 001 time=3.923339
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.070076,3.010684,-0.414968)
-[Animation Update] clip=Take 001 time=4.057749
-[BoneUpload] count=83 b0T(1.070076,3.010684,-0.414968) b1T(1.070076,3.010684,-0.414968) b2T(1.070076,3.010684,-0.414968)
-[Animation Update] clip=Take 001 time=0.058822
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.386430,0.075388,0.406627)
-[Animation Update] clip=Take 001 time=0.193222
-[BoneUpload] count=83 b0T(0.386430,0.075388,0.406627) b1T(0.386430,0.075388,0.406627) b2T(0.386430,0.075388,0.406627)
-[Animation Update] clip=Take 001 time=0.327622
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.319322,0.276881,0.454422)
-[Animation Update] clip=Take 001 time=0.462023
-[BoneUpload] count=83 b0T(0.319322,0.276881,0.454422) b1T(0.319322,0.276881,0.454422) b2T(0.319322,0.276882,0.454422)
-[Animation Update] clip=Take 001 time=0.596420
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(0.378189,0.615287,-0.566561)
-[Animation Update] clip=Take 001 time=0.730817
-[BoneUpload] count=83 b0T(0.378189,0.615287,-0.566561) b1T(0.378189,0.615287,-0.566561) b2T(0.378189,0.615287,-0.566561)
-[Animation Update] clip=Take 001 time=0.865213
-[BuildClipPose] clip=Take 001 appliedBones=83 rootT=(1.344148,1.253010,-1.085878)
-[Animation Update] clip=Take 001 time=0.999610
-[BoneUpload] count=83 b0T(1.344148,1.253010,-1.085878) b1T(1.344148,1.253009,-1.085878) b2T(1.344148,1.253009,-1.085878)
+[Channel] clip=mixamo.com idx=0 nodeName=mixamorig:Head nodeIndex=7 hierarchyName=mixamorig:Head expected=7 status=OK
+[Channel] clip=mixamo.com idx=1 nodeName=mixamorig:Hips nodeIndex=2 hierarchyName=mixamorig:Hips expected=2 status=OK
+[Channel] clip=mixamo.com idx=2 nodeName=mixamorig:LeftArm nodeIndex=10 hierarchyName=mixamorig:LeftArm expected=10 status=OK
+[Channel] clip=mixamo.com idx=3 nodeName=mixamorig:LeftFoot nodeIndex=27 hierarchyName=mixamorig:LeftFoot expected=27 status=OK
+[Channel] clip=mixamo.com idx=4 nodeName=mixamorig:LeftForeArm nodeIndex=11 hierarchyName=mixamorig:LeftForeArm expected=11 status=OK
+[Channel] clip=mixamo.com idx=5 nodeName=mixamorig:LeftHand nodeIndex=12 hierarchyName=mixamorig:LeftHand expected=12 status=OK
+[Channel] clip=mixamo.com idx=6 nodeName=mixamorig:LeftHandIndex1 nodeIndex=13 hierarchyName=mixamorig:LeftHandIndex1 expected=13 status=OK
+[Channel] clip=mixamo.com idx=7 nodeName=mixamorig:LeftHandIndex2 nodeIndex=14 hierarchyName=mixamorig:LeftHandIndex2 expected=14 status=OK
+[Channel] clip=mixamo.com idx=8 nodeName=mixamorig:LeftHandIndex3 nodeIndex=15 hierarchyName=mixamorig:LeftHandIndex3 expected=15 status=OK
+[Channel] clip=mixamo.com idx=9 nodeName=mixamorig:LeftLeg nodeIndex=26 hierarchyName=mixamorig:LeftLeg expected=26 status=OK
+[Channel] clip=mixamo.com idx=10 nodeName=mixamorig:LeftShoulder nodeIndex=9 hierarchyName=mixamorig:LeftShoulder expected=9 status=OK
+[Channel] clip=mixamo.com idx=11 nodeName=mixamorig:LeftToeBase nodeIndex=28 hierarchyName=mixamorig:LeftToeBase expected=28 status=OK
+[Channel] clip=mixamo.com idx=12 nodeName=mixamorig:LeftUpLeg nodeIndex=25 hierarchyName=mixamorig:LeftUpLeg expected=25 status=OK
+[Channel] clip=mixamo.com idx=13 nodeName=mixamorig:Neck nodeIndex=6 hierarchyName=mixamorig:Neck expected=6 status=OK
+[Channel] clip=mixamo.com idx=14 nodeName=mixamorig:RightArm nodeIndex=18 hierarchyName=mixamorig:RightArm expected=18 status=OK
+[Channel] clip=mixamo.com idx=15 nodeName=mixamorig:RightFoot nodeIndex=32 hierarchyName=mixamorig:RightFoot expected=32 status=OK
+[Channel] clip=mixamo.com idx=16 nodeName=mixamorig:RightForeArm nodeIndex=19 hierarchyName=mixamorig:RightForeArm expected=19 status=OK
+[Channel] clip=mixamo.com idx=17 nodeName=mixamorig:RightHand nodeIndex=20 hierarchyName=mixamorig:RightHand expected=20 status=OK
+[Channel] clip=mixamo.com idx=18 nodeName=mixamorig:RightHandIndex1 nodeIndex=21 hierarchyName=mixamorig:RightHandIndex1 expected=21 status=OK
+[Channel] clip=mixamo.com idx=19 nodeName=mixamorig:RightHandIndex2 nodeIndex=22 hierarchyName=mixamorig:RightHandIndex2 expected=22 status=OK
+[Channel] clip=mixamo.com idx=20 nodeName=mixamorig:RightHandIndex3 nodeIndex=23 hierarchyName=mixamorig:RightHandIndex3 expected=23 status=OK
+[Channel] clip=mixamo.com idx=21 nodeName=mixamorig:RightLeg nodeIndex=31 hierarchyName=mixamorig:RightLeg expected=31 status=OK
+[Channel] clip=mixamo.com idx=22 nodeName=mixamorig:RightShoulder nodeIndex=17 hierarchyName=mixamorig:RightShoulder expected=17 status=OK
+[Channel] clip=mixamo.com idx=23 nodeName=mixamorig:RightToeBase nodeIndex=33 hierarchyName=mixamorig:RightToeBase expected=33 status=OK
+[Channel] clip=mixamo.com idx=24 nodeName=mixamorig:RightUpLeg nodeIndex=30 hierarchyName=mixamorig:RightUpLeg expected=30 status=OK
+[Channel] clip=mixamo.com idx=25 nodeName=mixamorig:Spine nodeIndex=3 hierarchyName=mixamorig:Spine expected=3 status=OK
+[Channel] clip=mixamo.com idx=26 nodeName=mixamorig:Spine1 nodeIndex=4 hierarchyName=mixamorig:Spine1 expected=4 status=OK
+[Channel] clip=mixamo.com idx=27 nodeName=mixamorig:Spine2 nodeIndex=5 hierarchyName=mixamorig:Spine2 expected=5 status=OK
+[Integrity] bones=28 clips=1 boneMismatch=0
+[Animation BeginPlay] clips=1 bones=28 boneMissingNodeIndex=0
+[Animation Update] clip=mixamo.com time=1.920001
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.107094,67.748848,-54.191124)
+[Animation Update] clip=mixamo.com time=3.840005
+[BoneUpload] count=28 b0T(21.107094,67.748848,-54.191124) b1T(53.508526,105.325592,-52.391811) b2T(5.795460,227.954926,27.688416)
+[Animation Update] clip=mixamo.com time=1.726672
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(28.750328,70.755234,-56.340218)
+[Animation Update] clip=mixamo.com time=3.646676
+[BoneUpload] count=28 b0T(28.750328,70.755234,-56.340218) b1T(58.831879,109.996391,-51.830784) b2T(3.886918,223.680634,36.397911)
+[Animation Update] clip=mixamo.com time=1.533343
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.368923,71.805588,-58.241821)
+[Animation Update] clip=mixamo.com time=3.453347
+[BoneUpload] count=28 b0T(34.368923,71.805588,-58.241821) b1T(65.482605,109.932709,-51.656700) b2T(14.223006,219.353348,43.878235)
+[Animation Update] clip=mixamo.com time=1.340014
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(40.183578,69.506760,-60.522835)
+[Animation Update] clip=mixamo.com time=3.260018
+[BoneUpload] count=28 b0T(40.183578,69.506760,-60.522835) b1T(72.047089,107.043213,-54.132771) b2T(25.607273,214.909500,45.544456)
+[Animation Update] clip=mixamo.com time=1.146685
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.809811,52.827751,-56.314137)
+[Animation Update] clip=mixamo.com time=3.066689
+[BoneUpload] count=28 b0T(37.809811,52.827751,-56.314137) b1T(73.975731,86.838516,-55.684090) b2T(43.864697,211.546280,29.572166)
+[Animation Update] clip=mixamo.com time=0.953357
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(54.446198,55.371628,-51.852180)
+[Animation Update] clip=mixamo.com time=2.873360
+[BoneUpload] count=28 b0T(54.446198,55.371628,-51.852180) b1T(88.509750,90.796951,-44.793671) b2T(39.019367,213.026031,34.818428)
+[Animation Update] clip=mixamo.com time=0.760029
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.757957,63.808357,-47.897339)
+[Animation Update] clip=mixamo.com time=2.680032
+[BoneUpload] count=28 b0T(39.757957,63.808357,-47.897339) b1T(70.476120,102.339935,-41.829823) b2T(20.032793,210.411346,55.655479)
+[Animation Update] clip=mixamo.com time=0.566700
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(26.119431,61.400375,-43.767643)
+[Animation Update] clip=mixamo.com time=2.486703
+[BoneUpload] count=28 b0T(26.119431,61.400375,-43.767643) b1T(51.651993,103.962616,-45.049992) b2T(8.366749,208.408813,59.567047)
+[Animation Update] clip=mixamo.com time=0.373372
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(20.020737,51.152023,-45.791740)
+[Animation Update] clip=mixamo.com time=2.293374
+[BoneUpload] count=28 b0T(20.020737,51.152023,-45.791740) b1T(54.391785,85.402115,-56.311478) b2T(38.422745,218.397324,19.745102)
+[Animation Update] clip=mixamo.com time=0.180044
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(7.980110,53.897572,-37.996891)
+[Animation Update] clip=mixamo.com time=2.100045
+[BoneUpload] count=28 b0T(7.980110,53.897572,-37.996891) b1T(51.188744,73.019974,-53.243145) b2T(86.821327,209.506042,8.637527)
+[Animation Update] clip=mixamo.com time=4.020049
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.298439,57.395580,-38.527718)
+[Animation Update] clip=mixamo.com time=1.906716
+[BoneUpload] count=28 b0T(9.298439,57.395580,-38.527718) b1T(55.044960,72.512886,-50.520454) b2T(99.180283,204.077896,16.338158)
+[Animation Update] clip=mixamo.com time=3.826720
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.321419,53.257698,-37.845100)
+[Animation Update] clip=mixamo.com time=1.713387
+[BoneUpload] count=28 b0T(9.321419,53.257698,-37.845100) b1T(57.378777,63.302174,-45.241081) b2T(106.921135,193.648773,20.200974)
+[Animation Update] clip=mixamo.com time=3.633391
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.485497,46.190910,-33.984478)
+[Animation Update] clip=mixamo.com time=1.520058
+[BoneUpload] count=28 b0T(10.485497,46.190910,-33.984478) b1T(59.200062,55.117771,-37.492073) b2T(105.106003,188.269470,24.882675)
+[Animation Update] clip=mixamo.com time=3.440062
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.232658,39.425690,-29.964977)
+[Animation Update] clip=mixamo.com time=1.326729
+[BoneUpload] count=28 b0T(15.232658,39.425690,-29.964977) b1T(62.610710,54.270844,-30.177105) b2T(86.782700,193.958832,30.075043)
+[Animation Update] clip=mixamo.com time=3.246733
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.067856,31.905048,-24.999626)
+[Animation Update] clip=mixamo.com time=1.133401
+[BoneUpload] count=28 b0T(13.067856,31.905048,-24.999626) b1T(59.148754,50.249947,-27.261848) b2T(73.693634,194.798004,23.940262)
+[Animation Update] clip=mixamo.com time=3.053404
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.060539,31.630493,-27.000187)
+[Animation Update] clip=mixamo.com time=0.940072
+[BoneUpload] count=28 b0T(10.060539,31.630493,-27.000187) b1T(56.389194,49.436626,-28.303894) b2T(72.323166,192.122330,27.501488)
+[Animation Update] clip=mixamo.com time=2.860075
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.717262,42.434200,-31.739407)
+[Animation Update] clip=mixamo.com time=0.746744
+[BoneUpload] count=28 b0T(9.717262,42.434200,-31.739407) b1T(55.719013,60.950932,-29.275227) b2T(67.891647,193.553284,48.157280)
+[Animation Update] clip=mixamo.com time=2.666747
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(4.283058,30.182037,-19.864029)
+[Animation Update] clip=mixamo.com time=0.553416
+[BoneUpload] count=28 b0T(4.283058,30.182037,-19.864029) b1T(49.351055,50.946125,-21.546589) b2T(56.195545,194.903854,32.828743)
+[Animation Update] clip=mixamo.com time=2.473418
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(18.127483,23.218338,-11.536301)
+[Animation Update] clip=mixamo.com time=0.360087
+[BoneUpload] count=28 b0T(18.127483,23.218338,-11.536301) b1T(60.519264,48.209579,-18.130020) b2T(48.527245,200.976883,-2.455589)
+[Animation Update] clip=mixamo.com time=2.280089
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(30.966751,51.375732,-38.801216)
+[Animation Update] clip=mixamo.com time=0.166759
+[BoneUpload] count=28 b0T(30.966751,51.375732,-38.801216) b1T(67.168617,85.337120,-39.875183) b2T(25.526403,225.650146,8.140793)
+[Animation Update] clip=mixamo.com time=2.086760
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.587482,61.650383,-48.355335)
+[Animation Update] clip=mixamo.com time=4.006764
+[BoneUpload] count=28 b0T(21.587482,61.650383,-48.355335) b1T(55.760162,97.668777,-48.429810) b2T(11.591404,228.728088,19.392944)
+[Animation Update] clip=mixamo.com time=1.893431
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(20.260170,68.245987,-54.757931)
+[Animation Update] clip=mixamo.com time=3.813435
+[BoneUpload] count=28 b0T(20.260170,68.245987,-54.757931) b1T(52.642075,105.842384,-53.017994) b2T(5.814496,227.666489,28.795242)
+[Animation Update] clip=mixamo.com time=1.700102
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.854790,71.384888,-56.720963)
+[Animation Update] clip=mixamo.com time=3.620106
+[BoneUpload] count=28 b0T(29.854790,71.384888,-56.720963) b1T(59.460678,110.937958,-51.806763) b2T(3.248268,222.944534,37.759079)
+[Animation Update] clip=mixamo.com time=1.506773
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.686756,71.535324,-58.574059)
+[Animation Update] clip=mixamo.com time=3.426777
+[BoneUpload] count=28 b0T(34.686756,71.535324,-58.574059) b1T(66.167252,109.359787,-51.986851) b2T(16.442326,218.717499,44.427185)
+[Animation Update] clip=mixamo.com time=1.313445
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(40.867840,68.979187,-60.759003)
+[Animation Update] clip=mixamo.com time=3.233449
+[BoneUpload] count=28 b0T(40.867840,68.979187,-60.759003) b1T(72.608376,106.640289,-54.491371) b2T(26.096081,214.362976,45.307297)
+[Animation Update] clip=mixamo.com time=1.120116
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.275494,50.819618,-55.047775)
+[Animation Update] clip=mixamo.com time=3.040120
+[BoneUpload] count=28 b0T(39.275494,50.819618,-55.047775) b1T(75.908913,84.326218,-54.412811) b2T(46.136810,211.001205,28.015450)
+[Animation Update] clip=mixamo.com time=0.926787
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(55.141949,56.576508,-51.444466)
+[Animation Update] clip=mixamo.com time=2.846791
+[BoneUpload] count=28 b0T(55.141949,56.576508,-51.444466) b1T(89.068733,91.948708,-43.514549) b2T(38.387341,213.176651,36.875320)
+[Animation Update] clip=mixamo.com time=0.733459
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(36.397003,64.938087,-47.103462)
+[Animation Update] clip=mixamo.com time=2.653462
+[BoneUpload] count=28 b0T(36.397003,64.938087,-47.103462) b1T(66.070786,104.381157,-41.735554) b2T(16.356033,209.289169,59.507225)
+[Animation Update] clip=mixamo.com time=0.540131
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(28.098022,60.750374,-44.886684)
+[Animation Update] clip=mixamo.com time=2.460133
+[BoneUpload] count=28 b0T(28.098022,60.750374,-44.886684) b1T(53.263966,103.497574,-46.997303) b2T(8.329224,209.981277,54.833107)
+[Animation Update] clip=mixamo.com time=0.346802
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(18.747265,50.444458,-44.484123)
+[Animation Update] clip=mixamo.com time=2.266804
+[BoneUpload] count=28 b0T(18.747265,50.444458,-44.484123) b1T(54.638870,82.805191,-55.871788) b2T(45.177963,218.082855,17.188469)
+[Animation Update] clip=mixamo.com time=0.153474
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(6.667221,55.182415,-37.529068)
+[Animation Update] clip=mixamo.com time=2.073475
+[BoneUpload] count=28 b0T(6.667221,55.182415,-37.529068) b1T(50.453087,72.774422,-52.969978) b2T(91.191750,207.864288,8.823563)
+[Animation Update] clip=mixamo.com time=3.993479
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.065254,57.027092,-38.332703)
+[Animation Update] clip=mixamo.com time=1.880146
+[BoneUpload] count=28 b0T(9.065254,57.027092,-38.332703) b1T(55.057465,71.639091,-50.007835) b2T(99.970390,203.006958,16.720421)
+[Animation Update] clip=mixamo.com time=3.800150
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.365211,52.698257,-37.662216)
+[Animation Update] clip=mixamo.com time=1.686817
+[BoneUpload] count=28 b0T(9.365211,52.698257,-37.662216) b1T(57.633263,62.236359,-44.319687) b2T(107.400917,192.373108,21.368599)
+[Animation Update] clip=mixamo.com time=3.606821
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.378845,44.925949,-33.440571)
+[Animation Update] clip=mixamo.com time=1.493489
+[BoneUpload] count=28 b0T(11.378845,44.925949,-33.440571) b1T(59.986126,54.611160,-36.378456) b2T(102.939705,188.895126,25.671158)
+[Animation Update] clip=mixamo.com time=3.413492
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.029533,38.860924,-29.276627)
+[Animation Update] clip=mixamo.com time=1.300160
+[BoneUpload] count=28 b0T(15.029533,38.860924,-29.276627) b1T(62.169235,54.444588,-29.594959) b2T(84.235504,194.654587,30.251335)
+[Animation Update] clip=mixamo.com time=3.220164
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.007538,30.607288,-24.669613)
+[Animation Update] clip=mixamo.com time=1.106831
+[BoneUpload] count=28 b0T(12.007538,30.607288,-24.669613) b1T(58.281834,48.466389,-26.870895) b2T(74.017197,193.362701,22.976776)
+[Animation Update] clip=mixamo.com time=3.026835
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.915932,33.238144,-28.139854)
+[Animation Update] clip=mixamo.com time=0.913502
+[BoneUpload] count=28 b0T(10.915932,33.238144,-28.139854) b1T(57.081039,51.501118,-28.730911) b2T(71.322372,192.972916,30.516541)
+[Animation Update] clip=mixamo.com time=2.833506
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.842400,43.349205,-31.555199)
+[Animation Update] clip=mixamo.com time=0.720174
+[BoneUpload] count=28 b0T(10.842400,43.349205,-31.555199) b1T(56.411739,62.818710,-28.477108) b2T(65.063110,194.748337,50.561234)
+[Animation Update] clip=mixamo.com time=2.640177
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(-0.583916,24.791580,-14.995739)
+[Animation Update] clip=mixamo.com time=0.526846
+[BoneUpload] count=28 b0T(-0.583916,24.791580,-14.995739) b1T(45.461414,42.938675,-18.947220) b2T(60.533123,190.453156,22.762054)
+[Animation Update] clip=mixamo.com time=2.446848
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.448120,28.290215,-16.511738)
+[Animation Update] clip=mixamo.com time=0.333517
+[BoneUpload] count=28 b0T(21.448120,28.290215,-16.511738) b1T(62.587547,55.385017,-22.718361) b2T(44.135246,206.741180,-0.851349)
+[Animation Update] clip=mixamo.com time=2.253519
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(30.260628,52.699455,-40.433987)
+[Animation Update] clip=mixamo.com time=0.140189
+[BoneUpload] count=28 b0T(30.260628,52.699455,-40.433987) b1T(66.527893,86.603348,-40.994141) b2T(25.135117,226.273834,9.067177)
+[Animation Update] clip=mixamo.com time=2.060190
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.527546,63.132614,-49.425564)
+[Animation Update] clip=mixamo.com time=3.980194
+[BoneUpload] count=28 b0T(21.527546,63.132614,-49.425564) b1T(55.153339,99.660362,-49.061588) b2T(9.423925,228.827988,21.308060)
+[Animation Update] clip=mixamo.com time=1.866861
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(19.831963,68.622696,-55.182915)
+[Animation Update] clip=mixamo.com time=3.786865
+[BoneUpload] count=28 b0T(19.831963,68.622696,-55.182915) b1T(52.175285,106.251572,-53.428188) b2T(5.970598,227.284271,29.899834)
+[Animation Update] clip=mixamo.com time=1.673533
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(30.544029,71.834908,-57.105537)
+[Animation Update] clip=mixamo.com time=3.593536
+[BoneUpload] count=28 b0T(30.544029,71.834908,-57.105537) b1T(59.916393,111.525894,-51.909988) b2T(3.332144,222.281021,38.968399)
+[Animation Update] clip=mixamo.com time=1.480204
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(35.036167,71.177521,-58.906937)
+[Animation Update] clip=mixamo.com time=3.400208
+[BoneUpload] count=28 b0T(35.036167,71.177521,-58.906937) b1T(66.843384,108.740128,-52.391106) b2T(18.625465,218.060303,44.827591)
+[Animation Update] clip=mixamo.com time=1.286875
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(40.957352,67.761871,-60.791145)
+[Animation Update] clip=mixamo.com time=3.206879
+[BoneUpload] count=28 b0T(40.957352,67.761871,-60.791145) b1T(72.874527,105.343689,-54.959812) b2T(27.348202,213.903946,44.384903)
+[Animation Update] clip=mixamo.com time=1.093546
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(41.484745,49.708023,-53.989342)
+[Animation Update] clip=mixamo.com time=3.013550
+[BoneUpload] count=28 b0T(41.484745,49.708023,-53.989342) b1T(78.209518,83.102081,-52.880104) b2T(47.011799,210.750732,27.493294)
+[Animation Update] clip=mixamo.com time=0.900217
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(54.673504,57.537834,-50.970230)
+[Animation Update] clip=mixamo.com time=2.820221
+[BoneUpload] count=28 b0T(54.673504,57.537834,-50.970230) b1T(88.540924,92.863525,-42.591911) b2T(37.535645,213.182892,38.949768)
+[Animation Update] clip=mixamo.com time=0.706889
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(33.280972,65.470757,-46.175453)
+[Animation Update] clip=mixamo.com time=2.626892
+[BoneUpload] count=28 b0T(33.280972,65.470757,-46.175453) b1T(62.068527,105.663033,-41.597034) b2T(13.649940,208.241119,62.617722)
+[Animation Update] clip=mixamo.com time=0.513561
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(30.305870,60.019051,-46.291309)
+[Animation Update] clip=mixamo.com time=2.433563
+[BoneUpload] count=28 b0T(30.305870,60.019051,-46.291309) b1T(55.699677,102.586365,-49.169003) b2T(9.732227,211.968567,49.064743)
+[Animation Update] clip=mixamo.com time=0.320233
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(17.718689,50.042702,-43.210636)
+[Animation Update] clip=mixamo.com time=2.240234
+[BoneUpload] count=28 b0T(17.718689,50.042702,-43.210636) b1T(55.000038,80.479340,-55.409615) b2T(51.935837,217.640274,14.624870)
+[Animation Update] clip=mixamo.com time=0.126904
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(6.113609,56.394341,-37.404606)
+[Animation Update] clip=mixamo.com time=2.046905
+[BoneUpload] count=28 b0T(6.113609,56.394341,-37.404606) b1T(50.393990,72.820419,-52.719162) b2T(94.732994,206.545990,9.561607)
+[Animation Update] clip=mixamo.com time=3.966909
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.721657,56.402172,-38.084232)
+[Animation Update] clip=mixamo.com time=1.853577
+[BoneUpload] count=28 b0T(8.721657,56.402172,-38.084232) b1T(54.989578,70.372452,-49.451492) b2T(100.914757,201.649109,16.765251)
+[Animation Update] clip=mixamo.com time=3.773580
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.340355,51.866554,-37.249409)
+[Animation Update] clip=mixamo.com time=1.660248
+[BoneUpload] count=28 b0T(9.340355,51.866554,-37.249409) b1T(57.763584,60.983448,-43.346680) b2T(107.693886,191.198776,22.061874)
+[Animation Update] clip=mixamo.com time=3.580251
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.475433,43.664860,-32.908508)
+[Animation Update] clip=mixamo.com time=1.466919
+[BoneUpload] count=28 b0T(12.475433,43.664860,-32.908508) b1T(60.919880,54.281940,-35.256989) b2T(100.395813,189.785858,26.449455)
+[Animation Update] clip=mixamo.com time=3.386923
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(14.874855,38.250000,-28.573959)
+[Animation Update] clip=mixamo.com time=1.273590
+[BoneUpload] count=28 b0T(14.874855,38.250000,-28.573959) b1T(61.724224,54.678719,-29.154694) b2T(81.523491,195.467056,30.123993)
+[Animation Update] clip=mixamo.com time=3.193594
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.641808,29.633274,-24.518608)
+[Animation Update] clip=mixamo.com time=1.080261
+[BoneUpload] count=28 b0T(10.641808,29.633274,-24.518608) b1T(57.128395,46.914783,-26.852760) b2T(74.654312,191.907623,22.109093)
+[Animation Update] clip=mixamo.com time=3.000265
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.309471,35.014057,-29.301979)
+[Animation Update] clip=mixamo.com time=0.886933
+[BoneUpload] count=28 b0T(11.309471,35.014057,-29.301979) b1T(57.397511,53.479752,-29.184532) b2T(70.713348,193.471588,33.682907)
+[Animation Update] clip=mixamo.com time=2.806936
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.463650,44.026917,-31.179001)
+[Animation Update] clip=mixamo.com time=0.693604
+[BoneUpload] count=28 b0T(12.463650,44.026917,-31.179001) b1T(57.408073,64.797737,-27.481049) b2T(61.346771,196.396835,52.478386)
+[Animation Update] clip=mixamo.com time=2.613607
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(-3.708023,20.236492,-9.920990)
+[Animation Update] clip=mixamo.com time=0.500276
+[BoneUpload] count=28 b0T(-3.708023,20.236492,-9.920990) b1T(42.962986,36.174488,-15.656853) b2T(64.022911,186.025864,13.124924)
+[Animation Update] clip=mixamo.com time=2.420278
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(23.545334,33.871590,-22.157219)
+[Animation Update] clip=mixamo.com time=0.306948
+[BoneUpload] count=28 b0T(23.545334,33.871590,-22.157219) b1T(63.457211,62.837746,-27.910728) b2T(39.440506,212.287125,0.644753)
+[Animation Update] clip=mixamo.com time=2.226949
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(28.538193,53.961967,-42.011322)
+[Animation Update] clip=mixamo.com time=0.113619
+[BoneUpload] count=28 b0T(28.538193,53.961967,-42.011322) b1T(64.852753,87.817146,-42.440060) b2T(24.215620,226.773849,10.162186)
+[Animation Update] clip=mixamo.com time=2.033621
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.711971,64.416229,-50.473221)
+[Animation Update] clip=mixamo.com time=3.953624
+[BoneUpload] count=28 b0T(21.711971,64.416229,-50.473221) b1T(54.877190,101.354988,-49.637173) b2T(7.779926,228.794022,22.947159)
+[Animation Update] clip=mixamo.com time=1.840292
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(20.308811,68.903946,-55.461098)
+[Animation Update] clip=mixamo.com time=3.760296
+[BoneUpload] count=28 b0T(20.308811,68.903946,-55.461098) b1T(52.512718,106.641403,-53.487633) b2T(6.103747,226.785553,31.004585)
+[Animation Update] clip=mixamo.com time=1.646963
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(35.334782,70.944786,-59.071869)
+[Animation Update] clip=mixamo.com time=3.385531
+[BoneUpload] count=28 b0T(35.334782,70.944786,-59.071869) b1T(67.302261,108.379623,-52.605385) b2T(19.839409,217.698273,44.985855)
+[Animation Update] clip=mixamo.com time=0.502278
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.225784,39.378170,-26.333469)
+[Animation Update] clip=mixamo.com time=0.600679
+[BoneUpload] count=28 b0T(12.225784,39.378170,-26.333469) b1T(55.779560,63.110142,-24.105492) b2T(51.402088,199.540176,47.273949)
+[Animation Update] clip=mixamo.com time=0.696681
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.503716,40.498138,-31.693493)
+[Animation Update] clip=mixamo.com time=0.792683
+[BoneUpload] count=28 b0T(9.503716,40.498138,-31.693493) b1T(55.782158,58.400700,-29.988724) b2T(70.320847,192.889587,43.691071)
+[Animation Update] clip=mixamo.com time=0.888684
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.554260,29.709763,-25.499134)
+[Animation Update] clip=mixamo.com time=0.984686
+[BoneUpload] count=28 b0T(8.554260,29.709763,-25.499134) b1T(55.193745,46.590363,-27.714092) b2T(74.247040,190.600861,23.523506)
+[Animation Update] clip=mixamo.com time=1.080687
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(14.166687,34.363796,-25.910145)
+[Animation Update] clip=mixamo.com time=1.176689
+[BoneUpload] count=28 b0T(14.166687,34.363796,-25.910145) b1T(60.154659,52.971897,-27.897224) b2T(74.167801,196.436295,26.407013)
+[Animation Update] clip=mixamo.com time=1.272691
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.350876,40.359352,-30.948471)
+[Animation Update] clip=mixamo.com time=1.368692
+[BoneUpload] count=28 b0T(15.350876,40.359352,-30.948471) b1T(63.041805,54.162125,-31.348995) b2T(90.594711,193.006531,29.399757)
+[Animation Update] clip=mixamo.com time=1.464694
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.647942,47.945610,-34.848072)
+[Animation Update] clip=mixamo.com time=1.560696
+[BoneUpload] count=28 b0T(9.647942,47.945610,-34.848072) b1T(58.400211,56.266941,-39.215355) b2T(107.288788,188.123199,23.642998)
+[Animation Update] clip=mixamo.com time=1.656697
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.058922,53.810101,-37.819225)
+[Animation Update] clip=mixamo.com time=1.752699
+[BoneUpload] count=28 b0T(9.058922,53.810101,-37.819225) b1T(56.678497,64.820175,-46.551682) b2T(105.610474,195.740936,18.199791)
+[Animation Update] clip=mixamo.com time=1.848700
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.915100,57.637768,-38.524914)
+[Animation Update] clip=mixamo.com time=1.944702
+[BoneUpload] count=28 b0T(8.915100,57.637768,-38.524914) b1T(54.335632,73.151215,-51.229591) b2T(98.440727,204.999054,15.089607)
+[Animation Update] clip=mixamo.com time=2.040698
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.699821,52.186741,-39.068024)
+[Animation Update] clip=mixamo.com time=2.136685
+[BoneUpload] count=28 b0T(10.699821,52.186741,-39.068024) b1T(52.881264,73.950745,-53.633633) b2T(79.326614,212.072906,9.217453)
+[Animation Update] clip=mixamo.com time=2.232672
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.580307,52.623032,-47.369514)
+[Animation Update] clip=mixamo.com time=2.328660
+[BoneUpload] count=28 b0T(22.580307,52.623032,-47.369514) b1T(54.016747,89.879959,-56.791641) b2T(27.250282,218.754608,23.222336)
+[Animation Update] clip=mixamo.com time=2.424647
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.395821,62.507690,-43.207157)
+[Animation Update] clip=mixamo.com time=2.520634
+[BoneUpload] count=28 b0T(25.395821,62.507690,-43.207157) b1T(51.796513,104.556442,-43.117195) b2T(9.376329,207.209946,63.607361)
+[Animation Update] clip=mixamo.com time=2.616621
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(43.980053,62.028320,-48.719116)
+[Animation Update] clip=mixamo.com time=2.712609
+[BoneUpload] count=28 b0T(43.980053,62.028320,-48.719116) b1T(75.967514,99.374481,-41.851181) b2T(25.294098,211.608353,50.685822)
+[Animation Update] clip=mixamo.com time=2.808596
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(52.449192,53.645096,-52.209930)
+[Animation Update] clip=mixamo.com time=2.904583
+[BoneUpload] count=28 b0T(52.449192,53.645096,-52.209930) b1T(86.900604,88.941353,-46.519886) b2T(40.180641,212.640198,32.493919)
+[Animation Update] clip=mixamo.com time=3.000571
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.476372,56.064293,-57.807224)
+[Animation Update] clip=mixamo.com time=3.096558
+[BoneUpload] count=28 b0T(37.476372,56.064293,-57.807224) b1T(72.727417,91.002258,-56.463718) b2T(40.061634,212.299011,32.684380)
+[Animation Update] clip=mixamo.com time=3.192545
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.083683,69.768173,-60.165565)
+[Animation Update] clip=mixamo.com time=3.288533
+[BoneUpload] count=28 b0T(39.083683,69.768173,-60.165565) b1T(71.185181,107.101730,-53.777985) b2T(25.214836,215.518341,45.519096)
+[Animation Update] clip=mixamo.com time=3.384520
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(33.862930,71.985977,-57.965462)
+[Animation Update] clip=mixamo.com time=3.480507
+[BoneUpload] count=28 b0T(33.862930,71.985977,-57.965462) b1T(64.547424,110.482948,-51.519695) b2T(11.796765,219.963196,43.131165)
+[Animation Update] clip=mixamo.com time=3.576495
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.031784,70.127533,-56.040833)
+[Animation Update] clip=mixamo.com time=3.672482
+[BoneUpload] count=28 b0T(27.031784,70.127533,-56.040833) b1T(57.699745,108.972397,-52.084003) b2T(4.748363,224.439423,35.041618)
+[Animation Update] clip=mixamo.com time=3.768469
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.833946,67.185204,-53.579079)
+[Animation Update] clip=mixamo.com time=3.864457
+[BoneUpload] count=28 b0T(21.833946,67.185204,-53.579079) b1T(54.288689,104.715591,-51.773273) b2T(5.961190,228.160522,26.668770)
+[Animation Update] clip=mixamo.com time=3.960444
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.498844,58.659592,-46.342770)
+[Animation Update] clip=mixamo.com time=0.023111
+[BoneUpload] count=28 b0T(22.498844,58.659592,-46.342770) b1T(57.785553,93.581245,-46.997314) b2T(16.595713,228.183289,15.556778)
+[Animation Update] clip=mixamo.com time=0.119111
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.111042,48.011909,-35.409206)
+[Animation Update] clip=mixamo.com time=0.215111
+[BoneUpload] count=28 b0T(29.111042,48.011909,-35.409206) b1T(65.687607,81.461266,-38.306923) b2T(26.867807,223.640106,6.476242)
+[Animation Update] clip=mixamo.com time=0.311112
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.213337,16.614807,-4.873993)
+[Animation Update] clip=mixamo.com time=0.407113
+[BoneUpload] count=28 b0T(9.213337,16.614807,-4.873993) b1T(54.012096,36.835548,-11.895149) b2T(57.575493,190.575806,-3.029732)
+[Animation Update] clip=mixamo.com time=0.503115
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.038712,39.130058,-26.172436)
+[Animation Update] clip=mixamo.com time=0.599117
+[BoneUpload] count=28 b0T(12.038712,39.130058,-26.172436) b1T(55.619469,62.822090,-24.049488) b2T(51.441879,199.472748,46.918739)
+[Animation Update] clip=mixamo.com time=0.695118
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.479645,40.571095,-31.704109)
+[Animation Update] clip=mixamo.com time=0.791120
+[BoneUpload] count=28 b0T(9.479645,40.571095,-31.704109) b1T(55.756733,58.475193,-29.978878) b2T(70.283356,192.886719,43.844353)
+[Animation Update] clip=mixamo.com time=0.887121
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.582405,29.752316,-25.536247)
+[Animation Update] clip=mixamo.com time=0.983123
+[BoneUpload] count=28 b0T(8.582405,29.752316,-25.536247) b1T(55.214027,46.657177,-27.731636) b2T(74.190239,190.637726,23.618690)
+[Animation Update] clip=mixamo.com time=1.079125
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(14.138611,34.276066,-25.870956)
+[Animation Update] clip=mixamo.com time=1.175126
+[BoneUpload] count=28 b0T(14.138611,34.276066,-25.870956) b1T(60.124310,52.887959,-27.874950) b2T(74.122780,196.397934,26.312500)
+[Animation Update] clip=mixamo.com time=1.271128
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.363358,40.321079,-30.914440)
+[Animation Update] clip=mixamo.com time=1.367129
+[BoneUpload] count=28 b0T(15.363358,40.321079,-30.914440) b1T(63.042866,54.163822,-31.295654) b2T(90.450912,193.043747,29.437447)
+[Animation Update] clip=mixamo.com time=1.463131
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.670029,47.882198,-34.813648)
+[Animation Update] clip=mixamo.com time=1.559133
+[BoneUpload] count=28 b0T(9.670029,47.882198,-34.813648) b1T(58.423321,56.214622,-39.148422) b2T(107.230225,188.111191,23.688835)
+[Animation Update] clip=mixamo.com time=1.655134
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.074547,53.786617,-37.823700)
+[Animation Update] clip=mixamo.com time=1.751136
+[BoneUpload] count=28 b0T(9.074547,53.786617,-37.823700) b1T(56.714592,64.751869,-46.500832) b2T(105.681343,195.651688,18.266808)
+[Animation Update] clip=mixamo.com time=1.847138
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.949486,57.630508,-38.532829)
+[Animation Update] clip=mixamo.com time=1.943139
+[BoneUpload] count=28 b0T(8.949486,57.630508,-38.532829) b1T(54.383232,73.135086,-51.201019) b2T(98.461792,204.973007,15.155457)
+[Animation Update] clip=mixamo.com time=2.039135
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.573730,52.257004,-39.016071)
+[Animation Update] clip=mixamo.com time=2.135122
+[BoneUpload] count=28 b0T(10.573730,52.257004,-39.016071) b1T(52.807892,73.896172,-53.614868) b2T(79.688225,211.960022,9.179764)
+[Animation Update] clip=mixamo.com time=2.231110
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.448853,52.537109,-47.303944)
+[Animation Update] clip=mixamo.com time=2.327097
+[BoneUpload] count=28 b0T(22.448853,52.537109,-47.303944) b1T(54.043327,89.647766,-56.774521) b2T(27.809978,218.747375,23.053131)
+[Animation Update] clip=mixamo.com time=2.423084
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.363331,62.447083,-43.202198)
+[Animation Update] clip=mixamo.com time=2.519072
+[BoneUpload] count=28 b0T(25.363331,62.447083,-43.202198) b1T(51.723305,104.521484,-43.183861) b2T(9.325500,207.239120,63.487862)
+[Animation Update] clip=mixamo.com time=2.615059
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(43.777607,62.117691,-48.682930)
+[Animation Update] clip=mixamo.com time=2.711046
+[BoneUpload] count=28 b0T(43.777607,62.117691,-48.682930) b1T(75.707512,99.520042,-41.852997) b2T(25.034172,211.557999,50.921219)
+[Animation Update] clip=mixamo.com time=2.807034
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(52.580204,53.739296,-52.195442)
+[Animation Update] clip=mixamo.com time=2.903021
+[BoneUpload] count=28 b0T(52.580204,53.739296,-52.195442) b1T(87.002197,89.052139,-46.430775) b2T(40.094444,212.666595,32.603882)
+[Animation Update] clip=mixamo.com time=2.999008
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.474010,55.882248,-57.731045)
+[Animation Update] clip=mixamo.com time=3.094995
+[BoneUpload] count=28 b0T(37.474010,55.882248,-57.731045) b1T(72.777649,90.768906,-56.436203) b2T(40.272793,212.262543,32.502441)
+[Animation Update] clip=mixamo.com time=3.190983
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.151924,69.758446,-60.186806)
+[Animation Update] clip=mixamo.com time=3.286970
+[BoneUpload] count=28 b0T(39.151924,69.758446,-60.186806) b1T(71.240837,107.102448,-53.796997) b2T(25.245037,215.484833,45.525726)
+[Animation Update] clip=mixamo.com time=3.382957
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(33.896870,71.977188,-57.979622)
+[Animation Update] clip=mixamo.com time=3.478945
+[BoneUpload] count=28 b0T(33.896870,71.977188,-57.979622) b1T(64.607056,110.451843,-51.523045) b2T(11.939954,219.929153,43.177750)
+[Animation Update] clip=mixamo.com time=3.574932
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.157551,70.163231,-56.055851)
+[Animation Update] clip=mixamo.com time=3.670919
+[BoneUpload] count=28 b0T(27.157551,70.163231,-56.055851) b1T(57.788521,109.033318,-52.060329) b2T(4.697276,224.392639,35.122856)
+[Animation Update] clip=mixamo.com time=3.766907
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.792152,67.222076,-53.620541)
+[Animation Update] clip=mixamo.com time=3.862894
+[BoneUpload] count=28 b0T(21.792152,67.222076,-53.620541) b1T(54.242821,104.755951,-51.813744) b2T(5.949039,228.147934,26.732285)
+[Animation Update] clip=mixamo.com time=3.958881
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.444027,58.748520,-46.404896)
+[Animation Update] clip=mixamo.com time=0.021548
+[BoneUpload] count=28 b0T(22.444027,58.748520,-46.404896) b1T(57.698410,93.703018,-47.049633) b2T(16.430935,228.204391,15.669724)
+[Animation Update] clip=mixamo.com time=0.117548
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.202023,48.139893,-35.530701)
+[Animation Update] clip=mixamo.com time=0.213548
+[BoneUpload] count=28 b0T(29.202023,48.139893,-35.530701) b1T(65.756340,81.619011,-38.364914) b2T(26.795168,223.724472,6.528366)
+[Animation Update] clip=mixamo.com time=0.309549
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.565498,16.753693,-5.016191)
+[Animation Update] clip=mixamo.com time=0.405550
+[BoneUpload] count=28 b0T(9.565498,16.753693,-5.016191) b1T(54.286968,37.148003,-12.027954) b2T(57.267891,190.895721,-3.077370)
+[Animation Update] clip=mixamo.com time=0.501552
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.821899,38.852867,-25.998062)
+[Animation Update] clip=mixamo.com time=0.597554
+[BoneUpload] count=28 b0T(11.821899,38.852867,-25.998062) b1T(55.439846,62.486580,-23.991875) b2T(51.526489,199.382935,46.516357)
+[Animation Update] clip=mixamo.com time=0.693555
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.455612,40.644051,-31.714649)
+[Animation Update] clip=mixamo.com time=0.789557
+[BoneUpload] count=28 b0T(9.455612,40.644051,-31.714649) b1T(55.731323,58.549725,-29.968925) b2T(70.245743,192.883713,43.997612)
+[Animation Update] clip=mixamo.com time=0.885559
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.629051,29.806843,-25.581669)
+[Animation Update] clip=mixamo.com time=0.981560
+[BoneUpload] count=28 b0T(8.629051,29.806843,-25.581669) b1T(55.250534,46.743031,-27.750648) b2T(74.124756,190.687225,23.738937)
+[Animation Update] clip=mixamo.com time=1.077562
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(14.110565,34.188366,-25.831661)
+[Animation Update] clip=mixamo.com time=1.173563
+[BoneUpload] count=28 b0T(14.110565,34.188366,-25.831661) b1T(60.093998,52.804047,-27.852577) b2T(74.077759,196.359497,26.218063)
+[Animation Update] clip=mixamo.com time=1.269565
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.367172,40.284637,-30.879410)
+[Animation Update] clip=mixamo.com time=1.365567
+[BoneUpload] count=28 b0T(15.367172,40.284637,-30.879410) b1T(63.035530,54.166122,-31.246567) b2T(90.309303,193.079620,29.470184)
+[Animation Update] clip=mixamo.com time=1.461568
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.692123,47.818787,-34.779205)
+[Animation Update] clip=mixamo.com time=1.557570
+[BoneUpload] count=28 b0T(9.692123,47.818787,-34.779205) b1T(58.446396,56.162327,-39.081459) b2T(107.171600,188.099182,23.734657)
+[Animation Update] clip=mixamo.com time=1.653571
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.089432,53.763920,-37.827808)
+[Animation Update] clip=mixamo.com time=1.749573
+[BoneUpload] count=28 b0T(9.089432,53.763920,-37.827808) b1T(56.749535,64.685440,-46.449707) b2T(105.749146,195.563492,18.337044)
+[Animation Update] clip=mixamo.com time=1.845575
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.983788,57.623276,-38.540737)
+[Animation Update] clip=mixamo.com time=1.941576
+[BoneUpload] count=28 b0T(8.983788,57.623276,-38.540737) b1T(54.430710,73.118980,-51.172462) b2T(98.482719,204.947006,15.221375)
+[Animation Update] clip=mixamo.com time=2.037572
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.447868,52.328590,-38.964451)
+[Animation Update] clip=mixamo.com time=2.133560
+[BoneUpload] count=28 b0T(10.447868,52.328590,-38.964451) b1T(52.734520,73.842712,-53.596096) b2T(80.050140,211.846207,9.143272)
+[Animation Update] clip=mixamo.com time=2.229547
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.317120,52.453476,-47.238827)
+[Animation Update] clip=mixamo.com time=2.325534
+[BoneUpload] count=28 b0T(22.317120,52.453476,-47.238827) b1T(54.069408,89.417007,-56.756813) b2T(28.370852,218.737961,22.886276)
+[Animation Update] clip=mixamo.com time=2.421522
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.330906,62.386513,-43.197205)
+[Animation Update] clip=mixamo.com time=2.517509
+[BoneUpload] count=28 b0T(25.330906,62.386513,-43.197205) b1T(51.650051,104.486420,-43.250488) b2T(9.274479,207.268097,63.368347)
+[Animation Update] clip=mixamo.com time=2.613496
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(43.575115,62.206451,-48.646149)
+[Animation Update] clip=mixamo.com time=2.709484
+[BoneUpload] count=28 b0T(43.575115,62.206451,-48.646149) b1T(75.447159,99.665009,-41.854038) b2T(24.774515,211.506882,51.156807)
+[Animation Update] clip=mixamo.com time=2.805471
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(52.711159,53.833656,-52.180725)
+[Animation Update] clip=mixamo.com time=2.901458
+[BoneUpload] count=28 b0T(52.711159,53.833656,-52.180725) b1T(87.103607,89.163033,-46.341431) b2T(40.008102,212.692871,32.713837)
+[Animation Update] clip=mixamo.com time=2.997446
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.471176,55.700386,-57.654594)
+[Animation Update] clip=mixamo.com time=3.093433
+[BoneUpload] count=28 b0T(37.471176,55.700386,-57.654594) b1T(72.827370,90.535568,-56.408310) b2T(40.483971,212.225403,32.320717)
+[Animation Update] clip=mixamo.com time=3.189420
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.220123,69.748993,-60.208122)
+[Animation Update] clip=mixamo.com time=3.285408
+[BoneUpload] count=28 b0T(39.220123,69.748993,-60.208122) b1T(71.296402,107.103439,-53.815968) b2T(25.275101,215.451172,45.532661)
+[Animation Update] clip=mixamo.com time=3.381395
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(33.930794,71.968353,-57.993790)
+[Animation Update] clip=mixamo.com time=3.477382
+[BoneUpload] count=28 b0T(33.930794,71.968353,-57.993790) b1T(64.666679,110.420670,-51.526440) b2T(12.083228,219.895035,43.224197)
+[Animation Update] clip=mixamo.com time=3.573370
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.283382,70.199287,-56.070992)
+[Animation Update] clip=mixamo.com time=3.669357
+[BoneUpload] count=28 b0T(27.283382,70.199287,-56.070992) b1T(57.877396,109.094444,-52.036591) b2T(4.646399,224.345673,35.204285)
+[Animation Update] clip=mixamo.com time=3.765344
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.750320,67.258934,-53.661919)
+[Animation Update] clip=mixamo.com time=3.861331
+[BoneUpload] count=28 b0T(21.750320,67.258934,-53.661919) b1T(54.196926,104.796303,-51.854156) b2T(5.937025,228.135345,26.795830)
+[Animation Update] clip=mixamo.com time=3.957319
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.389076,58.837509,-46.466885)
+[Animation Update] clip=mixamo.com time=0.019985
+[BoneUpload] count=28 b0T(22.389076,58.837509,-46.466885) b1T(57.611095,93.824783,-47.101761) b2T(16.266239,228.225174,15.782837)
+[Animation Update] clip=mixamo.com time=0.115985
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.293190,48.268761,-35.652496)
+[Animation Update] clip=mixamo.com time=0.211985
+[BoneUpload] count=28 b0T(29.293190,48.268761,-35.652496) b1T(65.824898,81.777893,-38.422829) b2T(26.721186,223.808823,6.582024)
+[Animation Update] clip=mixamo.com time=0.307986
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.916470,16.894592,-5.159531)
+[Animation Update] clip=mixamo.com time=0.403988
+[BoneUpload] count=28 b0T(9.916470,16.894592,-5.159531) b1T(54.559906,37.462303,-12.162048) b2T(56.958374,191.215088,-3.124512)
+[Animation Update] clip=mixamo.com time=0.499989
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.604492,38.576656,-25.822605)
+[Animation Update] clip=mixamo.com time=0.595991
+[BoneUpload] count=28 b0T(11.604492,38.576656,-25.822605) b1T(55.259499,62.151485,-23.933002) b2T(51.610783,199.291489,46.114479)
+[Animation Update] clip=mixamo.com time=0.691992
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.431618,40.717037,-31.725166)
+[Animation Update] clip=mixamo.com time=0.787994
+[BoneUpload] count=28 b0T(9.431618,40.717037,-31.725166) b1T(55.705959,58.624279,-29.958973) b2T(70.208046,192.880615,44.150826)
+[Animation Update] clip=mixamo.com time=0.883996
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.675674,29.861477,-25.627003)
+[Animation Update] clip=mixamo.com time=0.979997
+[BoneUpload] count=28 b0T(8.675674,29.861477,-25.627003) b1T(55.287006,46.828960,-27.769531) b2T(74.059174,190.736603,23.859314)
+[Animation Update] clip=mixamo.com time=1.075999
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(14.082542,34.100716,-25.792370)
+[Animation Update] clip=mixamo.com time=1.172001
+[BoneUpload] count=28 b0T(14.082542,34.100716,-25.792370) b1T(60.063702,52.720139,-27.830185) b2T(74.032745,196.320953,26.123634)
+[Animation Update] clip=mixamo.com time=1.268002
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.367363,40.248997,-30.843918)
+[Animation Update] clip=mixamo.com time=1.364004
+[BoneUpload] count=28 b0T(15.367363,40.248997,-30.843918) b1T(63.024666,54.168690,-31.199211) b2T(90.168594,193.114899,29.500847)
+[Animation Update] clip=mixamo.com time=1.460005
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.714218,47.755390,-34.744759)
+[Animation Update] clip=mixamo.com time=1.556007
+[BoneUpload] count=28 b0T(9.714218,47.755390,-34.744759) b1T(58.469440,56.110031,-39.014496) b2T(107.112946,188.087143,23.780426)
+[Animation Update] clip=mixamo.com time=1.652009
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.102509,53.743179,-37.831123)
+[Animation Update] clip=mixamo.com time=1.748010
+[BoneUpload] count=28 b0T(9.102509,53.743179,-37.831123) b1T(56.781853,64.623878,-46.398026) b2T(105.809143,195.478333,18.415405)
+[Animation Update] clip=mixamo.com time=1.844012
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.018066,57.616089,-38.548641)
+[Animation Update] clip=mixamo.com time=1.940014
+[BoneUpload] count=28 b0T(9.018066,57.616089,-38.548641) b1T(54.478165,73.102951,-51.143845) b2T(98.503464,204.921005,15.287392)
+[Animation Update] clip=mixamo.com time=2.036010
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.324524,52.395573,-38.914425)
+[Animation Update] clip=mixamo.com time=2.131997
+[BoneUpload] count=28 b0T(10.324524,52.395573,-38.914425) b1T(52.658615,73.793320,-53.579483) b2T(80.383102,211.739456,9.106697)
+[Animation Update] clip=mixamo.com time=2.227984
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.185066,52.372108,-47.174141)
+[Animation Update] clip=mixamo.com time=2.323972
+[BoneUpload] count=28 b0T(22.185066,52.372108,-47.174141) b1T(54.094990,89.187630,-56.738487) b2T(28.932873,218.726379,22.721725)
+[Animation Update] clip=mixamo.com time=2.419959
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.321751,62.329292,-43.203232)
+[Animation Update] clip=mixamo.com time=2.515946
+[BoneUpload] count=28 b0T(25.321751,62.329292,-43.203232) b1T(51.599796,104.454720,-43.325367) b2T(9.224190,207.306885,63.225487)
+[Animation Update] clip=mixamo.com time=2.611934
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(43.372471,62.294678,-48.608803)
+[Animation Update] clip=mixamo.com time=2.707921
+[BoneUpload] count=28 b0T(43.372471,62.294678,-48.608803) b1T(75.186409,99.809387,-41.854385) b2T(24.515121,211.455017,51.392685)
+[Animation Update] clip=mixamo.com time=2.803908
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(52.840446,53.927742,-52.165703)
+[Animation Update] clip=mixamo.com time=2.899896
+[BoneUpload] count=28 b0T(52.840446,53.927742,-52.165703) b1T(87.203888,89.272987,-46.252056) b2T(39.923416,212.718704,32.824226)
+[Animation Update] clip=mixamo.com time=2.995883
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.467991,55.518715,-57.577835)
+[Animation Update] clip=mixamo.com time=3.091870
+[BoneUpload] count=28 b0T(37.467991,55.518715,-57.577835) b1T(72.876671,90.302208,-56.380020) b2T(40.695282,212.187546,32.139229)
+[Animation Update] clip=mixamo.com time=3.187858
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.288277,69.739868,-60.229591)
+[Animation Update] clip=mixamo.com time=3.283845
+[BoneUpload] count=28 b0T(39.288277,69.739868,-60.229591) b1T(71.351891,107.104767,-53.834934) b2T(25.304937,215.417465,45.540024)
+[Animation Update] clip=mixamo.com time=3.379832
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(33.964695,71.959457,-58.008026)
+[Animation Update] clip=mixamo.com time=3.475820
+[BoneUpload] count=28 b0T(33.964695,71.959457,-58.008026) b1T(64.726288,110.389404,-51.529953) b2T(12.226494,219.860825,43.270500)
+[Animation Update] clip=mixamo.com time=3.571807
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.409283,70.235725,-56.086189)
+[Animation Update] clip=mixamo.com time=3.667794
+[BoneUpload] count=28 b0T(27.409283,70.235725,-56.086189) b1T(57.966358,109.155823,-52.012695) b2T(4.595709,224.298660,35.285995)
+[Animation Update] clip=mixamo.com time=3.763782
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.708405,67.295837,-53.703300)
+[Animation Update] clip=mixamo.com time=3.859769
+[BoneUpload] count=28 b0T(21.708405,67.295837,-53.703300) b1T(54.150970,104.836624,-51.894524) b2T(5.925153,228.122635,26.859390)
+[Animation Update] clip=mixamo.com time=3.955756
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.333992,58.926529,-46.528835)
+[Animation Update] clip=mixamo.com time=0.018422
+[BoneUpload] count=28 b0T(22.333992,58.926529,-46.528835) b1T(57.523636,93.946533,-47.153797) b2T(16.101624,228.245667,15.896172)
+[Animation Update] clip=mixamo.com time=0.114422
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.384518,48.398529,-35.774773)
+[Animation Update] clip=mixamo.com time=0.210422
+[BoneUpload] count=28 b0T(29.384518,48.398529,-35.774773) b1T(65.893265,81.937889,-38.480831) b2T(26.645889,223.893295,6.637352)
+[Animation Update] clip=mixamo.com time=0.306423
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.266304,17.037498,-5.303986)
+[Animation Update] clip=mixamo.com time=0.402425
+[BoneUpload] count=28 b0T(10.266304,17.037498,-5.303986) b1T(54.830978,37.778412,-12.297390) b2T(56.646862,191.533951,-3.171112)
+[Animation Update] clip=mixamo.com time=0.498426
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.386467,38.301464,-25.646038)
+[Animation Update] clip=mixamo.com time=0.594428
+[BoneUpload] count=28 b0T(11.386467,38.301464,-25.646038) b1T(55.078388,61.816883,-23.872879) b2T(51.694679,199.198425,45.713089)
+[Animation Update] clip=mixamo.com time=0.690430
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.407692,40.790012,-31.735596)
+[Animation Update] clip=mixamo.com time=0.786431
+[BoneUpload] count=28 b0T(9.407692,40.790012,-31.735596) b1T(55.680630,58.698845,-29.948872) b2T(70.170212,192.877426,44.304039)
+[Animation Update] clip=mixamo.com time=0.882433
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.722229,29.916203,-25.672279)
+[Animation Update] clip=mixamo.com time=0.978434
+[BoneUpload] count=28 b0T(8.722229,29.916203,-25.672279) b1T(55.323402,46.914925,-27.788345) b2T(73.993622,190.785828,23.979736)
+[Animation Update] clip=mixamo.com time=1.074436
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(14.054588,34.013081,-25.753025)
+[Animation Update] clip=mixamo.com time=1.170438
+[BoneUpload] count=28 b0T(14.054588,34.013081,-25.753025) b1T(60.033463,52.636265,-27.807735) b2T(73.987717,196.282349,26.029236)
+[Animation Update] clip=mixamo.com time=1.266439
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.367538,40.213348,-30.808445)
+[Animation Update] clip=mixamo.com time=1.362441
+[BoneUpload] count=28 b0T(15.367538,40.213348,-30.808445) b1T(63.013748,54.171238,-31.151890) b2T(90.027855,193.150070,29.531403)
+[Animation Update] clip=mixamo.com time=1.458442
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.736282,47.691959,-34.710262)
+[Animation Update] clip=mixamo.com time=1.554444
+[BoneUpload] count=28 b0T(9.736282,47.691959,-34.710262) b1T(58.492432,56.057724,-38.947479) b2T(107.054276,188.075012,23.826096)
+[Animation Update] clip=mixamo.com time=1.650446
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.115509,53.722492,-37.834427)
+[Animation Update] clip=mixamo.com time=1.746447
+[BoneUpload] count=28 b0T(9.115509,53.722492,-37.834427) b1T(56.814011,64.562378,-46.346306) b2T(105.869011,195.393143,18.493950)
+[Animation Update] clip=mixamo.com time=1.842449
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.052292,57.608864,-38.556553)
+[Animation Update] clip=mixamo.com time=1.938451
+[BoneUpload] count=28 b0T(9.052292,57.608864,-38.556553) b1T(54.525513,73.086899,-51.115219) b2T(98.524094,204.895004,15.353500)
+[Animation Update] clip=mixamo.com time=2.034447
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.201736,52.462761,-38.864861)
+[Animation Update] clip=mixamo.com time=2.130434
+[BoneUpload] count=28 b0T(10.201736,52.462761,-38.864861) b1T(52.582260,73.745407,-53.563221) b2T(80.711456,211.633240,9.070946)
+[Animation Update] clip=mixamo.com time=2.226422
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.052704,52.293076,-47.109970)
+[Animation Update] clip=mixamo.com time=2.322409
+[BoneUpload] count=28 b0T(22.052704,52.293076,-47.109970) b1T(54.120029,88.959732,-56.719666) b2T(29.496019,218.712631,22.559509)
+[Animation Update] clip=mixamo.com time=2.418396
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.339821,62.276047,-43.222252)
+[Animation Update] clip=mixamo.com time=2.514384
+[BoneUpload] count=28 b0T(25.339821,62.276047,-43.222252) b1T(51.576450,104.427032,-43.410080) b2T(9.174709,207.357132,63.055077)
+[Animation Update] clip=mixamo.com time=2.610371
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(43.169708,62.382271,-48.570885)
+[Animation Update] clip=mixamo.com time=2.706358
+[BoneUpload] count=28 b0T(43.169708,62.382271,-48.570885) b1T(74.925217,99.953194,-41.854034) b2T(24.255899,211.402374,51.628738)
+[Animation Update] clip=mixamo.com time=2.802346
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(52.947247,54.015587,-52.149414)
+[Animation Update] clip=mixamo.com time=2.898333
+[BoneUpload] count=28 b0T(52.947247,54.015587,-52.149414) b1T(87.290482,89.368599,-46.165222) b2T(39.863701,212.739609,32.940041)
+[Animation Update] clip=mixamo.com time=2.994320
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.464413,55.337158,-57.500843)
+[Animation Update] clip=mixamo.com time=3.090307
+[BoneUpload] count=28 b0T(37.464413,55.337158,-57.500843) b1T(72.925575,90.068817,-56.351421) b2T(40.906654,212.149109,31.957954)
+[Animation Update] clip=mixamo.com time=3.186295
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.352226,69.727432,-60.249817)
+[Animation Update] clip=mixamo.com time=3.282282
+[BoneUpload] count=28 b0T(39.352226,69.727432,-60.249817) b1T(71.402473,107.103638,-53.854214) b2T(25.328176,215.384140,45.543144)
+[Animation Update] clip=mixamo.com time=3.378269
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(33.998566,71.950546,-58.022278)
+[Animation Update] clip=mixamo.com time=3.474257
+[BoneUpload] count=28 b0T(33.998566,71.950546,-58.022278) b1T(64.785835,110.358116,-51.533512) b2T(12.369808,219.826569,43.316689)
+[Animation Update] clip=mixamo.com time=3.570244
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.528534,70.272537,-56.102287)
+[Animation Update] clip=mixamo.com time=3.666231
+[BoneUpload] count=28 b0T(27.528534,70.272537,-56.102287) b1T(58.048973,109.217484,-51.991547) b2T(4.544046,224.252045,35.367729)
+[Animation Update] clip=mixamo.com time=3.762219
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.666428,67.332779,-53.744614)
+[Animation Update] clip=mixamo.com time=3.858206
+[BoneUpload] count=28 b0T(21.666428,67.332779,-53.744614) b1T(54.105011,104.876938,-51.934834) b2T(5.913438,228.109879,26.923012)
+[Animation Update] clip=mixamo.com time=3.954193
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.278793,59.015564,-46.590675)
+[Animation Update] clip=mixamo.com time=0.016860
+[BoneUpload] count=28 b0T(22.278793,59.015564,-46.590675) b1T(57.436016,94.068298,-47.205654) b2T(15.937107,228.265900,16.009705)
+[Animation Update] clip=mixamo.com time=0.112859
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.476040,48.529190,-35.897350)
+[Animation Update] clip=mixamo.com time=0.208859
+[BoneUpload] count=28 b0T(29.476040,48.529190,-35.897350) b1T(65.961510,82.099052,-38.538746) b2T(26.569288,223.977768,6.694229)
+[Animation Update] clip=mixamo.com time=0.304860
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.614891,17.182365,-5.449520)
+[Animation Update] clip=mixamo.com time=0.400862
+[BoneUpload] count=28 b0T(10.614891,17.182365,-5.449520) b1T(55.100056,38.096268,-12.433964) b2T(56.333485,191.852203,-3.217201)
+[Animation Update] clip=mixamo.com time=0.496863
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.167892,38.027298,-25.468369)
+[Animation Update] clip=mixamo.com time=0.592865
+[BoneUpload] count=28 b0T(11.167892,38.027298,-25.468369) b1T(54.896591,61.482746,-23.811474) b2T(51.778179,199.103714,45.312256)
+[Animation Update] clip=mixamo.com time=0.688867
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.383827,40.862988,-31.745960)
+[Animation Update] clip=mixamo.com time=0.784868
+[BoneUpload] count=28 b0T(9.383827,40.862988,-31.745960) b1T(55.655323,58.773445,-29.938686) b2T(70.132248,192.874207,44.457199)
+[Animation Update] clip=mixamo.com time=0.880870
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.768745,29.971039,-25.717522)
+[Animation Update] clip=mixamo.com time=0.976872
+[BoneUpload] count=28 b0T(8.768745,29.971039,-25.717522) b1T(55.359741,47.000938,-27.807079) b2T(73.928032,190.834854,24.100250)
+[Animation Update] clip=mixamo.com time=1.072873
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(14.026627,33.925446,-25.713615)
+[Animation Update] clip=mixamo.com time=1.168875
+[BoneUpload] count=28 b0T(14.026627,33.925446,-25.713615) b1T(60.003246,52.552364,-27.785210) b2T(73.942757,196.243713,25.934860)
+[Animation Update] clip=mixamo.com time=1.264876
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.367714,40.177696,-30.772930)
+[Animation Update] clip=mixamo.com time=1.360878
+[BoneUpload] count=28 b0T(15.367714,40.177696,-30.772930) b1T(63.002808,54.173744,-31.104519) b2T(89.887100,193.185089,29.561920)
+[Animation Update] clip=mixamo.com time=1.456880
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.758362,47.628510,-34.675762)
+[Animation Update] clip=mixamo.com time=1.552881
+[BoneUpload] count=28 b0T(9.758362,47.628510,-34.675762) b1T(58.515434,56.005390,-38.880447) b2T(106.995636,188.062866,23.871750)
+[Animation Update] clip=mixamo.com time=1.648883
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.128395,53.701862,-37.837833)
+[Animation Update] clip=mixamo.com time=1.744884
+[BoneUpload] count=28 b0T(9.128395,53.701862,-37.837833) b1T(56.845940,64.500938,-46.294670) b2T(105.928665,195.307953,18.572609)
+[Animation Update] clip=mixamo.com time=1.840886
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.086472,57.601692,-38.564503)
+[Animation Update] clip=mixamo.com time=1.936888
+[BoneUpload] count=28 b0T(9.086472,57.601692,-38.564503) b1T(54.572769,73.070908,-51.086571) b2T(98.544579,204.868973,15.419754)
+[Animation Update] clip=mixamo.com time=2.032884
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.079216,52.531082,-38.815590)
+[Animation Update] clip=mixamo.com time=2.128872
+[BoneUpload] count=28 b0T(10.079216,52.531082,-38.815590) b1T(52.505981,73.698502,-53.546947) b2T(81.040047,211.526215,9.036293)
+[Animation Update] clip=mixamo.com time=2.224859
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.920101,52.216354,-47.046276)
+[Animation Update] clip=mixamo.com time=2.320846
+[BoneUpload] count=28 b0T(21.920101,52.216354,-47.046276) b1T(54.144562,88.733299,-56.700264) b2T(30.060184,218.696701,22.399696)
+[Animation Update] clip=mixamo.com time=2.416834
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.357918,62.222740,-43.241322)
+[Animation Update] clip=mixamo.com time=2.512821
+[BoneUpload] count=28 b0T(25.357918,62.222740,-43.241322) b1T(51.553028,104.399208,-43.494862) b2T(9.124842,207.407166,62.884460)
+[Animation Update] clip=mixamo.com time=2.608808
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(42.966908,62.469246,-48.532440)
+[Animation Update] clip=mixamo.com time=2.704796
+[BoneUpload] count=28 b0T(42.966908,62.469246,-48.532440) b1T(74.663719,100.096367,-41.852970) b2T(23.996958,211.349091,51.864960)
+[Animation Update] clip=mixamo.com time=2.800783
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.053967,54.103546,-52.132957)
+[Animation Update] clip=mixamo.com time=2.896770
+[BoneUpload] count=28 b0T(53.053967,54.103546,-52.132957) b1T(87.376884,89.464249,-46.078220) b2T(39.803871,212.760406,33.055908)
+[Animation Update] clip=mixamo.com time=2.992758
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.460419,55.155823,-57.423538)
+[Animation Update] clip=mixamo.com time=3.088745
+[BoneUpload] count=28 b0T(37.460419,55.155823,-57.423538) b1T(72.973969,89.835472,-56.322392) b2T(41.118053,212.109970,31.776939)
+[Animation Update] clip=mixamo.com time=3.184732
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.414085,69.713531,-60.269455)
+[Animation Update] clip=mixamo.com time=3.280720
+[BoneUpload] count=28 b0T(39.414085,69.713531,-60.269455) b1T(71.450607,107.101456,-53.873585) b2T(25.348106,215.351074,45.544365)
+[Animation Update] clip=mixamo.com time=3.376707
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.032402,71.941574,-58.036636)
+[Animation Update] clip=mixamo.com time=3.472694
+[BoneUpload] count=28 b0T(34.032402,71.941574,-58.036636) b1T(64.845383,110.326736,-51.537216) b2T(12.513155,219.792221,43.362701)
+[Animation Update] clip=mixamo.com time=3.568681
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.630447,70.309639,-56.120293)
+[Animation Update] clip=mixamo.com time=3.664669
+[BoneUpload] count=28 b0T(27.630447,70.309639,-56.120293) b1T(58.114960,109.279282,-51.977428) b2T(4.489580,224.206543,35.449097)
+[Animation Update] clip=mixamo.com time=3.760656
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.624367,67.369705,-53.785927)
+[Animation Update] clip=mixamo.com time=3.856643
+[BoneUpload] count=28 b0T(21.624367,67.369705,-53.785927) b1T(54.058975,104.917267,-51.975140) b2T(5.901883,228.097137,26.986641)
+[Animation Update] clip=mixamo.com time=3.952631
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.245087,59.110176,-46.652760)
+[Animation Update] clip=mixamo.com time=0.015297
+[BoneUpload] count=28 b0T(22.245087,59.110176,-46.652760) b1T(57.365574,94.200005,-47.251373) b2T(15.764272,228.288177,16.128708)
+[Animation Update] clip=mixamo.com time=0.111297
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.567726,48.660728,-36.020290)
+[Animation Update] clip=mixamo.com time=0.207297
+[BoneUpload] count=28 b0T(29.567726,48.660728,-36.020290) b1T(66.029541,82.261337,-38.596626) b2T(26.491388,224.062302,6.752747)
+[Animation Update] clip=mixamo.com time=0.303297
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.954033,17.349121,-5.619635)
+[Animation Update] clip=mixamo.com time=0.399299
+[BoneUpload] count=28 b0T(10.954033,17.349121,-5.619635) b1T(55.359867,38.434433,-12.593410) b2T(56.022816,192.185791,-3.243462)
+[Animation Update] clip=mixamo.com time=0.495301
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.948708,37.754181,-25.289623)
+[Animation Update] clip=mixamo.com time=0.591302
+[BoneUpload] count=28 b0T(10.948708,37.754181,-25.289623) b1T(54.714039,61.149162,-23.748852) b2T(51.861305,199.007446,44.911903)
+[Animation Update] clip=mixamo.com time=0.687304
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.360413,40.935917,-31.756142)
+[Animation Update] clip=mixamo.com time=0.783305
+[BoneUpload] count=28 b0T(9.360413,40.935917,-31.756142) b1T(55.630363,58.848259,-29.928272) b2T(70.093628,192.871201,44.610336)
+[Animation Update] clip=mixamo.com time=0.879307
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.815193,30.025986,-25.762691)
+[Animation Update] clip=mixamo.com time=0.975309
+[BoneUpload] count=28 b0T(8.815193,30.025986,-25.762691) b1T(55.395954,47.087044,-27.825714) b2T(73.862381,190.883774,24.220863)
+[Animation Update] clip=mixamo.com time=1.071310
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.998688,33.837887,-25.674137)
+[Animation Update] clip=mixamo.com time=1.167312
+[BoneUpload] count=28 b0T(13.998688,33.837887,-25.674137) b1T(59.973022,52.468529,-27.762596) b2T(73.897720,196.204956,25.840523)
+[Animation Update] clip=mixamo.com time=1.263314
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.367905,40.142006,-30.737423)
+[Animation Update] clip=mixamo.com time=1.359315
+[BoneUpload] count=28 b0T(15.367905,40.142006,-30.737423) b1T(62.991863,54.176193,-31.057175) b2T(89.746368,193.219986,29.592316)
+[Animation Update] clip=mixamo.com time=1.455317
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.780434,47.565060,-34.641235)
+[Animation Update] clip=mixamo.com time=1.551318
+[BoneUpload] count=28 b0T(9.780434,47.565060,-34.641235) b1T(58.538368,55.953091,-38.813393) b2T(106.936920,188.050751,23.917267)
+[Animation Update] clip=mixamo.com time=1.647320
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.141205,53.681290,-37.841164)
+[Animation Update] clip=mixamo.com time=1.743322
+[BoneUpload] count=28 b0T(9.141205,53.681290,-37.841164) b1T(56.877693,64.439560,-46.242966) b2T(105.988121,195.222687,18.651451)
+[Animation Update] clip=mixamo.com time=1.839323
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.120590,57.594570,-38.572403)
+[Animation Update] clip=mixamo.com time=1.935325
+[BoneUpload] count=28 b0T(9.120590,57.594570,-38.572403) b1T(54.619942,73.054970,-51.057877) b2T(98.564888,204.842972,15.486092)
+[Animation Update] clip=mixamo.com time=2.031322
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.956909,52.600540,-38.766624)
+[Animation Update] clip=mixamo.com time=2.127309
+[BoneUpload] count=28 b0T(9.956909,52.600540,-38.766624) b1T(52.429718,73.652512,-53.530685) b2T(81.368958,211.418411,9.002670)
+[Animation Update] clip=mixamo.com time=2.223296
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.787239,52.141922,-46.983067)
+[Animation Update] clip=mixamo.com time=2.319284
+[BoneUpload] count=28 b0T(21.787239,52.141922,-46.983067) b1T(54.168621,88.508278,-56.680313) b2T(30.625439,218.678574,22.242180)
+[Animation Update] clip=mixamo.com time=2.415271
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.376049,62.169373,-43.260380)
+[Animation Update] clip=mixamo.com time=2.511258
+[BoneUpload] count=28 b0T(25.376049,62.169373,-43.260380) b1T(51.529526,104.371216,-43.579643) b2T(9.074650,207.456955,62.713608)
+[Animation Update] clip=mixamo.com time=2.607246
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(42.763981,62.555641,-48.493416)
+[Animation Update] clip=mixamo.com time=2.703233
+[BoneUpload] count=28 b0T(42.763981,62.555641,-48.493416) b1T(74.401794,100.238953,-41.851200) b2T(23.738251,211.294983,52.101448)
+[Animation Update] clip=mixamo.com time=2.799220
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.160656,54.191612,-52.116341)
+[Animation Update] clip=mixamo.com time=2.895208
+[BoneUpload] count=28 b0T(53.160656,54.191612,-52.116341) b1T(87.463188,89.559967,-45.991066) b2T(39.743908,212.781097,33.171829)
+[Animation Update] clip=mixamo.com time=2.991195
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.456009,54.974693,-57.346027)
+[Animation Update] clip=mixamo.com time=3.087182
+[BoneUpload] count=28 b0T(37.456009,54.974693,-57.346027) b1T(73.021912,89.602142,-56.293079) b2T(41.329483,212.070190,31.596184)
+[Animation Update] clip=mixamo.com time=3.183170
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.475910,69.699898,-60.289230)
+[Animation Update] clip=mixamo.com time=3.279157
+[BoneUpload] count=28 b0T(39.475910,69.699898,-60.289230) b1T(71.498642,107.099548,-53.892960) b2T(25.367836,215.317825,45.545952)
+[Animation Update] clip=mixamo.com time=3.375144
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.066227,71.932571,-58.050995)
+[Animation Update] clip=mixamo.com time=3.471132
+[BoneUpload] count=28 b0T(34.066227,71.932571,-58.050995) b1T(64.904892,110.295280,-51.540970) b2T(12.656508,219.757751,43.408554)
+[Animation Update] clip=mixamo.com time=3.567119
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.732384,70.347092,-56.138443)
+[Animation Update] clip=mixamo.com time=3.663106
+[BoneUpload] count=28 b0T(27.732384,70.347092,-56.138443) b1T(58.181000,109.341339,-51.963245) b2T(4.435294,224.161011,35.530792)
+[Animation Update] clip=mixamo.com time=3.759094
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.582294,67.406631,-53.827194)
+[Animation Update] clip=mixamo.com time=3.855081
+[BoneUpload] count=28 b0T(21.582294,67.406631,-53.827194) b1T(54.012970,104.957550,-52.015377) b2T(5.890464,228.084320,27.050255)
+[Animation Update] clip=mixamo.com time=3.951068
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.214279,59.205650,-46.714821)
+[Animation Update] clip=mixamo.com time=0.013734
+[BoneUpload] count=28 b0T(22.214279,59.205650,-46.714821) b1T(57.297409,94.333130,-47.296124) b2T(15.590325,228.310455,16.248634)
+[Animation Update] clip=mixamo.com time=0.109734
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.659554,48.793198,-36.143597)
+[Animation Update] clip=mixamo.com time=0.205734
+[BoneUpload] count=28 b0T(29.659554,48.793198,-36.143597) b1T(66.097382,82.424759,-38.654484) b2T(26.412201,224.146835,6.812935)
+[Animation Update] clip=mixamo.com time=0.301735
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.281639,17.542061,-5.819693)
+[Animation Update] clip=mixamo.com time=0.397736
+[BoneUpload] count=28 b0T(11.281639,17.542061,-5.819693) b1T(55.608570,38.796959,-12.780685) b2T(55.715652,192.538361,-3.245354)
+[Animation Update] clip=mixamo.com time=0.493738
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.728973,37.482101,-25.109802)
+[Animation Update] clip=mixamo.com time=0.589739
+[BoneUpload] count=28 b0T(10.728973,37.482101,-25.109802) b1T(54.530800,60.816040,-23.684971) b2T(51.944027,198.909561,44.512108)
+[Animation Update] clip=mixamo.com time=0.685741
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.358391,41.003384,-31.759506)
+[Animation Update] clip=mixamo.com time=0.781743
+[BoneUpload] count=28 b0T(9.358391,41.003384,-31.759506) b1T(55.621395,58.931263,-29.907726) b2T(70.024124,192.886917,44.763489)
+[Animation Update] clip=mixamo.com time=0.877744
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.861565,30.081032,-25.807777)
+[Animation Update] clip=mixamo.com time=0.973746
+[BoneUpload] count=28 b0T(8.861565,30.081032,-25.807777) b1T(55.432102,47.173168,-27.844246) b2T(73.796753,190.932480,24.341545)
+[Animation Update] clip=mixamo.com time=1.069747
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.964981,33.748646,-25.638020)
+[Animation Update] clip=mixamo.com time=1.165749
+[BoneUpload] count=28 b0T(13.964981,33.748646,-25.638020) b1T(59.940037,52.375996,-27.739948) b2T(73.867798,196.155319,25.747215)
+[Animation Update] clip=mixamo.com time=1.261751
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.368095,40.106308,-30.701931)
+[Animation Update] clip=mixamo.com time=1.357752
+[BoneUpload] count=28 b0T(15.368095,40.106308,-30.701931) b1T(62.980896,54.178585,-31.009811) b2T(89.605637,193.254761,29.622704)
+[Animation Update] clip=mixamo.com time=1.453754
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.803909,47.501026,-34.606972)
+[Animation Update] clip=mixamo.com time=1.549756
+[BoneUpload] count=28 b0T(9.803909,47.501026,-34.606972) b1T(58.562389,55.901978,-38.746498) b2T(106.874466,188.041199,23.963348)
+[Animation Update] clip=mixamo.com time=1.645757
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.153946,53.660770,-37.844635)
+[Animation Update] clip=mixamo.com time=1.741759
+[BoneUpload] count=28 b0T(9.153946,53.660770,-37.844635) b1T(56.909271,64.378235,-46.191360) b2T(106.047379,195.137360,18.730461)
+[Animation Update] clip=mixamo.com time=1.837760
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.154686,57.587429,-38.580376)
+[Animation Update] clip=mixamo.com time=1.933762
+[BoneUpload] count=28 b0T(9.154686,57.587429,-38.580376) b1T(54.667053,73.039024,-51.029228) b2T(98.585075,204.817017,15.552475)
+[Animation Update] clip=mixamo.com time=2.029759
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.834846,52.671173,-38.717926)
+[Animation Update] clip=mixamo.com time=2.125746
+[BoneUpload] count=28 b0T(9.834846,52.671173,-38.717926) b1T(52.353470,73.607552,-53.514442) b2T(81.698143,211.309784,8.970131)
+[Animation Update] clip=mixamo.com time=2.221734
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.654125,52.069786,-46.920364)
+[Animation Update] clip=mixamo.com time=2.317721
+[BoneUpload] count=28 b0T(21.654125,52.069786,-46.920364) b1T(54.192150,88.284729,-56.659821) b2T(31.191729,218.658234,22.087090)
+[Animation Update] clip=mixamo.com time=2.413708
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.394211,62.115906,-43.279469)
+[Animation Update] clip=mixamo.com time=2.509696
+[BoneUpload] count=28 b0T(25.394211,62.115906,-43.279469) b1T(51.505962,104.343033,-43.664501) b2T(9.024097,207.506561,62.542473)
+[Animation Update] clip=mixamo.com time=2.605683
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(42.560978,62.641418,-48.453850)
+[Animation Update] clip=mixamo.com time=2.701670
+[BoneUpload] count=28 b0T(42.560978,62.641418,-48.453850) b1T(74.139519,100.380905,-41.848732) b2T(23.479824,211.240173,52.338127)
+[Animation Update] clip=mixamo.com time=2.797658
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.267277,54.279770,-52.099548)
+[Animation Update] clip=mixamo.com time=2.893645
+[BoneUpload] count=28 b0T(53.267277,54.279770,-52.099548) b1T(87.549332,89.655685,-45.903748) b2T(39.683838,212.801697,33.287773)
+[Animation Update] clip=mixamo.com time=2.989632
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.451195,54.793716,-57.268196)
+[Animation Update] clip=mixamo.com time=3.085620
+[BoneUpload] count=28 b0T(37.451195,54.793716,-57.268196) b1T(73.069420,89.368774,-56.263332) b2T(41.541008,212.029694,31.415649)
+[Animation Update] clip=mixamo.com time=3.181607
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.537731,69.686531,-60.309105)
+[Animation Update] clip=mixamo.com time=3.277594
+[BoneUpload] count=28 b0T(39.537731,69.686531,-60.309105) b1T(71.546661,107.097931,-53.912334) b2T(25.387413,215.284576,45.547791)
+[Animation Update] clip=mixamo.com time=3.373582
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.099998,71.923538,-58.065453)
+[Animation Update] clip=mixamo.com time=3.469569
+[BoneUpload] count=28 b0T(34.099998,71.923538,-58.065453) b1T(64.964371,110.263779,-51.544853) b2T(12.799897,219.723282,43.454224)
+[Animation Update] clip=mixamo.com time=3.565556
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.834370,70.384888,-56.156738)
+[Animation Update] clip=mixamo.com time=3.661544
+[BoneUpload] count=28 b0T(27.834370,70.384888,-56.156738) b1T(58.247131,109.403633,-51.949009) b2T(4.381187,224.115326,35.612709)
+[Animation Update] clip=mixamo.com time=3.757531
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.540138,67.443604,-53.868404)
+[Animation Update] clip=mixamo.com time=3.853518
+[BoneUpload] count=28 b0T(21.540138,67.443604,-53.868404) b1T(53.966888,104.997849,-52.055565) b2T(5.879169,228.071442,27.113945)
+[Animation Update] clip=mixamo.com time=3.949506
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.183315,59.301201,-46.776810)
+[Animation Update] clip=mixamo.com time=0.012171
+[BoneUpload] count=28 b0T(22.183315,59.301201,-46.776810) b1T(57.229057,94.466232,-47.340740) b2T(15.416448,228.332397,16.368668)
+[Animation Update] clip=mixamo.com time=0.108171
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.751541,48.926590,-36.267277)
+[Animation Update] clip=mixamo.com time=0.204171
+[BoneUpload] count=28 b0T(29.751541,48.926590,-36.267277) b1T(66.165054,82.589340,-38.712303) b2T(26.331720,224.231400,6.874725)
+[Animation Update] clip=mixamo.com time=0.300172
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.607815,17.736839,-6.020803)
+[Animation Update] clip=mixamo.com time=0.396173
+[BoneUpload] count=28 b0T(11.607815,17.736839,-6.020803) b1T(55.855103,39.161171,-12.969082) b2T(55.406338,192.890213,-3.246506)
+[Animation Update] clip=mixamo.com time=0.492175
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.508644,37.211025,-24.928909)
+[Animation Update] clip=mixamo.com time=0.588177
+[BoneUpload] count=28 b0T(10.508644,37.211025,-24.928909) b1T(54.346828,60.483398,-23.619858) b2T(52.026356,198.809998,44.112801)
+[Animation Update] clip=mixamo.com time=0.684178
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.356346,41.070843,-31.762779)
+[Animation Update] clip=mixamo.com time=0.780180
+[BoneUpload] count=28 b0T(9.356346,41.070843,-31.762779) b1T(55.612362,59.014236,-29.887077) b2T(69.954483,192.902466,44.916557)
+[Animation Update] clip=mixamo.com time=0.876181
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.907913,30.136211,-25.852833)
+[Animation Update] clip=mixamo.com time=0.972183
+[BoneUpload] count=28 b0T(8.907913,30.136211,-25.852833) b1T(55.468185,47.259411,-27.862690) b2T(73.731033,190.981018,24.462334)
+[Animation Update] clip=mixamo.com time=1.068185
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.927139,33.658268,-25.604176)
+[Animation Update] clip=mixamo.com time=1.164186
+[BoneUpload] count=28 b0T(13.927139,33.658268,-25.604176) b1T(59.905018,52.277393,-27.717152) b2T(73.848434,196.098022,25.654701)
+[Animation Update] clip=mixamo.com time=1.260188
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.368301,40.070625,-30.666389)
+[Animation Update] clip=mixamo.com time=1.356189
+[BoneUpload] count=28 b0T(15.368301,40.070625,-30.666389) b1T(62.969902,54.181011,-30.962429) b2T(89.464844,193.289368,29.653000)
+[Animation Update] clip=mixamo.com time=1.452191
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.835106,47.434017,-34.574028)
+[Animation Update] clip=mixamo.com time=1.548193
+[BoneUpload] count=28 b0T(9.835106,47.434017,-34.574028) b1T(58.592514,55.857533,-38.680344) b2T(106.791855,188.046066,24.012299)
+[Animation Update] clip=mixamo.com time=1.644194
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.166611,53.640305,-37.848103)
+[Animation Update] clip=mixamo.com time=1.740196
+[BoneUpload] count=28 b0T(9.166611,53.640305,-37.848103) b1T(56.940674,64.316971,-46.139732) b2T(106.106461,195.052048,18.809586)
+[Animation Update] clip=mixamo.com time=1.836198
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.174744,57.578362,-38.582066)
+[Animation Update] clip=mixamo.com time=1.932199
+[BoneUpload] count=28 b0T(9.174744,57.578362,-38.582066) b1T(54.700439,73.015457,-51.000130) b2T(98.613388,204.782120,15.607193)
+[Animation Update] clip=mixamo.com time=2.028197
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.712997,52.742939,-38.669479)
+[Animation Update] clip=mixamo.com time=2.124184
+[BoneUpload] count=28 b0T(9.712997,52.742939,-38.669479) b1T(52.277252,73.563538,-53.498146) b2T(82.027634,211.200439,8.938675)
+[Animation Update] clip=mixamo.com time=2.220171
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.528915,51.999580,-46.854519)
+[Animation Update] clip=mixamo.com time=2.316159
+[BoneUpload] count=28 b0T(21.528915,51.999580,-46.854519) b1T(54.212669,88.070816,-56.639175) b2T(31.728245,218.640106,21.932137)
+[Animation Update] clip=mixamo.com time=2.412146
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.412411,62.062393,-43.298607)
+[Animation Update] clip=mixamo.com time=2.508133
+[BoneUpload] count=28 b0T(25.412411,62.062393,-43.298607) b1T(51.482342,104.314713,-43.749428) b2T(8.973173,207.556000,62.371063)
+[Animation Update] clip=mixamo.com time=2.604120
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(42.357876,62.726578,-48.413681)
+[Animation Update] clip=mixamo.com time=2.700108
+[BoneUpload] count=28 b0T(42.357876,62.726578,-48.413681) b1T(73.876862,100.522278,-41.845512) b2T(23.221630,211.184616,52.574974)
+[Animation Update] clip=mixamo.com time=2.796095
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.373829,54.368042,-52.082596)
+[Animation Update] clip=mixamo.com time=2.892082
+[BoneUpload] count=28 b0T(53.373829,54.368042,-52.082596) b1T(87.635315,89.751472,-45.816280) b2T(39.623619,212.822220,33.403786)
+[Animation Update] clip=mixamo.com time=2.988070
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.446026,54.612938,-57.190125)
+[Animation Update] clip=mixamo.com time=3.084057
+[BoneUpload] count=28 b0T(37.446026,54.612938,-57.190125) b1T(73.116501,89.135452,-56.233253) b2T(41.752594,211.988617,31.235413)
+[Animation Update] clip=mixamo.com time=3.180044
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.599522,69.673416,-60.329094)
+[Animation Update] clip=mixamo.com time=3.276032
+[BoneUpload] count=28 b0T(39.599522,69.673416,-60.329094) b1T(71.594589,107.096550,-53.931686) b2T(25.406794,215.251221,45.549957)
+[Animation Update] clip=mixamo.com time=3.372019
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.133759,71.914452,-58.079933)
+[Animation Update] clip=mixamo.com time=3.468006
+[BoneUpload] count=28 b0T(34.133759,71.914452,-58.079933) b1T(65.023819,110.232224,-51.548817) b2T(12.943302,219.688705,43.499825)
+[Animation Update] clip=mixamo.com time=3.563994
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(27.936382,70.423058,-56.175095)
+[Animation Update] clip=mixamo.com time=3.659981
+[BoneUpload] count=28 b0T(27.936382,70.423058,-56.175095) b1T(58.313316,109.466164,-51.934635) b2T(4.327300,224.069550,35.694885)
+[Animation Update] clip=mixamo.com time=3.755968
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.497913,67.480576,-53.909588)
+[Animation Update] clip=mixamo.com time=3.851956
+[BoneUpload] count=28 b0T(21.497913,67.480576,-53.909588) b1T(53.920776,105.038116,-52.095718) b2T(5.868038,228.058517,27.177628)
+[Animation Update] clip=mixamo.com time=3.947943
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.152191,59.396797,-46.838737)
+[Animation Update] clip=mixamo.com time=0.010608
+[BoneUpload] count=28 b0T(22.152191,59.396797,-46.838737) b1T(57.160492,94.599388,-47.385242) b2T(15.242600,228.354080,16.488876)
+[Animation Update] clip=mixamo.com time=0.106608
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.843662,49.060890,-36.391308)
+[Animation Update] clip=mixamo.com time=0.202608
+[BoneUpload] count=28 b0T(29.843662,49.060890,-36.391308) b1T(66.232506,82.755051,-38.770088) b2T(26.250004,224.315994,6.938164)
+[Animation Update] clip=mixamo.com time=0.298609
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(11.932507,17.933495,-6.222948)
+[Animation Update] clip=mixamo.com time=0.394610
+[BoneUpload] count=28 b0T(11.932507,17.933495,-6.222948) b1T(56.099407,39.527115,-13.158611) b2T(55.094723,193.241409,-3.246994)
+[Animation Update] clip=mixamo.com time=0.490612
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.287701,36.941025,-24.746925)
+[Animation Update] clip=mixamo.com time=0.586614
+[BoneUpload] count=28 b0T(10.287701,36.941025,-24.746925) b1T(54.162086,60.151299,-23.553478) b2T(52.108322,198.708893,43.714096)
+[Animation Update] clip=mixamo.com time=0.682615
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.354324,41.138275,-31.766003)
+[Animation Update] clip=mixamo.com time=0.778617
+[BoneUpload] count=28 b0T(9.354324,41.138275,-31.766003) b1T(55.603352,59.097191,-29.866367) b2T(69.884766,192.917953,45.069542)
+[Animation Update] clip=mixamo.com time=0.874619
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(8.954163,30.191483,-25.897781)
+[Animation Update] clip=mixamo.com time=0.970620
+[BoneUpload] count=28 b0T(8.954163,30.191483,-25.897781) b1T(55.504177,47.345657,-27.881020) b2T(73.665314,191.029388,24.583183)
+[Animation Update] clip=mixamo.com time=1.066622
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.889259,33.567879,-25.570301)
+[Animation Update] clip=mixamo.com time=1.162623
+[BoneUpload] count=28 b0T(13.889259,33.567879,-25.570301) b1T(59.869980,52.178791,-27.694332) b2T(73.829155,196.040634,25.562172)
+[Animation Update] clip=mixamo.com time=1.258625
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.368523,40.034931,-30.630875)
+[Animation Update] clip=mixamo.com time=1.354627
+[BoneUpload] count=28 b0T(15.368523,40.034931,-30.630875) b1T(62.958893,54.183369,-30.915062) b2T(89.324097,193.323868,29.683235)
+[Animation Update] clip=mixamo.com time=1.450628
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.866325,47.367001,-34.541065)
+[Animation Update] clip=mixamo.com time=1.546630
+[BoneUpload] count=28 b0T(9.866325,47.367001,-34.541065) b1T(58.622620,55.813095,-38.614204) b2T(106.709160,188.050873,24.061142)
+[Animation Update] clip=mixamo.com time=1.642632
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.179146,53.619942,-37.851582)
+[Animation Update] clip=mixamo.com time=1.738633
+[BoneUpload] count=28 b0T(9.179146,53.619942,-37.851582) b1T(56.971832,64.255814,-46.088112) b2T(106.165329,194.966660,18.888916)
+[Animation Update] clip=mixamo.com time=1.834635
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.189476,57.568604,-38.581486)
+[Animation Update] clip=mixamo.com time=1.930636
+[BoneUpload] count=28 b0T(9.189476,57.568604,-38.581486) b1T(54.728622,72.989014,-50.970924) b2T(98.644714,204.743942,15.657570)
+[Animation Update] clip=mixamo.com time=2.026634
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.591431,52.815895,-38.621338)
+[Animation Update] clip=mixamo.com time=2.122621
+[BoneUpload] count=28 b0T(9.591431,52.815895,-38.621338) b1T(52.201111,73.520531,-53.481869) b2T(82.357437,211.090225,8.908272)
+[Animation Update] clip=mixamo.com time=2.218609
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.420094,51.930664,-46.781643)
+[Animation Update] clip=mixamo.com time=2.314596
+[BoneUpload] count=28 b0T(21.420094,51.930664,-46.781643) b1T(54.227333,87.875290,-56.618950) b2T(32.201958,218.629425,21.774826)
+[Animation Update] clip=mixamo.com time=2.410583
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.430641,62.008804,-43.317734)
+[Animation Update] clip=mixamo.com time=2.506571
+[BoneUpload] count=28 b0T(25.430641,62.008804,-43.317734) b1T(51.458649,104.286194,-43.834385) b2T(8.921915,207.605209,62.199348)
+[Animation Update] clip=mixamo.com time=2.602558
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(42.155563,62.814980,-48.376541)
+[Animation Update] clip=mixamo.com time=2.698545
+[BoneUpload] count=28 b0T(42.155563,62.814980,-48.376541) b1T(73.613586,100.668198,-41.847588) b2T(22.968462,211.128510,52.814575)
+[Animation Update] clip=mixamo.com time=2.794533
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.480362,54.456482,-52.065422)
+[Animation Update] clip=mixamo.com time=2.890520
+[BoneUpload] count=28 b0T(53.480362,54.456482,-52.065422) b1T(87.721184,89.847336,-45.728584) b2T(39.563328,212.842590,33.519875)
+[Animation Update] clip=mixamo.com time=2.986507
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.462875,54.443253,-57.112083)
+[Animation Update] clip=mixamo.com time=3.082494
+[BoneUpload] count=28 b0T(37.462875,54.443253,-57.112083) b1T(73.181335,88.917160,-56.193024) b2T(41.951660,211.949432,31.071571)
+[Animation Update] clip=mixamo.com time=3.178482
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.661255,69.660606,-60.349213)
+[Animation Update] clip=mixamo.com time=3.274469
+[BoneUpload] count=28 b0T(39.661255,69.660606,-60.349213) b1T(71.642426,107.095474,-53.951061) b2T(25.425976,215.217743,45.552467)
+[Animation Update] clip=mixamo.com time=3.370456
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.166168,71.904930,-58.094872)
+[Animation Update] clip=mixamo.com time=3.466444
+[BoneUpload] count=28 b0T(34.166168,71.904930,-58.094872) b1T(65.081635,110.200539,-51.553967) b2T(13.085646,219.653915,43.544540)
+[Animation Update] clip=mixamo.com time=3.562431
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(28.038414,70.461578,-56.193596)
+[Animation Update] clip=mixamo.com time=3.658418
+[BoneUpload] count=28 b0T(28.038414,70.461578,-56.193596) b1T(58.379555,109.528915,-51.920219) b2T(4.273582,224.023605,35.777313)
+[Animation Update] clip=mixamo.com time=3.754406
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.455612,67.517601,-53.950764)
+[Animation Update] clip=mixamo.com time=3.850393
+[BoneUpload] count=28 b0T(21.455612,67.517601,-53.950764) b1T(53.874626,105.078445,-52.135834) b2T(5.857057,228.045609,27.241386)
+[Animation Update] clip=mixamo.com time=3.946380
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.120907,59.492401,-46.900539)
+[Animation Update] clip=mixamo.com time=0.009046
+[BoneUpload] count=28 b0T(22.120907,59.492401,-46.900539) b1T(57.091766,94.732452,-47.429623) b2T(15.068877,228.375443,16.609184)
+[Animation Update] clip=mixamo.com time=0.105045
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(29.935947,49.196114,-36.515690)
+[Animation Update] clip=mixamo.com time=0.201045
+[BoneUpload] count=28 b0T(29.935947,49.196114,-36.515690) b1T(66.299774,82.921875,-38.827797) b2T(26.166988,224.400589,7.003242)
+[Animation Update] clip=mixamo.com time=0.297046
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.255737,18.131920,-6.426180)
+[Animation Update] clip=mixamo.com time=0.393048
+[BoneUpload] count=28 b0T(12.255737,18.131920,-6.426180) b1T(56.341530,39.894646,-13.349308) b2T(54.780914,193.591934,-3.246712)
+[Animation Update] clip=mixamo.com time=0.489049
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(10.066219,36.672047,-24.563866)
+[Animation Update] clip=mixamo.com time=0.585051
+[BoneUpload] count=28 b0T(10.066219,36.672047,-24.563866) b1T(53.976669,59.819702,-23.485882) b2T(52.189857,198.606140,43.315918)
+[Animation Update] clip=mixamo.com time=0.681053
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.352310,41.205666,-31.769119)
+[Animation Update] clip=mixamo.com time=0.777054
+[BoneUpload] count=28 b0T(9.352310,41.205666,-31.769119) b1T(55.594292,59.180126,-29.845554) b2T(69.814880,192.933289,45.222466)
+[Animation Update] clip=mixamo.com time=0.873056
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.000389,30.246857,-25.942707)
+[Animation Update] clip=mixamo.com time=0.969057
+[BoneUpload] count=28 b0T(9.000389,30.246857,-25.942707) b1T(55.540123,47.431984,-27.899300) b2T(73.599579,191.077667,24.704102)
+[Animation Update] clip=mixamo.com time=1.065059
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.851402,33.477551,-25.536400)
+[Animation Update] clip=mixamo.com time=1.161061
+[BoneUpload] count=28 b0T(13.851402,33.477551,-25.536400) b1T(59.834930,52.080185,-27.671474) b2T(73.809814,195.983154,25.469704)
+[Animation Update] clip=mixamo.com time=1.257062
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.368706,39.999218,-30.595314)
+[Animation Update] clip=mixamo.com time=1.353064
+[BoneUpload] count=28 b0T(15.368706,39.999218,-30.595314) b1T(62.947834,54.185684,-30.867638) b2T(89.183304,193.358215,29.713409)
+[Animation Update] clip=mixamo.com time=1.449065
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.897606,47.299957,-34.508080)
+[Animation Update] clip=mixamo.com time=1.545067
+[BoneUpload] count=28 b0T(9.897606,47.299957,-34.508080) b1T(58.652748,55.768654,-38.548004) b2T(106.626472,188.055664,24.109955)
+[Animation Update] clip=mixamo.com time=1.641069
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.191643,53.599594,-37.855122)
+[Animation Update] clip=mixamo.com time=1.737070
+[BoneUpload] count=28 b0T(9.191643,53.599594,-37.855122) b1T(57.002853,64.194672,-46.036522) b2T(106.224022,194.881256,18.968391)
+[Animation Update] clip=mixamo.com time=1.833072
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.204124,57.558891,-38.580929)
+[Animation Update] clip=mixamo.com time=1.929074
+[BoneUpload] count=28 b0T(9.204124,57.558891,-38.580929) b1T(54.756714,72.962646,-50.941704) b2T(98.675964,204.705780,15.708069)
+[Animation Update] clip=mixamo.com time=2.025071
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.470116,52.890007,-38.573402)
+[Animation Update] clip=mixamo.com time=2.121059
+[BoneUpload] count=28 b0T(9.470116,52.890007,-38.573402) b1T(52.125031,73.478485,-53.465534) b2T(82.687492,210.979202,8.878960)
+[Animation Update] clip=mixamo.com time=2.217046
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.310734,51.863625,-46.709114)
+[Animation Update] clip=mixamo.com time=2.313033
+[BoneUpload] count=28 b0T(21.310734,51.863625,-46.709114) b1T(54.241367,87.680916,-56.598396) b2T(32.676765,218.617172,21.619324)
+[Animation Update] clip=mixamo.com time=2.409021
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.448914,61.955154,-43.336922)
+[Animation Update] clip=mixamo.com time=2.505008
+[BoneUpload] count=28 b0T(25.448914,61.955154,-43.336922) b1T(51.434883,104.257553,-43.919411) b2T(8.870317,207.654205,62.027458)
+[Animation Update] clip=mixamo.com time=2.600995
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(41.953209,62.903015,-48.339066)
+[Animation Update] clip=mixamo.com time=2.696983
+[BoneUpload] count=28 b0T(41.953209,62.903015,-48.339066) b1T(73.349930,100.813850,-41.849331) b2T(22.716011,211.071716,53.054535)
+[Animation Update] clip=mixamo.com time=2.792970
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.586784,54.545029,-52.048141)
+[Animation Update] clip=mixamo.com time=2.888957
+[BoneUpload] count=28 b0T(53.586784,54.545029,-52.048141) b1T(87.806854,89.943230,-45.640778) b2T(39.502876,212.862869,33.636032)
+[Animation Update] clip=mixamo.com time=2.984945
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.498798,54.283035,-57.034126)
+[Animation Update] clip=mixamo.com time=3.080932
+[BoneUpload] count=28 b0T(37.498798,54.283035,-57.034126) b1T(73.261566,88.711731,-56.144058) b2T(42.140060,211.911972,30.922043)
+[Animation Update] clip=mixamo.com time=3.176919
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.722969,69.648041,-60.369446)
+[Animation Update] clip=mixamo.com time=3.272907
+[BoneUpload] count=28 b0T(39.722969,69.648041,-60.369446) b1T(71.690201,107.094681,-53.970413) b2T(25.444996,215.184250,45.555321)
+[Animation Update] clip=mixamo.com time=3.368894
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.190445,71.893196,-58.112206)
+[Animation Update] clip=mixamo.com time=3.464881
+[BoneUpload] count=28 b0T(34.190445,71.893196,-58.112206) b1T(65.129562,110.168770,-51.565907) b2T(13.221261,219.618286,43.584900)
+[Animation Update] clip=mixamo.com time=3.560869
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(28.140472,70.500412,-56.212234)
+[Animation Update] clip=mixamo.com time=3.656856
+[BoneUpload] count=28 b0T(28.140472,70.500412,-56.212234) b1T(58.445854,109.591850,-51.905739) b2T(4.220059,223.977539,35.860046)
+[Animation Update] clip=mixamo.com time=3.752843
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.405548,67.552849,-53.988129)
+[Animation Update] clip=mixamo.com time=3.848830
+[BoneUpload] count=28 b0T(21.405548,67.552849,-53.988129) b1T(53.821606,105.116295,-52.174809) b2T(5.847135,228.032150,27.307816)
+[Animation Update] clip=mixamo.com time=3.944818
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.089470,59.588112,-46.962269)
+[Animation Update] clip=mixamo.com time=0.007483
+[BoneUpload] count=28 b0T(22.089470,59.588112,-46.962269) b1T(57.022839,94.865570,-47.473808) b2T(14.895197,228.396515,16.729683)
+[Animation Update] clip=mixamo.com time=0.103483
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(30.019382,49.321274,-36.634197)
+[Animation Update] clip=mixamo.com time=0.199483
+[BoneUpload] count=28 b0T(30.019382,49.321274,-36.634197) b1T(66.362907,83.073280,-38.881802) b2T(26.099739,224.478149,7.062714)
+[Animation Update] clip=mixamo.com time=0.295483
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.577477,18.332214,-6.630503)
+[Animation Update] clip=mixamo.com time=0.391485
+[BoneUpload] count=28 b0T(12.577477,18.332214,-6.630503) b1T(56.581406,40.263901,-13.541153) b2T(54.464851,193.941681,-3.245720)
+[Animation Update] clip=mixamo.com time=0.487486
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.844151,36.404167,-24.379738)
+[Animation Update] clip=mixamo.com time=0.583488
+[BoneUpload] count=28 b0T(9.844151,36.404167,-24.379738) b1T(53.790512,59.488640,-23.417038) b2T(52.271004,198.501846,42.918205)
+[Animation Update] clip=mixamo.com time=0.679490
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.350250,41.273064,-31.772156)
+[Animation Update] clip=mixamo.com time=0.775491
+[BoneUpload] count=28 b0T(9.350250,41.273064,-31.772156) b1T(55.585194,59.263077,-29.824650) b2T(69.744904,192.948578,45.375320)
+[Animation Update] clip=mixamo.com time=0.871493
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.046532,30.302311,-25.987545)
+[Animation Update] clip=mixamo.com time=0.967495
+[BoneUpload] count=28 b0T(9.046532,30.302311,-25.987545) b1T(55.575954,47.518341,-27.917454) b2T(73.533821,191.125702,24.825134)
+[Animation Update] clip=mixamo.com time=1.063496
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.813507,33.387253,-25.502445)
+[Animation Update] clip=mixamo.com time=1.159498
+[BoneUpload] count=28 b0T(13.813507,33.387253,-25.502445) b1T(59.799877,51.981621,-27.648556) b2T(73.790543,195.925629,25.377213)
+[Animation Update] clip=mixamo.com time=1.255499
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.368927,39.963486,-30.559761)
+[Animation Update] clip=mixamo.com time=1.351501
+[BoneUpload] count=28 b0T(15.368927,39.963486,-30.559761) b1T(62.936760,54.187969,-30.820240) b2T(89.042534,193.392456,29.743446)
+[Animation Update] clip=mixamo.com time=1.447503
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.928909,47.232914,-34.475048)
+[Animation Update] clip=mixamo.com time=1.543504
+[BoneUpload] count=28 b0T(9.928909,47.232914,-34.475048) b1T(58.682850,55.724197,-38.481766) b2T(106.543747,188.060364,24.158630)
+[Animation Update] clip=mixamo.com time=1.639506
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.204025,53.579300,-37.858646)
+[Animation Update] clip=mixamo.com time=1.735507
+[BoneUpload] count=28 b0T(9.204025,53.579300,-37.858646) b1T(57.033653,64.133591,-45.984909) b2T(106.282562,194.795761,19.047997)
+[Animation Update] clip=mixamo.com time=1.831509
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.218758,57.549271,-38.580441)
+[Animation Update] clip=mixamo.com time=1.927511
+[BoneUpload] count=28 b0T(9.218758,57.549271,-38.580441) b1T(54.784729,72.936371,-50.912529) b2T(98.707031,204.667572,15.758759)
+[Animation Update] clip=mixamo.com time=2.023509
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.349045,52.965233,-38.525787)
+[Animation Update] clip=mixamo.com time=2.119496
+[BoneUpload] count=28 b0T(9.349045,52.965233,-38.525787) b1T(52.048965,73.437424,-53.449230) b2T(83.017792,210.867416,8.850700)
+[Animation Update] clip=mixamo.com time=2.215483
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.200878,51.798485,-46.636932)
+[Animation Update] clip=mixamo.com time=2.311471
+[BoneUpload] count=28 b0T(21.200878,51.798485,-46.636932) b1T(54.254833,87.487778,-56.577415) b2T(33.152664,218.603394,21.465721)
+[Animation Update] clip=mixamo.com time=2.407458
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.467224,61.901451,-43.356094)
+[Animation Update] clip=mixamo.com time=2.503445
+[BoneUpload] count=28 b0T(25.467224,61.901451,-43.356094) b1T(51.411068,104.228745,-44.004448) b2T(8.818354,207.702988,61.855286)
+[Animation Update] clip=mixamo.com time=2.599433
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(41.750725,62.990402,-48.300964)
+[Animation Update] clip=mixamo.com time=2.695420
+[BoneUpload] count=28 b0T(41.750725,62.990402,-48.300964) b1T(73.085831,100.958832,-41.850307) b2T(22.463852,211.014099,53.294815)
+[Animation Update] clip=mixamo.com time=2.791407
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.693184,54.633644,-52.030670)
+[Animation Update] clip=mixamo.com time=2.887395
+[BoneUpload] count=28 b0T(53.693184,54.633644,-52.030670) b1T(87.892403,90.039200,-45.552807) b2T(39.442314,212.883118,33.752197)
+[Animation Update] clip=mixamo.com time=2.983382
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.534359,54.122925,-56.955956)
+[Animation Update] clip=mixamo.com time=3.079369
+[BoneUpload] count=28 b0T(37.534359,54.122925,-56.955956) b1T(73.341415,88.506302,-56.094765) b2T(42.328621,211.874008,30.772758)
+[Animation Update] clip=mixamo.com time=3.175357
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.784668,69.635712,-60.389793)
+[Animation Update] clip=mixamo.com time=3.271344
+[BoneUpload] count=28 b0T(39.784668,69.635712,-60.389793) b1T(71.737923,107.094116,-53.989765) b2T(25.463837,215.150650,45.558449)
+[Animation Update] clip=mixamo.com time=3.367331
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.214684,71.881416,-58.129639)
+[Animation Update] clip=mixamo.com time=3.463319
+[BoneUpload] count=28 b0T(34.214684,71.881416,-58.129639) b1T(65.177475,110.136932,-51.577965) b2T(13.356919,219.582581,43.625076)
+[Animation Update] clip=mixamo.com time=3.559306
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(28.242546,70.539627,-56.230980)
+[Animation Update] clip=mixamo.com time=3.655293
+[BoneUpload] count=28 b0T(28.242546,70.539627,-56.230980) b1T(58.512207,109.655052,-51.891163) b2T(4.166733,223.931366,35.943001)
+[Animation Update] clip=mixamo.com time=3.751281
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.352825,67.587524,-54.024158)
+[Animation Update] clip=mixamo.com time=3.847268
+[BoneUpload] count=28 b0T(21.352825,67.587524,-54.024158) b1T(53.766228,105.153397,-52.213341) b2T(5.837628,228.018616,27.375191)
+[Animation Update] clip=mixamo.com time=3.943255
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.057884,59.683838,-47.023930)
+[Animation Update] clip=mixamo.com time=0.005920
+[BoneUpload] count=28 b0T(22.057884,59.683838,-47.023930) b1T(56.953743,94.998672,-47.517902) b2T(14.721577,228.417282,16.850327)
+[Animation Update] clip=mixamo.com time=0.101920
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(30.084831,49.425003,-36.740341)
+[Animation Update] clip=mixamo.com time=0.197920
+[BoneUpload] count=28 b0T(30.084831,49.425003,-36.740341) b1T(66.417885,83.192215,-38.928238) b2T(26.065765,224.541534,7.108917)
+[Animation Update] clip=mixamo.com time=0.293920
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(12.897675,18.534286,-6.835882)
+[Animation Update] clip=mixamo.com time=0.389922
+[BoneUpload] count=28 b0T(12.897675,18.534286,-6.835882) b1T(56.819031,40.634773,-13.734131) b2T(54.146576,194.290771,-3.243950)
+[Animation Update] clip=mixamo.com time=0.485924
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.577980,36.086578,-24.171551)
+[Animation Update] clip=mixamo.com time=0.581925
+[BoneUpload] count=28 b0T(9.577980,36.086578,-24.171551) b1T(53.578453,59.072952,-23.342354) b2T(52.441231,198.356750,42.430588)
+[Animation Update] clip=mixamo.com time=0.677927
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.348236,41.340446,-31.775105)
+[Animation Update] clip=mixamo.com time=0.773928
+[BoneUpload] count=28 b0T(9.348236,41.340446,-31.775105) b1T(55.576099,59.345978,-29.803635) b2T(69.674789,192.963699,45.528091)
+[Animation Update] clip=mixamo.com time=0.869930
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.098236,30.364872,-26.037392)
+[Animation Update] clip=mixamo.com time=0.965932
+[BoneUpload] count=28 b0T(9.098236,30.364872,-26.037392) b1T(55.616806,47.613525,-27.937294) b2T(73.466141,191.178329,24.957695)
+[Animation Update] clip=mixamo.com time=1.061933
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.775604,33.296982,-25.468403)
+[Animation Update] clip=mixamo.com time=1.157935
+[BoneUpload] count=28 b0T(13.775604,33.296982,-25.468403) b1T(59.764812,51.883060,-27.625546) b2T(73.771286,195.867981,25.284760)
+[Animation Update] clip=mixamo.com time=1.253937
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.368828,39.927830,-30.524136)
+[Animation Update] clip=mixamo.com time=1.349938
+[BoneUpload] count=28 b0T(15.368828,39.927830,-30.524136) b1T(62.925331,54.190331,-30.773048) b2T(88.901703,193.426605,29.773178)
+[Animation Update] clip=mixamo.com time=1.445940
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.960258,47.165871,-34.442017)
+[Animation Update] clip=mixamo.com time=1.541941
+[BoneUpload] count=28 b0T(9.960258,47.165871,-34.442017) b1T(58.712982,55.679771,-38.415497) b2T(106.461021,188.065048,24.207283)
+[Animation Update] clip=mixamo.com time=1.637943
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.216347,53.559082,-37.862259)
+[Animation Update] clip=mixamo.com time=1.733945
+[BoneUpload] count=28 b0T(9.216347,53.559082,-37.862259) b1T(57.064293,64.072586,-45.933380) b2T(106.340858,194.710297,19.127754)
+[Animation Update] clip=mixamo.com time=1.829946
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.233330,57.539692,-38.579971)
+[Animation Update] clip=mixamo.com time=1.925948
+[BoneUpload] count=28 b0T(9.233330,57.539692,-38.579971) b1T(54.812675,72.910172,-50.883324) b2T(98.738007,204.629395,15.809578)
+[Animation Update] clip=mixamo.com time=2.021946
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.228233,53.041645,-38.478409)
+[Animation Update] clip=mixamo.com time=2.117934
+[BoneUpload] count=28 b0T(9.228233,53.041645,-38.478409) b1T(51.972954,73.397369,-53.432896) b2T(83.348389,210.754791,8.823524)
+[Animation Update] clip=mixamo.com time=2.213921
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.090546,51.735207,-46.565079)
+[Animation Update] clip=mixamo.com time=2.309908
+[BoneUpload] count=28 b0T(21.090546,51.735207,-46.565079) b1T(54.267715,87.295837,-56.556046) b2T(33.629662,218.588135,21.313972)
+[Animation Update] clip=mixamo.com time=2.405895
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(25.485565,61.847664,-43.375305)
+[Animation Update] clip=mixamo.com time=2.501883
+[BoneUpload] count=28 b0T(25.485565,61.847664,-43.375305) b1T(51.387173,104.199753,-44.089558) b2T(8.766018,207.751572,61.682869)
+[Animation Update] clip=mixamo.com time=2.597870
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(41.548138,63.077118,-48.262215)
+[Animation Update] clip=mixamo.com time=2.693857
+[BoneUpload] count=28 b0T(41.548138,63.077118,-48.262215) b1T(72.821358,101.103134,-41.850506) b2T(22.212078,210.955780,53.535210)
+[Animation Update] clip=mixamo.com time=2.789845
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(53.799507,54.722389,-52.013054)
+[Animation Update] clip=mixamo.com time=2.885832
+[BoneUpload] count=28 b0T(53.799507,54.722389,-52.013054) b1T(87.977798,90.135162,-45.464710) b2T(39.381649,212.903244,33.868408)
+[Animation Update] clip=mixamo.com time=2.981819
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(37.569553,53.962929,-56.877590)
+[Animation Update] clip=mixamo.com time=3.077807
+[BoneUpload] count=28 b0T(37.569553,53.962929,-56.877590) b1T(73.420876,88.300835,-56.045208) b2T(42.517353,211.835449,30.623787)
+[Animation Update] clip=mixamo.com time=3.173794
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(39.846313,69.623749,-60.410240)
+[Animation Update] clip=mixamo.com time=3.269781
+[BoneUpload] count=28 b0T(39.846313,69.623749,-60.410240) b1T(71.785553,107.093903,-54.009056) b2T(25.482475,215.116974,45.561951)
+[Animation Update] clip=mixamo.com time=3.365769
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(34.238941,71.869629,-58.147087)
+[Animation Update] clip=mixamo.com time=3.461756
+[BoneUpload] count=28 b0T(34.238941,71.869629,-58.147087) b1T(65.225365,110.105072,-51.590076) b2T(13.492567,219.546829,43.665184)
+[Animation Update] clip=mixamo.com time=3.557743
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(28.344654,70.579224,-56.249847)
+[Animation Update] clip=mixamo.com time=3.653731
+[BoneUpload] count=28 b0T(28.344654,70.579224,-56.249847) b1T(58.578636,109.718491,-51.876537) b2T(4.113585,223.885101,36.026260)
+[Animation Update] clip=mixamo.com time=3.749718
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(21.300060,67.622208,-54.060165)
+[Animation Update] clip=mixamo.com time=3.845705
+[BoneUpload] count=28 b0T(21.300060,67.622208,-54.060165) b1T(53.710861,105.190460,-52.251823) b2T(5.828309,228.005020,27.442535)
+[Animation Update] clip=mixamo.com time=3.941693
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(22.026123,59.779633,-47.085510)
+[Animation Update] clip=mixamo.com time=0.004357
+[BoneUpload] count=28 b0T(22.026123,59.779633,-47.085510) b1T(56.884445,95.131752,-47.561890) b2T(14.548037,228.437698,16.971123)
+[Animation Update] clip=mixamo.com time=0.100357
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(30.150391,49.529343,-36.846741)
+[Animation Update] clip=mixamo.com time=0.196357
+[BoneUpload] count=28 b0T(30.150391,49.529343,-36.846741) b1T(66.472778,83.311852,-38.974636) b2T(26.030968,224.604874,7.156380)
+[Animation Update] clip=mixamo.com time=0.292358
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.216312,18.738213,-7.042324)
+[Animation Update] clip=mixamo.com time=0.388359
+[BoneUpload] count=28 b0T(13.216312,18.738213,-7.042324) b1T(57.054363,41.007294,-13.928211) b2T(53.826153,194.639023,-3.241379)
+[Animation Update] clip=mixamo.com time=0.484361
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.305912,35.764915,-23.959148)
+[Animation Update] clip=mixamo.com time=0.580362
+[BoneUpload] count=28 b0T(9.305912,35.764915,-23.959148) b1T(53.362190,58.648663,-23.265224) b2T(52.620392,198.204758,41.933655)
+[Animation Update] clip=mixamo.com time=0.676364
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.346184,41.407784,-31.777992)
+[Animation Update] clip=mixamo.com time=0.772366
+[BoneUpload] count=28 b0T(9.346184,41.407784,-31.777992) b1T(55.566975,59.428894,-29.782566) b2T(69.604599,192.978821,45.680756)
+[Animation Update] clip=mixamo.com time=0.868367
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.156235,30.435398,-26.092861)
+[Animation Update] clip=mixamo.com time=0.964369
+[BoneUpload] count=28 b0T(9.156235,30.435398,-26.092861) b1T(55.663326,47.718605,-27.959000) b2T(73.396240,191.236084,25.103348)
+[Animation Update] clip=mixamo.com time=1.060370
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(13.737679,33.206730,-25.434319)
+[Animation Update] clip=mixamo.com time=1.156372
+[BoneUpload] count=28 b0T(13.737679,33.206730,-25.434319) b1T(59.729725,51.784534,-27.602459) b2T(73.752045,195.810272,25.192375)
+[Animation Update] clip=mixamo.com time=1.252374
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(15.360687,39.893780,-30.487450)
+[Animation Update] clip=mixamo.com time=1.348375
+[BoneUpload] count=28 b0T(15.360687,39.893780,-30.487450) b1T(62.905632,54.194862,-30.731926) b2T(88.760254,193.461960,29.795464)
+[Animation Update] clip=mixamo.com time=1.444377
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.991615,47.098824,-34.408943)
+[Animation Update] clip=mixamo.com time=1.540379
+[BoneUpload] count=28 b0T(9.991615,47.098824,-34.408943) b1T(58.743084,55.635326,-38.349194) b2T(106.378242,188.069687,24.255806)
+[Animation Update] clip=mixamo.com time=1.636380
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.226570,53.537655,-37.863304)
+[Animation Update] clip=mixamo.com time=1.732382
+[BoneUpload] count=28 b0T(9.226570,53.537655,-37.863304) b1T(57.091805,64.013138,-45.881172) b2T(106.391975,194.627426,19.209038)
+[Animation Update] clip=mixamo.com time=1.828383
+[BuildClipPose] clip=mixamo.com appliedBones=28 rootT=(9.247818,57.530178,-38.579571)
+[Animation Update] clip=mixamo.com time=1.924385
+[BoneUpload] count=28 b0T(9.247818,57.530178,-38.579571) b1T(54.840515,72.884041,-50.854172) b2T(98.768845,204.591248,15.860573)

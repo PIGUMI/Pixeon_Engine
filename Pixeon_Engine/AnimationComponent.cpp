@@ -246,7 +246,7 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
             cnt++;
         }
 
-        MessageBoxA(nullptr, text.c_str(), "Node Dump", MB_OK);
+        //MessageBoxA(nullptr, text.c_str(), "Node Dump", MB_OK);
     }
 
     auto& clipRuntime = m_clips[clipIndex];
