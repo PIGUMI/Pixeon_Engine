@@ -195,6 +195,7 @@
     <ClCompile Include="EditrGUI_Content.cpp" />
     <ClCompile Include="EditrGUI_Hierarchy.cpp" />
     <ClCompile Include="EditrGUI_Inspector.cpp" />
+    <ClCompile Include="EditrGUI_Prefab.cpp" />
     <ClCompile Include="EngineManager.cpp" />
     <ClCompile Include="ErrorLog.cpp" />
     <ClCompile Include="File.cpp" />

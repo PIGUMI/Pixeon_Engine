@@ -36,6 +36,7 @@ private:
 	void ShowInspector();
 	void ShowGameView();
 	void ShowConsole();
+	void ShowPrefab();
 
 	void ShowSceneCreateWindow();
 	void ShaderListWindow();

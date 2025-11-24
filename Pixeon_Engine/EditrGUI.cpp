@@ -280,6 +280,7 @@ void EditrGUI::WindowGUI()
 		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("ゲームビュー").c_str(), dock_main_id);
 		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("インスペクター").c_str(), dock_id_right);
 		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("コンソール").c_str(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("Prefab").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("コンテンツドロワー").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("ヒエラルキー").c_str(), dock_id_left);
 
@@ -294,6 +295,7 @@ void EditrGUI::WindowGUI()
 	if (EngineManager::GetInstance()->IsShowGUI())return;
 	ShowContentDrawer();
 	ShowConsole();
+	ShowPrefab();
 	ShaderEditorWindow();
 	ShaderListWindow();
 	ShowHierarchy();
