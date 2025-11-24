@@ -176,13 +176,10 @@
     <ClCompile Include="API.cpp">
       <Filter>ソース ファイル\Other</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationComponent.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
     <ClCompile Include="AnimationDebug.cpp">
       <Filter>ソース ファイル\Sys</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationComponentV2.cpp">
+    <ClCompile Include="AnimationComponent.cpp">
       <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
   </ItemGroup>
@@ -316,9 +313,6 @@
     <ClInclude Include="API.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationComponent.h">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClInclude>
     <ClInclude Include="BoneNodeMapping.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
@@ -331,7 +325,7 @@
     <ClInclude Include="MatrixUtil.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationComponentV2.h">
+    <ClInclude Include="AnimationComponent.h">
       <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>

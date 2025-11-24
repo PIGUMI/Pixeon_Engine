@@ -6,8 +6,9 @@
 #include "LightComponent.h"
 #include "ImageRender.h"
 #include "ScripComponent.h"
+#include "Component.h"
 #include "AnimationComponent.h"
-#include "AnimationComponentV2.h"
+//#include "AnimationComponentV2.h"
 #include <Windows.h>
 
 ComponentManager* ComponentManager::_instance;

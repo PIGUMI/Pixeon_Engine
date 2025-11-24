@@ -366,7 +366,7 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
     size_t count = std::min(m_boneMatrices.size(), size_t(256));
     for (size_t i = 0; i < count; ++i) {
         DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&m_boneMatrices[i]);
-        DirectX::XMStoreFloat4x4(&data.m[i], DirectX::XMMatrixTranspose(M));
+        DirectX::XMStoreFloat4x4(&data.m[i], M);
     }
     for (size_t i = count; i < 256; ++i)
         DirectX::XMStoreFloat4x4(&data.m[i], DirectX::XMMatrixIdentity());

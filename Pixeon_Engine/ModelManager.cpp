@@ -444,15 +444,30 @@ void ModelManager::BuildNodeHierarchy(aiNode* node,
     AnimationClip& clip,
     std::map<std::string, int>& nodeNameToIndex,
     int parentIndex) {
+
+    std::string nm = node->mName.C_Str();
+
+    // ==============================
+    // 🔴 補助ノードは完全にスキップ
+    // ==============================
+    if (nm.find("$AssimpFbx") != std::string::npos)
+    {
+        for (uint32_t i = 0; i < node->mNumChildren; ++i)
+            BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, parentIndex);
+        return;
+    }
+
     AnimationClip::NodeInfo ni;
-    ni.name = node->mName.C_Str();
+    ni.name = nm;
     ni.parentIndex = parentIndex;
-    // 行順で変換（旧コードは転置ミス）
     ni.localTransform = AssimpToXM_RowMajor(node->mTransformation);
+
     int current = (int)clip.nodeHierarchy.size();
-    nodeNameToIndex[ni.name] = current;
+    nodeNameToIndex[nm] = current;
     clip.nodeHierarchy.push_back(ni);
-    for (uint32_t i = 0; i < node->mNumChildren; ++i) {
+
+    for (uint32_t i = 0; i < node->mNumChildren; ++i)
+    {
         int childIndex = (int)clip.nodeHierarchy.size();
         clip.nodeHierarchy[current].children.push_back(childIndex);
         BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, current);

@@ -247,16 +247,21 @@ DirectX::XMMATRIX AnimationComponentV2::InterpChannel(const ACV2_Channel& ch, fl
         XMFLOAT4 r; XMStoreFloat4(&r, q);
         return r;
         };
-    auto SampleScale = SampleVec3;
-
     XMFLOAT3 P = SampleVec3(ch.posKeys);
     XMFLOAT4 R = SampleQuat(ch.rotKeys);
-    XMFLOAT3 S = ch.sclKeys.empty() ? XMFLOAT3{ 1,1,1 } : SampleScale(ch.sclKeys);
+    XMFLOAT3 S = ch.sclKeys.empty() ? XMFLOAT3{ 1,1,1 } : SampleVec3(ch.sclKeys);
+
     XMVECTOR Pv = XMLoadFloat3(&P);
     XMVECTOR Rv = XMLoadFloat4(&R);
     XMVECTOR Sv = XMLoadFloat3(&S);
-    Rv = XMQuaternionNormalize(Rv);
-    return XMMatrixScalingFromVector(Sv) *
+
+    // ÅöÅö Ç±Ç±Ç™ç≈èdóv ÅöÅö
+    // Assimp(âEéËån) Å® DirectX(ç∂éËån)
+    // ZîΩì]: (x,y,z)Å®(x,y,-z)
+    XMMATRIX toDX = XMMatrixScaling(1.0f, 1.0f, -1.0f);
+
+    return
+        XMMatrixScalingFromVector(Sv) *
         XMMatrixRotationQuaternion(Rv) *
         XMMatrixTranslationFromVector(Pv);
 }

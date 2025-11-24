@@ -226,6 +226,29 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
     if (clipIndex < 0 || clipIndex >= (int)m_clips.size()) return;
     if (!m_resource) return;
 
+    static bool dumpedNodes = false;
+    if (!dumpedNodes)
+    {
+        dumpedNodes = true;
+
+        const AnimationClip& clip = m_resource->clips[clipIndex];
+        std::string text = "Node Hierarchy:\n";
+        for (size_t i = 0; i < clip.nodeHierarchy.size(); ++i)
+        {
+            static int cnt = 0;
+            auto& n = clip.nodeHierarchy[i];
+            text += std::to_string(i) + ": " + n.name +
+                " (parent=" + std::to_string(n.parentIndex) + ")";
+            if (cnt > 3)
+            {
+				text += "\n";
+            }
+            cnt++;
+        }
+
+        MessageBoxA(nullptr, text.c_str(), "Node Dump", MB_OK);
+    }
+
     auto& clipRuntime = m_clips[clipIndex];
     auto& sourceClip = m_resource->clips[clipIndex];
     size_t nodeCount = sourceClip.nodeHierarchy.size();
@@ -266,6 +289,30 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
         if (IsValidMatrix(finalMat)) {
             XMStoreFloat4x4(&outFinal[b], finalMat);
             ++applied;
+        }
+        static bool shownOnce = false;
+        if (!shownOnce && (b == 5 || b == 6 || b == 7))
+        {
+            DirectX::XMFLOAT4X4 gm, om, fm;
+            DirectX::XMStoreFloat4x4(&gm, global[nodeIdx]);
+            DirectX::XMStoreFloat4x4(&om, bone.offset);
+            DirectX::XMStoreFloat4x4(&fm, finalMat);
+
+            char buf[1024];
+            sprintf_s(buf,
+                "FootBone Debug\n"
+                "bone[%zu] name=%s node=%d\n"
+                "global T=(%.2f, %.2f, %.2f)\n"
+                "offset T=(%.2f, %.2f, %.2f)\n"
+                "final T=(%.2f, %.2f, %.2f)\n",
+                b, bone.name.c_str(), nodeIdx,
+                gm._41, gm._42, gm._43,
+                om._41, om._42, om._43,
+                fm._41, fm._42, fm._43
+            );
+            //MessageBoxA(nullptr, buf, "BoneFootDebug", MB_OK);
+
+
         }
     }
 

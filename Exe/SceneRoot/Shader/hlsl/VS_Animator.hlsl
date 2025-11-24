@@ -103,7 +103,7 @@ VSOutput main(VSInput IN)
     }
 
     // 位置スキン
-    float4 skinnedPos = mul(float4(IN.position, 1.0f), skin);
+    float4 skinnedPos = mul(skin, float4(IN.position, 1.0f));
 
     // ワールド変換
     float4 worldPos = mul(skinnedPos, gWorld);
