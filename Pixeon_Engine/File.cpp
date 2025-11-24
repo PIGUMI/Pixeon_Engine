@@ -2,19 +2,19 @@
 #include <Windows.h>
 
 // Explorerで指定パスを開く
-void File::OpenExplorer(const std::string& path){
+void File::OpenExplorer(const std::string& path) {
 	ShellExecuteA(
-		NULL,           
-		"open",         
-		"explorer.exe", 
-		path.c_str(),   
-		NULL,           
-		SW_SHOWNORMAL   
+		NULL,
+		"open",
+		"explorer.exe",
+		path.c_str(),
+		NULL,
+		SW_SHOWNORMAL
 	);
 }
 
 // 実行ファイルのパスを取得
-std::string File::GetExePath(){
+std::string File::GetExePath() {
 	char path[MAX_PATH];
 	DWORD length = GetModuleFileNameA(nullptr, path, MAX_PATH);
 	if (length == 0 || length == MAX_PATH) return "";
@@ -22,15 +22,15 @@ std::string File::GetExePath(){
 }
 
 // 実行ファイル名を除いたパスを取得
-std::string File::RemoveExeFromPath(const std::string& exePath){
+std::string File::RemoveExeFromPath(const std::string& exePath) {
 	size_t pos = exePath.find_last_of("\\/");
 	if (pos != std::string::npos)return exePath.substr(0, pos);
-	
+
 	return exePath;
 }
 
 // アセットパッカーを呼び出す
-bool File::CallAssetPacker(const std::string& toolPath, const std::string& assetDir, const std::string& outputPak){
+bool File::CallAssetPacker(const std::string& toolPath, const std::string& assetDir, const std::string& outputPak) {
 	std::string cmd = "\"" + toolPath + "\" \"" + assetDir + "\" \"" + outputPak + "\"";
 	STARTUPINFOA si = { sizeof(si) };
 	PROCESS_INFORMATION pi;
@@ -52,7 +52,7 @@ bool File::CallAssetPacker(const std::string& toolPath, const std::string& asset
 }
 
 // アーカイブツールを実行
-bool File::RunArchiveTool(const std::string& toolExePath, const std::string& assetDir, const std::string& archivePath){
+bool File::RunArchiveTool(const std::string& toolExePath, const std::string& assetDir, const std::string& archivePath) {
 	std::string cmd = "\"" + toolExePath + "\" \"" + assetDir + "\" \"" + archivePath + "\"";
 
 	STARTUPINFOA si = { sizeof(si) };
@@ -88,7 +88,7 @@ bool File::RunArchiveTool(const std::string& toolExePath, const std::string& ass
 // 指定ディレクトリ内のファイル名を変更
 // SceneMangerにも同名義関数がありますが、こちらは汎用的に使用するためのものです
 // SceneManager側は拡張子が.sceneで固定されているため、パスの結合処理が異なります
-bool File::RenameFileInDirectory(const std::string& oldName, const std::string& newName){
+bool File::RenameFileInDirectory(const std::string& oldName, const std::string& newName) {
 	std::string oldPath = oldName;
 	std::string newPath = newName;
 	if (std::rename(oldPath.c_str(), newPath.c_str()) != 0) {
@@ -96,7 +96,3 @@ bool File::RenameFileInDirectory(const std::string& oldName, const std::string& 
 	}
 	return true;
 }
-
-
-
-

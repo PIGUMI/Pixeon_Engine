@@ -1,4 +1,3 @@
-
 #include "EditrGUI.h"
 #include "IMGUI/imgui.h"
 #include "IMGUI/imgui_impl_dx11.h"
@@ -15,8 +14,8 @@
 
 void EditrGUI::ShowInspector()
 {
-    ImGui::Begin(ShiftJISToUTF8("インスペクター").c_str());
-    if (SelectedObject){
+	ImGui::Begin(ShiftJISToUTF8("インスペクター").c_str());
+	if (SelectedObject) {
 		ImGui::Text(ShiftJISToUTF8("オブジェクト名:").c_str());
 		ImGui::SameLine();
 		char buf[256];
@@ -77,7 +76,6 @@ void EditrGUI::ShowInspector()
 
 		// 削除処理
 		if (removeComponentIndex >= 0) {
-
 		}
 
 		//　コンポーネント追加UI
@@ -95,7 +93,6 @@ void EditrGUI::ShowInspector()
 		if (ImGui::Button(ShiftJISToUTF8("追加").c_str())) ComponentManager::GetInstance()->AddComponent(SelectedObject, (ComponentManager::COMPONENT_TYPE)CurrentComponent);
 
 		ImGui::EndChild();
-
-    }
-    ImGui::End();
+	}
+	ImGui::End();
 }

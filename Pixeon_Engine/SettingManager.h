@@ -64,23 +64,22 @@ private:
 	static SettingManager* instance;
 private:
 	// ê›íËçÄñ⁄
-	std::string AssetsFilePath		= "SceneRoot/Assets/";
-	std::string ArchiveFilePath		= "SceneRoot/Archive/";
-	std::string SceneFilePath		= "SceneRoot/Scene/";
-	std::string PackingTool			= "SceneRoot/Tool/Asset packaging tool.exe";
-	std::string ExternelTool		= "SceneRoot/Tool/IN/";
-	std::string ShaderFilePath		= "SceneRoot/Shader/hlsl/";
-	std::string CSOFilePath			= "SceneRoot/Shader/cso/";
-	std::string DLLFilePath			= "SceneRoot/Script/DLL/";
-	std::string ScriptFilePath		= "SceneRoot/Script/Source/";
-	std::string ScriptLogFilePath	= "SceneRoot/Script/Log/";
-	DirectX::XMFLOAT4 BackgroundColor = DirectX::XMFLOAT4(0.1f, 0.1f, 0.1f,1.0f);
+	std::string AssetsFilePath = "SceneRoot/Assets/";
+	std::string ArchiveFilePath = "SceneRoot/Archive/";
+	std::string SceneFilePath = "SceneRoot/Scene/";
+	std::string PackingTool = "SceneRoot/Tool/Asset packaging tool.exe";
+	std::string ExternelTool = "SceneRoot/Tool/IN/";
+	std::string ShaderFilePath = "SceneRoot/Shader/hlsl/";
+	std::string CSOFilePath = "SceneRoot/Shader/cso/";
+	std::string DLLFilePath = "SceneRoot/Script/DLL/";
+	std::string ScriptFilePath = "SceneRoot/Script/Source/";
+	std::string ScriptLogFilePath = "SceneRoot/Script/Log/";
+	DirectX::XMFLOAT4 BackgroundColor = DirectX::XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	float MouseSensitivity = 0.01f;
-	
+
 	bool bZBuffer = true;
 	int AutoSaveInterval = 5; // é©ìÆï€ë∂ä‘äuÅiï™Åj
 
 	SettingManager() {}
 	~SettingManager() {}
 };
-

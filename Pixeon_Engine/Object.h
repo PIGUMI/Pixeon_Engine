@@ -1,6 +1,5 @@
-//	コンポーネントの更新、描画を管理するクラス
-
-#pragma once
+#ifndef _OBJECT_H_
+#define _OBJECT_H_
 
 #include "Struct.h"
 #include <string>
@@ -21,9 +20,7 @@ public:
 	virtual void UInit();
 
 	Object* Clone();
-
 public:
-
 	// Setter And Getter
 	Transform GetTransform() { return _transform; }
 	void SetTransform(Transform transform) { _transform = transform; }
@@ -44,14 +41,7 @@ public:
 	}
 
 public:
-	// コンポーネントの追加
-	template<typename T = Component>
-	T* AddComponent() {
-		T* newComp = new T();
-		newComp->Init(this);
-		_components.push_back(newComp);
-		return newComp;
-	}
+
 	// 名前からコンポーネントを取得
 	Component* GetComponent(const std::string& name);
 	// 型からコンポーネントを取得
@@ -65,14 +55,29 @@ public:
 		}
 		return nullptr;
 	}
+	// 全コンポーネントの取得
+	std::vector<Component*> GetComponents() { return _components; }
 	// コンポーネントの削除
 	void RemoveComponent(Component* comp);
+	// コンポーネントの追加
+	template<typename T = Component>
+	T* AddComponent() {
+		T* newComp = new T();
+		newComp->Init(this);
+		// 同じ型のコンポーネントが既に存在する場合は名前に番号を付与
+		std::string baseName = newComp->GetComponentName();
 
-	std::vector<Component*> GetComponents() { return _components; }
+		int count = 1;
+		while (GetComponent(newComp->GetComponentName())) {
+			newComp->SetComponentName(baseName + std::to_string(count));
+			count++;
+		}
+		_components.push_back(newComp);
+		return newComp;
+	}
 
 	void SetParentScene(Scene* scene) { _ParentScene = scene; }
 	Scene* GetParentScene() const { return _ParentScene; }
-
 public:
 	// variable Setter And Getter
 	void SetInt(const std::string& key, int value) { _intValues[key] = value; }
@@ -81,19 +86,14 @@ public:
 	int GetInt(const std::string& key) { return _intValues[key]; }
 	float GetFloat(const std::string& key) { return _floatValues[key]; }
 	bool GetBool(const std::string& key) { return _boolValues[key]; }
-
 protected:
 	std::string _ObjectName;
 	Transform _transform;
-
 	std::vector<Component*> _components;
-
 	Scene* _ParentScene = nullptr;
-
 	std::map<std::string, int>		_intValues;
 	std::map<std::string, float>	_floatValues;
 	std::map<std::string, bool>		_boolValues;
 };
 
-
-
+#endif // !_OBJECT_H_

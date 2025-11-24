@@ -8,27 +8,27 @@
 
 // テクスチャ共有リソース
 struct TextureResource {
-    std::string name;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-    uint32_t width = 0;
-    uint32_t height = 0;
-    size_t   gpuBytes = 0;
+	std::string name;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+	uint32_t width = 0;
+	uint32_t height = 0;
+	size_t   gpuBytes = 0;
 };
 
 struct SubMesh {
-    uint32_t indexOffset = 0;
-    uint32_t indexCount = 0;
-    uint32_t materialIndex = 0;
-    bool     skinned = false;
-    bool     hasUV = false;
-    bool     uvAllZero = false;
+	uint32_t indexOffset = 0;
+	uint32_t indexCount = 0;
+	uint32_t materialIndex = 0;
+	bool     skinned = false;
+	bool     hasUV = false;
+	bool     uvAllZero = false;
 };
 
 struct MaterialShared {
-    std::string       baseColorTex;
-    DirectX::XMFLOAT4 baseColor{ 1,1,1,1 };
-    float metallic = 0.0f;
-    float roughness = 0.8f;
+	std::string       baseColorTex;
+	DirectX::XMFLOAT4 baseColor{ 1,1,1,1 };
+	float metallic = 0.0f;
+	float roughness = 0.8f;
 };
 
 // ------------------------------------------------------------
@@ -37,62 +37,62 @@ struct MaterialShared {
 // nodeIndex : アニメ用ノード階層(clip.nodeHierarchy)上の index
 // ------------------------------------------------------------
 struct Bone {
-    std::string name;
-    int parentIndex = -1;
-    int nodeIndex = -1;
-    DirectX::XMMATRIX offset;     // InverseBindPose
-    DirectX::XMMATRIX invOffset;  // BindPose = inverse(offset)
+	std::string name;
+	int parentIndex = -1;
+	int nodeIndex = -1;
+	DirectX::XMMATRIX offset;     // InverseBindPose
+	DirectX::XMMATRIX invOffset;  // BindPose = inverse(offset)
 };
 
 struct AnimationChannel {
-    int nodeIndex = -1;
-    std::string nodeName;
-    std::vector<std::pair<float, DirectX::XMFLOAT3>> positionKeys;
-    std::vector<std::pair<float, DirectX::XMFLOAT4>> rotationKeys;
-    std::vector<std::pair<float, DirectX::XMFLOAT3>> scaleKeys;
+	int nodeIndex = -1;
+	std::string nodeName;
+	std::vector<std::pair<float, DirectX::XMFLOAT3>> positionKeys;
+	std::vector<std::pair<float, DirectX::XMFLOAT4>> rotationKeys;
+	std::vector<std::pair<float, DirectX::XMFLOAT3>> scaleKeys;
 };
 
 struct AnimationClip {
-    std::string name;
-    double duration = 0;
-    double tps = 25.0;
-    std::vector<AnimationChannel> channels;
-    struct NodeInfo {
-        std::string name;
-        int parentIndex = -1;
-        DirectX::XMMATRIX localTransform;
-        std::vector<int> children;
-    };
-    std::vector<NodeInfo> nodeHierarchy;
+	std::string name;
+	double duration = 0;
+	double tps = 25.0;
+	std::vector<AnimationChannel> channels;
+	struct NodeInfo {
+		std::string name;
+		int parentIndex = -1;
+		DirectX::XMMATRIX localTransform;
+		std::vector<int> children;
+	};
+	std::vector<NodeInfo> nodeHierarchy;
 };
 
 struct ModelSharedResource {
-    std::string source;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> vb;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> ib;
-    uint32_t vertexCount = 0;
-    uint32_t indexCount = 0;
-    std::vector<SubMesh> submeshes;
-    std::vector<MaterialShared> materials;
-    std::vector<Bone> bones;
-    std::vector<AnimationClip> clips;
-    bool hasSkin = false;
-    size_t gpuBytes = 0;
+	std::string source;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> vb;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> ib;
+	uint32_t vertexCount = 0;
+	uint32_t indexCount = 0;
+	std::vector<SubMesh> submeshes;
+	std::vector<MaterialShared> materials;
+	std::vector<Bone> bones;
+	std::vector<AnimationClip> clips;
+	bool hasSkin = false;
+	size_t gpuBytes = 0;
 };
 
 struct SoundResource {
-    std::string name;
-    std::vector<uint8_t> pcmData;
-    int channels = 0;
-    int sampleRate = 0;
-    bool streaming = false;
+	std::string name;
+	std::vector<uint8_t> pcmData;
+	int channels = 0;
+	int sampleRate = 0;
+	bool streaming = false;
 };
 
 struct ModelVertex {
-    float position[3];
-    float normal[3];
-    float tangent[4];
-    float uv[2];
-    uint32_t boneIndices[4];
-    float boneWeights[4];
+	float position[3];
+	float normal[3];
+	float tangent[4];
+	float uv[2];
+	uint32_t boneIndices[4];
+	float boneWeights[4];
 };

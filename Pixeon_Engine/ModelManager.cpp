@@ -40,480 +40,479 @@
 ModelManager* ModelManager::s_instance = nullptr;
 
 static std::string MM_NormalizePath(std::string s) {
-    for (auto& c : s) if (c == '\\') c = '/';
-    while (s.size() && (s[0] == '/' || (s.size() >= 2 && s.rfind("./", 0) == 0))) {
-        if (s[0] == '/') s.erase(0, 1);
-        else if (s.rfind("./", 0) == 0) s.erase(0, 2);
-        else break;
-    }
-    return s;
+	for (auto& c : s) if (c == '\\') c = '/';
+	while (s.size() && (s[0] == '/' || (s.size() >= 2 && s.rfind("./", 0) == 0))) {
+		if (s[0] == '/') s.erase(0, 1);
+		else if (s.rfind("./", 0) == 0) s.erase(0, 2);
+		else break;
+	}
+	return s;
 }
 
 ModelManager* ModelManager::Instance() {
-    if (!s_instance) s_instance = new ModelManager();
-    return s_instance;
+	if (!s_instance) s_instance = new ModelManager();
+	return s_instance;
 }
 void ModelManager::DeleteInstance() {
-    if (s_instance) {
-        s_instance->UnInit();
-        delete s_instance;
-        s_instance = nullptr;
-    }
+	if (s_instance) {
+		s_instance->UnInit();
+		delete s_instance;
+		s_instance = nullptr;
+	}
 }
 void ModelManager::UnInit() {
-    std::lock_guard<std::mutex> lk(m_mtx);
-    m_cache.clear();
-    m_frame = 0;
+	std::lock_guard<std::mutex> lk(m_mtx);
+	m_cache.clear();
+	m_frame = 0;
 }
 
 std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& logicalName) {
-    std::lock_guard<std::mutex> lk(m_mtx);
-    m_frame++;
-    auto it = m_cache.find(logicalName);
-    if (it != m_cache.end()) {
-        if (auto sp = it->second.weak.lock()) {
-            it->second.lastUse = m_frame;
-            return sp;
-        }
-    }
-    auto res = LoadInternal(logicalName);
-    if (res) {
-        Entry e; e.weak = res; e.lastUse = m_frame; e.gpuBytes = res->gpuBytes;
-        m_cache[logicalName] = e;
-    }
-    return res;
+	std::lock_guard<std::mutex> lk(m_mtx);
+	m_frame++;
+	auto it = m_cache.find(logicalName);
+	if (it != m_cache.end()) {
+		if (auto sp = it->second.weak.lock()) {
+			it->second.lastUse = m_frame;
+			return sp;
+		}
+	}
+	auto res = LoadInternal(logicalName);
+	if (res) {
+		Entry e; e.weak = res; e.lastUse = m_frame; e.gpuBytes = res->gpuBytes;
+		m_cache[logicalName] = e;
+	}
+	return res;
 }
 
 std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::string& logicalName) {
-    std::vector<uint8_t> data;
-    if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
-        ErrorLogger::Instance().LogError("ModelManager", "Failed load asset: " + logicalName);
-        return nullptr;
-    }
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFileFromMemory(
-        data.data(), data.size(),
-        aiProcess_Triangulate |
-        aiProcess_CalcTangentSpace |
-        aiProcess_GenNormals |
-        aiProcess_JoinIdenticalVertices |
-        aiProcess_LimitBoneWeights |
-        aiProcess_ImproveCacheLocality |
-        aiProcess_SortByPType |
-        aiProcess_FlipUVs);
+	std::vector<uint8_t> data;
+	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
+		ErrorLogger::Instance().LogError("ModelManager", "Failed load asset: " + logicalName);
+		return nullptr;
+	}
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFileFromMemory(
+		data.data(), data.size(),
+		aiProcess_Triangulate |
+		aiProcess_CalcTangentSpace |
+		aiProcess_GenNormals |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_LimitBoneWeights |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_SortByPType |
+		aiProcess_FlipUVs);
 
-    if (!scene || !scene->mRootNode) {
-        ErrorLogger::Instance().LogError("ModelManager", "Assimp parse failed: " + logicalName +
-            (importer.GetErrorString()[0] ? (" (" + std::string(importer.GetErrorString()) + ")") : ""));
-        return nullptr;
-    }
+	if (!scene || !scene->mRootNode) {
+		ErrorLogger::Instance().LogError("ModelManager", "Assimp parse failed: " + logicalName +
+			(importer.GetErrorString()[0] ? (" (" + std::string(importer.GetErrorString()) + ")") : ""));
+		return nullptr;
+	}
 
-    auto shared = std::make_shared<ModelSharedResource>();
-    shared->source = logicalName;
+	auto shared = std::make_shared<ModelSharedResource>();
+	shared->source = logicalName;
 
-    std::vector<ModelVertex> vertices;
-    std::vector<uint32_t> indices;
-    ProcessNode(scene->mRootNode, scene, vertices, indices, shared);
+	std::vector<ModelVertex> vertices;
+	std::vector<uint32_t> indices;
+	ProcessNode(scene->mRootNode, scene, vertices, indices, shared);
 
-    auto device = DirectX11::GetInstance()->GetDevice();
-    if (!device) {
-        ErrorLogger::Instance().LogError("ModelManager", "Device null");
-        return nullptr;
-    }
-    { // VB
-        D3D11_BUFFER_DESC bd{};
-        bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = (UINT)(vertices.size() * sizeof(ModelVertex));
-        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        D3D11_SUBRESOURCE_DATA srd{ vertices.data(),0,0 };
-        if (FAILED(device->CreateBuffer(&bd, &srd, shared->vb.GetAddressOf()))) {
-            ErrorLogger::Instance().LogError("ModelManager", "VB creation failed");
-            return nullptr;
-        }
-    }
-    { // IB
-        D3D11_BUFFER_DESC bd{};
-        bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = (UINT)(indices.size() * sizeof(uint32_t));
-        bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        D3D11_SUBRESOURCE_DATA srd{ indices.data(),0,0 };
-        if (FAILED(device->CreateBuffer(&bd, &srd, shared->ib.GetAddressOf()))) {
-            ErrorLogger::Instance().LogError("ModelManager", "IB creation failed");
-            return nullptr;
-        }
-    }
-    shared->vertexCount = (uint32_t)vertices.size();
-    shared->indexCount = (uint32_t)indices.size();
-    shared->gpuBytes = vertices.size() * sizeof(ModelVertex) + indices.size() * sizeof(uint32_t);
+	auto device = DirectX11::GetInstance()->GetDevice();
+	if (!device) {
+		ErrorLogger::Instance().LogError("ModelManager", "Device null");
+		return nullptr;
+	}
+	{ // VB
+		D3D11_BUFFER_DESC bd{};
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.ByteWidth = (UINT)(vertices.size() * sizeof(ModelVertex));
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		D3D11_SUBRESOURCE_DATA srd{ vertices.data(),0,0 };
+		if (FAILED(device->CreateBuffer(&bd, &srd, shared->vb.GetAddressOf()))) {
+			ErrorLogger::Instance().LogError("ModelManager", "VB creation failed");
+			return nullptr;
+		}
+	}
+	{ // IB
+		D3D11_BUFFER_DESC bd{};
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.ByteWidth = (UINT)(indices.size() * sizeof(uint32_t));
+		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		D3D11_SUBRESOURCE_DATA srd{ indices.data(),0,0 };
+		if (FAILED(device->CreateBuffer(&bd, &srd, shared->ib.GetAddressOf()))) {
+			ErrorLogger::Instance().LogError("ModelManager", "IB creation failed");
+			return nullptr;
+		}
+	}
+	shared->vertexCount = (uint32_t)vertices.size();
+	shared->indexCount = (uint32_t)indices.size();
+	shared->gpuBytes = vertices.size() * sizeof(ModelVertex) + indices.size() * sizeof(uint32_t);
 
-    ProcessMaterials(scene, shared);
-    ProcessAnimations(scene, shared);
-    ProcessBonesFinalizeHierarchy(scene, shared);
-    MapBonesToNodes(*shared);
-    QuickIntegrityReport(shared.get());
-    DumpBoneChannelMapping(shared.get());
-    RebindBoneNodeIndices(shared.get());
-    QuickIntegrityReport(shared.get());
+	ProcessMaterials(scene, shared);
+	ProcessAnimations(scene, shared);
+	ProcessBonesFinalizeHierarchy(scene, shared);
+	MapBonesToNodes(*shared);
+	QuickIntegrityReport(shared.get());
+	DumpBoneChannelMapping(shared.get());
+	RebindBoneNodeIndices(shared.get());
+	QuickIntegrityReport(shared.get());
 #ifdef _DEBUG
-    int missing = 0;
-    for (auto& b : shared->bones) if (b.nodeIndex < 0) ++missing;
-    EditrGUI::GetInstance()->WriteLog("[ModelManager] LoadInternal bone missing nodeIndex=" + std::to_string(missing));
+	int missing = 0;
+	for (auto& b : shared->bones) if (b.nodeIndex < 0) ++missing;
+	EditrGUI::GetInstance()->WriteLog("[ModelManager] LoadInternal bone missing nodeIndex=" + std::to_string(missing));
 #endif
 
-    return shared;
+	return shared;
 }
 
 void ModelManager::ProcessNode(aiNode* node, const aiScene* scene,
-    std::vector<ModelVertex>& vertices,
-    std::vector<uint32_t>& indices,
-    std::shared_ptr<ModelSharedResource> shared) {
-    for (uint32_t i = 0; i < node->mNumMeshes; ++i) {
-        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        ProcessMesh(mesh, scene, vertices, indices, shared);
-    }
-    for (uint32_t i = 0; i < node->mNumChildren; ++i)
-        ProcessNode(node->mChildren[i], scene, vertices, indices, shared);
+	std::vector<ModelVertex>& vertices,
+	std::vector<uint32_t>& indices,
+	std::shared_ptr<ModelSharedResource> shared) {
+	for (uint32_t i = 0; i < node->mNumMeshes; ++i) {
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		ProcessMesh(mesh, scene, vertices, indices, shared);
+	}
+	for (uint32_t i = 0; i < node->mNumChildren; ++i)
+		ProcessNode(node->mChildren[i], scene, vertices, indices, shared);
 }
 
 void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
-    std::vector<ModelVertex>& vertices,
-    std::vector<uint32_t>& indices,
-    std::shared_ptr<ModelSharedResource> shared)
+	std::vector<ModelVertex>& vertices,
+	std::vector<uint32_t>& indices,
+	std::shared_ptr<ModelSharedResource> shared)
 {
-    SubMesh sm;
-    sm.indexOffset = (uint32_t)indices.size();
-    sm.materialIndex = mesh->mMaterialIndex;
-    sm.skinned = mesh->HasBones();
-    if (sm.skinned) {
-        shared->hasSkin = true;
-    }
-    uint32_t vtxOffset = (uint32_t)vertices.size();
+	SubMesh sm;
+	sm.indexOffset = (uint32_t)indices.size();
+	sm.materialIndex = mesh->mMaterialIndex;
+	sm.skinned = mesh->HasBones();
+	if (sm.skinned) {
+		shared->hasSkin = true;
+	}
+	uint32_t vtxOffset = (uint32_t)vertices.size();
 
-    std::unordered_map<std::string, int> boneMap;
-    for (size_t i = 0; i < shared->bones.size(); ++i)
-        boneMap[shared->bones[i].name] = (int)i;
+	std::unordered_map<std::string, int> boneMap;
+	for (size_t i = 0; i < shared->bones.size(); ++i)
+		boneMap[shared->bones[i].name] = (int)i;
 
-    struct TmpWeight { std::vector<std::pair<int, float>> w; };
-    std::vector<TmpWeight> tmp(mesh->mNumVertices);
+	struct TmpWeight { std::vector<std::pair<int, float>> w; };
+	std::vector<TmpWeight> tmp(mesh->mNumVertices);
 
-    if (mesh->HasBones()) {
-        for (uint32_t bi = 0; bi < mesh->mNumBones; ++bi) {
-            aiBone* ab = mesh->mBones[bi];
-            std::string bname = ab->mName.C_Str();
-            int boneIndex = -1;
-            auto it = boneMap.find(bname);
-            if (it == boneMap.end()) {
-                boneIndex = (int)shared->bones.size();
-                boneMap[bname] = boneIndex;
-                Bone newBone;
-                newBone.name = bname;
-                // InverseBindPose 正しい行(row)順変換
-                newBone.offset = AssimpToXM_RowMajor(ab->mOffsetMatrix);
-                // 必要なら座標スケール / 反転処理ここで (現状不要)
-                newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
-                newBone.parentIndex = -1;
-                newBone.nodeIndex = -1;
-                shared->bones.push_back(newBone);
-            }
-            else {
-                boneIndex = it->second;
-            }
-            for (uint32_t w = 0; w < ab->mNumWeights; ++w) {
-                uint32_t vid = ab->mWeights[w].mVertexId;
-                float     val = ab->mWeights[w].mWeight;
-                if (vid < tmp.size())
-                    tmp[vid].w.push_back({ boneIndex, val });
-            }
-        }
-    }
+	if (mesh->HasBones()) {
+		for (uint32_t bi = 0; bi < mesh->mNumBones; ++bi) {
+			aiBone* ab = mesh->mBones[bi];
+			std::string bname = ab->mName.C_Str();
+			int boneIndex = -1;
+			auto it = boneMap.find(bname);
+			if (it == boneMap.end()) {
+				boneIndex = (int)shared->bones.size();
+				boneMap[bname] = boneIndex;
+				Bone newBone;
+				newBone.name = bname;
+				// InverseBindPose 正しい行(row)順変換
+				newBone.offset = AssimpToXM_RowMajor(ab->mOffsetMatrix);
+				// 必要なら座標スケール / 反転処理ここで (現状不要)
+				newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
+				newBone.parentIndex = -1;
+				newBone.nodeIndex = -1;
+				shared->bones.push_back(newBone);
+			}
+			else {
+				boneIndex = it->second;
+			}
+			for (uint32_t w = 0; w < ab->mNumWeights; ++w) {
+				uint32_t vid = ab->mWeights[w].mVertexId;
+				float     val = ab->mWeights[w].mWeight;
+				if (vid < tmp.size())
+					tmp[vid].w.push_back({ boneIndex, val });
+			}
+		}
+	}
 
-    for (uint32_t v = 0; v < mesh->mNumVertices; ++v) {
-        ModelVertex mv{};
-        mv.position[0] = mesh->mVertices[v].x;
-        mv.position[1] = mesh->mVertices[v].y;
-        mv.position[2] = mesh->mVertices[v].z;
-        if (mesh->HasNormals()) {
-            mv.normal[0] = mesh->mNormals[v].x;
-            mv.normal[1] = mesh->mNormals[v].y;
-            mv.normal[2] = mesh->mNormals[v].z;
-        }
-        if (mesh->mTangents) {
-            mv.tangent[0] = mesh->mTangents[v].x;
-            mv.tangent[1] = mesh->mTangents[v].y;
-            mv.tangent[2] = mesh->mTangents[v].z;
-            mv.tangent[3] = 1.0f;
-        }
-        if (mesh->mTextureCoords[0]) {
-            mv.uv[0] = mesh->mTextureCoords[0][v].x;
-            mv.uv[1] = mesh->mTextureCoords[0][v].y;
-        }
-        for (int k = 0; k < 4; ++k) {
-            mv.boneIndices[k] = 0;
-            mv.boneWeights[k] = 0.0f;
-        }
+	for (uint32_t v = 0; v < mesh->mNumVertices; ++v) {
+		ModelVertex mv{};
+		mv.position[0] = mesh->mVertices[v].x;
+		mv.position[1] = mesh->mVertices[v].y;
+		mv.position[2] = mesh->mVertices[v].z;
+		if (mesh->HasNormals()) {
+			mv.normal[0] = mesh->mNormals[v].x;
+			mv.normal[1] = mesh->mNormals[v].y;
+			mv.normal[2] = mesh->mNormals[v].z;
+		}
+		if (mesh->mTangents) {
+			mv.tangent[0] = mesh->mTangents[v].x;
+			mv.tangent[1] = mesh->mTangents[v].y;
+			mv.tangent[2] = mesh->mTangents[v].z;
+			mv.tangent[3] = 1.0f;
+		}
+		if (mesh->mTextureCoords[0]) {
+			mv.uv[0] = mesh->mTextureCoords[0][v].x;
+			mv.uv[1] = mesh->mTextureCoords[0][v].y;
+		}
+		for (int k = 0; k < 4; ++k) {
+			mv.boneIndices[k] = 0;
+			mv.boneWeights[k] = 0.0f;
+		}
 
-        if (!tmp[v].w.empty()) {
-            auto& arr = tmp[v].w;
-            std::sort(arr.begin(), arr.end(),
-                [](auto& a, auto& b) {return a.second > b.second; });
-            int count = std::min<int>(4, (int)arr.size());
-            float total = 0.f;
-            for (int k = 0; k < count; ++k) {
-                mv.boneIndices[k] = arr[k].first;
-                mv.boneWeights[k] = arr[k].second;
-                total += arr[k].second;
-            }
-            if (total > 0.f && fabs(total - 1.f) > 1e-5f) {
-                for (int k = 0; k < count; ++k)
-                    mv.boneWeights[k] /= total;
-            }
-        }
-        vertices.push_back(mv);
-    }
+		if (!tmp[v].w.empty()) {
+			auto& arr = tmp[v].w;
+			std::sort(arr.begin(), arr.end(),
+				[](auto& a, auto& b) {return a.second > b.second; });
+			int count = std::min<int>(4, (int)arr.size());
+			float total = 0.f;
+			for (int k = 0; k < count; ++k) {
+				mv.boneIndices[k] = arr[k].first;
+				mv.boneWeights[k] = arr[k].second;
+				total += arr[k].second;
+			}
+			if (total > 0.f && fabs(total - 1.f) > 1e-5f) {
+				for (int k = 0; k < count; ++k)
+					mv.boneWeights[k] /= total;
+			}
+		}
+		vertices.push_back(mv);
+	}
 
-    for (uint32_t f = 0; f < mesh->mNumFaces; ++f) {
-        aiFace face = mesh->mFaces[f];
-        for (uint32_t j = 0; j < face.mNumIndices; ++j)
-            indices.push_back(vtxOffset + face.mIndices[j]);
-    }
+	for (uint32_t f = 0; f < mesh->mNumFaces; ++f) {
+		aiFace face = mesh->mFaces[f];
+		for (uint32_t j = 0; j < face.mNumIndices; ++j)
+			indices.push_back(vtxOffset + face.mIndices[j]);
+	}
 
-    bool anyUV = mesh->mTextureCoords[0] != nullptr;
-    bool allZero = true;
-    if (anyUV) {
-        for (uint32_t vv = 0; vv < mesh->mNumVertices; ++vv) {
-            float ux = mesh->mTextureCoords[0][vv].x;
-            float uy = mesh->mTextureCoords[0][vv].y;
-            if (ux != 0.f || uy != 0.f) { allZero = false; break; }
-        }
-    }
-    sm.hasUV = anyUV;
-    sm.uvAllZero = anyUV ? allZero : false;
-    sm.indexCount = (uint32_t)indices.size() - sm.indexOffset;
-    shared->submeshes.push_back(sm);
+	bool anyUV = mesh->mTextureCoords[0] != nullptr;
+	bool allZero = true;
+	if (anyUV) {
+		for (uint32_t vv = 0; vv < mesh->mNumVertices; ++vv) {
+			float ux = mesh->mTextureCoords[0][vv].x;
+			float uy = mesh->mTextureCoords[0][vv].y;
+			if (ux != 0.f || uy != 0.f) { allZero = false; break; }
+		}
+	}
+	sm.hasUV = anyUV;
+	sm.uvAllZero = anyUV ? allZero : false;
+	sm.indexCount = (uint32_t)indices.size() - sm.indexOffset;
+	shared->submeshes.push_back(sm);
 }
 
 void ModelManager::ProcessMaterials(const aiScene* scene,
-    std::shared_ptr<ModelSharedResource> shared) {
-    for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
-        aiMaterial* mat = scene->mMaterials[i];
-        MaterialShared ms;
-        aiColor4D col;
-        if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, col))
-            ms.baseColor = { col.r,col.g,col.b,col.a };
-        aiString texPath;
-        if (AI_SUCCESS == mat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath)) {
-            ms.baseColorTex = ResolveTexturePath(shared->source, texPath.C_Str());
-        }
-        shared->materials.push_back(ms);
-    }
+	std::shared_ptr<ModelSharedResource> shared) {
+	for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
+		aiMaterial* mat = scene->mMaterials[i];
+		MaterialShared ms;
+		aiColor4D col;
+		if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, col))
+			ms.baseColor = { col.r,col.g,col.b,col.a };
+		aiString texPath;
+		if (AI_SUCCESS == mat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath)) {
+			ms.baseColorTex = ResolveTexturePath(shared->source, texPath.C_Str());
+		}
+		shared->materials.push_back(ms);
+	}
 }
 
 std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath) {
-    if (rawPath.empty()) return {};
-    if (rawPath[0] == '*') {
-        ErrorLogger::Instance().LogError("ModelManager", "Embedded texture unsupported: " + rawPath);
-        return {};
-    }
-    std::string norm = MM_NormalizePath(rawPath);
+	if (rawPath.empty()) return {};
+	if (rawPath[0] == '*') {
+		ErrorLogger::Instance().LogError("ModelManager", "Embedded texture unsupported: " + rawPath);
+		return {};
+	}
+	std::string norm = MM_NormalizePath(rawPath);
 
-    {
-        std::filesystem::path p(norm);
-        if (p.is_absolute()) norm = p.filename().generic_string();
-    }
+	{
+		std::filesystem::path p(norm);
+		if (p.is_absolute()) norm = p.filename().generic_string();
+	}
 
-    std::string modelDir;
-    if (auto pos = modelLogical.find_last_of("/\\"); pos != std::string::npos) {
-        modelDir = modelLogical.substr(0, pos + 1);
-        for (auto& c : modelDir) if (c == '\\') c = '/';
-    }
+	std::string modelDir;
+	if (auto pos = modelLogical.find_last_of("/\\"); pos != std::string::npos) {
+		modelDir = modelLogical.substr(0, pos + 1);
+		for (auto& c : modelDir) if (c == '\\') c = '/';
+	}
 
-    std::string filename = norm;
-    if (auto pos = norm.find_last_of('/'); pos != std::string::npos)
-        filename = norm.substr(pos + 1);
+	std::string filename = norm;
+	if (auto pos = norm.find_last_of('/'); pos != std::string::npos)
+		filename = norm.substr(pos + 1);
 
-    std::vector<std::string> candidates;
-    if (norm.find('/') != std::string::npos) candidates.push_back(norm);
-    candidates.push_back(modelDir + norm);
-    candidates.push_back(modelDir + filename);
-    candidates.push_back(modelDir + "Textures/" + filename);
-    candidates.push_back("Textures/" + filename);
-    candidates.push_back(filename);
+	std::vector<std::string> candidates;
+	if (norm.find('/') != std::string::npos) candidates.push_back(norm);
+	candidates.push_back(modelDir + norm);
+	candidates.push_back(modelDir + filename);
+	candidates.push_back(modelDir + "Textures/" + filename);
+	candidates.push_back("Textures/" + filename);
+	candidates.push_back(filename);
 
-    std::unordered_set<std::string> seen;
-    std::vector<std::string> uniq;
-    for (auto& c : candidates) {
-        auto n = MM_NormalizePath(c);
-        if (seen.insert(n).second) uniq.push_back(n);
-    }
-    for (auto& c : uniq) {
-        if (AssetManager::Instance()->Exists(c)) {
-            return c;
-        }
-    }
-    ErrorLogger::Instance().LogError("ModelManager",
-        "Texture not found: " + rawPath + " (tried " + std::to_string(uniq.size()) + " paths)", false, 3);
-    return {};
+	std::unordered_set<std::string> seen;
+	std::vector<std::string> uniq;
+	for (auto& c : candidates) {
+		auto n = MM_NormalizePath(c);
+		if (seen.insert(n).second) uniq.push_back(n);
+	}
+	for (auto& c : uniq) {
+		if (AssetManager::Instance()->Exists(c)) {
+			return c;
+		}
+	}
+	ErrorLogger::Instance().LogError("ModelManager",
+		"Texture not found: " + rawPath + " (tried " + std::to_string(uniq.size()) + " paths)", false, 3);
+	return {};
 }
 
 void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
-    std::shared_ptr<ModelSharedResource> shared)
+	std::shared_ptr<ModelSharedResource> shared)
 {
-    if (shared->bones.empty()) return;
+	if (shared->bones.empty()) return;
 
-    std::unordered_map<std::string, std::string> parentName;
-    std::function<void(aiNode*, aiNode*)> walk = [&](aiNode* n, aiNode* p) {
-        if (!n) return;
-        parentName[n->mName.C_Str()] = p ? p->mName.C_Str() : "";
-        for (uint32_t c = 0; c < n->mNumChildren; ++c)
-            walk(n->mChildren[c], n);
-        };
-    walk(scene->mRootNode, nullptr);
+	std::unordered_map<std::string, std::string> parentName;
+	std::function<void(aiNode*, aiNode*)> walk = [&](aiNode* n, aiNode* p) {
+		if (!n) return;
+		parentName[n->mName.C_Str()] = p ? p->mName.C_Str() : "";
+		for (uint32_t c = 0; c < n->mNumChildren; ++c)
+			walk(n->mChildren[c], n);
+		};
+	walk(scene->mRootNode, nullptr);
 
-    std::unordered_map<std::string, int> boneIndexMap;
-    for (int i = 0; i < (int)shared->bones.size(); ++i)
-        boneIndexMap[shared->bones[i].name] = i;
+	std::unordered_map<std::string, int> boneIndexMap;
+	for (int i = 0; i < (int)shared->bones.size(); ++i)
+		boneIndexMap[shared->bones[i].name] = i;
 
-    for (auto& b : shared->bones) {
-        auto pit = parentName.find(b.name);
-        if (pit == parentName.end() || pit->second.empty()) {
-            b.parentIndex = -1;
-        }
-        else {
-            auto bit = boneIndexMap.find(pit->second);
-            b.parentIndex = (bit != boneIndexMap.end()) ? bit->second : -1;
-        }
-        if (shared->clips.empty()) {
-            b.nodeIndex = -1;
-        }
-    }
+	for (auto& b : shared->bones) {
+		auto pit = parentName.find(b.name);
+		if (pit == parentName.end() || pit->second.empty()) {
+			b.parentIndex = -1;
+		}
+		else {
+			auto bit = boneIndexMap.find(pit->second);
+			b.parentIndex = (bit != boneIndexMap.end()) ? bit->second : -1;
+		}
+		if (shared->clips.empty()) {
+			b.nodeIndex = -1;
+		}
+	}
 #ifdef _DEBUG
-    EditrGUI::GetInstance()->WriteLog("[ModelManager] ProcessBonesFinalizeHierarchy done");
+	EditrGUI::GetInstance()->WriteLog("[ModelManager] ProcessBonesFinalizeHierarchy done");
 #endif
 }
 
 void ModelManager::ProcessAnimations(const aiScene* scene,
-    std::shared_ptr<ModelSharedResource> shared)
+	std::shared_ptr<ModelSharedResource> shared)
 {
-    if (!scene->HasAnimations()) return;
-    for (uint32_t i = 0; i < scene->mNumAnimations; ++i) {
-        aiAnimation* anim = scene->mAnimations[i];
-        AnimationClip clip;
-        clip.name = anim->mName.length ? anim->mName.C_Str() : ("Animation_" + std::to_string(i));
-        clip.duration = anim->mDuration;
-        clip.tps = anim->mTicksPerSecond != 0.0 ? anim->mTicksPerSecond : 25.0;
+	if (!scene->HasAnimations()) return;
+	for (uint32_t i = 0; i < scene->mNumAnimations; ++i) {
+		aiAnimation* anim = scene->mAnimations[i];
+		AnimationClip clip;
+		clip.name = anim->mName.length ? anim->mName.C_Str() : ("Animation_" + std::to_string(i));
+		clip.duration = anim->mDuration;
+		clip.tps = anim->mTicksPerSecond != 0.0 ? anim->mTicksPerSecond : 25.0;
 
-        std::map<std::string, int> nodeMap;
-        BuildNodeHierarchy(scene->mRootNode, clip, nodeMap, -1);
+		std::map<std::string, int> nodeMap;
+		BuildNodeHierarchy(scene->mRootNode, clip, nodeMap, -1);
 
-        for (uint32_t ch = 0; ch < anim->mNumChannels; ++ch) {
-            aiNodeAnim* na = anim->mChannels[ch];
-            AnimationChannel ac;
-            ac.nodeName = na->mNodeName.C_Str();
-            auto it = nodeMap.find(ac.nodeName);
-            ac.nodeIndex = (it != nodeMap.end()) ? it->second : -1;
-            for (uint32_t k = 0; k < na->mNumPositionKeys; ++k) {
-                float t = (float)(na->mPositionKeys[k].mTime / clip.tps);
-                ac.positionKeys.push_back({ t,{
-                    na->mPositionKeys[k].mValue.x,
-                    na->mPositionKeys[k].mValue.y,
-                    na->mPositionKeys[k].mValue.z } });
-            }
-            for (uint32_t k = 0; k < na->mNumRotationKeys; ++k) {
-                float t = (float)(na->mRotationKeys[k].mTime / clip.tps);
-                ac.rotationKeys.push_back({ t,{
-                    na->mRotationKeys[k].mValue.x,
-                    na->mRotationKeys[k].mValue.y,
-                    na->mRotationKeys[k].mValue.z,
-                    na->mRotationKeys[k].mValue.w } });
-            }
-            for (uint32_t k = 0; k < na->mNumScalingKeys; ++k) {
-                float t = (float)(na->mScalingKeys[k].mTime / clip.tps);
-                ac.scaleKeys.push_back({ t,{
-                    na->mScalingKeys[k].mValue.x,
-                    na->mScalingKeys[k].mValue.y,
-                    na->mScalingKeys[k].mValue.z } });
-            }
-            clip.channels.push_back(ac);
-        }
-        shared->clips.push_back(clip);
-    }
-    MapBonesToNodes(*shared);
+		for (uint32_t ch = 0; ch < anim->mNumChannels; ++ch) {
+			aiNodeAnim* na = anim->mChannels[ch];
+			AnimationChannel ac;
+			ac.nodeName = na->mNodeName.C_Str();
+			auto it = nodeMap.find(ac.nodeName);
+			ac.nodeIndex = (it != nodeMap.end()) ? it->second : -1;
+			for (uint32_t k = 0; k < na->mNumPositionKeys; ++k) {
+				float t = (float)(na->mPositionKeys[k].mTime / clip.tps);
+				ac.positionKeys.push_back({ t,{
+					na->mPositionKeys[k].mValue.x,
+					na->mPositionKeys[k].mValue.y,
+					na->mPositionKeys[k].mValue.z } });
+			}
+			for (uint32_t k = 0; k < na->mNumRotationKeys; ++k) {
+				float t = (float)(na->mRotationKeys[k].mTime / clip.tps);
+				ac.rotationKeys.push_back({ t,{
+					na->mRotationKeys[k].mValue.x,
+					na->mRotationKeys[k].mValue.y,
+					na->mRotationKeys[k].mValue.z,
+					na->mRotationKeys[k].mValue.w } });
+			}
+			for (uint32_t k = 0; k < na->mNumScalingKeys; ++k) {
+				float t = (float)(na->mScalingKeys[k].mTime / clip.tps);
+				ac.scaleKeys.push_back({ t,{
+					na->mScalingKeys[k].mValue.x,
+					na->mScalingKeys[k].mValue.y,
+					na->mScalingKeys[k].mValue.z } });
+			}
+			clip.channels.push_back(ac);
+		}
+		shared->clips.push_back(clip);
+	}
+	MapBonesToNodes(*shared);
 }
 
 void ModelManager::BuildNodeHierarchy(aiNode* node,
-    AnimationClip& clip,
-    std::map<std::string, int>& nodeNameToIndex,
-    int parentIndex) {
+	AnimationClip& clip,
+	std::map<std::string, int>& nodeNameToIndex,
+	int parentIndex) {
+	std::string nm = node->mName.C_Str();
 
-    std::string nm = node->mName.C_Str();
+	// ==============================
+	// 🔴 補助ノードは完全にスキップ
+	// ==============================
+	if (nm.find("$AssimpFbx") != std::string::npos)
+	{
+		for (uint32_t i = 0; i < node->mNumChildren; ++i)
+			BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, parentIndex);
+		return;
+	}
 
-    // ==============================
-    // 🔴 補助ノードは完全にスキップ
-    // ==============================
-    if (nm.find("$AssimpFbx") != std::string::npos)
-    {
-        for (uint32_t i = 0; i < node->mNumChildren; ++i)
-            BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, parentIndex);
-        return;
-    }
+	AnimationClip::NodeInfo ni;
+	ni.name = nm;
+	ni.parentIndex = parentIndex;
+	ni.localTransform = AssimpToXM_RowMajor(node->mTransformation);
 
-    AnimationClip::NodeInfo ni;
-    ni.name = nm;
-    ni.parentIndex = parentIndex;
-    ni.localTransform = AssimpToXM_RowMajor(node->mTransformation);
+	int current = (int)clip.nodeHierarchy.size();
+	nodeNameToIndex[nm] = current;
+	clip.nodeHierarchy.push_back(ni);
 
-    int current = (int)clip.nodeHierarchy.size();
-    nodeNameToIndex[nm] = current;
-    clip.nodeHierarchy.push_back(ni);
-
-    for (uint32_t i = 0; i < node->mNumChildren; ++i)
-    {
-        int childIndex = (int)clip.nodeHierarchy.size();
-        clip.nodeHierarchy[current].children.push_back(childIndex);
-        BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, current);
-    }
+	for (uint32_t i = 0; i < node->mNumChildren; ++i)
+	{
+		int childIndex = (int)clip.nodeHierarchy.size();
+		clip.nodeHierarchy[current].children.push_back(childIndex);
+		BuildNodeHierarchy(node->mChildren[i], clip, nodeNameToIndex, current);
+	}
 }
 
 void ModelManager::GarbageCollect() {
-    std::lock_guard<std::mutex> lk(m_mtx);
-    for (auto it = m_cache.begin(); it != m_cache.end();) {
-        if (it->second.weak.expired()) it = m_cache.erase(it);
-        else ++it;
-    }
+	std::lock_guard<std::mutex> lk(m_mtx);
+	for (auto it = m_cache.begin(); it != m_cache.end();) {
+		if (it->second.weak.expired()) it = m_cache.erase(it);
+		else ++it;
+	}
 }
 
 void ModelManager::DrawDebugGUI() {
-    std::lock_guard<std::mutex> lk(m_mtx);
-    ImGui::TextUnformatted("ModelManager");
-    ImGui::Separator();
-    size_t alive = 0;
-    size_t totalGPU = 0;
-    for (auto& kv : m_cache) {
-        if (!kv.second.weak.expired()) {
-            alive++;
-            totalGPU += kv.second.gpuBytes;
-        }
-    }
-    ImGui::Text("Cached: %zu (alive=%zu)", m_cache.size(), alive);
-    ImGui::Text("GPU Approx Total: %.2f MB", totalGPU / (1024.0 * 1024.0));
-    static char filter[128] = "";
-    ImGui::InputText("Filter##Model", filter, sizeof(filter));
-    if (ImGui::Button("GC Dead")) {
-        for (auto it = m_cache.begin(); it != m_cache.end();) {
-            if (it->second.weak.expired()) it = m_cache.erase(it);
-            else ++it;
-        }
-    }
-    ImGui::Separator();
-    ImGui::BeginChild("ModelList", ImVec2(0, 160), true);
-    for (auto& kv : m_cache) {
-        if (filter[0] && kv.first.find(filter) == std::string::npos) continue;
-        bool aliveRes = !kv.second.weak.expired();
-        ImGui::Text("%s | %s | %.2f KB | lastUse=%llu",
-            kv.first.c_str(),
-            aliveRes ? "alive" : "dead",
-            kv.second.gpuBytes / 1024.0,
-            (unsigned long long)kv.second.lastUse);
-    }
-    ImGui::EndChild();
+	std::lock_guard<std::mutex> lk(m_mtx);
+	ImGui::TextUnformatted("ModelManager");
+	ImGui::Separator();
+	size_t alive = 0;
+	size_t totalGPU = 0;
+	for (auto& kv : m_cache) {
+		if (!kv.second.weak.expired()) {
+			alive++;
+			totalGPU += kv.second.gpuBytes;
+		}
+	}
+	ImGui::Text("Cached: %zu (alive=%zu)", m_cache.size(), alive);
+	ImGui::Text("GPU Approx Total: %.2f MB", totalGPU / (1024.0 * 1024.0));
+	static char filter[128] = "";
+	ImGui::InputText("Filter##Model", filter, sizeof(filter));
+	if (ImGui::Button("GC Dead")) {
+		for (auto it = m_cache.begin(); it != m_cache.end();) {
+			if (it->second.weak.expired()) it = m_cache.erase(it);
+			else ++it;
+		}
+	}
+	ImGui::Separator();
+	ImGui::BeginChild("ModelList", ImVec2(0, 160), true);
+	for (auto& kv : m_cache) {
+		if (filter[0] && kv.first.find(filter) == std::string::npos) continue;
+		bool aliveRes = !kv.second.weak.expired();
+		ImGui::Text("%s | %s | %.2f KB | lastUse=%llu",
+			kv.first.c_str(),
+			aliveRes ? "alive" : "dead",
+			kv.second.gpuBytes / 1024.0,
+			(unsigned long long)kv.second.lastUse);
+	}
+	ImGui::EndChild();
 }

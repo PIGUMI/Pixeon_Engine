@@ -89,7 +89,7 @@ HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
 	}
 
 	g_pRTV = new RenderTarget();
-	if(FAILED(result = g_pRTV->CreateFromScreen()))return result;
+	if (FAILED(result = g_pRTV->CreateFromScreen()))return result;
 	g_pDSV = new DepthStencil();
 	if (FAILED(result = g_pDSV->Create(g_pRTV->GetWidth(), g_pRTV->GetHeight(), false)))return result;
 	SetRenderTargets(1, &g_pRTV, nullptr);
@@ -179,7 +179,6 @@ void DirectX11::Uninit()
 
 void DirectX11::BeginDraw()
 {
-
 	float color[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	//if (IsInGame) {
 	//	DirectX::XMFLOAT4 Temp;
@@ -198,7 +197,7 @@ void DirectX11::EndDraw()
 	g_pSwapChain->Present(0, 0);
 }
 
-void DirectX11::OnResize(UINT width, UINT height){
+void DirectX11::OnResize(UINT width, UINT height) {
 	if (width == 0 || height == 0) return;
 
 	// ImGui: デバイスオブジェクト無効化
@@ -294,7 +293,7 @@ ID3D11Buffer* DirectX11::CreateVertexBuffer(void* vtxData, UINT vtxNum)
 // Render class
 
 Render::Render()
-	:m_width(0) , m_height(0)
+	:m_width(0), m_height(0)
 	, m_pTex(nullptr)
 	, m_pSRV(nullptr)
 {
@@ -313,7 +312,7 @@ HRESULT Render::Create(const char* fileName)
 	wchar_t wPath[260];
 	size_t wLen = 0;
 	MultiByteToWideChar(0, 0, fileName, -1, wPath, MAX_PATH);
-	
+
 	DirectX::TexMetadata	mdata;
 	DirectX::ScratchImage	image;
 
@@ -322,7 +321,7 @@ HRESULT Render::Create(const char* fileName)
 	if (FAILED(result)) return result;
 
 	result = DirectX::CreateShaderResourceView(DirectX11::GetInstance()->GetDevice(), image.GetImages(), image.GetImageCount(), mdata, &m_pSRV);
-	if(SUCCEEDED(result))
+	if (SUCCEEDED(result))
 	{
 		m_width = (UINT)mdata.width;
 		m_height = (UINT)mdata.height;

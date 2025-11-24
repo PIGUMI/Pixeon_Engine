@@ -139,7 +139,6 @@
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationDebug.h" />
     <ClInclude Include="API.h" />
-    <ClInclude Include="ApplicationFeedbackSystem.h" />
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
@@ -189,7 +188,6 @@
     <ClCompile Include="AnimationComponent.cpp" />
     <ClCompile Include="AnimationDebug.cpp" />
     <ClCompile Include="API.cpp" />
-    <ClCompile Include="ApplicationFeedbackSystem.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ComponentManager.cpp" />

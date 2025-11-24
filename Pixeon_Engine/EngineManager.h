@@ -7,12 +7,12 @@
 
 #include <Windows.h>
 #include <d3d11.h>
-#include <string> 
+#include <string>
 #include <vector>
 
 class GameRenderTarget;
 
-class EngineManager{
+class EngineManager {
 public:
 	struct EngineConfig {
 		HWND		wnd;
@@ -42,6 +42,7 @@ public:
 	void SetInGame(bool inGame) { m_bInGame_ = inGame; }
 	bool IsShowGUI() const { return m_bIsShowGUI_; }
 	void SetShowGUI(bool isShow) { m_bIsShowGUI_ = isShow; }
+	float GetDeltaTime() { return deltaTime_; }
 
 private:
 	void EditeUpdate();
@@ -51,13 +52,18 @@ private:
 
 	EngineManager() {};
 	~EngineManager() {};
-	
+
 private:
 	static EngineManager* instance_;
 
+	DWORD lastUpdateTime_;
+	DWORD lastDrawTime_;
+	float targetFrameTime_;
+	float deltaTime_;
+
 	HWND m_hWnd_;
 	GameRenderTarget* m_gameRenderTarget_;
-	// ÉQÅ[ÉÄíÜîªíË	
+	// ÉQÅ[ÉÄíÜîªíË
 	bool m_bInGame_;
 	// GUIï\é¶îªíË
 	bool m_bIsShowGUI_;
@@ -65,4 +71,3 @@ private:
 };
 
 #endif // !ENGINE_MANAGER_H
-

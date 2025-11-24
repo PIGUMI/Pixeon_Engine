@@ -14,27 +14,28 @@
 #include "ScriptManager.h"
 #include "Object.h"
 #include "Input.h"
+#include <chrono>
 
 EngineManager* EngineManager::instance_ = nullptr;
 
-EngineManager* EngineManager::GetInstance(){
-	if (instance_ == nullptr){
+EngineManager* EngineManager::GetInstance() {
+	if (instance_ == nullptr) {
 		instance_ = new EngineManager();
 	}
 	return instance_;
 }
 
-void EngineManager::DeleteInstance(){
-	if (instance_ != nullptr){
+void EngineManager::DeleteInstance() {
+	if (instance_ != nullptr) {
 		delete instance_;
 		instance_ = nullptr;
 	}
 }
 
-int EngineManager::Init(const EngineConfig& InPut){
-
-	m_bInGame_		= false;
-	m_bIsShowGUI_	= false;
+int EngineManager::Init(const EngineConfig& InPut) {
+	m_bInGame_ = false;
+	m_bIsShowGUI_ = false;
+	targetFrameTime_ = 1000.0f / 60.0f; // デフォルト60FPS
 
 	// COM の初期化
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -68,21 +69,38 @@ int EngineManager::Init(const EngineConfig& InPut){
 	// スクリプトコンポーネントの初期化
 	ScriptManager::Instance().RegisterAllScripts();
 	InitInput();
+
+	lastDrawTime_ = timeGetTime();
+	lastUpdateTime_ = timeGetTime();
+
 	return 0;
 }
 
 void EngineManager::Update() {
-	UpdateInput(GetWindowHandle());
-	if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))m_bIsShowGUI_ = !m_bIsShowGUI_;
-	if (m_bInGame_)
-		InGameUpdate();
-	else
-		EditeUpdate();
+	// フレーム制御
+	DWORD currentTime = timeGetTime();
+	float deltaTime = static_cast<float>(currentTime - lastUpdateTime_);
+	if (deltaTime >= targetFrameTime_) {
+		deltaTime_ = deltaTime;
+		UpdateInput(GetWindowHandle());
+		if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))m_bIsShowGUI_ = !m_bIsShowGUI_;
+		if (m_bInGame_)
+			InGameUpdate();
+		else
+			EditeUpdate();
+		lastUpdateTime_ = currentTime;
+	}
 }
 
 void EngineManager::Draw() {
-	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-	EditeDraw();	
+	DWORD currentTime = timeGetTime();
+	float deltaTime = static_cast<float>(currentTime - lastDrawTime_);
+	if (deltaTime >= targetFrameTime_) {
+		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
+		EditeDraw();
+
+		lastDrawTime_ = currentTime;
+	}
 }
 
 void EngineManager::UnInit() {
@@ -108,7 +126,7 @@ void EngineManager::UnInit() {
 	CoUninitialize();
 }
 
-ID3D11ShaderResourceView* EngineManager::GetGameRender(){
+ID3D11ShaderResourceView* EngineManager::GetGameRender() {
 	return m_gameRenderTarget_->GetShaderResourceView();
 }
 
@@ -121,7 +139,7 @@ void EngineManager::EditeUpdate() {
 }
 
 void EngineManager::InGameUpdate() {
-	if(!m_bIsBeginPlayCalled) {
+	if (!m_bIsBeginPlayCalled) {
 		SceneManger::GetInstance()->BeginPlay();
 		m_bIsBeginPlayCalled = true;
 	}

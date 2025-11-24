@@ -13,7 +13,7 @@ class Scene;
 class SceneManger
 {
 private:
-	struct SceneInfo{
+	struct SceneInfo {
 		nlohmann::json data;
 	};
 public:
@@ -61,4 +61,3 @@ private:
 	DWORD _AutoSaveCurrentTime;
 	DWORD _AutoNowTime;
 };
-
