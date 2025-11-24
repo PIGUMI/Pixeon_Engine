@@ -1,6 +1,7 @@
 ﻿#define NOMINMAX
 #include "AnimationComponent.h"
 #include "AnimationDebug.h"
+#include "EngineManager.h"
 #include "ErrorLog.h"
 #include "IMGUI/imgui.h"
 #include <algorithm>
@@ -153,7 +154,8 @@ void AnimationComponent::InGameUpdate() {
     if (!m_playing || m_paused) return;
     if (m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return;
 
-    float dt = 1.0f / 60.0f; // 固定フレーム
+	float dt = EngineManager::GetInstance()->GetDeltaTime();
+	dt = std::min(dt, 0.1f);
     UpdateAnimation(dt);
     RebuildBoneMatrices();
     ApplyToModel();
@@ -237,8 +239,6 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
             }
             cnt++;
         }
-
-        //MessageBoxA(nullptr, text.c_str(), "Node Dump", MB_OK);
     }
 
     auto& clipRuntime = m_clips[clipIndex];
@@ -276,7 +276,6 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
         int nodeIdx = bone.nodeIndex;
         if (nodeIdx < 0 || nodeIdx >= (int)global.size()) continue;
 
-        // InverseBindPose (offset) * CurrentGlobal
         DirectX::XMMATRIX finalMat = bone.offset * global[nodeIdx];
         if (IsValidMatrix(finalMat)) {
             XMStoreFloat4x4(&outFinal[b], finalMat);
@@ -289,22 +288,6 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
             DirectX::XMStoreFloat4x4(&gm, global[nodeIdx]);
             DirectX::XMStoreFloat4x4(&om, bone.offset);
             DirectX::XMStoreFloat4x4(&fm, finalMat);
-
-            char buf[1024];
-            sprintf_s(buf,
-                "FootBone Debug\n"
-                "bone[%zu] name=%s node=%d\n"
-                "global T=(%.2f, %.2f, %.2f)\n"
-                "offset T=(%.2f, %.2f, %.2f)\n"
-                "final T=(%.2f, %.2f, %.2f)\n",
-                b, bone.name.c_str(), nodeIdx,
-                gm._41, gm._42, gm._43,
-                om._41, om._42, om._43,
-                fm._41, fm._42, fm._43
-            );
-            //MessageBoxA(nullptr, buf, "BoneFootDebug", MB_OK);
-
-
         }
     }
 
@@ -312,15 +295,6 @@ void AnimationComponent::BuildClipPose(int clipIndex, float time,
     if (++poseCounter % 240 == 0) {
         if (!outFinal.empty()) {
             auto& m = outFinal[0];
-            EditrGUI::GetInstance()->WriteLog(
-                "[BuildClipPose] clip=" + clipRuntime.name +
-                " appliedBones=" + std::to_string(applied) +
-                " rootT=(" + std::to_string(m._41) + "," +
-                std::to_string(m._42) + "," + std::to_string(m._43) + ")");
-        }
-        else {
-            EditrGUI::GetInstance()->WriteLog(
-                "[BuildClipPose] clip=" + clipRuntime.name + " appliedBones=0");
         }
     }
 }

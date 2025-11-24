@@ -58,7 +58,7 @@ void SceneManger::EditUpdate(){
 	if (_currentScene)_currentScene->EditUpdate();
 
 	// オートセーブの処理
-	DWORD nowTime = GetTickCount64();
+	DWORD nowTime = (DWORD)GetTickCount64();
 	_AutoNowTime = SettingManager::GetInstance()->GetAutoSaveInterval() * 1000;
 	if (nowTime - _AutoSaveCurrentTime >= _AutoNowTime) {
 		Save();

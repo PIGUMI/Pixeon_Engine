@@ -84,6 +84,8 @@ private:
         bool usedMagentaFallback,
         bool usedWhiteFallback);
 
+    void EnsureDefaultBoneMatrices();
+
 private:
     std::string m_modelPath;
     std::shared_ptr<ModelSharedResource> m_model;

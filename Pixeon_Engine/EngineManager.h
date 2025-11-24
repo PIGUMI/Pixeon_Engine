@@ -42,6 +42,7 @@ public:
 	void SetInGame(bool inGame) { m_bInGame_ = inGame; }
 	bool IsShowGUI() const { return m_bIsShowGUI_; }
 	void SetShowGUI(bool isShow) { m_bIsShowGUI_ = isShow; }
+	float GetDeltaTime() { return deltaTime_; }
 
 private:
 	void EditeUpdate();
@@ -54,6 +55,11 @@ private:
 	
 private:
 	static EngineManager* instance_;
+
+	DWORD lastUpdateTime_;
+	DWORD lastDrawTime_;
+	float targetFrameTime_;
+	float deltaTime_;
 
 	HWND m_hWnd_;
 	GameRenderTarget* m_gameRenderTarget_;

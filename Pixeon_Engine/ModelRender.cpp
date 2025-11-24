@@ -260,6 +260,22 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
     }
 }
 
+void ModelRenderComponent::EnsureDefaultBoneMatrices()
+{
+    if (!m_model) return;
+    if (!m_model->hasSkin) return;
+    size_t required = m_model->bones.size();
+    if (required == 0) {
+        required = 1;
+    }
+    if (m_boneMatrices.size() != required) {
+        m_boneMatrices.assign(required, DirectX::XMFLOAT4X4());
+        for (auto& m : m_boneMatrices)
+            XMStoreFloat4x4(&m, XMMatrixIdentity());
+    }
+    m_useBoneMatrices = true;
+}
+
 void ModelRenderComponent::Draw() {
     if (!m_ready || !m_model) return;
     Scene* scene = _Parent->GetParentScene();
@@ -270,6 +286,9 @@ void ModelRenderComponent::Draw() {
     if (!m_vs || !m_ps) {
         if (!EnsureShaders(false)) return;
     }
+
+    EnsureDefaultBoneMatrices();
+    
 
     XMMATRIX view = cam->GetView();
     XMMATRIX proj = cam->GetProjection();
