@@ -47,7 +47,10 @@ DirectX::XMFLOAT3 LightComponent::GetWorldDirection() const {
 
 void LightComponent::DrawInspector() {
     auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
-    if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
+	std::string label = SJ(_ComponentName.c_str());
+	std::string Ptr = std::to_string((uintptr_t)this);
+	label += "###" + Ptr;
+    if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
         int typeIndex = (int)m_type;
         const char* types[] = { "Directional", "Point", "Spot" };
         if (ImGui::Combo("Type", &typeIndex, types, IM_ARRAYSIZE(types))) {

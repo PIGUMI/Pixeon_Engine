@@ -23,7 +23,7 @@ void Geometry::Init(Object* Prt) {
 
 void Geometry::DrawInspector()
 {
-    std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8("Geometry");
+    std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
     std::string Ptr = std::to_string((uintptr_t)this);
     label += "###" + Ptr;
 

@@ -409,7 +409,8 @@ void ImageRender::Draw() {
 
 void ImageRender::DrawInspector() {
     auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
-    if (!ImGui::CollapsingHeader(SJ("ImageRender").c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	std::string title = _ComponentName + "##" + std::to_string((uintptr_t)this);
+    if (!ImGui::CollapsingHeader(SJ(title.c_str()).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
         return;
 
     // テクスチャ

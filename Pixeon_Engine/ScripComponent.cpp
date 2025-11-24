@@ -238,7 +238,7 @@ void ScripComponent::UnLoadScript() {
 
 // --- ImGui Inspector ŽÀ‘• ---
 void ScripComponent::DrawInspector() {
-    std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8("ScripComponent");
+    std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
     std::string Ptr = std::to_string((uintptr_t)this);
     label += "###" + Ptr;
 

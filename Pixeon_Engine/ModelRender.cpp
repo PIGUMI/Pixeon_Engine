@@ -444,7 +444,7 @@ void ModelRenderComponent::DrawInspector() {
 	// ImGui •\Ž¦—p
     auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
     std::string title;
-	title = "ModelRenderComponent##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+	title = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
     if (!ImGui::CollapsingHeader(title.c_str(), ImGuiTreeNodeFlags_DefaultOpen))return;
 	title = "ModelTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
     if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV))return;
