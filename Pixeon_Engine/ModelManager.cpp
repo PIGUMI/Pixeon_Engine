@@ -17,6 +17,7 @@
 #include <functional>
 #include "MatrixUtil.h"
 
+
 #if _MSC_VER >= 1930
 #ifdef _DEBUG
 #pragma comment(lib, "assimp-vc143-mtd.lib")

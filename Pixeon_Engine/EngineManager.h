@@ -13,10 +13,13 @@
 #include <d3d11.h>
 #include <string>
 #include <vector>
+#include <chrono>
 
 class GameRenderTarget;
 
 class EngineManager {
+private:
+	using clock = std::chrono::steady_clock;
 public:
 	struct EngineConfig {
 		HWND		wnd;
@@ -61,9 +64,10 @@ private:
 	static EngineManager* instance_;
 
 	DWORD lastUpdateTime_;
-	DWORD lastDrawTime_;
+	bool bUpdateDraw;
 	float targetFrameTime_;
 	float deltaTime_;
+
 
 	HWND m_hWnd_;
 	GameRenderTarget* m_gameRenderTarget_;

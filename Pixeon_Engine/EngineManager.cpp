@@ -14,7 +14,7 @@
 #include "ScriptManager.h"
 #include "Object.h"
 #include "Input.h"
-#include <chrono>
+
 
 EngineManager* EngineManager::instance_ = nullptr;
 
@@ -35,12 +35,13 @@ void EngineManager::DeleteInstance() {
 int EngineManager::Init(const EngineConfig& InPut)
 {
 	/* メンバー変数の初期化 */
-	m_bInGame_ = false;
-	m_bIsShowGUI_ = false;
+	m_bInGame_			= false;
+	m_bIsShowGUI_		= false;
 	targetFrameTime_ = 1000.0f / 60.0f;
-	lastDrawTime_ = timeGetTime();
 	lastUpdateTime_ = timeGetTime();
 	m_hWnd_ = InPut.wnd;
+	bUpdateDraw = false;
+	clock::now();
 
 	/* 設定の読み込み */
 	SettingManager::GetInstance()->LoadConfig();
@@ -100,25 +101,29 @@ void EngineManager::Update()
 	// フレーム制御
 	DWORD currentTime = timeGetTime();
 	float deltaTime = static_cast<float>(currentTime - lastUpdateTime_);
+
 	if (deltaTime >= targetFrameTime_) {
-		deltaTime_ = deltaTime;
+		// deltaTime を秒単位に変換
+		deltaTime_ = deltaTime * 0.001f; // ms -> s
+		// 入力更新
 		UpdateInput(GetWindowHandle());
 		if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))m_bIsShowGUI_ = !m_bIsShowGUI_;
+		// エディタモード・ゲームモード更新
 		if (m_bInGame_)
 			InGameUpdate();
 		else
 			EditorUpdate();
+		// 更新時間記録
 		lastUpdateTime_ = currentTime;
+		bUpdateDraw = true;
 	}
 }
 
 void EngineManager::Draw() {
-	DWORD currentTime = timeGetTime();
-	float deltaTime = static_cast<float>(currentTime - lastDrawTime_);
-	if (deltaTime >= targetFrameTime_) {
+	if (bUpdateDraw) {
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 		EditorDraw();
-		lastDrawTime_ = currentTime;
+		bUpdateDraw = false;
 	}
 }
 
