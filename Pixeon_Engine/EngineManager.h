@@ -4,6 +4,10 @@
 // エンジンの管理クラス
 // 全体管理を行う
 // シングルトン
+/*
+* Log
+* 2025/11/25 リファクタリング
+*/
 
 #include <Windows.h>
 #include <d3d11.h>
@@ -45,9 +49,9 @@ public:
 	float GetDeltaTime() { return deltaTime_; }
 
 private:
-	void EditeUpdate();
+	void EditorUpdate();
 	void InGameUpdate();
-	void EditeDraw();
+	void EditorDraw();
 	void InGameDraw();
 
 	EngineManager() {};

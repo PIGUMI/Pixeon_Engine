@@ -32,52 +32,71 @@ void EngineManager::DeleteInstance() {
 	}
 }
 
-int EngineManager::Init(const EngineConfig& InPut) 
+int EngineManager::Init(const EngineConfig& InPut)
 {
+	/* メンバー変数の初期化 */
 	m_bInGame_ = false;
 	m_bIsShowGUI_ = false;
-	targetFrameTime_ = 1000.0f / 60.0f; // デフォルト60FPS
+	targetFrameTime_ = 1000.0f / 60.0f;
+	lastDrawTime_ = timeGetTime();
+	lastUpdateTime_ = timeGetTime();
+	m_hWnd_ = InPut.wnd;
 
-	// COM の初期化
+	/* 設定の読み込み */
+	SettingManager::GetInstance()->LoadConfig();
+
+	/* COM の初期化 */
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr)) return -1;
-	m_hWnd_ = InPut.wnd;
-	// DirectX11 初期化
-	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
+
+	/* DirectX11 初期化 */
+ 	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
 	if (FAILED(hr)) {
 		CoUninitialize();
 		return -1;
 	}
-	// 設定読み込み
-	SettingManager::GetInstance()->LoadConfig();
-	// AssetManager 初期化
-	AssetManager::Instance()->SetRoot(SettingManager::GetInstance()->GetAssetsFilePath());
-	AssetManager::Instance()->SetLoadMode(AssetManager::LoadMode::FromSource);
-	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
-	// エンジン用レンダーテクスチャ初期化
-	m_gameRenderTarget_ = new GameRenderTarget();
-	m_gameRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
-	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-	// GUI 初期化
-	EditrGUI::GetInstance()->Init();
-	// シーンマネージャー初期化
-	SceneManger::GetInstance()->Init();
-	SceneManger::GetInstance()->Load();
-	// シェーダー初期化
-	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
-	// コンポーネント初期化
-	ComponentManager::GetInstance()->Init();
-	// スクリプトコンポーネントの初期化
-	ScriptManager::Instance().RegisterAllScripts();
-	InitInput();
 
-	lastDrawTime_ = timeGetTime();
-	lastUpdateTime_ = timeGetTime();
+	/* AssetManager 初期化 */
+	// AssetManager のルートパス設定
+	AssetManager::Instance()->SetRoot(SettingManager::GetInstance()->GetAssetsFilePath());
+	// AssetManager のロードモード設定
+	AssetManager::Instance()->SetLoadMode(AssetManager::LoadMode::FromSource);
+	// AssetManager の自動同期開始
+	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
+
+	/* エンジン用レンダーテクスチャ初期化 */
+	// ゲーム用レンダーテクスチャ初期化
+	m_gameRenderTarget_ = new GameRenderTarget();
+	// ゲーム用レンダーテクスチャ初期化
+	m_gameRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+	// Zバッファ設定
+	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
+
+	/* GUIの初期化 */
+	EditrGUI::GetInstance()->Init();
+
+	/* シーンマネージャーの初期化 */
+	SceneManger::GetInstance()->Init();
+	// 設定の読み込み
+	SceneManger::GetInstance()->Load();
+	
+	/* シェーダーマネージャーの初期化 */
+	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
+	
+	/* コンポーネントマネージャーの初期化 */
+	ComponentManager::GetInstance()->Init();
+
+	/* スクリプトマネージャーの初期化 */
+	ScriptManager::Instance().RegisterAllScripts();
+
+	/* 入力初期化 */
+	InitInput();
 
 	return 0;
 }
 
-void EngineManager::Update() {
+void EngineManager::Update() 
+{
 	// フレーム制御
 	DWORD currentTime = timeGetTime();
 	float deltaTime = static_cast<float>(currentTime - lastUpdateTime_);
@@ -88,7 +107,7 @@ void EngineManager::Update() {
 		if (m_bInGame_)
 			InGameUpdate();
 		else
-			EditeUpdate();
+			EditorUpdate();
 		lastUpdateTime_ = currentTime;
 	}
 }
@@ -98,8 +117,7 @@ void EngineManager::Draw() {
 	float deltaTime = static_cast<float>(currentTime - lastDrawTime_);
 	if (deltaTime >= targetFrameTime_) {
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-		EditeDraw();
-
+		EditorDraw();
 		lastDrawTime_ = currentTime;
 	}
 }
@@ -131,7 +149,7 @@ ID3D11ShaderResourceView* EngineManager::GetGameRender() {
 	return m_gameRenderTarget_->GetShaderResourceView();
 }
 
-void EngineManager::EditeUpdate() {
+void EngineManager::EditorUpdate() {
 	ScriptManager::Instance().Update();
 	ShaderManager::GetInstance()->UpdateAndCompileShaders();
 	EditrGUI::GetInstance()->Update();
@@ -147,7 +165,7 @@ void EngineManager::InGameUpdate() {
 	SceneManger::GetInstance()->PlayUpdate();
 }
 
-void EngineManager::EditeDraw() {
+void EngineManager::EditorDraw() {
 	m_gameRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
 	SceneManger::GetInstance()->Draw();
 	m_gameRenderTarget_->End();
