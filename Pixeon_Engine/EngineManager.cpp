@@ -32,7 +32,8 @@ void EngineManager::DeleteInstance() {
 	}
 }
 
-int EngineManager::Init(const EngineConfig& InPut) {
+int EngineManager::Init(const EngineConfig& InPut) 
+{
 	m_bInGame_ = false;
 	m_bIsShowGUI_ = false;
 	targetFrameTime_ = 1000.0f / 60.0f; // デフォルト60FPS

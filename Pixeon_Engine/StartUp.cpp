@@ -1,8 +1,6 @@
 /*
 * Engine StartUp
 * 制作者: アキノ
-* コーディング規約: Google C++ Style Guide
-* https://ttsuki.github.io/styleguide/cppguide.ja.html
 */
 
 #include <windowsx.h>
