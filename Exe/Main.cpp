@@ -1,6 +1,7 @@
 // GameLauncher/main.cpp
 #include <Windows.h>
 #include <iostream>
+#include <crtdbg.h>
 
 // Engine.dllからの関数をインポート
 struct EngineConfig {

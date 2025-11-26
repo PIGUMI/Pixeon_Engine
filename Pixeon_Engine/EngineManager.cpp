@@ -5,16 +5,15 @@
 #include "PostEffectBase.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
-#include "ResourceService.h"
 #include "AssetManager.h"
 #include "SceneManger.h"
 #include "SettingManager.h"
 #include "ShaderManager.h"
 #include "ComponentManager.h"
 #include "ScriptManager.h"
-#include "Object.h"
+#include "ResourceService.h"
 #include "Input.h"
-
+#include <crtdbg.h>
 
 EngineManager* EngineManager::instance_ = nullptr;
 
@@ -120,6 +119,7 @@ void EngineManager::Update()
 }
 
 void EngineManager::Draw() {
+	
 	if (bUpdateDraw) {
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 		EditorDraw();
