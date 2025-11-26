@@ -4,15 +4,22 @@
 // エンジンの管理クラス
 // 全体管理を行う
 // シングルトン
+/*
+* Log
+* 2025/11/25 リファクタリング
+*/
 
 #include <Windows.h>
 #include <d3d11.h>
 #include <string>
 #include <vector>
+#include <chrono>
 
 class GameRenderTarget;
 
 class EngineManager {
+private:
+	using clock = std::chrono::steady_clock;
 public:
 	struct EngineConfig {
 		HWND		wnd;
@@ -45,9 +52,9 @@ public:
 	float GetDeltaTime() { return deltaTime_; }
 
 private:
-	void EditeUpdate();
+	void EditorUpdate();
 	void InGameUpdate();
-	void EditeDraw();
+	void EditorDraw();
 	void InGameDraw();
 
 	EngineManager() {};
@@ -57,9 +64,10 @@ private:
 	static EngineManager* instance_;
 
 	DWORD lastUpdateTime_;
-	DWORD lastDrawTime_;
+	bool bUpdateDraw;
 	float targetFrameTime_;
 	float deltaTime_;
+
 
 	HWND m_hWnd_;
 	GameRenderTarget* m_gameRenderTarget_;

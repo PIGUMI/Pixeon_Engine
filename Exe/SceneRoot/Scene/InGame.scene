@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-5.05588 1.31087 6.10779 -0.670002 0.19 6.33678e-39 1.04224 -0.577718 -1.58936 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "11.0858 12.317 12.3701 1.24 0.24 6.33678e-39 1.89903 9.94 9.21521 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -57,9 +57,14 @@
         {
             "Components": [
                 {
-                    "Data": "Enemy/Walk.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n",
+                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n",
                     "Name": "ModelRender",
                     "Type": 2
+                },
+                {
+                    "Data": "-1\n1\n1\n",
+                    "Name": "Animation",
+                    "Type": 6
                 }
             ],
             "Name": "Model",
