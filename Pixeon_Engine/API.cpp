@@ -55,6 +55,18 @@ extern "C" {
 		*outComponent = reinterpret_cast<ComponentHandle*>(comp);
 		return PN_SUCCESS;
 	}
+	/* ゲームオブジェクトのシーンへの追加 */
+	PIXEON_API APIResult AddGameObject(SceneHandle scene, GameObjectHandle object)
+	{
+		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		Scene* targetScene = reinterpret_cast<Scene*>(scene);
+		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
+		Object* targetObject = reinterpret_cast<Object*>(object);
+		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
+		bool result = targetScene->AddObject(targetObject);
+		if (!result)return PN_ERROR_INVALID_PARAMETER;
+		return PN_SUCCESS;
+	}
 	/* トランスフォームの取得 */
 	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform)
 	{

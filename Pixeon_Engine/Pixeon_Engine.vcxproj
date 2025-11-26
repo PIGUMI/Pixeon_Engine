@@ -171,6 +171,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="PostEffectBase.h" />
     <ClInclude Include="ResourceService.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManger.h" />
     <ClInclude Include="ScripComponent.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="ModelRender.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ResourceService.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManger.cpp" />
     <ClCompile Include="ScripComponent.cpp" />

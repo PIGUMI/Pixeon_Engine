@@ -75,6 +75,7 @@ extern"C" {
 	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform);
 	PIXEON_API APIResult SetGameObjectTransform(GameObjectHandle gameObject, const TransformData* inTransform);
 	PIXEON_API APIResult GetComponent(GameObjectHandle gameObject, const char* componentName, ComponentHandle* outComponent);
+	PIXEON_API APIResult AddGameObject(SceneHandle scene, GameObjectHandle object);
 }
 
 /* コンポーネントに関するAPI */

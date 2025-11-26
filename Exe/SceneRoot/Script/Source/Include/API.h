@@ -32,27 +32,27 @@ typedef void* ComponentHandle;
 #pragma pack(push, 1)  // 1バイトアライメントで構造体パディングを制御
 
 typedef struct {
-    float x;
-    float y;
+	float x;
+	float y;
 } Float2;
 
 typedef struct {
-    float x;
-    float y;
-    float z;
+	float x;
+	float y;
+	float z;
 } Float3;
 
 typedef struct {
-    float x;
-    float y;
-    float z;
-    float w;
+	float x;
+	float y;
+	float z;
+	float w;
 } Float4;
 
 typedef struct {
-    Float3 position;
-    Float3 rotation;  // Radians
-    Float3 scale;
+	Float3 position;
+	Float3 rotation;  // Radians
+	Float3 scale;
 } TransformData;
 
 typedef struct {
@@ -61,11 +61,10 @@ typedef struct {
 	Float3 fixation;
 } CameraTransform;
 
-
 #pragma pack(pop)
 
 /* シーンに関するAPI */
-extern "C"{
+extern "C" {
 	/* 現在のシーンの取得 */
 	PIXEON_API APIResult GetCurrentScene(SceneHandle* outHandle);
 }
@@ -76,6 +75,7 @@ extern"C" {
 	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform);
 	PIXEON_API APIResult SetGameObjectTransform(GameObjectHandle gameObject, const TransformData* inTransform);
 	PIXEON_API APIResult GetComponent(GameObjectHandle gameObject, const char* componentName, ComponentHandle* outComponent);
+	PIXEON_API APIResult AddGameObject(SceneHandle scene, GameObjectHandle object);
 }
 
 /* コンポーネントに関するAPI */
@@ -97,7 +97,7 @@ extern"C"
 	PIXEON_API APIResult ImageRender_SetPlacementMode(ComponentHandle imageRender, int mode);
 	PIXEON_API APIResult ImageRender_GetPlacementMode(ComponentHandle imageRender, int* outMode);
 	PIXEON_API APIResult ImageRender_SetOffset2D(ComponentHandle imageRender, Float2 offset);
-	PIXEON_API APIResult ImageRender_GetOffset2D(ComponentHandle imageRender, Float2 *offset);
+	PIXEON_API APIResult ImageRender_GetOffset2D(ComponentHandle imageRender, Float2* offset);
 	PIXEON_API APIResult ImageRender_SetSize2D(ComponentHandle imageRender, Float2 size);
 	PIXEON_API APIResult ImageRender_GetSize2D(ComponentHandle imageRender, Float2* size);
 	PIXEON_API APIResult ImageRender_SetOffset3D(ComponentHandle imageRender, Float3 offset);
@@ -108,7 +108,5 @@ extern"C"
 	PIXEON_API APIResult ImageRender_GetUVRect(ComponentHandle imageRender, Float4* outUVRect);
 	/*             */
 }
-
-
 
 #endif// API.h

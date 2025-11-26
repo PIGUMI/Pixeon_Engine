@@ -182,6 +182,9 @@
     <ClCompile Include="EditrGUI_Prefab.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -323,6 +326,9 @@
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
     <ClInclude Include="AnimationComponent.h">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
       <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>

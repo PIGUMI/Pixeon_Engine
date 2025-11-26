@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "11.0858 12.317 12.3701 1.24 0.24 6.33678e-39 1.89903 9.94 9.21521 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "-17.6417 16.9045 32.0366 -6.71 0.22 6.33678e-39 -13.6017 14.7222 23.1531 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -33,6 +33,11 @@
                     "Data": "SkyBox.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n",
                     "Name": "ModelRender",
                     "Type": 2
+                },
+                {
+                    "Data": "ScriptName Spawn\n",
+                    "Name": "ScripComponent",
+                    "Type": 5
                 }
             ],
             "Name": "SkyBox",
@@ -63,6 +68,38 @@
                 },
                 {
                     "Data": "-1\n1\n1\n",
+                    "Name": "Animation",
+                    "Type": 6
+                }
+            ],
+            "Name": "Model",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n",
+                    "Name": "ModelRender",
+                    "Type": 2
+                },
+                {
+                    "Data": "0\n1\n1\n",
                     "Name": "Animation",
                     "Type": 6
                 }
