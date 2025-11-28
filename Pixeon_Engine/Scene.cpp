@@ -31,7 +31,36 @@ static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
 // ŠJ•úˆ—
-Scene::~Scene() {
+Scene::~Scene() 
+{
+	SaveToFile();
+
+	for (auto& obj : _objects) {
+		if (obj) {
+			obj->UInit();
+			delete obj;
+		}
+	}
+	_objects.clear();
+	CleanupPhysics();
+	for (auto& obj : _ToBeAdded) {
+		if (obj) {
+			obj->UInit();
+			delete obj;
+		}
+	}
+	_ToBeAdded.clear();
+	for (auto& obj : _SaveObjects) {
+		if (obj) {
+			obj->UInit();
+			delete obj;
+		}
+	}
+	_SaveObjects.clear();
+	if (gLightCB) {
+		gLightCB->Release();
+		gLightCB = nullptr;
+	}
 }
 
 void Scene::Init() {
@@ -444,7 +473,6 @@ void Scene::CleanupPhysics()
 		{
 			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
 			btRigidBody* body = btRigidBody::upcast(obj);
-			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
 			pPhysicsWorld->removeCollisionObject(obj);
 			delete obj;
 		}

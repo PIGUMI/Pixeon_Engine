@@ -3,10 +3,10 @@
 
 #pragma once
 #include "CameraComponent.h"
+#include "CollisionManager.h"
 #include <string>
 #include <vector>
 #include <mutex>
-#include "CollisionManager.h"
 
 class Object;
 class LightComponent;
@@ -46,6 +46,8 @@ public: // Setter And Getter
 
 	void RegisterLight(LightComponent* l);
 	void UnregisterLight(LightComponent* l);
+
+	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }
 
 private://“à•”ˆ—
 	void ProcessThreadSafeAdditions();
