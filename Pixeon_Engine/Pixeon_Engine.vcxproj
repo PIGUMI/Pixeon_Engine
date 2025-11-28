@@ -145,6 +145,7 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
     <ClInclude Include="BoneNodeMapping.h" />
+    <ClInclude Include="BoxCollision.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="AnimationDebug.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="BoxCollision.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
