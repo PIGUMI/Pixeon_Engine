@@ -41,6 +41,7 @@ void Scene::Init() {
 	_ToBeRemoved.clear();
 	_SaveObjects.clear();
 	EndPlayCalled = true;
+	InitPhysics();
 }
 
 void Scene::BeginPlay() {
@@ -422,6 +423,64 @@ void Scene::UploadLightsToGPU() {
 	ctx->PSSetConstantBuffers(1, 1, cbs1);
 	ID3D11Buffer* cbs2[] = { gLightCountCB };
 	ctx->PSSetConstantBuffers(2, 1, cbs2);
+}
+
+void Scene::InitPhysics()
+{
+	pCollisionConfig = new btDefaultCollisionConfiguration();
+	pDispatcher = new btCollisionDispatcher(pCollisionConfig);
+	pOverlappingPairCache = new btDbvtBroadphase();
+	pSolver = new btSequentialImpulseConstraintSolver();
+	pPhysicsWorld = new btDiscreteDynamicsWorld(pDispatcher, pOverlappingPairCache, pSolver, pCollisionConfig);
+	// d—Í‚ÌÝ’è
+	pPhysicsWorld->setGravity(btVector3(0, -9.81f, 0));
+}
+
+void Scene::CleanupPhysics()
+{
+	if (pPhysicsWorld)
+	{
+		for(int i = pPhysicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
+		{
+			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
+			btRigidBody* body = btRigidBody::upcast(obj);
+			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
+			pPhysicsWorld->removeCollisionObject(obj);
+			delete obj;
+		}
+		delete pPhysicsWorld;
+		pPhysicsWorld = nullptr;
+	}
+	if (pSolver)
+	{
+		delete pSolver;
+		pSolver = nullptr;
+	}
+	if (pOverlappingPairCache)
+	{
+		delete pOverlappingPairCache;
+		pOverlappingPairCache = nullptr;
+	}
+	if (pDispatcher)
+	{
+		delete pDispatcher;
+		pDispatcher = nullptr;
+	}
+	if (pCollisionConfig)
+	{
+		delete pCollisionConfig;
+		pCollisionConfig = nullptr;
+	}
+}
+
+void Scene::CleanupAndReinitializePhysics()
+{
+	CleanupPhysics();
+	InitPhysics();
+	for (auto& obj : _objects)
+	{
+		/* ToDo RigiBodyCompŽÀ‘•‚µ‚½‚ç */
+	}
 }
 
 void Scene::AddObjectLocal(Object* obj) {

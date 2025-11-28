@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include "CollisionManager.h"
 
 class Object;
 class LightComponent;
@@ -49,6 +50,10 @@ public: // Setter And Getter
 private://“à•”ˆ—
 	void ProcessThreadSafeAdditions();
 	void UploadLightsToGPU();
+
+	void InitPhysics();
+	void CleanupPhysics();
+	void CleanupAndReinitializePhysics();
 private:
 	std::string _name = "DefaultScene";
 
@@ -62,4 +67,11 @@ private:
 	CameraComponent* _MainCamera = nullptr;
 	int _MainCameraNumber = -1;
 	bool EndPlayCalled = false;
+
+	// •¨—‰‰Z‚ÉŠÖ‚·‚é•Ï”
+	btDiscreteDynamicsWorld* pPhysicsWorld = nullptr;
+	btDefaultCollisionConfiguration* pCollisionConfig = nullptr;
+	btCollisionDispatcher* pDispatcher = nullptr;
+	btDbvtBroadphase* pOverlappingPairCache = nullptr;
+	btSequentialImpulseConstraintSolver* pSolver = nullptr;
 };
