@@ -2,6 +2,7 @@
 // オブジェクトなどの管理を行う
 
 #pragma once
+#include "ComponentManager.h"
 #include "CameraComponent.h"
 #include "CollisionManager.h"
 #include <string>

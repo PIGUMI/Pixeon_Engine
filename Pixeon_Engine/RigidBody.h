@@ -13,7 +13,8 @@ class RigidBody : public Component
 {
 public:
 	void Init(Object* Prt) override;
-	void BeginPlay() override;
+	void BeginPlay() override; 
+	void EditUpdate() override;
 	void InGameUpdate() override;
 	void UInit() override;
 
@@ -50,8 +51,8 @@ public:
 	void SyncPositionToBullet(const DirectX::XMFLOAT3& position);
 	void SyncRotationToBullet(const DirectX::XMFLOAT3& rotation);
 	void WarpTo(const DirectX::XMFLOAT3& position);
-	void SetTransformDirty(bool dirty) { TransformDirty_ = dirty; }
-	bool IsTransformDirty() const { return TransformDirty_; }
+	void SetTransformDirty(bool dirty) { bTransformDirty_ = dirty; }
+	bool IsTransformDirty() const { return bTransformDirty_; }
 
 private:
 	void CreateRigidBody();
@@ -74,7 +75,7 @@ private:
 	DirectX::XMFLOAT3 LastPosition_ = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 LastRotation_ = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 LastScale_ = { 1.0f, 1.0f, 1.0f };
-	bool TransformDirty_ = false;
+	bool bTransformDirty_ = false;
 
 	bool bAddedToWorld_ = false;
 	bool bManualTransformControl_ = false;
