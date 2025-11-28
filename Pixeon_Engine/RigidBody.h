@@ -47,7 +47,17 @@ public:
 
 	void ResetAddedToWorldFlag() { bAddedToWorld_ = false; }
 
+	void SyncPositionToBullet(const DirectX::XMFLOAT3& position);
+	void SyncRotationToBullet(const DirectX::XMFLOAT3& rotation);
+	void WarpTo(const DirectX::XMFLOAT3& position);
+	void SetTransformDirty(bool dirty) { TransformDirty_ = dirty; }
+	bool IsTransformDirty() const { return TransformDirty_; }
 
+private:
+	void CreateRigidBody();
+	void UpdateMassProperties();
+	btQuaternion EulerToQuaternion(const DirectX::XMFLOAT3& euler);
+	DirectX::XMFLOAT3 QuaternionToEuler(const btQuaternion& quat);
 
 private:
 	float fMass_ = 1.0f;

@@ -90,38 +90,6 @@
                     1.0
                 ]
             }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n",
-                    "Name": "ModelRender",
-                    "Type": 2
-                },
-                {
-                    "Data": "0\n1\n1\n",
-                    "Name": "Animation",
-                    "Type": 6
-                }
-            ],
-            "Name": "Model",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
         }
     ],
     "SceneSettings": {
