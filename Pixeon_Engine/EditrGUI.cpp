@@ -290,6 +290,10 @@ void EditrGUI::WindowGUI()
 	ImGui::End();
 	ImGui::PopStyleVar();
 
+	ImGui::Begin("EngineDebug");
+	ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+	ImGui::End();
+
 	// 各種ウィンドウ表示
 	ShowGameView();
 	if (EngineManager::GetInstance()->IsShowGUI())return;

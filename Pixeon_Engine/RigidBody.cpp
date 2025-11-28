@@ -379,17 +379,93 @@ void RigidBody::CreateRigidBody()
 		if(_Parent && _Parent->GetParentScene())
 		{
 			btDiscreteDynamicsWorld* physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
-			if(physicsWorld && bAddedToWorld_)
-			{
-				try
-				{
-					physicsWorld->removeRigidBody(pRigidBody_);
-				}
-				catch (...)
-				{
-				}
-				bAddedToWorld_ = false;
+			if(physicsWorld && bAddedToWorld_){
+				physicsWorld->removeRigidBody(pRigidBody_);
 			}
 		}
+		pRigidBody_->setMotionState(nullptr);
+		delete pRigidBody_;
+		pRigidBody_ = nullptr;
 	}
+
+	if (pMotionState_) {
+		delete pMotionState_;
+		pMotionState_ = nullptr;
+	}
+
+	btTransform startTransform;
+	startTransform.setIdentity();
+	if (_Parent)
+	{
+		auto currentTransform = _Parent->GetTransform();
+		startTransform.setOrigin(btVector3(
+			currentTransform.position.x,
+			currentTransform.position.y,
+			currentTransform.position.z
+		));
+		startTransform.setRotation(EulerToQuaternion(currentTransform.rotation));
+	}
+	pMotionState_ = new btDefaultMotionState(startTransform);
+
+	UpdateMassProperties();
+
+	if (pCompoundShape_) {
+		pCompoundShape_ = new btCompoundShape();
+	}
+
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(fMass_, pMotionState_, pCompoundShape_, localInertia_);
+	pRigidBody_ = new btRigidBody(rbInfo);
+
+	pRigidBody_->setUserPointer(this);
+
+	SetKinematic(bKinematic_);
+	SetGravityEnabled(bUseGravity_);
+
+	bAddedToWorld_ = false;
+}
+
+void RigidBody::UpdateMassProperties(){
+	if (pCompoundShape_)
+	{
+		if (bKinematic_ || fMass_ == 0.0f)
+		{
+			localInertia_ = btVector3(0, 0, 0);
+		}
+		else
+		{
+			pCompoundShape_->calculateLocalInertia(fMass_, localInertia_);
+		}
+		if (pRigidBody_)
+		{
+			pRigidBody_->setMassProps(fMass_, localInertia_);
+			pRigidBody_->updateInertiaTensor();
+		}
+	}
+}
+
+btQuaternion RigidBody::EulerToQuaternion(const DirectX::XMFLOAT3& euler)
+{
+	DirectX::XMMATRIX rotX = DirectX::XMMatrixRotationX(euler.x);
+	DirectX::XMMATRIX rotY = DirectX::XMMatrixRotationY(euler.y);
+	DirectX::XMMATRIX rotZ = DirectX::XMMatrixRotationZ(euler.z);
+	DirectX::XMMATRIX rotMatrix = rotX * rotY * rotZ;
+
+	DirectX::XMVECTOR quat_vec = DirectX::XMQuaternionRotationMatrix(rotMatrix);
+	DirectX::XMFLOAT4 quat_float;
+	DirectX::XMStoreFloat4(&quat_float, quat_vec);
+
+	return btQuaternion(quat_float.x, quat_float.y, quat_float.z, quat_float.w);
+}
+
+DirectX::XMFLOAT3 RigidBody::QuaternionToEuler(const btQuaternion& quat)
+{
+	DirectX::XMVECTOR q = DirectX::XMVectorSet(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
+	DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationQuaternion(q);
+
+	DirectX::XMFLOAT3 euler;
+	euler.x = asinf(-rotMatrix.r[2].m128_f32[1]);                        // Pitch
+	euler.y = atan2f(rotMatrix.r[2].m128_f32[0], rotMatrix.r[2].m128_f32[2]); // Yaw
+	euler.z = atan2f(rotMatrix.r[0].m128_f32[1], rotMatrix.r[1].m128_f32[1]); // Roll
+
+	return euler;
 }
