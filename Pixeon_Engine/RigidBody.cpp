@@ -192,6 +192,29 @@ void RigidBody::UInit()
 	RegisteredColliders_.clear();
 }
 
+void RigidBody::DrawInspector()
+{
+	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+	if (!ImGui::CollapsingHeader(SJ(label.c_str()).c_str()))return;
+	label = "RigidBodyTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("質量").c_str());
+		ImGui::TableSetColumnIndex(1); ImGui::InputFloat(SJ("##MassInput").c_str(), &fMass_, 0.1f, 1.0f, "%.3f");
+
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("キネマティック").c_str());
+		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##KinematicCheckbox").c_str(), &bKinematic_);
+
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("重力を使用").c_str());
+		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##UseGravityCheckbox").c_str(), &bUseGravity_);
+
+		ImGui::EndTable();
+	}
+}
+
 void RigidBody::SaveToFile(std::ostream& out)
 {
 	out << fMass_ << std::endl;

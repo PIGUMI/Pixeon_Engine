@@ -6,9 +6,9 @@
 #include "LightComponent.h"
 #include "ImageRender.h"
 #include "ScripComponent.h"
-#include "Component.h"
 #include "AnimationComponent.h"
-//#include "AnimationComponentV2.h"
+#include "RigidBody.h"
+
 #include <Windows.h>
 
 ComponentManager* ComponentManager::_instance;
@@ -35,6 +35,7 @@ void ComponentManager::Init() {
 	_ComponentName[(int)COMPONENT_TYPE::IMAGE] = "ImageRender";
 	_ComponentName[(int)COMPONENT_TYPE::SCRIPT] = "Script";
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATION] = "Animation";
+	_ComponentName[(int)COMPONENT_TYPE::RIGIDBODY] = "RigidBody";
 }
 
 Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
@@ -67,6 +68,9 @@ Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
 		break;
 	case ComponentManager::COMPONENT_TYPE::ANIMATION:
 		component = owner->AddComponent<AnimationComponent>();
+		break;
+	case ComponentManager::COMPONENT_TYPE::RIGIDBODY:
+		component = owner->AddComponent<RigidBody>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::MAX:
 		MessageBox(nullptr, "—áŠO‚È’l‚Å‚·\nCode : CMMAX", "Error", MB_OK);
