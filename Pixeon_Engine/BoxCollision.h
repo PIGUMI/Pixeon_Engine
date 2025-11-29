@@ -30,9 +30,112 @@ public:
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
+	void SetSize(const DirectX::XMFLOAT3& size);
+	DirectX::XMFLOAT3 GetSize() const;
+
+	void SetCenter(const DirectX::XMFLOAT3& center);
+	DirectX::XMFLOAT3 GetCenter() const;
+
+	void SetTrigger(bool isTrigger);
+	bool IsTrigger() const { return bTrigger_; }
+
+	void SetOnCollisionEnter(OnCollisionEnterCallback callback) {
+		OnCollisionEnter_ = callback;
+		bCallBackSetAfterBeginPlay = true;
+	}
+
+	void SetOnCollisionStay(OnCollisionStayCallback callback) {
+		OnCollisionStay_ = callback;
+		bCallBackSetAfterBeginPlay = true;
+	}
+
+	void SetOnCollisionExit(OnCollisionExitCallback callback) {
+		OnCollisionExit_ = callback;
+		bCallBackSetAfterBeginPlay = true;
+	}
+
+	int GetBeginPlayCount() const { return nBeginPlayCount; }
+
+	bool WasCallBackSetAfterBeginPlay() const { return bCallBackSetAfterBeginPlay; }
+
+	void ResetCollisionCallbacks() {
+		OnCollisionEnter_ = nullptr;
+		OnCollisionStay_ = nullptr;
+		OnCollisionExit_ = nullptr;
+		bCallBackSetAfterBeginPlay = false;
+
+		CollidingObjects_.clear();
+		CurrentCollisions_.clear();
+	};
+
+	void ResetOnCollisionEnter() { OnCollisionEnter_ = nullptr; }
+	void ResetOnCollisionStay() { OnCollisionStay_ = nullptr; }
+	void ResetOnCollisionExit() { OnCollisionExit_ = nullptr; }
+
+	bool HasCollisionEnterCallBack() const { return OnCollisionEnter_ != nullptr; }	
+	bool HasCollisionStayCallBack() const { return OnCollisionStay_ != nullptr; }
+	bool HasCollisionExitCallBack() const { return OnCollisionExit_ != nullptr; }
+
+	std::string GetCallbackStatus() const 
+	{
+		std::string status = "CallBack : ";
+		status += "Enter=" + std::string(HasCollisionEnterCallBack() ? "Set" : "None") + ", ";
+		status += "Stay=" + std::string(HasCollisionStayCallBack() ? "Set" : "None") + ", ";
+		status += "Exit=" + std::string(HasCollisionExitCallBack() ? "Set" : "None");
+		return status;
+	}
+
+	std::string GetDetailCallBackStatus() const
+	{
+		std::string status = "[" + (_Parent ? _Parent->GetObjectName() : "Unknown") + "] ";
+		status += "BeginPlayâÒêî: " + std::to_string(nBeginPlayCount) + ", ";
+		status += "Enter=" + std::string(HasCollisionEnterCallBack() ? "Set" : "None") + ", ";
+		status += "Stay=" + std::string(HasCollisionStayCallBack() ? "Set" : "None") + ", ";
+		status += "Exit=" + std::string(HasCollisionExitCallBack() ? "Set" : "None") + ", ";
+		status += "ê›íËçœÇ›=" + std::string(bCallBackSetAfterBeginPlay ? "Yes" : "No");
+		return status;
+	}
+
+	bool CheckCollision(BoxCollision* otherBox, CollisionInfo& outCollisionInfo);
+	std::vector<CollisionInfo> GetCollisions();
+
+	btBoxShape* GetBoxShape() const { return pBoxShape_; }
+
+	void DrawDebugWireframe();
+
+	bool IsViewVisible() const { return bViewVisible_; }
+	void SetViewVisible(bool visible) { bViewVisible_ = visible; }
+
+	friend class CollisionManager;
 private:
+	void CreateBoxShape();
+	void UpdateCollisionShape();
+	void AttachToRigidBody();
+	void DetachFromRigidBody();
+	void ProcessCollisionCallBacks();
 
+private:
+	DirectX::XMFLOAT3 f3Size_ = { 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT3 f3Center_ = { 0.0f, 0.0f, 0.0f };
+	bool bTrigger_ = false;
 
+	btBoxShape* pBoxShape_ = nullptr;
+
+	std::vector<Object*> CollidingObjects_;
+	std::vector<CollisionInfo> CurrentCollisions_;
+
+	OnCollisionEnterCallback OnCollisionEnter_ = nullptr;
+	OnCollisionStayCallback OnCollisionStay_ = nullptr;
+	OnCollisionExitCallback OnCollisionExit_ = nullptr;
+
+	int nBeginPlayCount = 0;
+	bool bCallBackSetAfterBeginPlay = false;
+
+	DirectX::XMFLOAT3 f3LastPosition_ = { 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 f3LastRotation_ = { 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 f3LastScale_ = { 1.0f, 1.0f, 1.0f };
+	bool bTransformDirty_ = true;
+	bool bViewVisible_ = false;
 
 };
 

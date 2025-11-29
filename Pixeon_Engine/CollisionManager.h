@@ -8,23 +8,23 @@
 #include <unordered_map>
 #include <functional>
 
-class BoxCollisionComponent;
-class RigidBodyComponent;
-class GameObject;
+class BoxCollision;
+class RigidBody;
+class Object;
 struct CollisionInfo;
 
 // Bulletの衝突コールバック処理用
 class CollisionContactCallback : public btCollisionWorld::ContactResultCallback
 {
 public:
-    CollisionContactCallback(BoxCollisionComponent* owner);
+    CollisionContactCallback(BoxCollision* owner);
 
     btScalar addSingleResult(btManifoldPoint& cp,
         const btCollisionObjectWrapper* colObj0Wrap, int partId0, int index0,
         const btCollisionObjectWrapper* colObj1Wrap, int partId1, int index1) override;
 
 private:
-    BoxCollisionComponent* m_Owner;
+    BoxCollision* m_Owner;
     std::vector<CollisionInfo> m_Collisions;
 
     friend class CollisionManager;
@@ -42,11 +42,11 @@ public:
     void Shutdown();
 
     // コンポーネント登録/削除
-    void RegisterBoxCollision(BoxCollisionComponent* collision);
-    void UnregisterBoxCollision(BoxCollisionComponent* collision);
+    void RegisterBoxCollision(BoxCollision* collision);
+    void UnregisterBoxCollision(BoxCollision* collision);
 
-    void RegisterRigidBody(RigidBodyComponent* rigidBody);
-    void UnregisterRigidBody(RigidBodyComponent* rigidBody);
+    void RegisterRigidBody(RigidBody* rigidBody);
+    void UnregisterRigidBody(RigidBody* rigidBody);
 
     // 手動衝突検出（RigidBodyなしの場合）
     void CheckManualCollisions();
@@ -60,17 +60,17 @@ public:
 private:
     btDiscreteDynamicsWorld* m_DynamicsWorld = nullptr;
 
-    std::vector<BoxCollisionComponent*> m_BoxCollisions;
-    std::vector<RigidBodyComponent*> m_RigidBodies;
+    std::vector<BoxCollision*> m_BoxCollisions;
+    std::vector<RigidBody*> m_RigidBodies;
 
     // 衝突状態追跡用
-    std::unordered_map<BoxCollisionComponent*, std::vector<BoxCollisionComponent*>> m_PreviousCollisions;
-    std::unordered_map<BoxCollisionComponent*, std::vector<CollisionInfo>> m_CurrentCollisions;
+    std::unordered_map<BoxCollision*, std::vector<BoxCollision*>> m_PreviousCollisions;
+    std::unordered_map<BoxCollision*, std::vector<CollisionInfo>> m_CurrentCollisions;
 
     // Bulletコールバック用
-    std::unordered_map<BoxCollisionComponent*, CollisionContactCallback*> m_ContactCallbacks;
+    std::unordered_map<BoxCollision*, CollisionContactCallback*> m_ContactCallbacks;
 
-    void ProcessCollisionEvents(BoxCollisionComponent* collision,
+    void ProcessCollisionEvents(BoxCollision* collision,
         const std::vector<CollisionInfo>& newCollisions);
 };
 
