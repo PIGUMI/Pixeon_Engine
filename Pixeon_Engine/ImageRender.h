@@ -24,7 +24,8 @@ public:
 	enum class PlacementMode : int {
 		Screen2D = 0,
 		Billboard = 1,
-		World3D = 2
+		World3D = 2,
+		UI = 3
 	};
 public:
 	ImageRender();
@@ -79,6 +80,7 @@ private:
 	void UpdateVertices2D(Vertex outV[4], float& outZClip);
 	void UpdateVerticesBillboard(Vertex outV[4]);
 	void UpdateVerticesWorld3D(Vertex outV[4]);
+	void UpdateVerticesUI(Vertex outV[4]);
 
 	void UpdateVB(const Vertex v[4]);
 
