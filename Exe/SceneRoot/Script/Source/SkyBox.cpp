@@ -6,28 +6,20 @@ void Script_SkyBox::BeginPlay() {
     SceneHandle CurrentScene;
 	GetCurrentScene(&CurrentScene);
 	APIResult res;
+
 	res = GetGameObject(CurrentScene,"SkyBox",&SkyBox);
 	if (res != APIResult::PN_SUCCESS) {
 		std::string Number = std::to_string(static_cast<int>(res));
 		Number += ":Error getting SkyBox game object in SkyBox script";
 		MessageBox(NULL,Number.c_str(), "Error", MB_OK);
 	}
-	else
-	{
-		MessageBox(nullptr, "SkyBox found!", "Info", MB_OK);
-	}
+
 	res = GetGameObject(CurrentScene,"Cam",&Cam);
 	if (res != APIResult::PN_SUCCESS) {
 		std::string Number = std::to_string(static_cast<int>(res));
 		Number += ":Error getting Cam game object in SkyBox script";
 		MessageBox(NULL,Number.c_str(), "Error", MB_OK);
-	}
-	else
-	{
-		MessageBox(nullptr, "Cam found!", "Info", MB_OK);
-	}
-	
-	
+	}	
 }
 
 void Script_SkyBox::Update() {
@@ -57,6 +49,7 @@ void Script_SkyBox::Update() {
 		Number += ":Error getting camera transform in SkyBox script";
 		MessageBox(NULL,Number.c_str(), "Error", MB_OK);
 	}
+
 	SetGameObjectTransform(SkyBox,&CamTransform);
 	if (res != APIResult::PN_SUCCESS) {
 		std::string Number = std::to_string(static_cast<int>(res));
