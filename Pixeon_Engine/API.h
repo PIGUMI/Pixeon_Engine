@@ -108,6 +108,25 @@ extern"C"
 	PIXEON_API APIResult ImageRender_SetUVRect(ComponentHandle imageRender, Float4 uvRect);
 	PIXEON_API APIResult ImageRender_GetUVRect(ComponentHandle imageRender, Float4* outUVRect);
 	/*             */
+
+	/* LightComponent */
+	PIXEON_API APIResult LightComponent_SetType(ComponentHandle lightComponent, int type);
+	PIXEON_API APIResult LightComponent_GetType(ComponentHandle lightComponent, int* outType);
+	PIXEON_API APIResult LightComponent_SetColor(ComponentHandle lightComponent, Float3 color);
+	PIXEON_API APIResult LightComponent_GetColor(ComponentHandle lightComponent, Float3* outColor);
+	PIXEON_API APIResult LightComponent_SetIntensity(ComponentHandle lightComponent, float intensity);
+	PIXEON_API APIResult LightComponent_GetIntensity(ComponentHandle lightComponent, float* outIntensity);
+	PIXEON_API APIResult LightComponent_SetRange(ComponentHandle lightComponent, float range);
+	PIXEON_API APIResult LightComponent_GetRange(ComponentHandle lightComponent, float* outRange);
+	PIXEON_API APIResult LightComponent_SetSpotInner(ComponentHandle lightComponent, float innerDeg);
+	PIXEON_API APIResult LightComponent_GetSpotInner(ComponentHandle lightComponent, float* outInnerDeg);
+	PIXEON_API APIResult LightComponent_SetSpotOuter(ComponentHandle lightComponent, float outerDeg);
+	PIXEON_API APIResult LightComponent_GetSpotOuter(ComponentHandle lightComponent, float* outOuterDeg);
+	PIXEON_API APIResult LightComponent_SetEnabled(ComponentHandle lightComponent, bool enabled);
+	PIXEON_API APIResult LightComponent_IsEnabled(ComponentHandle lightComponent, bool* outEnabled);
+	/*                */
+
+
 }
 
 #endif// API.h
