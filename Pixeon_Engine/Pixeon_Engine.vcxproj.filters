@@ -9,9 +9,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="リソース ファイル\Text">
-      <UniqueIdentifier>{e3246b6b-9cc7-4080-8c72-fd2305023d37}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\GUI">
       <UniqueIdentifier>{443e4728-733e-47c8-ae1e-17c40449c28d}</UniqueIdentifier>
     </Filter>
@@ -364,13 +361,5 @@
     <ClInclude Include="_Geometry.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="仕様書.txt">
-      <Filter>リソース ファイル\Text</Filter>
-    </Text>
-    <Text Include="追加実装予定機能.txt">
-      <Filter>リソース ファイル\Text</Filter>
-    </Text>
   </ItemGroup>
 </Project>

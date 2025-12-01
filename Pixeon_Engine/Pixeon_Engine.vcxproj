@@ -238,10 +238,6 @@
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="仕様書.txt" />
-    <Text Include="追加実装予定機能.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
