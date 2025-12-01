@@ -50,7 +50,7 @@ void LightComponent::DrawInspector() {
 	std::string label = SJ(_ComponentName.c_str());
 	std::string Ptr = std::to_string((uintptr_t)this);
 	label += "###" + Ptr;
-	if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+	if (ImGui::CollapsingHeader(label.c_str())) {
 		int typeIndex = (int)m_type;
 		const char* types[] = { "Directional", "Point", "Spot" };
 		if (ImGui::Combo("Type", &typeIndex, types, IM_ARRAYSIZE(types))) {

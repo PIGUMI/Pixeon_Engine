@@ -12,7 +12,6 @@
 #include "StartUp.h"
 
 // ƒo[ƒWƒ‡ƒ“
-#define VERSION (100)
 int g_nScreenWidth = 1920;
 int g_nScreenHeight = 1080;
 bool g_bInit = false;
@@ -21,7 +20,7 @@ bool g_bRun = false;
 extern "C" {
 	// version‚ğæ“¾
 	__declspec(dllexport) float SoftVersion() {
-		return VERSION;
+		return 110.0f;
 	}
 
 	__declspec(dllexport) int SoftInit(const EngineManager::EngineConfig& config) {

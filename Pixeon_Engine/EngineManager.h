@@ -1,12 +1,16 @@
 #ifndef ENGINE_MANAGER_H
 #define ENGINE_MANAGER_H
 
+#define PIXEON_ENGINE_VERSION "1.1.0"
+#define PIXEON_ENGINE_INEDITOR true
+
 // エンジンの管理クラス
 // 全体管理を行う
 // シングルトン
 /*
 * Log
 * 2025/11/25 リファクタリング
+* 2025/12/01 リファクタリング
 */
 
 #include <Windows.h>
@@ -57,7 +61,7 @@ private:
 	void EditorDraw();
 	void InGameDraw();
 
-	EngineManager() {};
+	EngineManager();
 	~EngineManager() {};
 
 private:

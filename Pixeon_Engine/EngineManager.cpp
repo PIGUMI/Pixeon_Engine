@@ -188,3 +188,9 @@ void EngineManager::InGameDraw() {
 	SceneManger::GetInstance()->Draw();
 	DirectX11::GetInstance()->EndDraw();
 }
+
+EngineManager::EngineManager()
+	:lastUpdateTime_(0), bUpdateDraw(false), targetFrameTime_(16.67f), deltaTime_(0.0f), m_hWnd_(0),
+	m_gameRenderTarget_(nullptr), m_bInGame_(false), m_bIsShowGUI_(false), m_bIsBeginPlayCalled(false)
+{
+}
