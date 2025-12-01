@@ -200,8 +200,10 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 	if (!cam) {
 		float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
 		float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
-		float cx = W * 0.5f + m_offset2D.x;
-		float cy = H * 0.5f + m_offset2D.y;
+
+		float cx = W * 0.5f + m_offset2D.x ;
+		float cy = H * 0.5f + m_offset2D.y ;
+
 		float hw = m_size2D.x * 0.5f;
 		float hh = m_size2D.y * 0.5f;
 		auto toNDC = [&](float x, float y)->DirectX::XMFLOAT2 {
@@ -349,6 +351,92 @@ void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
 }
 
+void ImageRender::UpdateVerticesUI(Vertex outV[4])
+{
+	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
+	CameraComponent* cam = scene ? scene->GetMainCamera() : nullptr;
+	if (!cam) {
+		// カメラが無い場合はとりあえず 2D と同じ扱いにフォールバック
+		float dummyZ = 0.0f;
+		UpdateVertices2D(outV, dummyZ);
+		return;
+	}
+
+	// カメラの View 行列 → 逆行列から right/up/forward を取得
+	DirectX::XMMATRIX V = cam->GetView();
+	DirectX::XMMATRIX invV = DirectX::XMMatrixInverse(nullptr, V);
+
+	DirectX::XMFLOAT3 camPosF(
+		invV.r[3].m128_f32[0],
+		invV.r[3].m128_f32[1],
+		invV.r[3].m128_f32[2]
+	);
+	DirectX::XMFLOAT3 rightF(
+		invV.r[0].m128_f32[0],
+		invV.r[0].m128_f32[1],
+		invV.r[0].m128_f32[2]
+	);
+	DirectX::XMFLOAT3 upF(
+		invV.r[1].m128_f32[0],
+		invV.r[1].m128_f32[1],
+		invV.r[1].m128_f32[2]
+	);
+	DirectX::XMFLOAT3 fwdF(
+		invV.r[2].m128_f32[0],
+		invV.r[2].m128_f32[1],
+		invV.r[2].m128_f32[2]
+	);
+
+	DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&camPosF);
+	DirectX::XMVECTOR right = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&rightF));
+	DirectX::XMVECTOR up = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&upF));
+	DirectX::XMVECTOR fwd = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&fwdF));
+
+	// UI の基準距離（カメラの前 d メートル）
+	float uiDistance = 3.0f; // 必要に応じて Inspector から弄れるようにしてもよい
+	DirectX::XMVECTOR baseCenter = DirectX::XMVectorAdd(
+		camPos,
+		DirectX::XMVectorScale(fwd, uiDistance)
+	);
+
+	// m_offset2D を「画面右・上方向オフセット」として解釈
+	// → X: 画面右方向（right）, Y: 画面上方向（up）
+	DirectX::XMVECTOR offsetWorld =
+		DirectX::XMVectorAdd(
+			DirectX::XMVectorScale(right, m_offset2D.x),
+			DirectX::XMVectorScale(up, m_offset2D.y)
+		);
+
+	DirectX::XMVECTOR center = DirectX::XMVectorAdd(baseCenter, offsetWorld);
+
+	float hw = m_sizeWorld.x * 0.5f;
+	float hh = m_sizeWorld.y * 0.5f;
+
+	// クワッド頂点をカメラの right/up ベクトル基準で生成
+	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
+		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
+	DirectX::XMVECTOR tr = DirectX::XMVectorAdd(
+		DirectX::XMVectorAdd(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
+	DirectX::XMVECTOR br = DirectX::XMVectorSubtract(
+		DirectX::XMVectorAdd(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
+	DirectX::XMVECTOR bl = DirectX::XMVectorSubtract(
+		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
+
+	DirectX::XMFLOAT3 f;
+	DirectX::XMStoreFloat3(&f, tl); outV[0].pos = f; outV[0].uv = { m_uvRect.x, m_uvRect.y };
+	DirectX::XMStoreFloat3(&f, tr); outV[1].pos = f; outV[1].uv = { m_uvRect.z, m_uvRect.y };
+	DirectX::XMStoreFloat3(&f, br); outV[2].pos = f; outV[2].uv = { m_uvRect.z, m_uvRect.w };
+	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
+}
+
 void ImageRender::Draw() {
 	if (!m_ready) return;
 
@@ -370,6 +458,10 @@ void ImageRender::Draw() {
 	}
 	else if (m_mode == PlacementMode::Billboard) {
 		UpdateVerticesBillboard(v);
+		mode2DFlag = 0;
+	}
+	else if (m_mode == PlacementMode::UI) {
+		UpdateVerticesUI(v);
 		mode2DFlag = 0;
 	}
 	else { // World3D
@@ -455,10 +547,10 @@ void ImageRender::DrawInspector() {
 		ImGui::Text("(%d x %d)", (int)m_texture->width, (int)m_texture->height);
 	}
 
-	std::string modeLabels[3] = { SJ("2D配置"), SJ("ビルボード"), SJ("3D配置") };
+	std::string modeLabels[4] = { SJ("2D配置"), SJ("ビルボード"), SJ("3D配置"),SJ("UI")};
 	int modeIdx = (int)m_mode;
 	if (ImGui::BeginCombo(SJ("配置モード").c_str(), modeLabels[modeIdx].c_str())) {
-		for (int i = 0; i < 3; ++i) {
+		for (int i = 0; i < 4; ++i) {
 			bool sel = (i == modeIdx);
 			if (ImGui::Selectable(modeLabels[i].c_str(), sel)) {
 				m_mode = (PlacementMode)i;
@@ -468,7 +560,7 @@ void ImageRender::DrawInspector() {
 		ImGui::EndCombo();
 	}
 
-	if (m_mode == PlacementMode::Screen2D) {
+	if (m_mode == PlacementMode::Screen2D || m_mode == PlacementMode::UI) {
 		ImGui::InputFloat2(SJ("2Dオフセット(px)").c_str(), (float*)&m_offset2D);
 		ImGui::InputFloat2(SJ("サイズ(px)").c_str(), (float*)&m_size2D);
 	}

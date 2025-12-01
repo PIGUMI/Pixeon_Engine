@@ -34,17 +34,33 @@ ImTextureID EditrGUI::GetAssetIcon(EditrGUI* gui, const std::string& name) {
 	return (ImTextureID)nullptr;
 }
 
-std::string AbbreviateName(const std::string& name, size_t maxLen = 16) {
+std::string AbbreviateName(const std::string& name, size_t maxBaseLen = 16)
+{
+	// 拡張子とベース名を分離
 	size_t dot = name.find_last_of('.');
 	std::string ext = (dot != std::string::npos) ? name.substr(dot) : "";
 	std::string base = (dot != std::string::npos) ? name.substr(0, dot) : name;
-	// 拡張子含めて収まる場合はそのまま
-	if (base.size() + ext.size() <= maxLen) return name;
-	// 収まらない場合は省略
-	size_t remain = (maxLen > ext.size()) ? maxLen - ext.size() - 3 : 0;
+
+	// ベース名が十分短ければそのまま
+	if (base.size() <= maxBaseLen) {
+		return base + ext; // 元の名前と同じ
+	}
+
+	// 長い場合はベース名だけを "xxx..." にする
+	//   maxBaseLen 文字以内に収める前提で「...」分を確保
+	const size_t dotsLen = 3;
+	if (maxBaseLen <= dotsLen) {
+		// かなり小さい指定のときは保険で全部 "..." にする
+		return std::string("...") + ext;
+	}
+
+	size_t remain = maxBaseLen - dotsLen;              // 先頭から残す文字数
 	if (remain > base.size()) remain = base.size();
-	return base.substr(0, remain) + "..." + ext;
+
+	std::string shortBase = base.substr(0, remain) + "...";
+	return shortBase + ext;                            // ★ 最後に拡張子をそのまま付ける
 }
+
 // Visual Studioでファイルを開く
 void OpenWithVisualStudio(const std::string& filepath) {
 	ShellExecuteA(NULL, "open", "devenv.exe", filepath.c_str(), NULL, SW_SHOWNORMAL);
@@ -157,25 +173,29 @@ void EditrGUI::ShowContentDrawer() {
 	for (const auto& entry : entries) {
 		ImGui::BeginGroup();
 
-		std::string name = entry.path().filename().string();
+		std::string fileName = entry.path().filename().string(); // "PS_SSAO.hlsl"
 		bool isDir = entry.is_directory();
-		ImTextureID icon = isDir ? (ImTextureID)folderIcon : GetAssetIcon(this, name);
-		name += "##" + std::to_string(index++); // ユニークID確保のためにインデックスを追加
+		ImTextureID icon = isDir ? (ImTextureID)folderIcon : GetAssetIcon(this, fileName);
+
+		// 表示文字列と ID を分離
+		std::string displayName = AbbreviateName(fileName, 12);        // 画面に表示する略称
+		std::string idName = fileName + "##" + std::to_string(index++); // ImGui ID
 
 		float groupX = ImGui::GetCursorPosX();
+
+		// アイコンを横方向センタリング
 		float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
 		ImGui::SetCursorPosX(cursorX);
 
 		bool isSelected = (entry.path() == selectedEntryPath);
 
-		// 非選択時はボタン背景色を透明に
+		// ボタン色
 		if (!isSelected) {
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
 		}
 		else {
-			// 選択時のみ青系の色
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.6f, 1.0f, 0.5f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 1.0f, 0.7f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.5f, 1.0f, 1.0f));
@@ -184,26 +204,28 @@ void EditrGUI::ShowContentDrawer() {
 		bool iconClicked = false;
 		if (icon) {
 			iconClicked = ImGui::ImageButton(
-				(std::string("icon_") + name).c_str(),
+				(std::string("icon_") + idName).c_str(),   // ID は idName を使う
 				icon,
 				ImVec2(iconSize, iconSize)
 			);
 		}
 		else {
 			iconClicked = ImGui::Button(
-				(std::string("btn_") + name).c_str(),
+				(std::string("btn_") + idName).c_str(),
 				ImVec2(iconSize, iconSize)
 			);
 		}
 
 		ImGui::PopStyleColor(3);
 
-		float textWidth = ImGui::CalcTextSize(ShiftJISToUTF8(AbbreviateName(name, 12)).c_str()).x;
+		// テキストを横方向センタリング（表示文字列で幅計算）
+		std::string textUTF8 = ShiftJISToUTF8(displayName);
+		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
 
-		ImGui::PushID(name.c_str());
+		ImGui::PushID(idName.c_str());
 		bool nameClicked = ImGui::Selectable(
-			ShiftJISToUTF8(AbbreviateName(name, 12)).c_str(),
+			textUTF8.c_str(),
 			isSelected, 0, ImVec2(itemWidth, 0)
 		);
 

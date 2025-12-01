@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "EditrGUI.h"
 #include "CollisionManager.h"
+#include "_Geometry.h"
 
 void BoxCollision::Init(Object* Prt)
 {
@@ -92,6 +93,67 @@ void BoxCollision::InGameUpdate()
 
 void BoxCollision::Draw()
 {
+	if (_Parent)
+	{
+		auto transform = _Parent->GetTransform();
+		DirectX::XMFLOAT3 pos = transform.position;
+		DirectX::XMFLOAT3 size = f3Size_;
+		DirectX::XMFLOAT3 center = f3Center_;
+		DirectX::XMFLOAT3 rot = transform.rotation;
+
+		// 回転行列（XYZ順）- GameObjectの位置を中心に回転
+		DirectX::XMMATRIX matRot =
+			DirectX::XMMatrixRotationZ(rot.z) *
+			DirectX::XMMatrixRotationY(rot.y) *
+			DirectX::XMMatrixRotationX(rot.x);
+
+		// 8頂点（ローカル座標系）- GameObjectの中心を原点とする
+		DirectX::XMFLOAT3 localCorners[8] = {
+			{center.x - size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
+			{center.x + size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
+			{center.x + size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
+			{center.x - size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
+			{center.x - size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
+			{center.x + size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
+			{center.x + size.x / 2, center.y + size.y / 2, center.z + size.z / 2},
+			{center.x - size.x / 2, center.y + size.y / 2, center.z + size.z / 2}
+		};
+
+		// ワールド座標系に変換
+		DirectX::XMFLOAT3 worldCorners[8];
+		for (int i = 0; i < 8; ++i) {
+			// ローカル頂点を回転
+			DirectX::XMVECTOR v = DirectX::XMVectorSet(localCorners[i].x, localCorners[i].y, localCorners[i].z, 1.0f);
+			v = DirectX::XMVector3Transform(v, matRot);
+			// GameObjectの位置を加算
+			v = DirectX::XMVectorAdd(v, DirectX::XMVectorSet(pos.x, pos.y, pos.z, 0.0f));
+			DirectX::XMStoreFloat3(&worldCorners[i], v);
+		}
+
+		DirectX::XMFLOAT4 color = bTrigger_
+			? DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f) // Trigger: Yellow
+			: DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f); // 通常: Red
+
+		int edges[12][2] = {
+			{0,1},{1,2},{2,3},{3,0},
+			{4,5},{5,6},{6,7},{7,4},
+			{0,4},{1,5},{2,6},{3,7}
+		};
+		auto Cam = _Parent->GetParentScene()->GetMainCamera();
+		DirectX::XMFLOAT4X4 Proj = Cam->GetProjectionMatrix();
+		DirectX::XMFLOAT4X4 view = Cam->GetViewMatrix();
+		DirectX::XMFLOAT4X4 world;
+		DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
+		for (int i = 0; i < 12; ++i) {
+			LineRenderer::GetInstance()->DrawLine(
+				worldCorners[edges[i][0]],
+				worldCorners[edges[i][1]],
+				color,
+				world, view, Proj,
+				0.05f // まずは小さい値で
+			);
+		}
+	}
 }
 
 void BoxCollision::UInit()

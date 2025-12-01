@@ -188,6 +188,7 @@
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="WeightFix.h" />
+    <ClInclude Include="_Geometry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -235,6 +236,7 @@
     <ClCompile Include="StartUp.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="仕様書.txt" />

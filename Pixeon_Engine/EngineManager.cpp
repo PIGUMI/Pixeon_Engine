@@ -12,7 +12,9 @@
 #include "ComponentManager.h"
 #include "ScriptManager.h"
 #include "ResourceService.h"
+#include "_Geometry.h"
 #include "Input.h"
+#include "Scene.h"
 #include <crtdbg.h>
 
 EngineManager* EngineManager::instance_ = nullptr;
@@ -88,6 +90,8 @@ int EngineManager::Init(const EngineConfig& InPut)
 	/* スクリプトマネージャーの初期化 */
 	ScriptManager::Instance().RegisterAllScripts();
 
+	LineRenderer::GetInstance()->Initialize();
+
 	/* 入力初期化 */
 	InitInput();
 
@@ -128,6 +132,7 @@ void EngineManager::Draw() {
 
 void EngineManager::UnInit() {
 	UninitInput();
+	LineRenderer::GetInstance()->Finalize();
 	// AssetManager の自動同期停止
 	AssetManager::Instance()->StopAutoSync();
 	// 保存

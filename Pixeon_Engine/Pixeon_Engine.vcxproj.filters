@@ -206,6 +206,9 @@
     <ClCompile Include="BoxCollision.cpp">
       <Filter>ソース ファイル\Component\physics</Filter>
     </ClCompile>
+    <ClCompile Include="_Geometry.cpp">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -357,6 +360,9 @@
     </ClInclude>
     <ClInclude Include="BoxCollision.h">
       <Filter>ソース ファイル\Component\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="_Geometry.h">
+      <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

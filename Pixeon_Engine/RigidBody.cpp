@@ -201,15 +201,21 @@ void RigidBody::DrawInspector()
 	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("質量").c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::InputFloat(SJ("##MassInput").c_str(), &fMass_, 0.1f, 1.0f, "%.3f");
+		float Mass = fMass_;
+		ImGui::TableSetColumnIndex(1); ImGui::InputFloat(SJ("##MassInput").c_str(), &Mass, 0.1f, 1.0f, "%.3f");
+		SetMass(Mass);
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("キネマティック").c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##KinematicCheckbox").c_str(), &bKinematic_);
+		bool Kinematic = bKinematic_;
+		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##KinematicCheckbox").c_str(), &Kinematic);
+		SetKinematic(Kinematic);
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("重力を使用").c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##UseGravityCheckbox").c_str(), &bUseGravity_);
+		bool UseGravity = bUseGravity_;
+		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##UseGravityCheckbox").c_str(), &UseGravity);
+		SetGravityEnabled(UseGravity);
 
 		ImGui::EndTable();
 	}
@@ -232,6 +238,52 @@ void RigidBody::LoadFromFile(std::istream& in)
 		UpdateMassProperties();
 		SetKinematic(bKinematic_);
 		SetGravityEnabled(bUseGravity_);
+	}
+}
+
+void RigidBody::SetMass(float mass)
+{
+	fMass_ = mass;
+	UpdateMassProperties();
+}
+
+void RigidBody::SetKinematic(bool kinematic)
+{
+	bKinematic_ = kinematic;
+	if (pRigidBody_)
+	{
+		if (bKinematic_)
+		{
+			pRigidBody_->setCollisionFlags(pRigidBody_->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+			pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+		}
+		else
+		{
+			pRigidBody_->setCollisionFlags(pRigidBody_->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+			pRigidBody_->setActivationState(ACTIVE_TAG);
+		}
+	}
+}
+
+void RigidBody::SetGravityEnabled(bool useGravity)
+{
+	bUseGravity_ = useGravity;
+	if (pRigidBody_)
+	{
+		if (bUseGravity_)
+		{
+			if(_Parent && _Parent->GetParentScene())
+			{
+				btVector3 gravity = _Parent->GetParentScene()->GetPhysicsWorld()->getGravity();
+				pRigidBody_->setGravity(gravity);
+			}
+		}
+		else
+		{
+			pRigidBody_->setGravity(btVector3(0, 0, 0));
+		}
+		pRigidBody_->setActivationState(ACTIVE_TAG);
+		pRigidBody_->forceActivationState(ACTIVE_TAG);
 	}
 }
 
@@ -432,7 +484,7 @@ void RigidBody::CreateRigidBody()
 
 	UpdateMassProperties();
 
-	if (pCompoundShape_) {
+	if (!pCompoundShape_) {
 		pCompoundShape_ = new btCompoundShape();
 	}
 
