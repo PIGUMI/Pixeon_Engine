@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include "System.h"
+#include "RigidBody.h"
 
 // ライト用GPU定数バッファ構造体
 struct LightGPU {
@@ -580,7 +581,15 @@ void Scene::CleanupAndReinitializePhysics()
 	InitPhysics();
 	for (auto& obj : _objects)
 	{
-		/* ToDo RigiBodyComp実装したら */
+		if (obj)
+		{
+			auto rb = obj->GetComponent<RigidBody>();
+			if (rb)
+			{
+				rb->ResetAddedToWorldFlag();
+				rb->BeginPlay();
+			}
+		}
 	}
 }
 

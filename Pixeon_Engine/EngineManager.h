@@ -68,7 +68,6 @@ private:
 	float targetFrameTime_;
 	float deltaTime_;
 
-
 	HWND m_hWnd_;
 	GameRenderTarget* m_gameRenderTarget_;
 	// ƒQ[ƒ€’†”»’è
