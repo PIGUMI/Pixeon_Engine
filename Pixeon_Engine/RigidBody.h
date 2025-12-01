@@ -13,7 +13,7 @@ class RigidBody : public Component
 {
 public:
 	void Init(Object* Prt) override;
-	void BeginPlay() override; 
+	void BeginPlay() override;
 	void EditUpdate() override;
 	void InGameUpdate() override;
 	void UInit() override;
@@ -82,4 +82,3 @@ private:
 };
 
 #endif // _RIGID_BODY_H_
-

@@ -55,7 +55,6 @@ void RigidBody::BeginPlay()
 						SetGravityEnabled(bUseGravity_);
 
 						SetKinematic(bKinematic_);
-
 					}
 					else
 					{
@@ -73,7 +72,6 @@ void RigidBody::BeginPlay()
 						}
 						bAddedToWorld_ = false;
 					}
-
 				}
 			}
 			catch (...)
@@ -83,7 +81,7 @@ void RigidBody::BeginPlay()
 					"RigidBody‚Ì’Ç‰Á’†‚É—áŠO‚ª”­¶‚µ‚Ü‚µ‚½");
 				if (pRigidBody_)
 				{
-					if(pRigidBody_->getMotionState())
+					if (pRigidBody_->getMotionState())
 					{
 						delete pRigidBody_->getMotionState();
 					}
@@ -111,7 +109,7 @@ void RigidBody::EditUpdate()
 {
 	if (!pRigidBody_)return;
 
-	if(bKinematic_ && bTransformDirty_)
+	if (bKinematic_ && bTransformDirty_)
 	{
 		SyncTransformToBullet();
 		bTransformDirty_ = false;
@@ -138,7 +136,7 @@ void RigidBody::UInit()
 	if (pRigidBody_ && _Parent && _Parent->GetParentScene())
 	{
 		btDiscreteDynamicsWorld* physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
-		if(physicsWorld && bAddedToWorld_)
+		if (physicsWorld && bAddedToWorld_)
 		{
 			try
 			{
@@ -146,7 +144,6 @@ void RigidBody::UInit()
 			}
 			catch (...)
 			{
-
 			}
 			bAddedToWorld_ = false;
 		}
@@ -155,7 +152,7 @@ void RigidBody::UInit()
 		{
 			btMotionState* motionState = pRigidBody_->getMotionState();
 			pRigidBody_->setMotionState(nullptr);
-			if(motionState == pMotionState_)
+			if (motionState == pMotionState_)
 			{
 				pMotionState_ = nullptr;
 			}
@@ -272,7 +269,7 @@ void RigidBody::SetGravityEnabled(bool useGravity)
 	{
 		if (bUseGravity_)
 		{
-			if(_Parent && _Parent->GetParentScene())
+			if (_Parent && _Parent->GetParentScene())
 			{
 				btVector3 gravity = _Parent->GetParentScene()->GetPhysicsWorld()->getGravity();
 				pRigidBody_->setGravity(gravity);
@@ -289,10 +286,10 @@ void RigidBody::SetGravityEnabled(bool useGravity)
 
 void RigidBody::AddCollisionShape(btCollisionShape* shape, const btTransform& localTransform)
 {
-	if(pCompoundShape_ && shape)
+	if (pCompoundShape_ && shape)
 	{
 		auto it = std::find(RegisteredColliders_.begin(), RegisteredColliders_.end(), shape);
-		if(it == RegisteredColliders_.end())
+		if (it == RegisteredColliders_.end())
 		{
 			pCompoundShape_->addChildShape(localTransform, shape);
 			RegisteredColliders_.push_back(shape);
@@ -306,7 +303,7 @@ void RigidBody::RemoveCollisionShape(btCollisionShape* shape)
 	if (pCompoundShape_ && shape)
 	{
 		auto it = std::find(RegisteredColliders_.begin(), RegisteredColliders_.end(), shape);
-		if(it != RegisteredColliders_.end())
+		if (it != RegisteredColliders_.end())
 		{
 			int numChildren = pCompoundShape_->getNumChildShapes();
 			for (int i = 0; i < numChildren; ++i)
@@ -376,7 +373,7 @@ void RigidBody::SyncTransformFromBullet()
 
 void RigidBody::SyncTransformToBullet()
 {
-	if(!pRigidBody_ || !_Parent) return;
+	if (!pRigidBody_ || !_Parent) return;
 	auto currentTransform = _Parent->GetTransform();
 
 	btTransform worldTransform;
@@ -451,10 +448,10 @@ void RigidBody::CreateRigidBody()
 {
 	if (pRigidBody_)
 	{
-		if(_Parent && _Parent->GetParentScene())
+		if (_Parent && _Parent->GetParentScene())
 		{
 			btDiscreteDynamicsWorld* physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
-			if(physicsWorld && bAddedToWorld_){
+			if (physicsWorld && bAddedToWorld_) {
 				physicsWorld->removeRigidBody(pRigidBody_);
 			}
 		}
@@ -499,7 +496,7 @@ void RigidBody::CreateRigidBody()
 	bAddedToWorld_ = false;
 }
 
-void RigidBody::UpdateMassProperties(){
+void RigidBody::UpdateMassProperties() {
 	if (pCompoundShape_)
 	{
 		if (bKinematic_ || fMass_ == 0.0f)

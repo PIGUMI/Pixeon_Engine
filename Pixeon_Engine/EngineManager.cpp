@@ -36,8 +36,8 @@ void EngineManager::DeleteInstance() {
 int EngineManager::Init(const EngineConfig& InPut)
 {
 	/* メンバー変数の初期化 */
-	m_bInGame_			= false;
-	m_bIsShowGUI_		= false;
+	m_bInGame_ = false;
+	m_bIsShowGUI_ = false;
 	targetFrameTime_ = 1000.0f / 70.0f;
 	lastUpdateTime_ = timeGetTime();
 	m_hWnd_ = InPut.wnd;
@@ -51,7 +51,7 @@ int EngineManager::Init(const EngineConfig& InPut)
 	if (FAILED(hr)) return -1;
 
 	/* DirectX11 初期化 */
- 	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
+	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
 	if (FAILED(hr)) {
 		CoUninitialize();
 		return -1;
@@ -80,10 +80,10 @@ int EngineManager::Init(const EngineConfig& InPut)
 	SceneManger::GetInstance()->Init();
 	// 設定の読み込み
 	SceneManger::GetInstance()->Load();
-	
+
 	/* シェーダーマネージャーの初期化 */
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
-	
+
 	/* コンポーネントマネージャーの初期化 */
 	ComponentManager::GetInstance()->Init();
 
@@ -98,7 +98,7 @@ int EngineManager::Init(const EngineConfig& InPut)
 	return 0;
 }
 
-void EngineManager::Update() 
+void EngineManager::Update()
 {
 	// フレーム制御
 	DWORD currentTime = timeGetTime();
@@ -122,7 +122,6 @@ void EngineManager::Update()
 }
 
 void EngineManager::Draw() {
-	
 	if (bUpdateDraw) {
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 		EditorDraw();

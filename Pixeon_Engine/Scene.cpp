@@ -32,7 +32,7 @@ static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
 // 開放処理
-Scene::~Scene() 
+Scene::~Scene()
 {
 	SaveToFile();
 
@@ -207,11 +207,10 @@ void Scene::PlayUpdate() {
 	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
 	else _MainCameraNumber = -1;
 
-
 	/* 物理シュミレーションのステップ */
 	if (pPhysicsWorld)
 	{
-		try 
+		try
 		{
 			int numObjects = pPhysicsWorld->getNumCollisionObjects();
 			if (numObjects >= 0 && numObjects < 10000)
@@ -220,7 +219,7 @@ void Scene::PlayUpdate() {
 				for (int i = 0; i < numObjects; i++)
 				{
 					btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
-					if(!obj || !obj->getCollisionShape())
+					if (!obj || !obj->getCollisionShape())
 					{
 						hasInvakudObjects = true;
 						break;
@@ -237,7 +236,7 @@ void Scene::PlayUpdate() {
 					{
 						btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
 						btRigidBody* body = btRigidBody::upcast(obj);
-						if(!body||!body->getCollisionShape()||!body->getMotionState())
+						if (!body || !body->getCollisionShape() || !body->getMotionState())
 						{
 							valid = false;
 							break;
@@ -247,7 +246,6 @@ void Scene::PlayUpdate() {
 					{
 						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps);
 					}
-
 				}
 				else
 				{
@@ -259,7 +257,7 @@ void Scene::PlayUpdate() {
 				CleanupAndReinitializePhysics();
 			}
 		}
-		catch (...) 
+		catch (...)
 		{
 			CleanupAndReinitializePhysics();
 		}
@@ -268,7 +266,7 @@ void Scene::PlayUpdate() {
 	// オブジェクトの更新
 	for (auto& obj : _objects) if (obj)obj->InGameUpdate();
 
-	if(_collisionManager)_collisionManager->Update();
+	if (_collisionManager)_collisionManager->Update();
 
 	// オブジェクトの削除処理
 	for (auto& obj : _ToBeRemoved) {
@@ -543,7 +541,7 @@ void Scene::CleanupPhysics()
 {
 	if (pPhysicsWorld)
 	{
-		for(int i = pPhysicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
+		for (int i = pPhysicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
 		{
 			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
 			btRigidBody* body = btRigidBody::upcast(obj);

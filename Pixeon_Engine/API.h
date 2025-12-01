@@ -67,6 +67,7 @@ typedef struct {
 extern "C" {
 	/* 現在のシーンの取得 */
 	PIXEON_API APIResult GetCurrentScene(SceneHandle* outHandle);
+	PIXEON_API APIResult ChangeScene(const char* sceneName);
 }
 
 /* ゲームオブジェクトに関するAPI */

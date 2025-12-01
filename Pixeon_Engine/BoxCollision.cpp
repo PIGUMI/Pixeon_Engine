@@ -51,7 +51,6 @@ void BoxCollision::BeginPlay()
 			EditrGUI::GetInstance()->WriteLog("[BoxCollision] + NoFindCollisionManager");
 		}
 	}
-
 }
 
 void BoxCollision::EditUpdate()
@@ -184,7 +183,6 @@ void BoxCollision::DrawInspector()
 	if (!ImGui::CollapsingHeader(SJ(label.c_str()).c_str()))return;
 	label = "Size##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
-
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ÉTÉCÉY").c_str());
 		ImGui::TableSetColumnIndex(1);
@@ -212,10 +210,8 @@ void BoxCollision::DrawInspector()
 			SetTrigger(isTrigger);
 		};
 
-
 		ImGui::EndTable();
 	}
-
 }
 
 void BoxCollision::SaveToFile(std::ostream& out)
@@ -366,7 +362,6 @@ void BoxCollision::ProcessCollisionCallBacks()
 
 bool BoxCollision::OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX::XMFLOAT3& rot1, const DirectX::XMFLOAT3& size1, const DirectX::XMFLOAT3& pos2, const DirectX::XMFLOAT3& rot2, const DirectX::XMFLOAT3& size2, CollisionInfo& info)
 {
-
 	DirectX::XMFLOAT3 min1 = { pos1.x - size1.x * 0.5f, pos1.y - size1.y * 0.5f, pos1.z - size1.z * 0.5f };
 	DirectX::XMFLOAT3 max1 = { pos1.x + size1.x * 0.5f, pos1.y + size1.y * 0.5f, pos1.z + size1.z * 0.5f };
 

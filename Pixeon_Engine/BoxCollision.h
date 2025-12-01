@@ -72,11 +72,11 @@ public:
 	void ResetOnCollisionStay() { OnCollisionStay_ = nullptr; }
 	void ResetOnCollisionExit() { OnCollisionExit_ = nullptr; }
 
-	bool HasCollisionEnterCallBack() const { return OnCollisionEnter_ != nullptr; }	
+	bool HasCollisionEnterCallBack() const { return OnCollisionEnter_ != nullptr; }
 	bool HasCollisionStayCallBack() const { return OnCollisionStay_ != nullptr; }
 	bool HasCollisionExitCallBack() const { return OnCollisionExit_ != nullptr; }
 
-	std::string GetCallbackStatus() const 
+	std::string GetCallbackStatus() const
 	{
 		std::string status = "CallBack : ";
 		status += "Enter=" + std::string(HasCollisionEnterCallBack() ? "Set" : "None") + ", ";
@@ -140,7 +140,6 @@ private:
 	DirectX::XMFLOAT3 f3LastScale_ = { 1.0f, 1.0f, 1.0f };
 	bool bTransformDirty_ = true;
 	bool bViewVisible_ = false;
-
 };
 
 #endif // !_BOX_COLLISION_H_

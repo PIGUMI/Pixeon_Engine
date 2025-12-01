@@ -18,6 +18,13 @@ extern "C" {
 		*outHandle = reinterpret_cast<SceneHandle*>(currentScene);
 		return PN_SUCCESS;
 	}
+	/* シーン切り替え */
+	PIXEON_API APIResult ChangeScene(const char* sceneName)
+	{
+		if (sceneName == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		SceneManger::GetInstance()->ChangeScene(sceneName);
+		return PN_SUCCESS;
+	}
 	/* ゲームオブジェクトの取得 */
 	PIXEON_API APIResult GetGameObject(SceneHandle scene, const char* objectname, GameObjectHandle* outObject)
 	{
