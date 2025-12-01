@@ -316,7 +316,7 @@ void AnimationComponent::ApplyToModel() {
 
 void AnimationComponent::DrawInspector() {
 	std::string title = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
-	if (!ImGui::CollapsingHeader(title.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	if (!ImGui::CollapsingHeader(title.c_str()))
 		return;
 	ImGui::Text("Clips: %zu", m_clips.size());
 	if (!m_clips.empty()) {
