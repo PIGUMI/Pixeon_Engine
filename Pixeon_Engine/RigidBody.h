@@ -23,13 +23,13 @@ public:
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
-	void SetMass(float mass) { fMass_ = mass; };
+	void SetMass(float mass);
 	float GetMass() const { return fMass_; }
 
-	void SetKinematic(bool kinematic) { bKinematic_ = kinematic; };
+	void SetKinematic(bool kinematic);
 	bool IsKinematic() const { return bKinematic_; }
 
-	void SetGravityEnabled(bool useGravity) { bUseGravity_ = useGravity; };
+	void SetGravityEnabled(bool useGravity);
 	bool IsGravityEnabled() const { return bUseGravity_; }
 
 	void AddCollisionShape(btCollisionShape* shape, const btTransform& localTransform);
