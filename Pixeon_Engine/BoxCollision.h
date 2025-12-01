@@ -113,7 +113,9 @@ private:
 	void AttachToRigidBody();
 	void DetachFromRigidBody();
 	void ProcessCollisionCallBacks();
-
+	bool OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX::XMFLOAT3& rot1, const DirectX::XMFLOAT3& size1,
+		const DirectX::XMFLOAT3& pos2, const DirectX::XMFLOAT3& rot2, const DirectX::XMFLOAT3& size2,
+		CollisionInfo& info);
 private:
 	DirectX::XMFLOAT3 f3Size_ = { 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 f3Center_ = { 0.0f, 0.0f, 0.0f };
@@ -123,6 +125,8 @@ private:
 
 	std::vector<Object*> CollidingObjects_;
 	std::vector<CollisionInfo> CurrentCollisions_;
+
+	RigidBody* pAttachedRigidBody_ = nullptr;
 
 	OnCollisionEnterCallback OnCollisionEnter_ = nullptr;
 	OnCollisionStayCallback OnCollisionStay_ = nullptr;

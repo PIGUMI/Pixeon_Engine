@@ -21,6 +21,7 @@ public:
 		MODEL,
 		ANIMATION,
 		RIGIDBODY,
+		BOX_COLLISION,
 		MAX,
 	};
 

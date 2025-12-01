@@ -49,6 +49,7 @@ public: // Setter And Getter
 	void UnregisterLight(LightComponent* l);
 
 	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }
+	CollisionManager* GetCollisionManager() { return _collisionManager; }
 
 private://“à•”ˆ—
 	void ProcessThreadSafeAdditions();
@@ -68,6 +69,7 @@ private:
 	std::vector<LightComponent*> _lights;
 	std::mutex _mtx;
 	CameraComponent* _MainCamera = nullptr;
+	CollisionManager* _collisionManager = nullptr;
 	int _MainCameraNumber = -1;
 	bool EndPlayCalled = false;
 
