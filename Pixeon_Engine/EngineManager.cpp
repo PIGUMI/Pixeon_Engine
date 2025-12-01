@@ -36,11 +36,10 @@ int EngineManager::Init(const EngineConfig& InPut)
 	/* ƒƒ“ƒo[•Ï”‚Ì‰Šú‰» */
 	m_bInGame_			= false;
 	m_bIsShowGUI_		= false;
-	targetFrameTime_ = 1000.0f / 60.0f;
+	targetFrameTime_ = 1000.0f / 70.0f;
 	lastUpdateTime_ = timeGetTime();
 	m_hWnd_ = InPut.wnd;
-	bUpdateDraw = false;
-	clock::now();
+	bUpdateDraw = false;;
 
 	/* Ý’è‚Ì“Ç‚Ýž‚Ý */
 	SettingManager::GetInstance()->LoadConfig();

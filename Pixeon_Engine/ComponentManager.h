@@ -15,11 +15,13 @@ public:
 		NONE = -1,
 		CAMERA,
 		GEOMETRY,
-		MODEL,
 		LIGHT,
 		IMAGE,
 		SCRIPT,
+		MODEL,
 		ANIMATION,
+		RIGIDBODY,
+		BOX_COLLISION,
 		MAX,
 	};
 

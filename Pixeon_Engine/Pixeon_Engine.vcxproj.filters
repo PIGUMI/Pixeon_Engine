@@ -54,6 +54,21 @@
     <Filter Include="ソース ファイル\Sys">
       <UniqueIdentifier>{db6a1d7e-36d0-4766-a177-40a57d57ba05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Component\3DModel">
+      <UniqueIdentifier>{f27f271d-0778-4977-b2a5-e4ff12965620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\physics">
+      <UniqueIdentifier>{eaf903e9-45be-4578-8e93-a61e6b3246ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\basics">
+      <UniqueIdentifier>{ee58dcc4-2263-4b31-b840-34f4461c602c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\Renderer">
+      <UniqueIdentifier>{e2bda8b6-348b-4a15-968c-f9e574f95498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\Other">
+      <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -116,12 +131,6 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>ソース ファイル\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="CameraComponent.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
     <ClCompile Include="HashUtill.cpp">
       <Filter>ソース ファイル\Archive</Filter>
     </ClCompile>
@@ -140,26 +149,14 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>ソース ファイル\Assets</Filter>
     </ClCompile>
-    <ClCompile Include="ModelRender.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
     <ClCompile Include="ErrorLog.cpp">
       <Filter>ソース ファイル\Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="LightComponent.cpp">
-      <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
     <ClCompile Include="EngineManager.cpp">
       <Filter>ソース ファイル\App</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
       <Filter>ソース ファイル\Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageRender.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="ScripComponent.cpp">
-      <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>ソース ファイル\Other</Filter>
@@ -176,11 +173,38 @@
     <ClCompile Include="AnimationDebug.cpp">
       <Filter>ソース ファイル\Sys</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationComponent.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
     <ClCompile Include="EditrGUI_Prefab.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>ソース ファイル\Component\3DModel</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelRender.cpp">
+      <Filter>ソース ファイル\Component\3DModel</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>ソース ファイル\Component\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
+      <Filter>ソース ファイル\Component\3DModel</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>ソース ファイル\Component\basics</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>ソース ファイル\Component\basics</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageRender.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ScripComponent.cpp">
+      <Filter>ソース ファイル\Component\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollision.cpp">
+      <Filter>ソース ファイル\Component\physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,14 +268,8 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>ソース ファイル\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="CameraComponent.h">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClInclude>
     <ClInclude Include="Struct.h">
       <Filter>ソース ファイル\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry.h">
-      <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
     <ClInclude Include="ArchiveFormat.h">
       <Filter>ソース ファイル\Archive</Filter>
@@ -277,26 +295,14 @@
     <ClInclude Include="AssetTypes.h">
       <Filter>ソース ファイル\Assets</Filter>
     </ClInclude>
-    <ClInclude Include="ModelRender.h">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClInclude>
     <ClInclude Include="ErrorLog.h">
       <Filter>ソース ファイル\Sys</Filter>
-    </ClInclude>
-    <ClInclude Include="LightComponent.h">
-      <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
     <ClInclude Include="EngineManager.h">
       <Filter>ソース ファイル\App</Filter>
     </ClInclude>
     <ClInclude Include="File.h">
       <Filter>ソース ファイル\Sys</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageRender.h">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ScripComponent.h">
-      <Filter>ソース ファイル\Component</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>ソース ファイル\Other</Filter>
@@ -322,8 +328,35 @@
     <ClInclude Include="MatrixUtil.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClInclude>
     <ClInclude Include="AnimationComponent.h">
-      <Filter>ソース ファイル\Component</Filter>
+      <Filter>ソース ファイル\Component\3DModel</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRender.h">
+      <Filter>ソース ファイル\Component\3DModel</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>ソース ファイル\Component\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="LightComponent.h">
+      <Filter>ソース ファイル\Component\3DModel</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>ソース ファイル\Component\basics</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>ソース ファイル\Component\basics</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageRender.h">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ScripComponent.h">
+      <Filter>ソース ファイル\Component\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollision.h">
+      <Filter>ソース ファイル\Component\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

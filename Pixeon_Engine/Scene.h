@@ -2,7 +2,9 @@
 // オブジェクトなどの管理を行う
 
 #pragma once
+#include "ComponentManager.h"
 #include "CameraComponent.h"
+#include "CollisionManager.h"
 #include <string>
 #include <vector>
 #include <mutex>
@@ -46,9 +48,16 @@ public: // Setter And Getter
 	void RegisterLight(LightComponent* l);
 	void UnregisterLight(LightComponent* l);
 
+	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }
+	CollisionManager* GetCollisionManager() { return _collisionManager; }
+
 private://内部処理
 	void ProcessThreadSafeAdditions();
 	void UploadLightsToGPU();
+
+	void InitPhysics();
+	void CleanupPhysics();
+	void CleanupAndReinitializePhysics();
 private:
 	std::string _name = "DefaultScene";
 
@@ -60,6 +69,14 @@ private:
 	std::vector<LightComponent*> _lights;
 	std::mutex _mtx;
 	CameraComponent* _MainCamera = nullptr;
+	CollisionManager* _collisionManager = nullptr;
 	int _MainCameraNumber = -1;
 	bool EndPlayCalled = false;
+
+	// 物理演算に関する変数
+	btDiscreteDynamicsWorld* pPhysicsWorld = nullptr;
+	btDefaultCollisionConfiguration* pCollisionConfig = nullptr;
+	btCollisionDispatcher* pDispatcher = nullptr;
+	btDbvtBroadphase* pOverlappingPairCache = nullptr;
+	btSequentialImpulseConstraintSolver* pSolver = nullptr;
 };

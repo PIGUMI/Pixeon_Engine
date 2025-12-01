@@ -31,7 +31,36 @@ static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
 // 開放処理
-Scene::~Scene() {
+Scene::~Scene() 
+{
+	SaveToFile();
+
+	for (auto& obj : _objects) {
+		if (obj) {
+			obj->UInit();
+			delete obj;
+		}
+	}
+	_objects.clear();
+	CleanupPhysics();
+	for (auto& obj : _ToBeAdded) {
+		if (obj) {
+			obj->UInit();
+			delete obj;
+		}
+	}
+	_ToBeAdded.clear();
+	for (auto& obj : _SaveObjects) {
+		if (obj) {
+			obj->UInit();
+			delete obj;
+		}
+	}
+	_SaveObjects.clear();
+	if (gLightCB) {
+		gLightCB->Release();
+		gLightCB = nullptr;
+	}
 }
 
 void Scene::Init() {
@@ -41,6 +70,9 @@ void Scene::Init() {
 	_ToBeRemoved.clear();
 	_SaveObjects.clear();
 	EndPlayCalled = true;
+	InitPhysics();
+	_collisionManager = new CollisionManager;
+	_collisionManager->Initialize(pPhysicsWorld);
 }
 
 void Scene::BeginPlay() {
@@ -52,7 +84,18 @@ void Scene::BeginPlay() {
 	}
 
 	// 物理演算に関するコード
-
+	if (pPhysicsWorld)
+	{
+		while (pPhysicsWorld->getNumCollisionObjects() > 0)
+		{
+			int last = pPhysicsWorld->getNumCollisionObjects() - 1;
+			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[last];
+			pPhysicsWorld->removeCollisionObject(obj);
+		}
+		pPhysicsWorld->clearForces();
+		pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
+		pPhysicsWorld->getConstraintSolver()->reset();
+	}
 	//
 
 	// BeginPlayを呼び出す
@@ -163,8 +206,68 @@ void Scene::PlayUpdate() {
 	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
 	else _MainCameraNumber = -1;
 
+
+	/* 物理シュミレーションのステップ */
+	if (pPhysicsWorld)
+	{
+		try 
+		{
+			int numObjects = pPhysicsWorld->getNumCollisionObjects();
+			if (numObjects >= 0 && numObjects < 10000)
+			{
+				bool hasInvakudObjects = false;
+				for (int i = 0; i < numObjects; i++)
+				{
+					btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
+					if(!obj || !obj->getCollisionShape())
+					{
+						hasInvakudObjects = true;
+						break;
+					}
+				}
+
+				// 無効なオブジェクトがない場合のみステップを進める
+				if (!hasInvakudObjects)
+				{
+					float timeStep = 1.0f / 60.0f;
+					int maxSubSteps = 10;
+					bool valid = true;
+					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i)
+					{
+						btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
+						btRigidBody* body = btRigidBody::upcast(obj);
+						if(!body||!body->getCollisionShape()||!body->getMotionState())
+						{
+							valid = false;
+							break;
+						}
+					}
+					if (valid)
+					{
+						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps);
+					}
+
+				}
+				else
+				{
+					CleanupAndReinitializePhysics();
+				}
+			}
+			else
+			{
+				CleanupAndReinitializePhysics();
+			}
+		}
+		catch (...) 
+		{
+			CleanupAndReinitializePhysics();
+		}
+	}
+
 	// オブジェクトの更新
 	for (auto& obj : _objects) if (obj)obj->InGameUpdate();
+
+	if(_collisionManager)_collisionManager->Update();
 
 	// オブジェクトの削除処理
 	for (auto& obj : _ToBeRemoved) {
@@ -422,6 +525,63 @@ void Scene::UploadLightsToGPU() {
 	ctx->PSSetConstantBuffers(1, 1, cbs1);
 	ID3D11Buffer* cbs2[] = { gLightCountCB };
 	ctx->PSSetConstantBuffers(2, 1, cbs2);
+}
+
+void Scene::InitPhysics()
+{
+	pCollisionConfig = new btDefaultCollisionConfiguration();
+	pDispatcher = new btCollisionDispatcher(pCollisionConfig);
+	pOverlappingPairCache = new btDbvtBroadphase();
+	pSolver = new btSequentialImpulseConstraintSolver();
+	pPhysicsWorld = new btDiscreteDynamicsWorld(pDispatcher, pOverlappingPairCache, pSolver, pCollisionConfig);
+	// 重力の設定
+	pPhysicsWorld->setGravity(btVector3(0, -9.81f, 0));
+}
+
+void Scene::CleanupPhysics()
+{
+	if (pPhysicsWorld)
+	{
+		for(int i = pPhysicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
+		{
+			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
+			btRigidBody* body = btRigidBody::upcast(obj);
+			pPhysicsWorld->removeCollisionObject(obj);
+			delete obj;
+		}
+		delete pPhysicsWorld;
+		pPhysicsWorld = nullptr;
+	}
+	if (pSolver)
+	{
+		delete pSolver;
+		pSolver = nullptr;
+	}
+	if (pOverlappingPairCache)
+	{
+		delete pOverlappingPairCache;
+		pOverlappingPairCache = nullptr;
+	}
+	if (pDispatcher)
+	{
+		delete pDispatcher;
+		pDispatcher = nullptr;
+	}
+	if (pCollisionConfig)
+	{
+		delete pCollisionConfig;
+		pCollisionConfig = nullptr;
+	}
+}
+
+void Scene::CleanupAndReinitializePhysics()
+{
+	CleanupPhysics();
+	InitPhysics();
+	for (auto& obj : _objects)
+	{
+		/* ToDo RigiBodyComp実装したら */
+	}
 }
 
 void Scene::AddObjectLocal(Object* obj) {
