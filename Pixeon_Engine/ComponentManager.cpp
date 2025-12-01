@@ -46,9 +46,6 @@ Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
 
 	switch (type)
 	{
-	case ComponentManager::COMPONENT_TYPE::NONE:
-
-		break;
 	case ComponentManager::COMPONENT_TYPE::CAMERA:
 		component = owner->AddComponent<CameraComponent>();
 		break;

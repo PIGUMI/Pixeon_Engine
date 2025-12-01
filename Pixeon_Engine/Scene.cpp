@@ -71,6 +71,8 @@ void Scene::Init() {
 	_SaveObjects.clear();
 	EndPlayCalled = true;
 	InitPhysics();
+	_collisionManager = new CollisionManager;
+	_collisionManager->Initialize(pPhysicsWorld);
 }
 
 void Scene::BeginPlay() {
@@ -82,7 +84,18 @@ void Scene::BeginPlay() {
 	}
 
 	// 物理演算に関するコード
-
+	if (pPhysicsWorld)
+	{
+		while (pPhysicsWorld->getNumCollisionObjects() > 0)
+		{
+			int last = pPhysicsWorld->getNumCollisionObjects() - 1;
+			btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[last];
+			pPhysicsWorld->removeCollisionObject(obj);
+		}
+		pPhysicsWorld->clearForces();
+		pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
+		pPhysicsWorld->getConstraintSolver()->reset();
+	}
 	//
 
 	// BeginPlayを呼び出す
@@ -193,8 +206,68 @@ void Scene::PlayUpdate() {
 	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
 	else _MainCameraNumber = -1;
 
+
+	/* 物理シュミレーションのステップ */
+	if (pPhysicsWorld)
+	{
+		try 
+		{
+			int numObjects = pPhysicsWorld->getNumCollisionObjects();
+			if (numObjects >= 0 && numObjects < 10000)
+			{
+				bool hasInvakudObjects = false;
+				for (int i = 0; i < numObjects; i++)
+				{
+					btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
+					if(!obj || !obj->getCollisionShape())
+					{
+						hasInvakudObjects = true;
+						break;
+					}
+				}
+
+				// 無効なオブジェクトがない場合のみステップを進める
+				if (!hasInvakudObjects)
+				{
+					float timeStep = 1.0f / 60.0f;
+					int maxSubSteps = 10;
+					bool valid = true;
+					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i)
+					{
+						btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
+						btRigidBody* body = btRigidBody::upcast(obj);
+						if(!body||!body->getCollisionShape()||!body->getMotionState())
+						{
+							valid = false;
+							break;
+						}
+					}
+					if (valid)
+					{
+						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps);
+					}
+
+				}
+				else
+				{
+					CleanupAndReinitializePhysics();
+				}
+			}
+			else
+			{
+				CleanupAndReinitializePhysics();
+			}
+		}
+		catch (...) 
+		{
+			CleanupAndReinitializePhysics();
+		}
+	}
+
 	// オブジェクトの更新
 	for (auto& obj : _objects) if (obj)obj->InGameUpdate();
+
+	if(_collisionManager)_collisionManager->Update();
 
 	// オブジェクトの削除処理
 	for (auto& obj : _ToBeRemoved) {
