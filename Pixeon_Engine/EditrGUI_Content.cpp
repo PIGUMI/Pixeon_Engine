@@ -34,7 +34,7 @@ ImTextureID EditrGUI::GetAssetIcon(EditrGUI* gui, const std::string& name) {
 	return (ImTextureID)nullptr;
 }
 
-std::string AbbreviateName(const std::string& name, size_t maxBaseLen = 16)
+std::string EditrGUI::AbbreviateName(const std::string& name, size_t maxBaseLen)
 {
 	// 拡張子とベース名を分離
 	size_t dot = name.find_last_of('.');

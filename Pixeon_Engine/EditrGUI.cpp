@@ -98,6 +98,7 @@ void EditrGUI::Init() {
 	JsonIcon = LoadImg(L"SceneRoot/Editor/texture/Json.png", DirectX11::GetInstance()->GetDevice());
 	archiveIcon = LoadImg(L"SceneRoot/Editor/texture/Archive.png", DirectX11::GetInstance()->GetDevice());
 	ExeIcon = LoadImg(L"SceneRoot/Editor/texture/Exe.png", DirectX11::GetInstance()->GetDevice());
+	ObjectIcon = LoadImg(L"SceneRoot/Editor/texture/Object.png", DirectX11::GetInstance()->GetDevice());
 }
 
 void EditrGUI::Update() {

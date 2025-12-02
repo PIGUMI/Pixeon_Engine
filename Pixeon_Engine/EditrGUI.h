@@ -54,6 +54,9 @@ private:
 	void ShowSceneRenameWindow();
 	void ShowInputDebug();
 
+
+	std::string AbbreviateName(const std::string& name, size_t maxBaseLen = 16);
+
 	bool ShowLicense = false;
 	bool dockNeedsReset = false;
 	bool ShowSettingsWindow = false;
@@ -83,6 +86,7 @@ private:
 	ID3D11ShaderResourceView* JsonIcon;
 	ID3D11ShaderResourceView* archiveIcon;
 	ID3D11ShaderResourceView* ExeIcon;
+	ID3D11ShaderResourceView* ObjectIcon;
 	std::string LogBuffer;
 
 private:

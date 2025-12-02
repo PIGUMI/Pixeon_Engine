@@ -5,6 +5,7 @@
 #include "IMGUI/imgui_internal.h"
 #include "System.h"
 #include "StartUp.h"
+#include "EngineManager.h"
 #include "SettingManager.h"
 #include "SceneManger.h"
 #include "Object.h"
@@ -71,6 +72,9 @@ void EditrGUI::ShowHierarchy()
 				if (ImGui::MenuItem(ShiftJISToUTF8("íœ").c_str())) {
 					SceneManger::GetInstance()->GetCurrentScene()->RemoveObject(obj);
 					SelectedObject = nullptr;
+				}
+				if (ImGui::MenuItem(ShiftJISToUTF8("Prefab‚Æ‚µ‚Ä•Û‘¶").c_str())) {
+					EngineManager::GetInstance()->AddPrefab(obj);
 				}
 				ImGui::EndPopup();
 			}
