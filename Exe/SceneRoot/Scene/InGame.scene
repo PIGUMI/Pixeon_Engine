@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "8.51672 5.78223 1.21427 1.52 0.56 6.33678e-39 0.0551017 0.470364 0.784081 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "126.317 38.6886 38.4048 1.77998 0.499996 6.33678e-39 117.732 33.8944 40.2272 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -57,17 +57,12 @@
         {
             "Components": [
                 {
-                    "Data": "10 1 10 0 0 0 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 8
-                },
-                {
-                    "Data": "1\n1\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 7
+                    "Data": "Dungeon/FBX format/room-large.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n",
+                    "Name": "ModelRender",
+                    "Type": 5
                 }
             ],
-            "Name": "NewObject",
+            "Name": "Model",
             "Transform": {
                 "Position": [
                     0.0,
@@ -80,41 +75,9 @@
                     0.0
                 ],
                 "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0 0 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 8
-                },
-                {
-                    "Data": "1\n0\n1\n",
-                    "Name": "RigidBody",
-                    "Type": 7
-                }
-            ],
-            "Name": "NewObject1",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    5.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
+                    0.10000000149011612,
+                    0.10000000149011612,
+                    0.10000000149011612
                 ]
             }
         }
