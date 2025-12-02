@@ -296,7 +296,6 @@ void EngineManager::LoadPrefabs()
 	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + "Prefab" + ".scene";
 	std::ifstream inFile(filePath);
 	if (!inFile.is_open()) {
-		// ファイルが開けなかった場合、falseを返す
 		return;
 	}
 
