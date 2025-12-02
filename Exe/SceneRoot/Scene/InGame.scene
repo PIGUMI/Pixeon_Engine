@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "9.64287e-38 9.27554e-38 10 9.64287e-39 9.27554e-39 6.33678e-39 0 0 0 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "8.51672 5.78223 1.21427 1.52 0.56 6.33678e-39 0.0551017 0.470364 0.784081 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -40,6 +40,70 @@
                 "Position": [
                     0.0,
                     0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "10 1 10 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 8
+                },
+                {
+                    "Data": "1\n1\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 7
+                }
+            ],
+            "Name": "NewObject",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1 1 1 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 8
+                },
+                {
+                    "Data": "1\n0\n1\n",
+                    "Name": "RigidBody",
+                    "Type": 7
+                }
+            ],
+            "Name": "NewObject1",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    5.0,
                     0.0
                 ],
                 "Rotation": [
