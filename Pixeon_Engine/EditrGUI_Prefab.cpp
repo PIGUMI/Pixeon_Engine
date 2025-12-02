@@ -4,19 +4,18 @@
 #include "IMGUI/imgui_impl_win32.h"
 #include "IMGUI/imgui_internal.h"
 #include "EngineManager.h"
+#include "SceneManger.h"
+#include "Scene.h"
 #include "Object.h"
 #include <vector>
 #include <string>
-
 
 void EditrGUI::ShowPrefab()
 {
     ImGui::Begin(ShiftJISToUTF8("Prefab").c_str());
 
-    // Prefabリスト取得
     std::vector<Object*> prefabList = EngineManager::GetInstance()->GetPrefabs();
 
-    // グリッド描画パラメータ
     float iconSize = 48.0f;
     float itemWidth = 96.0f;
     float itemHeight = 80.0f;
@@ -36,7 +35,6 @@ void EditrGUI::ShowPrefab()
         std::string displayName = AbbreviateName(name, 12);
         std::string idName = name + "##prefab_" + std::to_string(index++);
 
-        // アイコン中央
         float groupX = ImGui::GetCursorPosX();
         float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
         ImGui::SetCursorPosX(cursorX);
@@ -71,7 +69,6 @@ void EditrGUI::ShowPrefab()
 
         ImGui::PopStyleColor(3);
 
-        // テキスト中央
         std::string textUTF8 = ShiftJISToUTF8(displayName);
         float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
         ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
@@ -81,9 +78,27 @@ void EditrGUI::ShowPrefab()
             textUTF8.c_str(),
             isSelected, 0, ImVec2(itemWidth, 0)
         );
+
+        // 右クリックでPopup
+        if (ImGui::BeginPopupContextItem("context"))
+        {
+            //// 必要な項目を追加例：
+            //if (ImGui::MenuItem(ShiftJISToUTF8("リネーム").c_str())) {
+            //    // リネーム処理
+            //    // 例：ShowPrefabRenameWindow = true; RenameTargetObject = prefab;
+            //    // 実装は好みに応じ EditrGUI に追加してください
+            //}
+            if (ImGui::MenuItem(ShiftJISToUTF8("インスタンス化").c_str())) {
+				SceneManger::GetInstance()->GetCurrentScene()->AddObjectLocal(prefab->Clone());
+            }
+            if (ImGui::MenuItem(ShiftJISToUTF8("削除").c_str())) {
+				EngineManager::GetInstance()->RemovePrefab(prefab);
+            }
+            ImGui::EndPopup();
+        }
+
         ImGui::PopID();
 
-        // 選択
         if (iconClicked || nameClicked) {
             selectedPrefabObj = prefab;
             SelectedObject = prefab;

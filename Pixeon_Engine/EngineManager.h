@@ -58,6 +58,7 @@ public:
 	bool AddPrefab(Object* prefab);
 	std::vector<Object*> GetPrefabs() const { return prefabs_; }
 	Object* GetPrefabByName(const std::string& name);
+	void RemovePrefab(Object* ptr);
 
 private:
 	void EditorUpdate();

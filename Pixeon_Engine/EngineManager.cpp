@@ -199,6 +199,13 @@ Object* EngineManager::GetPrefabByName(const std::string& name)
 	}
 	return nullptr;
 }
+// ”z—ñ‚©‚çPrefab‚ğíœ
+void EngineManager::RemovePrefab(Object* ptr)
+{
+	prefabs_.erase(std::remove(prefabs_.begin(), prefabs_.end(), ptr), prefabs_.end());
+	delete ptr;
+	ptr = nullptr;
+}
 
 void EngineManager::EditorUpdate() {
 	ScriptManager::Instance().Update();
