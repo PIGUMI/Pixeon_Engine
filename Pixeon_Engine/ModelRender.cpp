@@ -444,9 +444,9 @@ void ModelRenderComponent::DrawInspector() {
 	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string title;
 	title = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
-	if (!ImGui::CollapsingHeader(title.c_str()))return;
+	if (!ImGui::CollapsingHeader(title.c_str())) return;
 	title = "ModelTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
-	if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV))return;
+	if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) return;
 
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("描画モデル").c_str());
@@ -517,14 +517,26 @@ void ModelRenderComponent::DrawInspector() {
 	title = "マテリアル一覧##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::TreeNode(SJ(title.c_str()).c_str())) {
 		ImGui::Text("%s %zu", SJ("マテリアル数:").c_str(), m_materials.size());
-
 		for (size_t i = 0; i < m_materials.size(); ++i) {
 			ImGui::PushID((int)i);
 			ImGui::Text("Mat %zu", i);
 			ImGui::SameLine();
 			std::string shown = m_materials[i].texName.empty() ? SJ("(なし)") : m_materials[i].texName;
 			ImGui::Text("tex=%s", shown.c_str());
+			ImGui::SameLine();
+			// 「テクスチャ変更」ボタン
+			if (ImGui::Button(SJ("テクスチャ変更").c_str())) {
+				m_openTexPopup = true;
+				m_texPopupMatIndex = (int)i;
+				ImGui::OpenPopup("TextureSelectPopup");
+			}
 			ImGui::PopID();
+		}
+
+		// ループやTreeNode外でポップアップを管理
+		if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ShowTextureSelectPopup(m_texPopupMatIndex); // 注意: EndPopupはShowTextureSelectPopup内で呼ばない
+			ImGui::EndPopup();
 		}
 
 		ImGui::TreePop();
@@ -594,5 +606,52 @@ void ModelRenderComponent::ShowModelSelectPopup()
 		}
 
 		ImGui::EndPopup();
+	}
+}
+
+void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
+{
+	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	static char filter[128] = "";
+	ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
+
+	auto list = AssetManager::Instance()->GetCachedTextureNames();
+	ImGui::Text("%s: %zu", SJ("候補数").c_str(), list.size());
+	ImGui::Separator();
+	ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
+	static int highlight = -1;
+	for (int i = 0; i < (int)list.size(); ++i) {
+		const std::string& rawName = list[i];
+		if (filter[0] && rawName.find(filter) == std::string::npos) continue;
+		std::string dispName = EditrGUI::GetInstance()->ShiftJISToUTF8(rawName.c_str());
+		bool selected = (highlight == i);
+		if (ImGui::Selectable(dispName.c_str(), selected)) {
+			highlight = i;
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+				m_materials[materialIndex].texName = rawName;
+				m_materials[materialIndex].tex = TextureManager::Instance()->LoadOrGet(rawName);
+				ImGui::CloseCurrentPopup();
+				m_openTexPopup = false;
+				m_texPopupMatIndex = -1;
+			}
+		}
+	}
+	ImGui::EndChild();
+	ImGui::Separator();
+	if (ImGui::Button(SJ("決定").c_str())) {
+		if (highlight >= 0 && highlight < (int)list.size()) {
+			const std::string& sel = list[highlight];
+			m_materials[materialIndex].texName = sel;
+			m_materials[materialIndex].tex = TextureManager::Instance()->LoadOrGet(sel);
+		}
+		ImGui::CloseCurrentPopup();
+		m_openTexPopup = false;
+		m_texPopupMatIndex = -1;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button(SJ("キャンセル").c_str())) {
+		ImGui::CloseCurrentPopup();
+		m_openTexPopup = false;
+		m_texPopupMatIndex = -1;
 	}
 }
