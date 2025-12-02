@@ -25,9 +25,6 @@ void LineRenderer::Initialize()
 	if (FAILED(hr)) {
 		MessageBoxA(nullptr, "CreateInputLayout failed", "LineRenderer", MB_OK);
 	}
-
-	// CameraCB 用の CB は ShaderManager が ReflectShader で作成済み
-	// →ここで独自の m_matrixCB はもう使わないので生成不要
 }
 
 void LineRenderer::Finalize()

@@ -79,6 +79,18 @@ extern"C" {
 	PIXEON_API APIResult AddGameObject(SceneHandle scene, GameObjectHandle object);
 }
 
+/* 入力関するAPI */
+extern"C"
+{
+	/* キーボード */
+	PIXEON_API APIResult IsKeyPressed(char Key, bool* outPressed);
+	PIXEON_API APIResult IsKeyTrigger(char Key, bool* outTriggered);
+	PIXEON_API APIResult IsKeyRelease(char Key, bool* outReleased);
+	PIXEON_API APIResult IsKeyRepeat(char Key, bool* outRepeated);
+	PIXEON_API APIResult GetMouseMove(int* outX, int* outY);
+
+}
+
 /* コンポーネントに関するAPI */
 extern"C"
 {

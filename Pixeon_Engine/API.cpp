@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "SceneManger.h"
 
+#include "Input.h"
 #include "Component.h"
 #include "CameraComponent.h"
 #include "ImageRender.h"
@@ -92,6 +93,46 @@ extern "C" {
 		outTransform->scale.x = t.scale.x;
 		outTransform->scale.y = t.scale.y;
 		outTransform->scale.z = t.scale.z;
+		return PN_SUCCESS;
+	}
+}
+
+/* 入力処理 */
+extern "C" {
+	/* キーが押されているか */
+	PIXEON_API APIResult IsKeyPressed(char Key, bool* outPressed)
+	{
+		if (outPressed == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outPressed = IsKeyPress(Key);
+		return PN_SUCCESS;
+	}
+	/* キーがトリガーされたか */
+	PIXEON_API APIResult IsKeyTrigger(char Key, bool* outTriggered)
+	{
+		if (outTriggered == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outTriggered = IsKeyTrigger(Key);
+		return PN_SUCCESS;
+	}
+	/* キーがリリースされたか */
+	PIXEON_API APIResult IsKeyRelease(char Key, bool* outReleased)
+	{
+		if (outReleased == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outReleased = IsKeyRelease(Key);
+		return PN_SUCCESS;
+	}
+	/* キーがリピートされたか */
+	PIXEON_API APIResult IsKeyRepeat(char Key, bool* outRepeated)
+	{
+		if (outRepeated == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outRepeated = IsKeyRepeat(Key);
+		return PN_SUCCESS;
+	}
+	/* マウスの移動量取得 */
+	PIXEON_API APIResult GetMouseMove(int* outX, int* outY)
+	{
+		if (outX == nullptr || outY == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outX = MouseMoveX();
+		*outY = MouseMoveY();
 		return PN_SUCCESS;
 	}
 }
