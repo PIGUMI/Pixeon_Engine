@@ -74,6 +74,7 @@ void SceneManger::PlayUpdate() {
 		_nextScene = nullptr;
 		_currentScene->Init();
 		_currentScene->LoadToFile();
+		_currentScene->EditUpdate();
 		_currentScene->BeginPlay();
 	}
 	if (_currentScene)_currentScene->PlayUpdate();

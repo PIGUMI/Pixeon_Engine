@@ -83,7 +83,6 @@ void Scene::BeginPlay() {
 			_SaveObjects.push_back(cloneObj);
 		}
 	}
-
 	// •¨—‰‰Z‚ÉŠÖ‚·‚éƒR[ƒh
 	if (pPhysicsWorld)
 	{

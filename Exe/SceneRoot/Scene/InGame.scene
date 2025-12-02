@@ -1,7 +1,62 @@
 {
-    "Objects": [],
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "9.64287e-38 9.27554e-38 10 9.64287e-39 9.27554e-39 6.33678e-39 0 0 0 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Cam",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "SkyBox.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n",
+                    "Name": "ModelRender",
+                    "Type": 5
+                }
+            ],
+            "Name": "SkyBox",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
     "SceneSettings": {
-        "MainCameraNumber": 2752604,
+        "MainCameraNumber": 0,
         "Name": "InGame"
     }
 }
