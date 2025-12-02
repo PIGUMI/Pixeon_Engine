@@ -1,4 +1,5 @@
 #include "API.h"
+#include "EngineManager.h"
 #include "Object.h"
 #include "Scene.h"
 #include "SceneManger.h"
@@ -75,6 +76,26 @@ extern "C" {
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		bool result = targetScene->AddObject(targetObject);
 		if (!result)return PN_ERROR_INVALID_PARAMETER;
+		return PN_SUCCESS;
+	}
+	/* Prefabからオブジェクトの取得 */
+	PIXEON_API APIResult GetPrefabObject(const char* prefabName, GameObjectHandle* outObject)
+	{
+		if (prefabName == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		Object* prefabObject = EngineManager::GetInstance()->GetPrefabByName(prefabName);
+		if (prefabObject == nullptr)return PN_ERROR_NOT_FOUND;
+		*outObject = reinterpret_cast<GameObjectHandle*>(prefabObject);
+		return PN_SUCCESS;
+	}
+	/* ゲームオブジェクトのシーンからの削除 */
+	PIXEON_API APIResult RemoveGameObject(SceneHandle scene, GameObjectHandle object)
+	{
+		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		Scene* targetScene = reinterpret_cast<Scene*>(scene);
+		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
+		Object* targetObject = reinterpret_cast<Object*>(object);
+		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
+		targetScene->RemoveObject(targetObject);
 		return PN_SUCCESS;
 	}
 	/* トランスフォームの取得 */
