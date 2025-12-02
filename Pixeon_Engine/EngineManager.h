@@ -20,6 +20,7 @@
 #include <chrono>
 
 class GameRenderTarget;
+class Object;
 
 class EngineManager {
 private:
@@ -54,6 +55,9 @@ public:
 	bool IsShowGUI() const { return m_bIsShowGUI_; }
 	void SetShowGUI(bool isShow) { m_bIsShowGUI_ = isShow; }
 	float GetDeltaTime() { return deltaTime_; }
+	bool AddPrefab(Object* prefab);
+	std::vector<Object*> GetPrefabs() const { return prefabs_; }
+	Object* GetPrefabByName(const std::string& name);
 
 private:
 	void EditorUpdate();
@@ -63,6 +67,9 @@ private:
 
 	EngineManager();
 	~EngineManager() {};
+
+	void SavePrefabs();
+	void LoadPrefabs();
 
 private:
 	static EngineManager* instance_;
@@ -79,6 +86,8 @@ private:
 	// GUI•\Ž¦”»’è
 	bool m_bIsShowGUI_;
 	bool m_bIsBeginPlayCalled;
+	/* Prefab */
+	std::vector<Object*> prefabs_;
 };
 
 #endif // !ENGINE_MANAGER_H

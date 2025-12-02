@@ -43,6 +43,9 @@ int EngineManager::Init(const EngineConfig& InPut)
 	m_hWnd_ = InPut.wnd;
 	bUpdateDraw = false;;
 
+	/* Prefabの読み込み */
+	LoadPrefabs();
+
 	/* 設定の読み込み */
 	SettingManager::GetInstance()->LoadConfig();
 
@@ -130,6 +133,8 @@ void EngineManager::Draw() {
 }
 
 void EngineManager::UnInit() {
+	// Prefabの保存
+	SavePrefabs();
 	UninitInput();
 	LineRenderer::GetInstance()->Finalize();
 	// AssetManager の自動同期停止
@@ -155,6 +160,38 @@ void EngineManager::UnInit() {
 
 ID3D11ShaderResourceView* EngineManager::GetGameRender() {
 	return m_gameRenderTarget_->GetShaderResourceView();
+}
+
+bool EngineManager::AddPrefab(Object* prefab)
+{
+	try
+	{
+		Object* Copy = prefab->Clone();
+		Copy->SetParentScene(nullptr);
+		// 同じ名前のPrefabが存在する場合、名前に番号を付与
+		std::string baseName = Copy->GetObjectName();
+		int count = 1;
+		while (GetPrefabByName(Copy->GetObjectName())) {
+			Copy->SetObjectName(baseName + std::to_string(count));
+			count++;
+		}
+		prefabs_.push_back(Copy);
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
+Object* EngineManager::GetPrefabByName(const std::string& name)
+{
+	for (auto prefab : prefabs_) {
+		if (prefab->GetObjectName() == name) {
+			return prefab;
+		}
+	}
+	return nullptr;
 }
 
 void EngineManager::EditorUpdate() {
@@ -197,4 +234,106 @@ EngineManager::EngineManager()
 	:lastUpdateTime_(0), bUpdateDraw(false), targetFrameTime_(16.67f), deltaTime_(0.0f), m_hWnd_(0),
 	m_gameRenderTarget_(nullptr), m_bInGame_(false), m_bIsShowGUI_(false), m_bIsBeginPlayCalled(false)
 {
+	prefabs_.clear();
+}
+
+void EngineManager::SavePrefabs()
+{
+	std::vector<Object*> SaveObjects;
+	SaveObjects = prefabs_;
+	// 現在時刻の取得
+	auto Now = std::chrono::system_clock::now();
+	auto in_time_t = std::chrono::system_clock::to_time_t(Now);
+	std::tm localtime;
+	localtime_s(&localtime, &in_time_t);
+
+	nlohmann::json SceneData;
+	SceneData["SceneSettings"]["Name"] = "prefabs";
+
+	// オブジェクトデータの保存
+	nlohmann::json ObjectArray = nlohmann::json::array();
+
+	for (const auto& Object : SaveObjects) {
+		if (Object) {
+			// オブジェクトの基本情報の保存
+			nlohmann::json ObjectData;
+			ObjectData["Name"] = Object->GetObjectName();
+			ObjectData["Transform"]["Position"] = { Object->GetTransform().position.x, Object->GetTransform().position.y, Object->GetTransform().position.z };
+			ObjectData["Transform"]["Rotation"] = { Object->GetTransform().rotation.x, Object->GetTransform().rotation.y, Object->GetTransform().rotation.z };
+			ObjectData["Transform"]["Scale"] = { Object->GetTransform().scale.x,    Object->GetTransform().scale.y,    Object->GetTransform().scale.z };
+
+			// コンポーネントデータの保存
+			nlohmann::json ComponentData = nlohmann::json::array();
+			for (const auto& comp : Object->GetComponents()) {
+				if (comp) {
+					nlohmann::json CompJson;
+					CompJson["Type"] = comp->GetComponentType();
+					CompJson["Name"] = comp->GetComponentName();
+					std::ostringstream oss;
+					comp->SaveToFile(oss);
+					CompJson["Data"] = oss.str();
+					ComponentData.push_back(CompJson);
+				}
+			}
+			ObjectData["Components"] = ComponentData;
+			ObjectArray.push_back(ObjectData);
+		}
+	}
+	SceneData["Objects"] = ObjectArray;
+
+	// ファイル名の生成
+	std::string File;
+	File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab" + ".scene";
+	std::ofstream outFile(File);
+	if (outFile.is_open()) {
+		outFile << SceneData.dump(4); // インデント幅4で保存
+		outFile.close();
+	}
+}
+
+void EngineManager::LoadPrefabs()
+{
+	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + "Prefab" + ".scene";
+	std::ifstream inFile(filePath);
+	if (!inFile.is_open()) {
+		// ファイルが開けなかった場合、falseを返す
+		return;
+	}
+
+	nlohmann::json sceneData;
+	inFile >> sceneData;
+	inFile.close();
+
+	// Objectsの読み込み
+	for (const auto& objData : sceneData["Objects"]) {
+		Object* newObj = new Object();
+		newObj->SetParentScene(nullptr);
+		newObj->SetObjectName(objData["Name"].get<std::string>());
+		// Transformの読み込み
+		auto pos = objData["Transform"]["Position"];
+		auto rot = objData["Transform"]["Rotation"];
+		auto scl = objData["Transform"]["Scale"];
+		Transform transform;
+		transform.position = { pos[0].get<float>(), pos[1].get<float>(), pos[2].get<float>() };
+		transform.rotation = { rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>() };
+		transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
+		newObj->SetTransform(transform);
+		// コンポーネントの読み込み
+		for (const auto& compData : objData["Components"]) {
+			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
+			auto name = compData["Name"].get<std::string>();
+			auto data = compData["Data"].get<std::string>();
+			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
+			if (newComp) {
+				newComp->SetComponentName(name);
+				std::istringstream iss(data);
+				newComp->LoadFromFile(iss);
+			}
+			else {
+				MessageBox(nullptr, "コンポーネントの追加に失敗しました", "Error", MB_OK);
+			}
+		}
+		prefabs_.push_back(newObj);
+		delete newObj;
+	}
 }
