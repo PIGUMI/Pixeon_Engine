@@ -29,7 +29,7 @@
                     "Type": 3
                 },
                 {
-                    "Data": "ScriptName \n",
+                    "Data": "ScriptName SceneChangeByTitle\n",
                     "Name": "ScripComponent",
                     "Type": 4
                 }

@@ -1,72 +1,7 @@
 {
-    "Objects": [
-        {
-            "Components": [
-                {
-                    "Data": "10.2865 1.16712 -1.34701 1.69 0.12 6.33678e-39 0.428871 -0.03 -0.166343 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
-                    "Name": "CameraComponent",
-                    "Type": 0
-                }
-            ],
-            "Name": "Cam",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "SkyBox.fbx\n1 1 1 1\nVS_ModelBasic\nPS_ModelBasic\n",
-                    "Name": "ModelRender",
-                    "Type": 5
-                },
-                {
-                    "Data": "ScriptName SkyBox\n",
-                    "Name": "ScripComponent",
-                    "Type": 4
-                },
-                {
-                    "Data": "SkyBox.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n",
-                    "Name": "ModelRender1",
-                    "Type": 5
-                }
-            ],
-            "Name": "SkyBox",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        }
-    ],
+    "Objects": [],
     "SceneSettings": {
-        "MainCameraNumber": 0,
+        "MainCameraNumber": 2752604,
         "Name": "InGame"
     }
 }

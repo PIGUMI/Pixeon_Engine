@@ -1,10 +1,13 @@
 #include "API.h"
 #include "Object.h"
+#include "Scene.h"
+#include "SceneManger.h"
+
+#include "Input.h"
 #include "Component.h"
 #include "CameraComponent.h"
 #include "ImageRender.h"
-#include "Scene.h"
-#include "SceneManger.h"
+#include "LightComponent.h"
 
 /* 基本API */
 extern "C" {
@@ -16,6 +19,13 @@ extern "C" {
 		currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (currentScene == nullptr) return PN_ERROR_NULL_POINTER;
 		*outHandle = reinterpret_cast<SceneHandle*>(currentScene);
+		return PN_SUCCESS;
+	}
+	/* シーン切り替え */
+	PIXEON_API APIResult ChangeScene(const char* sceneName)
+	{
+		if (sceneName == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		SceneManger::GetInstance()->ChangeScene(sceneName);
 		return PN_SUCCESS;
 	}
 	/* ゲームオブジェクトの取得 */
@@ -83,6 +93,46 @@ extern "C" {
 		outTransform->scale.x = t.scale.x;
 		outTransform->scale.y = t.scale.y;
 		outTransform->scale.z = t.scale.z;
+		return PN_SUCCESS;
+	}
+}
+
+/* 入力処理 */
+extern "C" {
+	/* キーが押されているか */
+	PIXEON_API APIResult IsKeyPressed(char Key, bool* outPressed)
+	{
+		if (outPressed == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outPressed = IsKeyPress(Key);
+		return PN_SUCCESS;
+	}
+	/* キーがトリガーされたか */
+	PIXEON_API APIResult IsKeyTrigger(char Key, bool* outTriggered)
+	{
+		if (outTriggered == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outTriggered = IsKeyTrigger(Key);
+		return PN_SUCCESS;
+	}
+	/* キーがリリースされたか */
+	PIXEON_API APIResult IsKeyRelease(char Key, bool* outReleased)
+	{
+		if (outReleased == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outReleased = IsKeyRelease(Key);
+		return PN_SUCCESS;
+	}
+	/* キーがリピートされたか */
+	PIXEON_API APIResult IsKeyRepeat(char Key, bool* outRepeated)
+	{
+		if (outRepeated == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outRepeated = IsKeyRepeat(Key);
+		return PN_SUCCESS;
+	}
+	/* マウスの移動量取得 */
+	PIXEON_API APIResult GetMouseMove(int* outX, int* outY)
+	{
+		if (outX == nullptr || outY == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		*outX = MouseMoveX();
+		*outY = MouseMoveY();
 		return PN_SUCCESS;
 	}
 }
@@ -173,7 +223,7 @@ extern "C" {
 		return PN_SUCCESS;
 	}
 	/* 描画モードの変更 */
-	/* 0:2D描画 1:ビルボード 2:3D描画 */
+	/* 0:2D描画 1:ビルボード 2:3D描画 3:UI */
 	PIXEON_API APIResult ImageRender_SetPlacementMode(ComponentHandle imageRender, int mode)
 	{
 		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
@@ -183,7 +233,7 @@ extern "C" {
 		return PN_SUCCESS;
 	}
 	/* 描画モードの取得 */
-	/* 0:2D描画 1:ビルボード 2:3D描画 */
+	/* 0:2D描画 1:ビルボード 2:3D描画 3:UI */
 	PIXEON_API APIResult ImageRender_GetPlacementMode(ComponentHandle imageRender, int* outMode)
 	{
 		if (imageRender == nullptr || outMode == nullptr)return PN_ERROR_INVALID_PARAMETER;
@@ -301,3 +351,126 @@ extern "C" {
 		return PN_SUCCESS;
 	}
 }
+
+/* ライトコンポーネントに関するAPI */
+extern "C" {
+	/* ライトコンポーネントのモード設定 */
+	/* 0:Directional 1:Point 2:Spot */
+	PIXEON_API APIResult LightComponent_SetType(ComponentHandle lightComponent, int type)
+	{
+		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		if (type < 0 || type > 2)return PN_ERROR_INVALID_PARAMETER;
+		targetComp->SetType(static_cast<LightComponent::LightType>(type));
+		return PN_SUCCESS;
+	}
+	/* ライトコンポーネントのモード取得 */
+	/* 0:Directional 1:Point 2:Spot */
+	PIXEON_API APIResult LightComponent_GetType(ComponentHandle lightComponent, int* outType)
+	{
+		if (lightComponent == nullptr || outType == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		*outType = static_cast<int>(targetComp->GetType());
+		return PN_SUCCESS;
+	}
+	/* ライト色設定 */
+	PIXEON_API APIResult LightComponent_SetColor(ComponentHandle lightComponent, Float3 color)
+	{
+		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		DirectX::XMFLOAT3 c = { color.x, color.y, color.z };
+		targetComp->SetColor(c);
+		return PN_SUCCESS;
+	}
+	/* ライト色取得 */
+	PIXEON_API APIResult LightComponent_GetColor(ComponentHandle lightComponent, Float3* outColor)
+	{
+		if (lightComponent == nullptr || outColor == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		DirectX::XMFLOAT3 color = targetComp->GetColor();
+		outColor->x = color.x;
+		outColor->y = color.y;
+		outColor->z = color.z;
+		return PN_SUCCESS;
+	}
+	/* ライト強度取得 */
+	PIXEON_API APIResult LightComponent_SetIntensity(ComponentHandle lightComponent, float intensity)
+	{
+		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		targetComp->SetIntensity(intensity);
+		return PN_SUCCESS;
+	}
+	/* ライト強度取得 */
+	PIXEON_API APIResult LightComponent_GetIntensity(ComponentHandle lightComponent, float* outIntensity)
+	{
+		if (lightComponent == nullptr || outIntensity == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		*outIntensity = targetComp->GetIntensity();
+		return PN_SUCCESS;
+	}
+	/* ライト距離設定 */
+	PIXEON_API APIResult LightComponent_SetRange(ComponentHandle lightComponent, float range)
+	{
+		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		targetComp->SetRange(range);
+		return PN_SUCCESS;
+	}
+	/* ライト距離取得 */
+	PIXEON_API APIResult LightComponent_GetRange(ComponentHandle lightComponent, float* outRange)
+	{
+		if (lightComponent == nullptr || outRange == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		*outRange = targetComp->GetRange();
+		return PN_SUCCESS;
+	}
+	/* スポットライト外側角度設定 */
+	PIXEON_API APIResult LightComponent_SetSpotInner(ComponentHandle lightComponent, float innerDeg)
+	{
+		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		targetComp->SetSpotInner(innerDeg);
+		return PN_SUCCESS;
+	}
+	/* スポットライト外側角度取得 */
+	PIXEON_API APIResult LightComponent_GetSpotInner(ComponentHandle lightComponent, float* outInnerDeg)
+	{
+		if (lightComponent == nullptr || outInnerDeg == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		*outInnerDeg = targetComp->GetSpotInner();
+		return PN_SUCCESS;
+	}
+	/* スポットライト外側角度設定 */
+	PIXEON_API APIResult LightComponent_SetSpotOuter(ComponentHandle lightComponent, float outerDeg)
+	{
+		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		targetComp->SetSpotOuter(outerDeg);
+		return PN_SUCCESS;
+	}
+	/* スポットライト外側角度取得 */
+	PIXEON_API APIResult LightComponent_GetSpotOuter(ComponentHandle lightComponent, float* outOuterDeg)
+	{
+		if (lightComponent == nullptr || outOuterDeg == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		*outOuterDeg = targetComp->GetSpotOuter();
+		return PN_SUCCESS;
+	}
+	/* スポットライト外側角度設定 */
+	PIXEON_API APIResult LightComponent_SetEnabled(ComponentHandle lightComponent, bool enabled)
+	{
+		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		targetComp->SetEnabled(enabled);
+		return PN_SUCCESS;
+	}
+	/* スポットライト外側角度取得 */
+	PIXEON_API APIResult LightComponent_IsEnabled(ComponentHandle lightComponent, bool* outEnabled)
+	{
+		if (lightComponent == nullptr || outEnabled == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
+		*outEnabled = targetComp->IsEnabled();
+		return PN_SUCCESS;
+	}
+};
