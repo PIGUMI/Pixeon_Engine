@@ -125,8 +125,6 @@ extern"C"
 	PIXEON_API APIResult LightComponent_SetEnabled(ComponentHandle lightComponent, bool enabled);
 	PIXEON_API APIResult LightComponent_IsEnabled(ComponentHandle lightComponent, bool* outEnabled);
 	/*                */
-
-
 }
 
 #endif// API.h
