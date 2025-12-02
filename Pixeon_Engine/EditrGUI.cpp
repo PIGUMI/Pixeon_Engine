@@ -295,8 +295,8 @@ void EditrGUI::WindowGUI()
 	ShowGameView();
 	if (EngineManager::GetInstance()->IsShowGUI())return;
 	ShowContentDrawer();
-	ShowConsole();
 	ShowPrefab();
+	ShowConsole();
 	ShaderEditorWindow();
 	ShaderListWindow();
 	ShowHierarchy();
