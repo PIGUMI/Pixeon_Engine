@@ -283,7 +283,7 @@ void EngineManager::SavePrefabs()
 
 	// ファイル名の生成
 	std::string File;
-	File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab" + ".scene";
+	File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab" + ".meta";
 	std::ofstream outFile(File);
 	if (outFile.is_open()) {
 		outFile << SceneData.dump(4); // インデント幅4で保存
@@ -293,7 +293,7 @@ void EngineManager::SavePrefabs()
 
 void EngineManager::LoadPrefabs()
 {
-	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + "Prefab" + ".scene";
+	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + "Prefab" + ".meta";
 	std::ifstream inFile(filePath);
 	if (!inFile.is_open()) {
 		return;
