@@ -66,6 +66,9 @@
     <Filter Include="ソース ファイル\Component\Other">
       <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\memo">
+      <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -361,5 +364,10 @@
     <ClInclude Include="_Geometry.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="20251202.txt">
+      <Filter>リソース ファイル\memo</Filter>
+    </Text>
   </ItemGroup>
 </Project>

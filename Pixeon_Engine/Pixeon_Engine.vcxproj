@@ -238,6 +238,9 @@
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="20251202.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
