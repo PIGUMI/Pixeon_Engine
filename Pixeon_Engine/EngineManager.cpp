@@ -42,10 +42,6 @@ int EngineManager::Init(const EngineConfig& InPut)
 	lastUpdateTime_ = timeGetTime();
 	m_hWnd_ = InPut.wnd;
 	bUpdateDraw = false;;
-
-	/* Prefab‚Ì“Ç‚İ‚İ */
-	LoadPrefabs();
-
 	/* İ’è‚Ì“Ç‚İ‚İ */
 	SettingManager::GetInstance()->LoadConfig();
 
@@ -97,6 +93,9 @@ int EngineManager::Init(const EngineConfig& InPut)
 
 	/* “ü—Í‰Šú‰» */
 	InitInput();
+
+	/* Prefab‚Ì“Ç‚İ‚İ */
+	LoadPrefabs();
 
 	return 0;
 }
