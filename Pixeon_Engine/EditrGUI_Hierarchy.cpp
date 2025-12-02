@@ -5,6 +5,7 @@
 #include "IMGUI/imgui_internal.h"
 #include "System.h"
 #include "StartUp.h"
+#include "EngineManager.h"
 #include "SettingManager.h"
 #include "SceneManger.h"
 #include "Object.h"
@@ -68,6 +69,9 @@ void EditrGUI::ShowHierarchy()
 			// 右クリックでコンテキストメニュー表示
 			if (ImGui::BeginPopupContextItem(popupLabel.c_str(), ImGuiPopupFlags_MouseButtonRight))
 			{
+				if (ImGui::MenuItem(ShiftJISToUTF8("Prefabとして保存").c_str())) {
+					EngineManager::GetInstance()->AddPrefab(obj);
+				}
 				if (ImGui::MenuItem(ShiftJISToUTF8("削除").c_str())) {
 					SceneManger::GetInstance()->GetCurrentScene()->RemoveObject(obj);
 					SelectedObject = nullptr;

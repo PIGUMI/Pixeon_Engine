@@ -34,7 +34,7 @@ ImTextureID EditrGUI::GetAssetIcon(EditrGUI* gui, const std::string& name) {
 	return (ImTextureID)nullptr;
 }
 
-std::string AbbreviateName(const std::string& name, size_t maxBaseLen = 16)
+std::string EditrGUI::AbbreviateName(const std::string& name, size_t maxBaseLen)
 {
 	// 拡張子とベース名を分離
 	size_t dot = name.find_last_of('.');
@@ -86,6 +86,7 @@ void  EditrGUI::HandleAssetClick(const std::filesystem::path& path)
 		std::vector<std::string> sceneList = SceneManger::GetInstance()->GetSceneList();
 		// シーンリストに存在する場合のみ切り替え
 		SceneManger::GetInstance()->ChangeScene(sceneName);
+		SelectedObject = nullptr;
 	}
 }
 
@@ -106,7 +107,7 @@ void EditrGUI::HandleAssetContextMenu(const std::filesystem::path& path)
 void EditrGUI::ShowContentDrawer() {
 	// 初期パス設定（Assetsフォルダ）
 	if (currentDir.empty()) {
-		std::string assetsPath = SettingManager::GetInstance()->GetAssetsFilePath();
+		std::string assetsPath = "SceneRoot/";
 		currentDir = assetsPath;
 	}
 

@@ -201,8 +201,8 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 		float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
 		float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
 
-		float cx = W * 0.5f + m_offset2D.x ;
-		float cy = H * 0.5f + m_offset2D.y ;
+		float cx = W * 0.5f + m_offset2D.x;
+		float cy = H * 0.5f + m_offset2D.y;
 
 		float hw = m_size2D.x * 0.5f;
 		float hh = m_size2D.y * 0.5f;
@@ -547,7 +547,7 @@ void ImageRender::DrawInspector() {
 		ImGui::Text("(%d x %d)", (int)m_texture->width, (int)m_texture->height);
 	}
 
-	std::string modeLabels[4] = { SJ("2D配置"), SJ("ビルボード"), SJ("3D配置"),SJ("UI")};
+	std::string modeLabels[4] = { SJ("2D配置"), SJ("ビルボード"), SJ("3D配置"),SJ("UI") };
 	int modeIdx = (int)m_mode;
 	if (ImGui::BeginCombo(SJ("配置モード").c_str(), modeLabels[modeIdx].c_str())) {
 		for (int i = 0; i < 4; ++i) {
@@ -612,5 +612,4 @@ void ImageRender::DrawInspector() {
 		}
 		ImGui::TreePop();
 	}
-
 }
