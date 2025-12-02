@@ -134,6 +134,13 @@ void EngineManager::Draw() {
 void EngineManager::UnInit() {
 	// Prefab‚Ì•Û‘¶
 	SavePrefabs();
+	/* Prefab‚ÌƒfƒŠ[ƒgˆ— */
+	for (auto prefab : prefabs_) {
+		if (prefab) {
+			delete prefab;
+			prefab = nullptr;
+		}
+	}
 	UninitInput();
 	LineRenderer::GetInstance()->Finalize();
 	// AssetManager ‚ÌŽ©“®“¯Šú’âŽ~
@@ -332,6 +339,5 @@ void EngineManager::LoadPrefabs()
 			}
 		}
 		prefabs_.push_back(newObj);
-		delete newObj;
 	}
 }

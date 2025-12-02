@@ -69,12 +69,12 @@ void EditrGUI::ShowHierarchy()
 			// 右クリックでコンテキストメニュー表示
 			if (ImGui::BeginPopupContextItem(popupLabel.c_str(), ImGuiPopupFlags_MouseButtonRight))
 			{
+				if (ImGui::MenuItem(ShiftJISToUTF8("Prefabとして保存").c_str())) {
+					EngineManager::GetInstance()->AddPrefab(obj);
+				}
 				if (ImGui::MenuItem(ShiftJISToUTF8("削除").c_str())) {
 					SceneManger::GetInstance()->GetCurrentScene()->RemoveObject(obj);
 					SelectedObject = nullptr;
-				}
-				if (ImGui::MenuItem(ShiftJISToUTF8("Prefabとして保存").c_str())) {
-					EngineManager::GetInstance()->AddPrefab(obj);
 				}
 				ImGui::EndPopup();
 			}
