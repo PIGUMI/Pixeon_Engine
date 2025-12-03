@@ -215,7 +215,7 @@
     <ClCompile Include="EditorGUI_UIAnimatior.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
-    <ClCompile Include="UIAnimatoData.cpp">
+    <ClCompile Include="Animator2D.cpp">
       <Filter>ソース ファイル\BaseClass</Filter>
     </ClCompile>
   </ItemGroup>
@@ -373,7 +373,7 @@
     <ClInclude Include="_Geometry.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
-    <ClInclude Include="UIAnimatoData.h">
+    <ClInclude Include="Animator2D.h">
       <Filter>ソース ファイル\BaseClass</Filter>
     </ClInclude>
   </ItemGroup>

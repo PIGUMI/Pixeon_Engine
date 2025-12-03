@@ -1,4 +1,4 @@
-#include "UIAnimatoData.h"
+#include "Animator2D.h"
 #include <nlohmann/json.hpp>
 #include <chrono>
 #include <algorithm>
@@ -12,7 +12,7 @@ static double GetTimeSeconds()
 	return std::chrono::duration_cast<std::chrono::duration<double>>(epoch).count();
 }
 
-UIAnimatoData::UIAnimatoData()
+Animator2D::Animator2D()
 	:bLoop_(false),
   bFirst_(true),
   fStartTime_(0.0f),
@@ -20,7 +20,7 @@ UIAnimatoData::UIAnimatoData()
   fTotalDuration_(0.0f)
 {
 }
-UIAnimatoData::~UIAnimatoData()
+Animator2D::~Animator2D()
 {
 	for(auto obj : KeyFrames_)
 	{
@@ -29,7 +29,7 @@ UIAnimatoData::~UIAnimatoData()
 	}
 }
 
-void UIAnimatoData::Update()
+void Animator2D::Update()
 {
 	// 現在時刻取得（秒）
 	double nowSec = GetTimeSeconds();
@@ -126,7 +126,7 @@ void UIAnimatoData::Update()
 	}
 }
 
-void UIAnimatoData::Draw()
+void Animator2D::Draw()
 {
 	std::vector<KeyFrame*> ActiveKeyFrames;
 	// アクティブなキーフレームを収集
@@ -152,21 +152,21 @@ void UIAnimatoData::Draw()
 	}
 }
 
-void UIAnimatoData::SaveFile()
+void Animator2D::SaveFile()
 {
 }
 
-void UIAnimatoData::LoadFile(std::string FilePath)
+void Animator2D::LoadFile(std::string FilePath)
 {
 }
 
 
-void UIAnimatoData::AddKeyFrame(const KeyFrame& keyframe)
+void Animator2D::AddKeyFrame(const KeyFrame& keyframe)
 {
 	KeyFrames_.push_back(keyframe);
 }
 
-vec2 UIAnimatoData::EaseByBezierCurve(const CurveData& curve, const vec2& startvalue, const vec2& endvalue, float elapsed, float duration)
+vec2 Animator2D::EaseByBezierCurve(const CurveData& curve, const vec2& startvalue, const vec2& endvalue, float elapsed, float duration)
 {
 	// elapsed と duration から 0..1 の t を計算
 	float t;

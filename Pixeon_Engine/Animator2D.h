@@ -68,11 +68,11 @@ inline vec2 EvalCubicBezier(const vec2& p0, const vec2& p1, const vec2& p2, cons
 	return p;
 }
 
-class UIAnimatoData
+class Animator2D
 {
 public:
-	UIAnimatoData();
-	~UIAnimatoData();
+	Animator2D();
+	~Animator2D();
 	void Update();
 	void Draw();
 
