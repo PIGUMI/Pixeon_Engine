@@ -11,6 +11,12 @@ struct Transform
 	DirectX::XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };
 };
 
+struct UIInfo
+{
+	DirectX::XMFLOAT2 UVPos;
+	DirectX::XMFLOAT2 UVScale;
+};
+
 struct CollisionInfo
 {
 	Object* HitObject = nullptr;
