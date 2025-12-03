@@ -156,9 +156,10 @@ void UIAnimatoData::SaveFile()
 {
 }
 
-void UIAnimatoData::LoadFile()
+void UIAnimatoData::LoadFile(std::string FilePath)
 {
 }
+
 
 void UIAnimatoData::AddKeyFrame(const KeyFrame& keyframe)
 {

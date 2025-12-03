@@ -77,7 +77,9 @@ public:
 	void Draw();
 
 	void SaveFile();
-	void LoadFile();
+	void LoadFile(std::string FilePath);
+
+
 	
 	void AddKeyFrame(const KeyFrame& keyframe);
 	std::vector<KeyFrame> GetKeyFrames() { return KeyFrames_; }
