@@ -15,6 +15,8 @@
 #include <vector>
 #include <string>
 #include <Windows.h> // ShellExecute用
+#include <comdef.h>   // _bstr_t, _variant_t
+#include <oleauto.h>  // IDispatch
 
 static std::string selectedExt = "";
 static std::filesystem::path currentDir;
@@ -61,9 +63,39 @@ std::string EditrGUI::AbbreviateName(const std::string& name, size_t maxBaseLen)
 	return shortBase + ext;                            // ★ 最後に拡張子をそのまま付ける
 }
 
-// Visual Studioでファイルを開く
-void OpenWithVisualStudio(const std::string& filepath) {
-	ShellExecuteA(NULL, "open", "devenv.exe", filepath.c_str(), NULL, SW_SHOWNORMAL);
+static std::wstring ToWideACP(const std::string& s) {
+	int len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, nullptr, 0);
+	if (len <= 0) return L"";
+	std::wstring w(len - 1, 0);
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, &w[0], len);
+	return w;
+}
+
+static void OpenWithVisualStudio(const std::string& filepath) {
+	// 1) ファイルの存在チェック（相対→絶対に変換）
+	char fullPathBuf[MAX_PATH];
+	if (GetFullPathNameA(filepath.c_str(), MAX_PATH, fullPathBuf, nullptr) == 0) {
+		// 失敗時はそのまま渡すが、ログ等を出すことを推奨
+		strncpy_s(fullPathBuf, filepath.c_str(), MAX_PATH - 1);
+	}
+	// 存在しない場合はメッセージ表示（任意）
+	if (GetFileAttributesA(fullPathBuf) == INVALID_FILE_ATTRIBUTES) {
+		MessageBoxA(NULL, "指定されたファイルが存在しません。", "Visual Studio", MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	// 2) /Edit で既存インスタンスにエディタとして開かせる
+	//    パスは必ず二重引用符で囲む
+	std::string args = "/Edit \"" + std::string(fullPathBuf) + "\"";
+
+	ShellExecuteA(
+		NULL,
+		"open",
+		"devenv.exe",
+		args.c_str(),
+		NULL,
+		SW_SHOWNORMAL
+	);
 }
 
 void  EditrGUI::HandleAssetClick(const std::filesystem::path& path)
