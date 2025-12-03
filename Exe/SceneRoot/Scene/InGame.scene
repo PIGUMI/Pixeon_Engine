@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "8.83297 5.64713 -4.78431 8.49002 0.46 0 1.62465 1.20765 0.538383 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "-46.687 8.86782 -3.13349 11.36 0.23 0 -37.5898 6.58804 -6.60377 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -75,6 +75,11 @@
                     "Data": "ScriptName \n",
                     "Name": "ScripComponent",
                     "Type": 4
+                },
+                {
+                    "Data": "",
+                    "Name": "Animator2DComponent",
+                    "Type": 9
                 }
             ],
             "Name": "Player",
@@ -107,36 +112,14 @@
                     "Data": "1\n1\n0\n",
                     "Name": "RigidBody",
                     "Type": 7
-                }
-            ],
-            "Name": "floor",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
+                },
                 {
-                    "Data": "SkyBox.jpg\n3\n128 128\n1 1\n0 0\n0 0 0\n0 0 0.5 0.5\n1 1 1 1\n",
+                    "Data": "2\n128\n128 1\n1 0\n0 0\n0 0 0\n0 1 1 1\n1 1 1 1\n",
                     "Name": "ImageRender",
                     "Type": 3
                 }
             ],
-            "Name": "NewObject",
+            "Name": "floor",
             "Transform": {
                 "Position": [
                     0.0,

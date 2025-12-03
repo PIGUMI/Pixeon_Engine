@@ -99,7 +99,7 @@ public:
 	float GetTotalTime() const { return fTotalDuration_; }
 
 	void SetProjectName(const std::string& name) { Name_ = name; }
-	void GetProjectName(const std::string& name) { Name_ = name; }
+	std::string GetProjectName() { return Name_; }
 
 	void SetLoop(bool loop) { bLoop_ = loop; }
 	bool GetLoop() const { return bLoop_; }
