@@ -126,6 +126,32 @@ void UIAnimatoData::Update()
 	}
 }
 
+void UIAnimatoData::Draw()
+{
+	std::vector<KeyFrame*> ActiveKeyFrames;
+	// アクティブなキーフレームを収集
+	for(auto obj : KeyFrames_)
+	{
+		if(obj.Active)
+		{
+			ActiveKeyFrames.push_back(&obj);
+		}
+	}
+	// レイヤー順にソート
+	std::sort(ActiveKeyFrames.begin(), ActiveKeyFrames.end(),
+		[](const KeyFrame* a, const KeyFrame* b) {
+			return a->Layer < b->Layer;
+		});
+	// アクティブなキーフレームの ImageRender を描画
+	for (auto kf : ActiveKeyFrames)
+	{
+		if (kf->Image)
+		{
+			kf->Image->Draw();
+		}
+	}
+}
+
 void UIAnimatoData::SaveFile()
 {
 }

@@ -1,5 +1,7 @@
 #pragma once
+#include <map>
 #include <vector>
+#include <string>
 #include "Struct.h"
 #include "ImageRender.h"
 
