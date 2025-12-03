@@ -2,6 +2,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <iostream>
 #include "Struct.h"
 #include "ImageRender.h"
 
@@ -68,8 +70,15 @@ inline vec2 EvalCubicBezier(const vec2& p0, const vec2& p1, const vec2& p2, cons
 	return p;
 }
 
+
 class Animator2D
 {
+public:
+	enum ViewMode
+	{
+		UI,
+		Billboard,
+	};
 public:
 	Animator2D();
 	~Animator2D();
@@ -78,28 +87,37 @@ public:
 
 	void SaveFile();
 	void LoadFile(std::string FilePath);
+	void LoadCache(std::ifstream& in);
 
-
-	
 	void AddKeyFrame(const KeyFrame& keyframe);
+	void RemoveKeyFrame(KeyFrame* ptr);
+
 	std::vector<KeyFrame> GetKeyFrames() { return KeyFrames_; }
 	std::vector<KeyFrame>* GetKeyFramePtr() { return &KeyFrames_; }
-	void SetTotaltime(float total) { fTotalDuration_ = total; }
+
+	void SetTotalTime(float total) { fTotalDuration_ = total; }
+	float GetTotalTime() const { return fTotalDuration_; }
+
 	void SetProjectName(const std::string& name) { Name_ = name; }
 	void GetProjectName(const std::string& name) { Name_ = name; }
-	void SetLoop(bool loop) { bLoop_ = loop; }
 
+	void SetLoop(bool loop) { bLoop_ = loop; }
+	bool GetLoop() const { return bLoop_; }
+
+	void SetViewMode(ViewMode mode) { viewMode_ = mode; }
+	ViewMode GetViewMode() const { return viewMode_; }
 
 private:
 	// ベジェによるイージング（elapsed: 経過秒, duration: 区間秒）
 	vec2 EaseByBezierCurve(const CurveData& curve, const vec2& startvalue, const vec2& endvalue, float elapsed, float duration = 1.0f);
 
 public:
-	std::string Name_ = "UIAnimation"; // アニメーション名
-	bool bLoop_ = false; // ループ
+	std::string Name_ = "Animator2D"; // アニメーション名
+	bool bLoop_ = false;// ループ
 	bool bFirst_ = true; // 初回フラグ
 	float fStartTime_ = 0.0f; // 再生開始時刻（秒）
 	float fNowTime_ = 0.0f;   // 現在の再生時刻（秒、0..total）
 	float fTotalDuration_ = 0.0f; // 総再生時間（秒）
 	std::vector<KeyFrame> KeyFrames_; // キーフレーム群
+	ViewMode viewMode_ = ViewMode::UI;
 };
