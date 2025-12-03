@@ -28,8 +28,17 @@ public:
 	ImTextureID GetAssetIcon(EditrGUI* gui, const std::string& name);
 	void WriteLog(std::string Log);
 	void WriteLogBuffer();
+	int GetGuiMode() const { return GuiMode; }
 private:
 	void WindowGUI();
+	void EditorModeGUI();
+	void UIModeGUI();
+
+private:
+
+
+
+private:
 
 	void ShowContentDrawer();
 	void ShowHierarchy();
@@ -88,6 +97,7 @@ private:
 	ID3D11ShaderResourceView* ExeIcon;
 	ID3D11ShaderResourceView* ObjectIcon;
 	std::string LogBuffer;
+	int GuiMode = 0;
 
 private:
 	static EditrGUI* instance;
