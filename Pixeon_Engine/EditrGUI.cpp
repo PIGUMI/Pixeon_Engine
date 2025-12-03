@@ -160,6 +160,19 @@ void EditrGUI::WindowGUI()
 	// メニューバー
 	if (ImGui::BeginMenuBar())
 	{
+
+		const char* guiModes[] = { "Editor","UIEditor"};
+		int guiModeWidth = 160;
+
+		float curX = ImGui::GetCursorPosX();
+		float targetX = curX - (float)guiModeWidth - 10.0f;
+		if (targetX > curX) ImGui::SetCursorPosX(targetX);
+
+		ImGui::PushItemWidth((float)guiModeWidth);
+		if (ImGui::Combo("##GuiModeCombo", &GuiMode, guiModes, IM_ARRAYSIZE(guiModes))) {
+		}
+		ImGui::PopItemWidth();
+
 		if (ImGui::BeginMenu(ShiftJISToUTF8("ファイル").c_str()))
 		{
 			ImGui::MenuItem(ShiftJISToUTF8("新規シーン").c_str());
@@ -215,6 +228,7 @@ void EditrGUI::WindowGUI()
 
 			ImGui::EndMenu();
 		}
+
 		ImGui::EndMenuBar();
 	}
 	// 環境設定ウィンドウ
@@ -256,6 +270,8 @@ void EditrGUI::WindowGUI()
 	// DockSpaceを作成
 	ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	ImGuiID dockSpaceUI = ImGui::GetID("UIEditorDockSpace");
+	ImGui::DockSpace(dockSpaceUI, ImVec2(0.0f, 0.0f), dockspace_flags);
 
 	// Dock初期化
 	static bool dock_init = false;
@@ -288,9 +304,40 @@ void EditrGUI::WindowGUI()
 		ImGui::DockBuilderFinish(dockspace_id);
 	}
 
+	static bool UIDock_init = false;
+	if(!UIDock_init || dockNeedsReset)
+	{
+		UIDock_init = true;
+		dockNeedsReset = false;
+		ImGui::DockBuilderRemoveNode(dockSpaceUI); // DockSpaceリセット
+		ImGui::DockBuilderAddNode(dockSpaceUI, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(dockSpaceUI, viewport->Size);
+
+		ImGuiID dock_main_id = dockSpaceUI;
+
+		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("UIエディター").c_str(), dock_main_id);
+		ImGui::DockBuilderFinish(dockSpaceUI);
+	}
+
 	ImGui::End();
 	ImGui::PopStyleVar();
 
+	switch (GuiMode)
+	{
+	case 0:
+		EditorModeGUI();
+		break;
+	case 1:
+		UIModeGUI();
+		break;
+	default:
+		break;
+	}
+}
+
+
+void EditrGUI::EditorModeGUI()
+{
 	// 各種ウィンドウ表示
 	ShowGameView();
 	if (EngineManager::GetInstance()->IsShowGUI())return;
@@ -310,6 +357,13 @@ void EditrGUI::WindowGUI()
 	ShowSceneRenameWindow();
 	ShowInputDebug();
 }
+
+void EditrGUI::UIModeGUI()
+{
+;
+}
+
+
 
 void EditrGUI::ShowGameView()
 {

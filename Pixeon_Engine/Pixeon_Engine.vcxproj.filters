@@ -69,6 +69,9 @@
     <Filter Include="リソース ファイル\memo">
       <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UIAnimator">
+      <UniqueIdentifier>{37caf2ce-cb5c-4114-9424-f1b8a1069438}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -208,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="_Geometry.cpp">
       <Filter>ソース ファイル\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorGUI_UIAnimatior.cpp">
+      <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -225,7 +225,14 @@ void EngineManager::InGameUpdate() {
 
 void EngineManager::EditorDraw() {
 	m_gameRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-	SceneManger::GetInstance()->Draw();
+	switch (EditrGUI::GetInstance()->GetGuiMode())
+	{
+	case 0:
+		SceneManger::GetInstance()->Draw();
+		break;
+	case 1:
+		break;
+	}
 	m_gameRenderTarget_->End();
 
 	ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
