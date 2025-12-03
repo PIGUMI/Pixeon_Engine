@@ -41,6 +41,15 @@ struct KeyFrame
 inline vec2 operator+(const vec2& a, const vec2& b) { return { a.x + b.x, a.y + b.y }; }
 inline vec2 operator-(const vec2& a, const vec2& b) { return { a.x - b.x, a.y - b.y }; }
 inline vec2 operator*(const vec2& v, float s) { return { v.x * s, v.y * s }; }
+inline bool operator==(const vec2& a, const vec2& b) noexcept
+{
+	return a.x == b.x && a.y == b.y;
+}
+inline bool operator!=(const vec2& a, const vec2& b) noexcept
+{
+	return !(a == b);
+}
+
 inline float Length(const vec2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
 
 inline vec2 EvalCubicBezier(const vec2& p0, const vec2& p1, const vec2& p2, const vec2& p3, float t)
@@ -67,11 +76,14 @@ public:
 
 private:
 	// ベジェ情報、開始位置、終了位置、経過秒数、総合時間
-	vec2 EaseByBezierCurve(const CurveData& curve,const vec2& startPos,const vec2& endPos,float elapsed,float duration = 1.0f);
+	vec2 EaseByBezierCurve(const CurveData& curve,const vec2& startvalue,const vec2& endvalue,float elapsed,float duration = 1.0f);
 
 public:
-	float NowTime;
-	float TotalDuration = 0.0f; // アニメーションの総時間
-	std::vector<KeyFrame> KeyFrames; // キーフレームのリスト
+	bool bLoop_ = false; // ループ再生するかどうか
+	bool bFirst_ = true; // 最初のフレームかどうか
+	float fStartTime_;
+	float fNowTime_;
+	float fTotalDuration_ = 0.0f; // アニメーションの総時間
+	std::vector<KeyFrame> KeyFrames_; // キーフレームのリスト
 };
 
