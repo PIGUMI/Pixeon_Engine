@@ -62,15 +62,15 @@
     <Filter Include="ソース ファイル\Component\Other">
       <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UIAnimator">
-      <UniqueIdentifier>{37caf2ce-cb5c-4114-9424-f1b8a1069438}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="ソース ファイル\リソース ファイル\memo">
       <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Animator2D">
+      <UniqueIdentifier>{37caf2ce-cb5c-4114-9424-f1b8a1069438}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="Animator2DComponent.cpp">
       <Filter>ソース ファイル\Component\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineEditor.cpp">
+      <Filter>ソース ファイル\Animator2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -381,6 +384,9 @@
     </ClInclude>
     <ClInclude Include="Animator2DComponent.h">
       <Filter>ソース ファイル\Component\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineEditor.h">
+      <Filter>ソース ファイル\Animator2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -189,6 +189,7 @@
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Animator2D.h" />
+    <ClInclude Include="TimelineEditor.h" />
     <ClInclude Include="WeightFix.h" />
     <ClInclude Include="_Geometry.h" />
   </ItemGroup>
@@ -241,6 +242,7 @@
     <ClCompile Include="System.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Animator2D.cpp" />
+    <ClCompile Include="TimelineEditor.cpp" />
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>

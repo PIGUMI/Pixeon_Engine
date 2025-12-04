@@ -12,6 +12,7 @@
 #include <filesystem>
 
 class Object;
+class TimelineEditor;
 
 class EditrGUI
 {
@@ -35,7 +36,7 @@ private:
 	void UIModeGUI();
 
 private:
-
+	void TimeLineEditorGUI();
 
 
 private:
@@ -62,7 +63,6 @@ private:
 	void HandleAssetContextMenu(const std::filesystem::path& path);
 	void ShowSceneRenameWindow();
 	void ShowInputDebug();
-
 
 	std::string AbbreviateName(const std::string& name, size_t maxBaseLen = 16);
 
@@ -98,6 +98,7 @@ private:
 	ID3D11ShaderResourceView* ObjectIcon;
 	std::string LogBuffer;
 	int GuiMode = 0;
+	TimelineEditor* timelineEditor_;
 
 private:
 	static EditrGUI* instance;

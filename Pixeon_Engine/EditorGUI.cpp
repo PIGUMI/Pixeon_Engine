@@ -15,6 +15,7 @@
 #include "ModelManager.h"
 #include "SoundManager.h"
 #include "SceneManger.h"
+#include "TimelineEditor.h"
 #include "Scene.h"
 #include "Input.h"
 
@@ -99,6 +100,7 @@ void EditrGUI::Init() {
 	archiveIcon = LoadImg(L"SceneRoot/Editor/texture/Archive.png", DirectX11::GetInstance()->GetDevice());
 	ExeIcon = LoadImg(L"SceneRoot/Editor/texture/Exe.png", DirectX11::GetInstance()->GetDevice());
 	ObjectIcon = LoadImg(L"SceneRoot/Editor/texture/Object.png", DirectX11::GetInstance()->GetDevice());
+	timelineEditor_ = new TimelineEditor();
 }
 
 void EditrGUI::Update() {
@@ -343,7 +345,6 @@ void EditrGUI::WindowGUI()
 	}
 }
 
-
 void EditrGUI::EditorModeGUI()
 {
 	// 各種ウィンドウ表示
@@ -368,10 +369,8 @@ void EditrGUI::EditorModeGUI()
 
 void EditrGUI::UIModeGUI()
 {
-;
+	TimeLineEditorGUI();
 }
-
-
 
 void EditrGUI::ShowGameView()
 {

@@ -1,0 +1,40 @@
+{
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "0 0 10 0 0 0 0 0 0 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                },
+                {
+                    "Data": "0 0 10 0 0 0 0 0 0 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 1 ",
+                    "Name": "CameraComponent1",
+                    "Type": 0
+                }
+            ],
+            "Name": "NewObject",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "NewScene"
+    }
+}

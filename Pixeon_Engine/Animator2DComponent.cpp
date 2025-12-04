@@ -29,7 +29,7 @@ void Animator2DComponent::Init(Object* Prt)
 	kf.Layer = 1;
 	kf.Image = new ImageRender();
 	kf.Image->Init(Prt);
-	kf.Image->SetTextureName("Hamu.png");
+	kf.Image->SetTextureName("AlphaTest.png");
 	
 	//Test->SetViewMode(Animator2D::ViewMode::Billboard);
 	Test->AddKeyFrame(kf);
