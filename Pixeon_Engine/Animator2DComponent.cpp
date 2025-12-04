@@ -28,8 +28,8 @@ void Animator2DComponent::Init(Object* Prt)
 	kf.Layer = 1;
 	kf.Image = new ImageRender();
 	kf.Image->Init(Prt);
-	kf.Image->SetTextureName("SkyBox.jpg");
-	Test->SetViewMode(Animator2D::ViewMode::Billboard);
+	kf.Image->SetTextureName("Hamu.png");
+	//Test->SetViewMode(Animator2D::ViewMode::Billboard);
 
 	Test->AddKeyFrame(kf);
 	Test->SetTotalTime(5.0f);
