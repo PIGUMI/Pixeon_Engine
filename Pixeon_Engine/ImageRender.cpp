@@ -109,8 +109,9 @@ bool ImageRender::EnsureBlendState() {
 	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	// ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«ã®ãƒ–ãƒ¬ãƒ³ãƒ‰è¨­å®šã‚’ä¿®æ­£: é€éç”»åƒãŒæ­£ã—ãåˆæˆã•ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹
 	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	auto dev = DirectX11::GetInstance()->GetDevice();
@@ -310,7 +311,7 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 	float hw = m_sizeWorld.x * 0.5f;
 	float hh = m_sizeWorld.y * 0.5f;
 
-	// ƒIƒyƒŒ[ƒ^[®‚Ì‚ ‚¢‚Ü‚¢‚³‰ñ”ğ‚Ì‚½‚ß‰‰Z‚ğ–¾¦“I‚ÉŠÖ”‰»
+	// ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½^ï¿½[ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ß‰ï¿½ï¿½Zï¿½ğ–¾ï¿½ï¿½Iï¿½ÉŠÖï¿½ï¿½ï¿½
 	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
 		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
 		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
@@ -376,13 +377,13 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
 	CameraComponent* cam = scene ? scene->GetMainCamera() : nullptr;
 	if (!cam) {
-		// ƒJƒƒ‰‚ª–³‚¢ê‡‚Í‚Æ‚è‚ ‚¦‚¸ 2D ‚Æ“¯‚¶ˆµ‚¢‚ÉƒtƒH[ƒ‹ƒoƒbƒN
+		// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½Í‚Æ‚è‚ ï¿½ï¿½ï¿½ï¿½ 2D ï¿½Æ“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éƒtï¿½Hï¿½[ï¿½ï¿½ï¿½oï¿½bï¿½N
 		float dummyZ = 0.0f;
 		UpdateVertices2D(outV, dummyZ);
 		return;
 	}
 
-	// ƒJƒƒ‰‚Ì View s—ñ ¨ ‹ts—ñ‚©‚ç right/up/forward ‚ğæ“¾
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ View ï¿½sï¿½ï¿½ ï¿½ï¿½ ï¿½tï¿½sï¿½ñ‚©‚ï¿½ right/up/forward ï¿½ï¿½ï¿½æ“¾
 	DirectX::XMMATRIX V = cam->GetView();
 	DirectX::XMMATRIX invV = DirectX::XMMatrixInverse(nullptr, V);
 
@@ -412,15 +413,15 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	DirectX::XMVECTOR up = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&upF));
 	DirectX::XMVECTOR fwd = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&fwdF));
 
-	// UI ‚ÌŠî€‹——£iƒJƒƒ‰‚Ì‘O d ƒ[ƒgƒ‹j
-	float uiDistance = 3.0f; // •K—v‚É‰‚¶‚Ä Inspector ‚©‚ç˜M‚ê‚é‚æ‚¤‚É‚µ‚Ä‚à‚æ‚¢
+	// UI ï¿½ÌŠî€ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Ì‘O d ï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½j
+	float uiDistance = 3.0f; // ï¿½Kï¿½vï¿½É‰ï¿½ï¿½ï¿½ï¿½ï¿½ Inspector ï¿½ï¿½ï¿½ï¿½Mï¿½ï¿½ï¿½æ‚¤ï¿½É‚ï¿½ï¿½Ä‚ï¿½ï¿½æ‚¢
 	DirectX::XMVECTOR baseCenter = DirectX::XMVectorAdd(
 		camPos,
 		DirectX::XMVectorScale(fwd, uiDistance)
 	);
 
-	// m_offset2D ‚ğu‰æ–Ê‰EEã•ûŒüƒIƒtƒZƒbƒgv‚Æ‚µ‚Ä‰ğß
-	// ¨ X: ‰æ–Ê‰E•ûŒüirightj, Y: ‰æ–Êã•ûŒüiupj
+	// m_offset2D ï¿½ï¿½ï¿½uï¿½ï¿½Ê‰Eï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½tï¿½Zï¿½bï¿½gï¿½vï¿½Æ‚ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½
+	// ï¿½ï¿½ X: ï¿½ï¿½Ê‰Eï¿½ï¿½ï¿½ï¿½ï¿½irightï¿½j, Y: ï¿½ï¿½Êï¿½ï¿½ï¿½ï¿½ï¿½iupï¿½j
 	DirectX::XMVECTOR offsetWorld =
 		DirectX::XMVectorAdd(
 			DirectX::XMVectorScale(right, m_offset2D.x),
@@ -432,7 +433,7 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	float hw = m_sizeWorld.x * 0.5f;
 	float hh = m_sizeWorld.y * 0.5f;
 
-	// ƒNƒƒbƒh’¸“_‚ğƒJƒƒ‰‚Ì right/up ƒxƒNƒgƒ‹Šî€‚Å¶¬
+	// ï¿½Nï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ right/up ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½î€ï¿½Åï¿½ï¿½ï¿½
 	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
 		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
 		DirectX::XMVectorScale(up, hh)
@@ -543,16 +544,16 @@ void ImageRender::DrawInspector() {
 	if (!ImGui::CollapsingHeader(SJ(title.c_str()).c_str()))
 		return;
 
-	ImGui::Text("%s", SJ("ƒeƒNƒXƒ`ƒƒ–¼:").c_str());
+	ImGui::Text("%s", SJ("ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½:").c_str());
 	ImGui::SameLine();
 	ImGui::Text("%s", m_textureName.empty() ? "(none)" : m_textureName.c_str());
 	ImGui::SameLine();
-	if (ImGui::Button(SJ("‘I‘ğ...").c_str())) {
+	if (ImGui::Button(SJ("ï¿½Iï¿½ï¿½...").c_str())) {
 		ImGui::OpenPopup("ImgTexSelectPopup");
 	}
 	if (ImGui::BeginPopupModal("ImgTexSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), filter, sizeof(filter));
+		ImGui::InputText(SJ("ï¿½tï¿½Bï¿½ï¿½ï¿½^").c_str(), filter, sizeof(filter));
 		auto texList = AssetManager::Instance()->GetCachedTextureNames();
 		ImGui::BeginChild("ImgTexList", ImVec2(420, 260), true);
 		for (int i = 0; i < (int)texList.size(); ++i) {
@@ -564,7 +565,7 @@ void ImageRender::DrawInspector() {
 			}
 		}
 		ImGui::EndChild();
-		if (ImGui::Button(SJ("•Â‚¶‚é").c_str())) ImGui::CloseCurrentPopup();
+		if (ImGui::Button(SJ("ï¿½Â‚ï¿½ï¿½ï¿½").c_str())) ImGui::CloseCurrentPopup();
 		ImGui::EndPopup();
 	}
 
@@ -572,9 +573,9 @@ void ImageRender::DrawInspector() {
 		ImGui::Text("(%d x %d)", (int)m_texture->width, (int)m_texture->height);
 	}
 
-	std::string modeLabels[4] = { SJ("2D”z’u"), SJ("ƒrƒ‹ƒ{[ƒh"), SJ("3D”z’u"),SJ("UI") };
+	std::string modeLabels[4] = { SJ("2Dï¿½zï¿½u"), SJ("ï¿½rï¿½ï¿½ï¿½{ï¿½[ï¿½h"), SJ("3Dï¿½zï¿½u"),SJ("UI") };
 	int modeIdx = (int)m_mode;
-	if (ImGui::BeginCombo(SJ("”z’uƒ‚[ƒh").c_str(), modeLabels[modeIdx].c_str())) {
+	if (ImGui::BeginCombo(SJ("ï¿½zï¿½uï¿½ï¿½ï¿½[ï¿½h").c_str(), modeLabels[modeIdx].c_str())) {
 		for (int i = 0; i < 4; ++i) {
 			bool sel = (i == modeIdx);
 			if (ImGui::Selectable(modeLabels[i].c_str(), sel)) {
@@ -586,12 +587,12 @@ void ImageRender::DrawInspector() {
 	}
 
 	if (m_mode == PlacementMode::Screen2D || m_mode == PlacementMode::UI) {
-		ImGui::InputFloat2(SJ("2DƒIƒtƒZƒbƒg(px)").c_str(), (float*)&m_offset2D);
-		ImGui::InputFloat2(SJ("ƒTƒCƒY(px)").c_str(), (float*)&m_size2D);
+		ImGui::InputFloat2(SJ("2Dï¿½Iï¿½tï¿½Zï¿½bï¿½g(px)").c_str(), (float*)&m_offset2D);
+		ImGui::InputFloat2(SJ("ï¿½Tï¿½Cï¿½Y(px)").c_str(), (float*)&m_size2D);
 	}
 	else {
-		ImGui::InputFloat3(SJ("3DƒIƒtƒZƒbƒg").c_str(), (float*)&m_offset3D);
-		ImGui::InputFloat2(SJ("ƒTƒCƒY(ƒ[ƒ‹ƒh)").c_str(), (float*)&m_sizeWorld);
+		ImGui::InputFloat3(SJ("3Dï¿½Iï¿½tï¿½Zï¿½bï¿½g").c_str(), (float*)&m_offset3D);
+		ImGui::InputFloat2(SJ("ï¿½Tï¿½Cï¿½Y(ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½h)").c_str(), (float*)&m_sizeWorld);
 	}
 
 	ImGui::InputFloat4("UV(u0,v0,u1,v1)", (float*)&m_uvRect);
@@ -600,13 +601,13 @@ void ImageRender::DrawInspector() {
 	m_uvRect.z = Clamp(m_uvRect.z, 0.0f, 1.0f);
 	m_uvRect.w = Clamp(m_uvRect.w, 0.0f, 1.0f);
 
-	ImGui::ColorEdit4(SJ("ƒJƒ‰[").c_str(), (float*)&m_color);
+	ImGui::ColorEdit4(SJ("ï¿½Jï¿½ï¿½ï¿½[").c_str(), (float*)&m_color);
 
-	if (ImGui::TreeNode(SJ("ƒVƒF[ƒ_İ’è").c_str())) {
+	if (ImGui::TreeNode(SJ("ï¿½Vï¿½Fï¿½[ï¿½_ï¿½İ’ï¿½").c_str())) {
 		auto* sm = ShaderManager::GetInstance();
 		static std::vector<std::string> vsList;
 		static std::vector<std::string> psList;
-		if (ImGui::Button(SJ("ƒŠƒXƒgXV").c_str())) {
+		if (ImGui::Button(SJ("ï¿½ï¿½ï¿½Xï¿½gï¿½Xï¿½V").c_str())) {
 			vsList = sm->GetShaderList("VS");
 			psList = sm->GetShaderList("PS");
 		}

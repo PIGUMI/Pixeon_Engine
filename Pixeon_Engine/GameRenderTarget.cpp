@@ -164,8 +164,7 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context)
 
 	DirectX::XMFLOAT4 Temp;
 	Temp = SettingManager::GetInstance()->GetBackgroundColor();
-	// アルファを0に設定して透過画像が正しくレンダリングされるようにする
-	float clearColor[4] = { Temp.x, Temp.y, Temp.z, 0.0f };
+	float clearColor[4] = { Temp.x, Temp.y, Temp.z, Temp.w };
 
 	context->ClearRenderTargetView(m_pRTV, clearColor);
 	if (m_pDSV)
