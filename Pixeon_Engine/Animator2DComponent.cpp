@@ -75,7 +75,7 @@ void Animator2DComponent::DrawInspector()
 		ImGui::TableSetColumnIndex(1);
 		// ƒpƒX‚Ì“ü—Í
 		char Path[256] = "";
-		if (ImGui::InputText(("Path##" + Ptr).c_str(), Path, sizeof(Path)));
+		if (ImGui::InputText(("Path##" + Ptr).c_str(), Path, sizeof(Path))) {}
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);

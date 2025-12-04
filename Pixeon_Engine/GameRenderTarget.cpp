@@ -173,7 +173,6 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context)
 
 void GameRenderTarget::End()
 {
-	// Šù‘¶‚ÌŽÀ‘•‚ð‚»‚Ì‚Ü‚ÜˆÛŽ
 	RenderTarget* defaultRTV = DirectX11::GetInstance()->GetDefaultRTV();
 	DepthStencil* defaultDSV = DirectX11::GetInstance()->GetDefaultDSV();
 
