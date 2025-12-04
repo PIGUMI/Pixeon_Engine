@@ -12,6 +12,7 @@
 #include "ComponentManager.h"
 #include "ScriptManager.h"
 #include "ResourceService.h"
+#include "Animator2D.h"
 #include "_Geometry.h"
 #include "Input.h"
 #include "Scene.h"
@@ -231,6 +232,11 @@ void EngineManager::EditorDraw() {
 		SceneManger::GetInstance()->Draw();
 		break;
 	case 1:
+		auto View = EditrGUI::GetInstance()->GetAnimator2D();
+		if (View)
+		{
+			View->Draw();
+		}
 		break;
 	}
 

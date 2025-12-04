@@ -32,6 +32,7 @@ public:
 	void WriteLog(std::string Log);
 	void WriteLogBuffer();
 	int GetGuiMode() const { return GuiMode; }
+	Animator2D* GetAnimator2D() const { return SelectedAnimator2D; }
 private:
 	void WindowGUI();
 	void EditorModeGUI();
