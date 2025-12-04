@@ -16,8 +16,8 @@ void Animator2DComponent::Init(Object* Prt)
 
 	kf.CurveInfo.StartPoint		= { 0.0f,0.0f };
 	kf.CurveInfo.EndPoint		= { 1.0f,1.0f };
-	kf.CurveInfo.ControlPoint1	= { 0.25f,0.25f };
-	kf.CurveInfo.ControlPoint2	= { 0.75f,0.75f };
+	kf.CurveInfo.ControlPoint1	= { 0.0f,0.0f };
+	kf.CurveInfo.ControlPoint2	= { 1.0,1.0f };
 	kf.StartTime = 0.0f;
 	kf.EndTime = 1.0f;
 
@@ -44,8 +44,6 @@ void Animator2DComponent::Init(Object* Prt)
 	Test->AddKeyFrame(kf);
 
 	_animators.push_back(Test);
-
-	
 
 }
 
