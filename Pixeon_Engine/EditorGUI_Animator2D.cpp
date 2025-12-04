@@ -29,7 +29,7 @@ void EditrGUI::TimeLineEditorGUI()
 		animator = new Animator2D();
 		TLEGInit = false;
 	}
-	ImGui::Begin(ShiftJISToUTF8("Animator2Dエディタ").c_str());
+	ImGui::Begin(ShiftJISToUTF8("Animator2DTimeLine").c_str(), nullptr,ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
 	timelineEditor_->DrawTimeline(animator);
 	ImGui::End();
 }

@@ -39,26 +39,24 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
     // 入力処理
     HandleInput(animator);
 
-    // ツールバー
-    ImGui::SetCursorScreenPos(ImVec2(canvasPos.x, canvasPos.y + canvasSize.y + 5));
-    ImGui::PushItemWidth(100);
-    ImGui::DragFloat("ズーム", &timeScale_, 1.0f, 10.0f, 500.0f, "%.0f px/s");
-    ImGui::SameLine();
-    ImGui::Checkbox("グリッドスナップ", &snapToGrid_);
-    ImGui::SameLine();
-    if (ImGui::Button("KeyFrame追加"))
-    {
-        KeyFrame newKF;
-        newKF.StartTime = animator->fNowTime_;
-        newKF.EndTime = animator->fNowTime_ + 1.0f;
-        newKF.Layer = 0;
-        newKF.Active = false;
-        newKF.Image = new ImageRender();
-        animator->AddKeyFrame(newKF);
-    }
-    ImGui::PopItemWidth();
 
     ImGui::EndChild();
+    // ツールバー
+    //ImGui::DragFloat("ズーム", &timeScale_, 1.0f, 10.0f, 500.0f, "%.0f px/s");
+    //ImGui::SameLine();
+    //ImGui::Checkbox("グリッドスナップ", &snapToGrid_);
+    //ImGui::SameLine();
+    //if (ImGui::Button("KeyFrame追加"))
+    //{
+    //    KeyFrame newKF;
+    //    newKF.StartTime = animator->fNowTime_;
+    //    newKF.EndTime = animator->fNowTime_ + 1.0f;
+    //    newKF.Layer = 0;
+    //    newKF.Active = false;
+    //    newKF.Image = new ImageRender();
+    //    animator->AddKeyFrame(newKF);
+    //}
+
 }
 
 void TimelineEditor::DrawTimeRuler(float totalDuration)
