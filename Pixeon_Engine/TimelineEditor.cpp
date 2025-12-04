@@ -28,16 +28,19 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
         colorBackground_);
 
     // タイムルーラー描画
-    DrawTimeRuler(animator->GetTotalTime());
+    if (animator)
+    {
+        DrawTimeRuler(animator->GetTotalTime());
 
-    // レイヤー描画
-    DrawLayers(animator);
+        // レイヤー描画
+        DrawLayers(animator);
 
-    // 再生ヘッド描画（最前面）
-    DrawPlayhead(animator->fNowTime_);
+        // 再生ヘッド描画（最前面）
+        DrawPlayhead(animator->fNowTime_);
 
-    // 入力処理
-    HandleInput(animator);
+        // 入力処理
+        HandleInput(animator);
+    }
 
 
     ImGui::EndChild();

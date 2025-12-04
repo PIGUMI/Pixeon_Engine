@@ -332,11 +332,13 @@ void EditrGUI::WindowGUI()
 		// 右にInspector
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_main_id);
 		// 下にContentDrawer
-		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.4f, &dock_id_bottom, &dock_main_id);
+		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.3f, &dock_id_bottom, &dock_main_id);
 		// 左にHierarchy
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.18f, &dock_id_left, &dock_main_id);
 
 		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("Animator2DTimeLine").c_str(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("KeyFrameEditor").c_str(), dock_id_right);
+		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("Animator2DView").c_str(), dock_main_id);
 		ImGui::DockBuilderFinish(Animator2D_dock_id);
 	}
 
@@ -381,6 +383,8 @@ void EditrGUI::EditorModeGUI()
 void EditrGUI::UIModeGUI()
 {
 	TimeLineEditorGUI();
+	KeyFrameEditorGUI();
+	Animator2DViewGUI();
 }
 
 void EditrGUI::ShowGameView()

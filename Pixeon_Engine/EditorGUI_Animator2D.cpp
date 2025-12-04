@@ -22,15 +22,22 @@
 
 void EditrGUI::TimeLineEditorGUI()
 {
-	static bool TLEGInit = true;
-	static Animator2D* animator;
-	if(TLEGInit)
-	{
-		animator = new Animator2D();
-		TLEGInit = false;
-	}
 	ImGui::Begin(ShiftJISToUTF8("Animator2DTimeLine").c_str(), nullptr,ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
-	timelineEditor_->DrawTimeline(animator);
+	timelineEditor_->DrawTimeline(SelectedAnimator2D);
+	ImGui::End();
+}
+
+void EditrGUI::KeyFrameEditorGUI()
+{
+	ImGui::Begin(ShiftJISToUTF8("KeyFrameEditor").c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
+
+	ImGui::End();
+}
+
+void EditrGUI::Animator2DViewGUI()
+{
+	ImGui::Begin(ShiftJISToUTF8("Animator2DView").c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
+
 	ImGui::End();
 }
 

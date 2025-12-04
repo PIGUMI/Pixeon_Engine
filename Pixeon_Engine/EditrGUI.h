@@ -12,7 +12,9 @@
 #include <filesystem>
 
 class Object;
+class Animator2D;
 class TimelineEditor;
+struct KeyFrame;
 
 class EditrGUI
 {
@@ -37,7 +39,8 @@ private:
 
 private:
 	void TimeLineEditorGUI();
-
+	void KeyFrameEditorGUI();
+	void Animator2DViewGUI();
 
 private:
 
@@ -103,6 +106,8 @@ private:
 private:
 	static EditrGUI* instance;
 	Object* SelectedObject = nullptr;
+	Animator2D* SelectedAnimator2D = nullptr;
+	KeyFrame* SelectedKeyFrame = nullptr;
 	std::string			SceneRenameNewName_;
 private:
 	EditrGUI() {}
