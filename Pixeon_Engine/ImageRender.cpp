@@ -8,6 +8,7 @@
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
 Microsoft::WRL::ComPtr<ID3D11BlendState> ImageRender::s_alphaBlendState;
+Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImageRender::s_depthStencilState;
 
 ImageRender::ImageRender() {
 	_ComponentName = "ImageRender";
@@ -203,6 +204,17 @@ bool ImageRender::EnsureBuffers() {
 		if (FAILED(hr)) return false;
 	}
 	return true;
+}
+
+bool ImageRender::EnsureDepthStencilState() {
+	if (s_depthStencilState) return true;
+	D3D11_DEPTH_STENCIL_DESC desc = {};
+	desc.DepthEnable = FALSE; // 2D‚Å‚Í‚±‚ê‚ÅOK
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	desc.StencilEnable = FALSE;
+	auto dev = DirectX11::GetInstance()->GetDevice();
+	HRESULT hr = dev->CreateDepthStencilState(&desc, s_depthStencilState.GetAddressOf());
+	return SUCCEEDED(hr);
 }
 
 void ImageRender::UpdateVB(const Vertex v[4]) {
@@ -529,6 +541,9 @@ void ImageRender::Draw() {
 
 	ID3D11SamplerState* smp = s_linearSmp.Get();
 	ctx->PSSetSamplers(0, 1, &smp);
+
+	if (!EnsureDepthStencilState()) return;
+	ctx->OMSetDepthStencilState(s_depthStencilState.Get(), 0);
 
 	float blendFactor[4] = { 0,0,0,0 };
 	UINT sampleMask = 0xFFFFFFFF;
