@@ -14,7 +14,7 @@ TimelineEditor::~TimelineEditor()
 
 void TimelineEditor::DrawTimeline(Animator2D* animator)
 {
-    if (!animator) return;
+    //if (!animator) return;
 
     ImGui::BeginChild("Timeline", ImVec2(0, 0), true);
 
@@ -41,24 +41,34 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
         // 入力処理
         HandleInput(animator);
     }
+ 
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    {
+        ImGui::OpenPopup("TimelineContextMenu");
+    }
 
+    // コンテキストメニュー
+    if (ImGui::BeginPopup("TimelineContextMenu"))
+    {
+        if (!animator)
+        {
+            if (ImGui::MenuItem(EditrGUI::GetInstance()->ShiftJISToUTF8("新規プロジェクトの作成").c_str()))
+            {
+				Animator2D* newAnimator = new Animator2D();
+				EditrGUI::GetInstance()->SetAnimator2D(newAnimator);
+            }
+        }
+        else
+        {
+            if (ImGui::MenuItem("メニュー項目2"))
+            {
+                // 処理
+            }
+        }
+        ImGui::EndPopup();
+    }
 
     ImGui::EndChild();
-    // ツールバー
-    //ImGui::DragFloat("ズーム", &timeScale_, 1.0f, 10.0f, 500.0f, "%.0f px/s");
-    //ImGui::SameLine();
-    //ImGui::Checkbox("グリッドスナップ", &snapToGrid_);
-    //ImGui::SameLine();
-    //if (ImGui::Button("KeyFrame追加"))
-    //{
-    //    KeyFrame newKF;
-    //    newKF.StartTime = animator->fNowTime_;
-    //    newKF.EndTime = animator->fNowTime_ + 1.0f;
-    //    newKF.Layer = 0;
-    //    newKF.Active = false;
-    //    newKF.Image = new ImageRender();
-    //    animator->AddKeyFrame(newKF);
-    //}
 
 }
 
