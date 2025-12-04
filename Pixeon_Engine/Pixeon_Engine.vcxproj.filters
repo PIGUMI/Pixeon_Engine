@@ -113,7 +113,7 @@
     <ClCompile Include="GameRenderTarget.cpp">
       <Filter>ソース ファイル\Sys</Filter>
     </ClCompile>
-    <ClCompile Include="EditrGUI.cpp">
+    <ClCompile Include="EditorGUI.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="SettingManager.cpp">
@@ -122,13 +122,13 @@
     <ClCompile Include="ComponentManager.cpp">
       <Filter>ソース ファイル\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="EditrGUI_Content.cpp">
+    <ClCompile Include="EditorGUI_Content.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
-    <ClCompile Include="EditrGUI_Hierarchy.cpp">
+    <ClCompile Include="EditorGUI_Hierarchy.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
-    <ClCompile Include="EditrGUI_Inspector.cpp">
+    <ClCompile Include="EditorGUI_Inspector.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
@@ -176,7 +176,7 @@
     <ClCompile Include="AnimationDebug.cpp">
       <Filter>ソース ファイル\Sys</Filter>
     </ClCompile>
-    <ClCompile Include="EditrGUI_Prefab.cpp">
+    <ClCompile Include="EditorGUI_Prefab.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="CollisionManager.cpp">

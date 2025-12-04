@@ -203,11 +203,11 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="EditorGUI_Animator2D.cpp" />
-    <ClCompile Include="EditrGUI.cpp" />
-    <ClCompile Include="EditrGUI_Content.cpp" />
-    <ClCompile Include="EditrGUI_Hierarchy.cpp" />
-    <ClCompile Include="EditrGUI_Inspector.cpp" />
-    <ClCompile Include="EditrGUI_Prefab.cpp" />
+    <ClCompile Include="EditorGUI.cpp" />
+    <ClCompile Include="EditorGUI_Content.cpp" />
+    <ClCompile Include="EditorGUI_Hierarchy.cpp" />
+    <ClCompile Include="EditorGUI_Inspector.cpp" />
+    <ClCompile Include="EditorGUI_Prefab.cpp" />
     <ClCompile Include="EngineManager.cpp" />
     <ClCompile Include="ErrorLog.cpp" />
     <ClCompile Include="File.cpp" />
