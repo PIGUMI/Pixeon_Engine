@@ -37,7 +37,24 @@ void EditrGUI::KeyFrameEditorGUI()
 void EditrGUI::Animator2DViewGUI()
 {
 	ImGui::Begin(ShiftJISToUTF8("Animator2DView").c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
+	ID3D11ShaderResourceView* srv = EngineManager::GetInstance()->GetGameRender();
+	ImVec2 size = ImGui::GetContentRegionAvail();
+	// アスペクト比16:9に合わせる
+	float aspect = 16.0f / 9.0f;
+	if (size.x / size.y > aspect) {
+		size.x = size.y * aspect;
+	}
+	else {
+		size.y = size.x / aspect;
+	}
 
+	ImVec2 pos = ImGui::GetCursorPos();
+	pos.x += (ImGui::GetContentRegionAvail().x - size.x) * 0.5f;
+	ImGui::SetCursorPosX(pos.x);
+	if (srv)
+		ImGui::Image((ImTextureID)srv, size);
+	else
+		ImGui::Text("SRVがNullです");
 	ImGui::End();
 }
 
