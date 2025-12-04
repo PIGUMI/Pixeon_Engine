@@ -17,7 +17,7 @@ void Animator2DComponent::Init(Object* Prt)
 	kf.CurveInfo.StartPoint		= { 0.0f,0.0f };
 	kf.CurveInfo.EndPoint		= { 1.0f,1.0f };
 	kf.CurveInfo.ControlPoint1	= { 0.0f,0.0f };
-	kf.CurveInfo.ControlPoint2	= { 1.0,1.0f };
+	kf.CurveInfo.ControlPoint2	= { 1.0f,1.0f };
 	kf.StartTime = 0.0f;
 	kf.EndTime = 1.0f;
 
@@ -29,9 +29,9 @@ void Animator2DComponent::Init(Object* Prt)
 	kf.Layer = 1;
 	kf.Image = new ImageRender();
 	kf.Image->Init(Prt);
-	kf.Image->SetTextureName("Test.jpg");
+	kf.Image->SetTextureName("Hamu.png");
 	
-	Test->SetViewMode(Animator2D::ViewMode::Billboard);
+	//Test->SetViewMode(Animator2D::ViewMode::Billboard);
 	Test->AddKeyFrame(kf);
 	Test->SetTotalTime(2.0f);
 	Test->SetLoop(true);
