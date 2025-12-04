@@ -226,7 +226,7 @@ void EngineManager::InGameUpdate() {
 void EngineManager::EditorDraw() {
 	m_gameRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
 
-	switch (EditrGUI::GetInstance()->GetGuiMode()){
+	switch (EditrGUI::GetInstance()->GetGuiMode()) {
 	case 0:
 		SceneManger::GetInstance()->Draw();
 		break;
@@ -236,6 +236,7 @@ void EngineManager::EditorDraw() {
 
 	m_gameRenderTarget_->End();
 
+	// SRVクリアのタイミングは正しい
 	ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	ctx->PSSetShaderResources(0, 1, nullSRV);
