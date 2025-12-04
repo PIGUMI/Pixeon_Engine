@@ -11,31 +11,29 @@ void Animator2DComponent::Init(Object* Prt)
 	_Type = ComponentManager::COMPONENT_TYPE::ANIMATOR2D;
 	_animators.clear();
 
-	Animator2D* Test = new Animator2D;
-	KeyFrame kf;
-	// 曲線情報の設定
-	// 簡易イージング
-	kf.CurveInfo.StartPoint = { 0.0f,0.0f };
-	kf.CurveInfo.EndPoint = { 1.0f,1.0f };
-	kf.CurveInfo.ControlPoint1 = { 0.25f,0.0f };
-	kf.CurveInfo.ControlPoint2 = { 0.75f,0.0f };
-	kf.StartTime = 0.0f;
-	kf.EndTime = 5.0f;
+	//Animator2D* Test = new Animator2D;
+	//KeyFrame kf;
 
-	kf.StartTransform.Scale = { 1.0f, 1.0f };
-	kf.EndTransform.Scale = { 5.0f, 5.0f };
+	//kf.CurveInfo.StartPoint = { 0.0f,0.0f };
+	//kf.CurveInfo.EndPoint = { 1.0f,1.0f };
+	//kf.CurveInfo.ControlPoint1 = { 0.25f,0.0f };
+	//kf.CurveInfo.ControlPoint2 = { 0.75f,0.0f };
+	//kf.StartTime = 0.0f;
+	//kf.EndTime = 5.0f;
 
-	kf.Layer = 1;
-	kf.Image = new ImageRender();
-	kf.Image->Init(Prt);
-	kf.Image->SetTextureName("Hamu.png");
-	//Test->SetViewMode(Animator2D::ViewMode::Billboard);
+	//kf.StartTransform.Scale = { 1.0f, 1.0f };
+	//kf.EndTransform.Scale = { 5.0f, 5.0f };
 
-	Test->AddKeyFrame(kf);
-	Test->SetTotalTime(5.0f);
-	Test->SetLoop(true);
+	//kf.Layer = 1;
+	//kf.Image = new ImageRender();
+	//kf.Image->Init(Prt);
+	//kf.Image->SetTextureName("Hamu.png");
 
-	_animators.push_back(Test);
+	//Test->AddKeyFrame(kf);
+	//Test->SetTotalTime(5.0f);
+	//Test->SetLoop(true);
+
+	//_animators.push_back(Test);
 }
 
 void Animator2DComponent::InGameUpdate()

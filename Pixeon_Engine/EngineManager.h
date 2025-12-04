@@ -59,6 +59,7 @@ public:
 	std::vector<Object*> GetPrefabs() const { return prefabs_; }
 	Object* GetPrefabByName(const std::string& name);
 	void RemovePrefab(Object* ptr);
+	GameRenderTarget* GetGameRenderTarget() const { return m_gameRenderTarget_; }
 
 private:
 	void EditorUpdate();
