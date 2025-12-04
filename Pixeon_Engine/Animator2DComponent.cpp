@@ -1,4 +1,6 @@
 #include "Animator2DComponent.h"
+#include "Animator2D.h"
+#include "ImageRender.h"
 #include "EditrGUI.h"
 #include <string>
 
@@ -8,7 +10,31 @@ void Animator2DComponent::Init(Object* Prt)
 	_ComponentName = "Animator2DComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::ANIMATOR2D;
 	_animators.clear();
+
 	Animator2D* Test = new Animator2D;
+	KeyFrame kf;
+	// 曲線情報の設定
+	// 簡易イージング
+	kf.CurveInfo.StartPoint = { 0.0f,0.0f };
+	kf.CurveInfo.EndPoint = { 1.0f,1.0f };
+	kf.CurveInfo.ControlPoint1 = { 0.25f,0.0f };
+	kf.CurveInfo.ControlPoint2 = { 0.75f,0.0f };
+	kf.StartTime = 0.0f;
+	kf.EndTime = 5.0f;
+
+	kf.StartTransform.Scale = { 1.0f, 1.0f };
+	kf.EndTransform.Scale = { 5.0f, 5.0f };
+
+	kf.Layer = 1;
+	kf.Image = new ImageRender();
+	kf.Image->Init(Prt);
+	kf.Image->SetTextureName("SkyBox.jpg");
+	Test->SetViewMode(Animator2D::ViewMode::Billboard);
+
+	Test->AddKeyFrame(kf);
+	Test->SetTotalTime(5.0f);
+	Test->SetLoop(true);
+
 	_animators.push_back(Test);
 }
 
@@ -33,21 +59,44 @@ void Animator2DComponent::DrawInspector()
 	label += "###" + Ptr;
 	if (!ImGui::CollapsingHeader(EditrGUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)){
-		for (auto animator : _animators)
-		{
-			ImGui::TableNextRow();
 
-			ImGui::TableSetColumnIndex(0);
-			std::string name;
-			name = animator->GetProjectName();
-			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8(name).c_str());
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("プロファイルパス").c_str());
+		ImGui::TableSetColumnIndex(1);
+		// パスの入力
+		char Path[256] = "";
+		if (ImGui::InputText(("Path##" + Ptr).c_str(), Path, sizeof(Path)));
 
-			ImGui::TableSetColumnIndex(1);
-
-
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("読み込み").c_str());
+		ImGui::TableSetColumnIndex(1);
+		// 読み込みボタン
+		if (ImGui::Button(("##Load" + Ptr).c_str())) {
+			Animator2D* animator = new Animator2D;
+			animator->LoadFile(Path);
 		}
-		ImGui::EndTable();
-	}
+
+		for(auto& animator : _animators) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text(animator->GetProjectName().c_str());
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("総再生時間").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text(std::to_string(animator->GetTotalTime()).c_str());
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text(animator->GetLoop() ? EditrGUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : EditrGUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
+		}
 	
 
+		ImGui::EndTable();
+	}
 }

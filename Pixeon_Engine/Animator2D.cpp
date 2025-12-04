@@ -103,6 +103,7 @@ void Animator2D::Update()
 			Scl.x = scl.x;
 			Scl.y = scl.y;
 			obj.Image->SetSize2D(Scl);
+			obj.Image->SetSizeWorld(Scl);
 		}
 
 		// UV 位置
@@ -112,7 +113,7 @@ void Animator2D::Update()
 			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
 			uvRect.x = uvp.x;
 			uvRect.y = uvp.y;
-			obj.Image->SetUVRect(uvRect);
+			//obj.Image->SetUVRect(uvRect);
 		}
 
 		// UV スケール
@@ -122,7 +123,7 @@ void Animator2D::Update()
 			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
 			uvRect.z = uvs.x;
 			uvRect.w = uvs.y;
-			obj.Image->SetUVRect(uvRect);
+			//obj.Image->SetUVRect(uvRect);
 		}
 	}
 }

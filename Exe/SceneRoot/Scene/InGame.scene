@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-46.687 8.86782 -3.13349 11.36 0.23 0 -37.5898 6.58804 -6.60377 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "-10.5286 2.55521 -1.13607 10.96 0.28 0 -0.924156 -0.208342 -0.794249 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -75,11 +75,6 @@
                     "Data": "ScriptName \n",
                     "Name": "ScripComponent",
                     "Type": 4
-                },
-                {
-                    "Data": "",
-                    "Name": "Animator2DComponent",
-                    "Type": 9
                 }
             ],
             "Name": "Player",
@@ -112,11 +107,6 @@
                     "Data": "1\n1\n0\n",
                     "Name": "RigidBody",
                     "Type": 7
-                },
-                {
-                    "Data": "2\n128\n128 1\n1 0\n0 0\n0 0 0\n0 1 1 1\n1 1 1 1\n",
-                    "Name": "ImageRender",
-                    "Type": 3
                 }
             ],
             "Name": "floor",
@@ -135,6 +125,33 @@
                     1.0,
                     1.0,
                     1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "",
+                    "Name": "Animator2DComponent",
+                    "Type": 9
+                }
+            ],
+            "Name": "Test",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    1.2999999523162842,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    -4.0
                 ]
             }
         }
