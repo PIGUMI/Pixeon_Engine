@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="ソース ファイル\GUI">
       <UniqueIdentifier>{443e4728-733e-47c8-ae1e-17c40449c28d}</UniqueIdentifier>
     </Filter>
@@ -66,11 +62,15 @@
     <Filter Include="ソース ファイル\Component\Other">
       <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\memo">
-      <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UIAnimator">
       <UniqueIdentifier>{37caf2ce-cb5c-4114-9424-f1b8a1069438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\リソース ファイル\memo">
+      <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -212,11 +212,14 @@
     <ClCompile Include="_Geometry.cpp">
       <Filter>ソース ファイル\Other</Filter>
     </ClCompile>
-    <ClCompile Include="EditorGUI_UIAnimatior.cpp">
+    <ClCompile Include="EditorGUI_Animator2D.cpp">
       <Filter>ソース ファイル\GUI\View</Filter>
     </ClCompile>
-    <ClCompile Include="UIAnimatoData.cpp">
+    <ClCompile Include="Animator2D.cpp">
       <Filter>ソース ファイル\BaseClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator2DComponent.cpp">
+      <Filter>ソース ファイル\Component\Other</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -373,13 +376,16 @@
     <ClInclude Include="_Geometry.h">
       <Filter>ソース ファイル\Other</Filter>
     </ClInclude>
-    <ClInclude Include="UIAnimatoData.h">
+    <ClInclude Include="Animator2D.h">
       <Filter>ソース ファイル\BaseClass</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator2DComponent.h">
+      <Filter>ソース ファイル\Component\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="20251202.txt">
-      <Filter>リソース ファイル\memo</Filter>
+      <Filter>ソース ファイル\リソース ファイル\memo</Filter>
     </Text>
   </ItemGroup>
 </Project>

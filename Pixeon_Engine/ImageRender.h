@@ -76,6 +76,7 @@ private:
 	bool EnsureInputLayout(const void* vsBytecode, size_t size);
 	bool EnsureConstantBuffer();
 	bool EnsureBuffers();
+	bool EnsureBlendState();
 
 	void UpdateVertices2D(Vertex outV[4], float& outZClip);
 	void UpdateVerticesBillboard(Vertex outV[4]);
@@ -87,6 +88,7 @@ private:
 	static bool EnsureFallbackTextures();
 	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_whiteTexSRV;
 	static Microsoft::WRL::ComPtr<ID3D11SamplerState> s_linearSmp;
+	static Microsoft::WRL::ComPtr<ID3D11BlendState> s_alphaBlendState;
 private:
 	// ÉäÉ\Å[ÉX
 	std::string m_textureName;

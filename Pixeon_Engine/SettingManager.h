@@ -60,6 +60,9 @@ public:
 	std::string GetScriptLogFilePath() const { return ScriptLogFilePath; }
 	void SetScriptLogFilePath(const std::string& path) { ScriptLogFilePath = path; }
 
+	std::string GetAnimator2DProjectFilePath() const { return Animator2DProjectFilePath; }
+	void SetAnimator2DProjectFilePath(const std::string& path) { Animator2DProjectFilePath = path; }
+
 private:
 	static SettingManager* instance;
 private:
@@ -74,6 +77,7 @@ private:
 	std::string DLLFilePath = "SceneRoot/Script/DLL/";
 	std::string ScriptFilePath = "SceneRoot/Script/Source/";
 	std::string ScriptLogFilePath = "SceneRoot/Script/Log/";
+	std::string Animator2DProjectFilePath = "SceneRoot/Editor/Project/";
 	DirectX::XMFLOAT4 BackgroundColor = DirectX::XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	float MouseSensitivity = 0.01f;
 

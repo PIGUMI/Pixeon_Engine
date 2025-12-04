@@ -22,6 +22,7 @@ public:
 		ANIMATION,
 		RIGIDBODY,
 		BOX_COLLISION,
+		ANIMATOR2D,
 		MAX,
 	};
 

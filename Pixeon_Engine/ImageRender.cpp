@@ -1,9 +1,13 @@
 #define NOMINMAX
 #include "ImageRender.h"
+#include "EngineManager.h"
+#include "GameRenderTarget.h"
+#include "SettingManager.h"
 
 // static
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
+Microsoft::WRL::ComPtr<ID3D11BlendState> ImageRender::s_alphaBlendState;
 
 ImageRender::ImageRender() {
 	_ComponentName = "ImageRender";
@@ -96,6 +100,22 @@ bool ImageRender::EnsureFallbackTextures() {
 		dev->CreateSamplerState(&sd, s_linearSmp.GetAddressOf());
 	}
 	return s_whiteTexSRV != nullptr;
+}
+
+bool ImageRender::EnsureBlendState() {
+	if (s_alphaBlendState) return true;
+	D3D11_BLEND_DESC desc = {};
+	desc.RenderTarget[0].BlendEnable = TRUE;
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	auto dev = DirectX11::GetInstance()->GetDevice();
+	HRESULT hr = dev->CreateBlendState(&desc, s_alphaBlendState.GetAddressOf());
+	return SUCCEEDED(hr);
 }
 
 bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
@@ -447,6 +467,7 @@ void ImageRender::Draw() {
 	if (!EnsureShaders(false)) return;
 	if (!EnsureConstantBuffer()) return;
 	if (!EnsureBuffers()) return;
+	if (!EnsureBlendState()) return;
 
 	Vertex v[4]{};
 	int mode2DFlag = 0;
@@ -464,7 +485,7 @@ void ImageRender::Draw() {
 		UpdateVerticesUI(v);
 		mode2DFlag = 0;
 	}
-	else { // World3D
+	else {
 		UpdateVerticesWorld3D(v);
 		mode2DFlag = 0;
 	}
@@ -508,6 +529,10 @@ void ImageRender::Draw() {
 
 	ID3D11SamplerState* smp = s_linearSmp.Get();
 	ctx->PSSetSamplers(0, 1, &smp);
+
+	float blendFactor[4] = { 0,0,0,0 };
+	UINT sampleMask = 0xFFFFFFFF;
+	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
 
 	ctx->DrawIndexed(6, 0, 0);
 }

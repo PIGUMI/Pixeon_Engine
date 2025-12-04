@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationDebug.h" />
+    <ClInclude Include="Animator2DComponent.h" />
     <ClInclude Include="API.h" />
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
@@ -187,20 +188,21 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="UIAnimatoData.h" />
+    <ClInclude Include="Animator2D.h" />
     <ClInclude Include="WeightFix.h" />
     <ClInclude Include="_Geometry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
     <ClCompile Include="AnimationDebug.cpp" />
+    <ClCompile Include="Animator2DComponent.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BoxCollision.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
-    <ClCompile Include="EditorGUI_UIAnimatior.cpp" />
+    <ClCompile Include="EditorGUI_Animator2D.cpp" />
     <ClCompile Include="EditrGUI.cpp" />
     <ClCompile Include="EditrGUI_Content.cpp" />
     <ClCompile Include="EditrGUI_Hierarchy.cpp" />
@@ -238,7 +240,7 @@
     <ClCompile Include="StartUp.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="UIAnimatoData.cpp" />
+    <ClCompile Include="Animator2D.cpp" />
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>

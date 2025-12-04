@@ -161,7 +161,7 @@ void EditrGUI::WindowGUI()
 	if (ImGui::BeginMenuBar())
 	{
 
-		const char* guiModes[] = { "Editor","UIEditor"};
+		const char* guiModes[] = { "Editor","Animator2D"};
 		int guiModeWidth = 160;
 
 		float curX = ImGui::GetCursorPosX();
@@ -268,10 +268,18 @@ void EditrGUI::WindowGUI()
 	ExternalToolsWindow();
 
 	// DockSpaceを作成
-	ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-	ImGuiID dockSpaceUI = ImGui::GetID("UIEditorDockSpace");
-	ImGui::DockSpace(dockSpaceUI, ImVec2(0.0f, 0.0f), dockspace_flags);
+	ImGuiID dockspace_id		= ImGui::GetID("MyDockSpace");
+	ImGuiID Animator2D_dock_id	= ImGui::GetID("Animator2D_DockSpace");
+
+	switch (GuiMode)
+	{
+	case 0:
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	break;
+	case 1:
+		ImGui::DockSpace(Animator2D_dock_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+		break;
+	}
 
 	// Dock初期化
 	static bool dock_init = false;
@@ -303,20 +311,20 @@ void EditrGUI::WindowGUI()
 
 		ImGui::DockBuilderFinish(dockspace_id);
 	}
+	static bool Aniamtor2D_dock_init = false;
+	if (!Aniamtor2D_dock_init || dockNeedsReset) {
 
-	static bool UIDock_init = false;
-	if(!UIDock_init || dockNeedsReset)
-	{
-		UIDock_init = true;
+		Aniamtor2D_dock_init = true;
 		dockNeedsReset = false;
-		ImGui::DockBuilderRemoveNode(dockSpaceUI); // DockSpaceリセット
-		ImGui::DockBuilderAddNode(dockSpaceUI, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
-		ImGui::DockBuilderSetNodeSize(dockSpaceUI, viewport->Size);
 
-		ImGuiID dock_main_id = dockSpaceUI;
+		ImGui::DockBuilderRemoveNode(Animator2D_dock_id); // DockSpaceリセット
+		ImGui::DockBuilderAddNode(Animator2D_dock_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(Animator2D_dock_id, viewport->Size);
 
-		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("UIエディター").c_str(), dock_main_id);
-		ImGui::DockBuilderFinish(dockSpaceUI);
+		ImGuiID dock_main_id = Animator2D_dock_id;
+
+		ImGui::DockBuilderDockWindow(ShiftJISToUTF8("Animator2Dエディタ").c_str(), dock_main_id);
+		ImGui::DockBuilderFinish(Animator2D_dock_id);
 	}
 
 	ImGui::End();
