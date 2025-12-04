@@ -1,0 +1,96 @@
+透過画像がGameRenderTargetを経由すると透過されない問題の原因
+================================================================
+
+問題の概要:
+----------
+ImagerRenderを使用して描画した透過画像がGameRenderTargetを経由して描画すると、
+透過部分が黒く表示されます。しかし、DirectX11に直接書き込むInGameDraw()では
+正常に透過されます。
+
+原因分析:
+----------
+
+1. InGameDraw()の動作 (EngineManager.cpp 247-251行目):
+   - DirectX11のデフォルトレンダーターゲットに直接描画
+   - BeginDraw()で背景色でクリア (System.cpp 180-193行目)
+   - SceneManger::Draw()で全てのオブジェクトを描画
+   - 透過は正常に機能する
+
+2. EditorDraw()の動作 (EngineManager.cpp 226-245行目):
+   - GameRenderTarget::Begin()でカスタムレンダーターゲットにレンダリング開始
+   - SceneManger::Draw()で全てのオブジェクトを描画
+   - GameRenderTarget::End()でデフォルトレンダーターゲットに戻る
+   - レンダーターゲットのテクスチャをエディターGUIに表示
+   - この過程で透過部分が黒く表示される
+
+根本原因:
+----------
+
+GameRenderTarget::Begin()メソッド (GameRenderTarget.cpp 156-172行目)で
+レンダーターゲットをクリアする際、背景色のアルファ値がそのまま使用されます。
+
+問題のコード:
+```cpp
+DirectX::XMFLOAT4 Temp;
+Temp = SettingManager::GetInstance()->GetBackgroundColor();
+float clearColor[4] = { Temp.x, Temp.y, Temp.z, Temp.w };
+context->ClearRenderTargetView(m_pRTV, clearColor);
+```
+
+背景色のアルファ値が1.0（不透明）の場合、レンダーターゲット全体が不透明な
+背景色でクリアされます。その後、ImageRenderで透過画像を描画する際:
+
+1. ImageRenderは正しくアルファブレンディングを設定している
+   (ImageRender.cpp 105-119行目)
+   - SrcBlend = D3D11_BLEND_SRC_ALPHA
+   - DestBlend = D3D11_BLEND_INV_SRC_ALPHA
+   
+2. しかし、レンダーターゲットの背景は既に不透明（alpha=1.0）でクリアされている
+
+3. 透過画像の透明部分（alpha=0）を描画すると:
+   - 最終色 = SrcColor * SrcAlpha + DestColor * (1 - SrcAlpha)
+   - 最終色 = 透明ピクセル色 * 0 + 背景色 * 1
+   - 最終色 = 背景色（不透明な黒または設定色）
+
+4. このため、透過部分が黒く表示される
+
+解決方法:
+----------
+
+GameRenderTarget::Begin()でクリアする際、アルファチャンネルを0（完全透明）に
+設定する必要があります:
+
+```cpp
+DirectX::XMFLOAT4 Temp;
+Temp = SettingManager::GetInstance()->GetBackgroundColor();
+float clearColor[4] = { Temp.x, Temp.y, Temp.z, 0.0f };  // アルファを0に設定
+context->ClearRenderTargetView(m_pRTV, clearColor);
+```
+
+これにより:
+1. レンダーターゲットは透明な背景でクリアされる
+2. 透過画像の透明部分は背景の透明色とブレンドされる
+3. エディターGUIに表示する際、透明部分は適切に処理される
+4. InGameDraw()と同じ視覚的結果が得られる
+
+技術的詳細:
+----------
+
+- レンダーターゲットのフォーマット: DXGI_FORMAT_R8G8B8A8_UNORM
+  (GameRenderTarget.cpp 18行目)
+- アルファブレンディング設定:
+  - BlendEnable = TRUE
+  - SrcBlend = D3D11_BLEND_SRC_ALPHA
+  - DestBlend = D3D11_BLEND_INV_SRC_ALPHA
+  - BlendOp = D3D11_BLEND_OP_ADD
+- ピクセルシェーダー: PS_ImgQuad.hlsl
+  - テクスチャのアルファ値を保持
+  - 頂点カラーとテクスチャカラーを乗算
+
+まとめ:
+------
+
+透過画像の描画自体は正しく機能していますが、GameRenderTargetのクリア処理で
+アルファチャンネルが不透明に設定されていたため、透過部分が意図通りに
+表示されませんでした。クリア時のアルファ値を0.0fに変更することで、
+この問題は解決されます。
