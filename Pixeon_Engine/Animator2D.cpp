@@ -85,6 +85,7 @@ void Animator2D::Update()
 			Pos.x = pos.x;
 			Pos.y = pos.y;
 			obj.Image->SetOffset2D(Pos);
+			obj.Image->SetOffset3D(DirectX::XMFLOAT3(pos.x, pos.y, 0.0f));
 		}
 
 		if (obj.StartTransform.Rotation != obj.EndTransform.Rotation)

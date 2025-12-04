@@ -11,29 +11,42 @@ void Animator2DComponent::Init(Object* Prt)
 	_Type = ComponentManager::COMPONENT_TYPE::ANIMATOR2D;
 	_animators.clear();
 
-	//Animator2D* Test = new Animator2D;
-	//KeyFrame kf;
+	Animator2D* Test = new Animator2D;
+	KeyFrame kf;
 
-	//kf.CurveInfo.StartPoint = { 0.0f,0.0f };
-	//kf.CurveInfo.EndPoint = { 1.0f,1.0f };
-	//kf.CurveInfo.ControlPoint1 = { 0.25f,0.0f };
-	//kf.CurveInfo.ControlPoint2 = { 0.75f,0.0f };
-	//kf.StartTime = 0.0f;
-	//kf.EndTime = 5.0f;
+	kf.CurveInfo.StartPoint		= { 0.0f,0.0f };
+	kf.CurveInfo.EndPoint		= { 1.0f,1.0f };
+	kf.CurveInfo.ControlPoint1	= { 0.25f,0.25f };
+	kf.CurveInfo.ControlPoint2	= { 0.75f,0.75f };
+	kf.StartTime = 0.0f;
+	kf.EndTime = 1.0f;
 
-	//kf.StartTransform.Scale = { 1.0f, 1.0f };
-	//kf.EndTransform.Scale = { 5.0f, 5.0f };
+	kf.StartTransform.Scale = { 1.0f, 1.0f };
+	kf.EndTransform.Scale	= { 1.0f, 1.0f };
+	kf.StartTransform.Position = { 0.0f,0.0f };
+	kf.EndTransform.Position = { 0.0f,1.0f };
 
-	//kf.Layer = 1;
-	//kf.Image = new ImageRender();
-	//kf.Image->Init(Prt);
-	//kf.Image->SetTextureName("Hamu.png");
+	kf.Layer = 1;
+	kf.Image = new ImageRender();
+	kf.Image->Init(Prt);
+	kf.Image->SetTextureName("Test.jpg");
+	
+	Test->SetViewMode(Animator2D::ViewMode::Billboard);
+	Test->AddKeyFrame(kf);
+	Test->SetTotalTime(2.0f);
+	Test->SetLoop(true);
 
-	//Test->AddKeyFrame(kf);
-	//Test->SetTotalTime(5.0f);
-	//Test->SetLoop(true);
+	kf.StartTransform.Position = { 0.0f,1.0f };
+	kf.EndTransform.Position = { 0.0f,0.0f };
+	kf.StartTime = 1.0f;
+	kf.EndTime = 2.0f;
 
-	//_animators.push_back(Test);
+	Test->AddKeyFrame(kf);
+
+	_animators.push_back(Test);
+
+	
+
 }
 
 void Animator2DComponent::InGameUpdate()
@@ -92,6 +105,12 @@ void Animator2DComponent::DrawInspector()
 			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text(animator->GetLoop() ? EditrGUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : EditrGUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("ビュー設定").c_str());
+			ImGui::TableSetColumnIndex(1);
+			std::string viewModeStr = (animator->GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
+			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8(viewModeStr).c_str());
 		}
 	
 
