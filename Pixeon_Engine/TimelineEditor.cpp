@@ -67,15 +67,15 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 	{
 		if (!animator)
 		{
-			if (ImGui::MenuItem(EditrGUI::GetInstance()->ShiftJISToUTF8("新規プロジェクトの作成").c_str()))
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("新規プロジェクトの作成").c_str()))
 			{
 				Animator2D* newAnimator = new Animator2D();
-				EditrGUI::GetInstance()->SetAnimator2D(newAnimator);
+				GUI::GetInstance()->SetAnimator2D(newAnimator);
 			}
 		}
 		else
 		{
-			if (ImGui::MenuItem(EditrGUI::GetInstance()->ShiftJISToUTF8("NewKeyFrame").c_str()))
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("NewKeyFrame").c_str()))
 			{
 				KeyFrame newKeyFrame;
 				newKeyFrame.CurveInfo.StartPoint = { 0.0f, 0.0f };

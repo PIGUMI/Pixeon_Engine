@@ -53,15 +53,6 @@ struct Vertex {
 	float uv[2];
 };
 
-typedef struct
-{
-	DWORD time;
-	DWORD oldTime;
-	DWORD fpsCount;
-	DWORD fps;
-	DWORD fpsTime;
-}FPSTIMER;
-
 // テクスチャ
 class Render
 {

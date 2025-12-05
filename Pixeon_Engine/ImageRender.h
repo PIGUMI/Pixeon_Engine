@@ -9,7 +9,7 @@
 #include "ShaderManager.h"
 #include "Scene.h"
 #include "CameraComponent.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include "AssetManager.h"
 #include "System.h"
 

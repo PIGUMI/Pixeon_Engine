@@ -12,8 +12,6 @@
 #include "SceneManger.h"
 #include "Scene.h"
 
-
-
 GUI* GUI::instance = nullptr;
 
 GUI* GUI::GetInstance()

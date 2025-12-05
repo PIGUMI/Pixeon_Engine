@@ -173,9 +173,6 @@
     <ClCompile Include="CameraComponent.cpp">
       <Filter>ソース ファイル\Engine\Component\basics</Filter>
     </ClCompile>
-    <ClCompile Include="Geometry.cpp">
-      <Filter>ソース ファイル\Engine\Component\basics</Filter>
-    </ClCompile>
     <ClCompile Include="ImageRender.cpp">
       <Filter>ソース ファイル\Engine\Component\Renderer</Filter>
     </ClCompile>
@@ -338,9 +335,6 @@
       <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
-      <Filter>ソース ファイル\Engine\Component\basics</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry.h">
       <Filter>ソース ファイル\Engine\Component\basics</Filter>
     </ClInclude>
     <ClInclude Include="ImageRender.h">

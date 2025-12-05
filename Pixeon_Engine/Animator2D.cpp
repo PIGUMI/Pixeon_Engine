@@ -4,7 +4,6 @@
 #include <chrono>
 #include <algorithm>
 
-// 現在時刻（秒）を返すヘルパー
 static double GetTimeSeconds()
 {
 	using clock = std::chrono::steady_clock;

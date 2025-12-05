@@ -156,7 +156,6 @@
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GameRenderTarget.h" />
-    <ClInclude Include="Geometry.h" />
     <ClInclude Include="HashUtill.h" />
     <ClInclude Include="ImageRender.h" />
     <ClInclude Include="IMGUI\imconfig.h" />
@@ -209,7 +208,6 @@
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameRenderTarget.cpp" />
-    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="HashUtill.cpp" />
     <ClCompile Include="ImageRender.cpp" />
     <ClCompile Include="IMGUI\imgui.cpp" />

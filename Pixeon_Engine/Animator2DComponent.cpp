@@ -1,7 +1,7 @@
 #include "Animator2DComponent.h"
 #include "Animator2D.h"
 #include "ImageRender.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include <string>
 
 void Animator2DComponent::Init(Object* Prt)
@@ -62,14 +62,14 @@ void Animator2DComponent::Draw()
 
 void Animator2DComponent::DrawInspector()
 {
-	std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
+	std::string label = GUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
 	std::string Ptr = std::to_string((uintptr_t)this);
 	label += "###" + Ptr;
-	if (!ImGui::CollapsingHeader(EditrGUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
+	if (!ImGui::CollapsingHeader(GUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("プロファイルパス").c_str());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("プロファイルパス").c_str());
 		ImGui::TableSetColumnIndex(1);
 		// パスの入力
 		char Path[256] = "";
@@ -77,7 +77,7 @@ void Animator2DComponent::DrawInspector()
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("読み込み").c_str());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("読み込み").c_str());
 		ImGui::TableSetColumnIndex(1);
 		// 読み込みボタン
 		if (ImGui::Button(("##Load" + Ptr).c_str())) {
@@ -88,25 +88,25 @@ void Animator2DComponent::DrawInspector()
 		for (auto& animator : _animators) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text(animator->GetProjectName().c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("総再生時間").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("総再生時間").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text(std::to_string(animator->GetTotalTime()).c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(animator->GetLoop() ? EditrGUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : EditrGUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
+			ImGui::Text(animator->GetLoop() ? GUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : GUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("ビュー設定").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定").c_str());
 			ImGui::TableSetColumnIndex(1);
 			std::string viewModeStr = (animator->GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
-			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8(viewModeStr).c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(viewModeStr).c_str());
 		}
 
 		ImGui::EndTable();

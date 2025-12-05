@@ -2,7 +2,7 @@
 #include "RigidBody.h"
 #include "Object.h"
 #include "Scene.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include "CollisionManager.h"
 #include "_Geometry.h"
 
@@ -45,10 +45,6 @@ void BoxCollision::BeginPlay()
 		if (collisionManager)
 		{
 			collisionManager->RegisterBoxCollision(this);
-		}
-		else
-		{
-			EditrGUI::GetInstance()->WriteLog("[BoxCollision] + NoFindCollisionManager");
 		}
 	}
 }
@@ -178,7 +174,7 @@ void BoxCollision::UInit()
 
 void BoxCollision::DrawInspector()
 {
-	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::CollapsingHeader(SJ(label.c_str()).c_str()))return;
 	label = "Size##" + std::to_string(reinterpret_cast<uintptr_t>(this));

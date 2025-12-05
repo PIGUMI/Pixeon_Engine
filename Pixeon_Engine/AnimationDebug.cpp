@@ -1,29 +1,17 @@
 #include "AnimationDebug.h"
-#include "EditrGUI.h"
-
-static void Log(const std::string& s) {
-	EditrGUI::GetInstance()->WriteLog(s);
-}
 
 void DumpBoneChannelMapping(const ModelSharedResource* res) {
-	if (!res || res->clips.empty()) { Log("[MappingDump] no clips"); return; }
+	if (!res || res->clips.empty()) { return; }
 	const auto& clip = res->clips[0]; // 代表クリップ
 	const auto& hierarchy = clip.nodeHierarchy;
 
-	Log("[MappingDump] ---- Bones ----");
 	for (size_t b = 0; b < res->bones.size(); ++b) {
 		const auto& bone = res->bones[b];
 		std::string hname = (bone.nodeIndex >= 0 && bone.nodeIndex < (int)hierarchy.size())
 			? hierarchy[bone.nodeIndex].name : "<OUT_OF_RANGE>";
 		std::string status = (bone.nodeIndex >= 0 && hname == bone.name) ? "OK" : "Mismatch";
-		Log("[Bone] idx=" + std::to_string(b) +
-			" name=" + bone.name +
-			" nodeIndex=" + std::to_string(bone.nodeIndex) +
-			" hierarchyName=" + hname +
-			" status=" + status);
 	}
 
-	Log("[MappingDump] ---- Channels (all clips) ----");
 	for (size_t ci = 0; ci < res->clips.size(); ++ci) {
 		const auto& c = res->clips[ci];
 		// nodeName -> index map
@@ -39,13 +27,6 @@ void DumpBoneChannelMapping(const ModelSharedResource* res) {
 			std::string hname = (chan.nodeIndex >= 0 && chan.nodeIndex < (int)c.nodeHierarchy.size())
 				? c.nodeHierarchy[chan.nodeIndex].name : "<OUT_OF_RANGE>";
 			std::string status = (expected == chan.nodeIndex) ? "OK" : "Mismatch";
-			Log("[Channel] clip=" + c.name +
-				" idx=" + std::to_string(ch) +
-				" nodeName=" + chan.nodeName +
-				" nodeIndex=" + std::to_string(chan.nodeIndex) +
-				" hierarchyName=" + hname +
-				" expected=" + std::to_string(expected) +
-				" status=" + status);
 		}
 	}
 }
@@ -66,7 +47,6 @@ int RebindBoneNodeIndices(ModelSharedResource* res) {
 			fixed++;
 		}
 	}
-	if (fixed > 0) Log("[RebindBoneNodeIndices] fixed=" + std::to_string(fixed));
 	return fixed;
 }
 
@@ -95,12 +75,11 @@ int RebindChannelNodeIndices(ModelSharedResource* res, AnimationClipRuntime& run
 			fixed++;
 		}
 	}
-	if (fixed > 0) Log("[RebindChannelNodeIndices] clip=" + runtimeClip.name + " fixed=" + std::to_string(fixed));
 	return fixed;
 }
 
 void QuickIntegrityReport(const ModelSharedResource* res) {
-	if (!res) { Log("[Integrity] resource null"); return; }
+	if (!res) {return; }
 	int boneMismatch = 0;
 	if (!res->clips.empty()) {
 		const auto& h = res->clips[0].nodeHierarchy;
@@ -109,7 +88,4 @@ void QuickIntegrityReport(const ModelSharedResource* res) {
 				boneMismatch++;
 		}
 	}
-	Log("[Integrity] bones=" + std::to_string(res->bones.size()) +
-		" clips=" + std::to_string(res->clips.size()) +
-		" boneMismatch=" + std::to_string(boneMismatch));
 }

@@ -4,7 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include "IMGUI/imgui_impl_win32.h"
-#include "EditrGUI.h"
 #include "ComponentManager.h"
 #include "Object.h"
 

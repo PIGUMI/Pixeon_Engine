@@ -2,7 +2,6 @@
 #include "AnimationComponent.h"
 #include "MainFrame.h"
 #include "GUI.h"
-#include "ErrorLog.h"
 #include "IMGUI/imgui.h"
 #include "AnimationDebug.h"
 #include <algorithm>
@@ -27,9 +26,9 @@ std::shared_ptr<ModelSharedResource> AnimationComponent::GetResource() {
 
 void AnimationComponent::BeginPlay() {
 	m_renderer = GetRenderer();
-	if (!m_renderer) { ErrorLogger::Instance().LogError("Animation", "Renderer not found"); return; }
+	if (!m_renderer) return;
 	m_resource = GetResource();
-	if (!m_resource) { ErrorLogger::Instance().LogError("Animation", "Resource null"); return; }
+	if (!m_resource) return;
 
 	// クリップ構築（キー統合）
 	m_clips.clear();

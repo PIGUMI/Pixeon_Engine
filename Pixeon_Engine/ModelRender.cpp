@@ -5,9 +5,8 @@
 #include "AssetManager.h"
 #include "CameraComponent.h"
 #include "SettingManager.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include "IMGUI/imgui.h"
-#include "ErrorLog.h"
 
 using namespace DirectX;
 
@@ -25,7 +24,6 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 	m_modelPath = logicalPath;
 	m_model = ModelManager::Instance()->LoadOrGet(logicalPath);
 	if (!m_model) {
-		ErrorLogger::Instance().LogError("ModelRenderComponent", "Failed load model: " + logicalPath);
 		m_ready = false;
 		return false;
 	}
@@ -256,7 +254,6 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 		std::string msg = "SubMesh " + std::to_string(submeshIdx) +
 			" Issue=" + issueNames[(int)issue] + " | " + detail;
 		if (mat && !mat->texName.empty()) msg += " | path=" + mat->texName;
-		ErrorLogger::Instance().LogError("TextureBind", msg, false, 1);
 	}
 }
 
@@ -376,7 +373,6 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		auto dev = DirectX11::GetInstance()->GetDevice();
 		if (FAILED(dev->CreateBuffer(&bd, nullptr, s_boneCB.GetAddressOf()))) {
-			ErrorLogger::Instance().LogError("ModelRenderComponent", "Bone CB create failed");
 			return;
 		}
 	}
@@ -441,7 +437,7 @@ void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4
 
 void ModelRenderComponent::DrawInspector() {
 	// ImGui •\Ž¦—p
-	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string title;
 	title = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::CollapsingHeader(title.c_str())) return;

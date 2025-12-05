@@ -2,7 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include "AssetTypes.h"
-#include "AnimationComponent.h" // AnimationChannelRuntime / AnimationClipRuntime 用
+#include "AnimationComponent.h"
 
 // 骨・チャンネル対応ダンプ
 void DumpBoneChannelMapping(const ModelSharedResource* res);

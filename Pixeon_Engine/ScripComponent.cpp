@@ -1,7 +1,7 @@
 #include "ScripComponent.h"
 #include "ScriptManager.h"
 #include "ComponentManager.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include "IMGUI/imgui.h"
 #include "SettingManager.h"
 
@@ -238,11 +238,11 @@ void ScripComponent::UnLoadScript() {
 
 // --- ImGui Inspector ŽÀ‘• ---
 void ScripComponent::DrawInspector() {
-	std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
+	std::string label = GUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
 	std::string Ptr = std::to_string((uintptr_t)this);
 	label += "###" + Ptr;
 
-	if (!ImGui::CollapsingHeader(EditrGUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
+	if (!ImGui::CollapsingHeader(GUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
 
 	// ƒe[ƒuƒ‹
 	if (ImGui::BeginTable(("ScriptTable_" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
@@ -366,7 +366,7 @@ void ScripComponent::DrawInspector() {
 	if (_showBuildLog) {
 		if (ImGui::CollapsingHeader(("Build Log##log_" + Ptr).c_str())) {
 			ImGui::BeginChild(("BuildLogChild_" + Ptr).c_str(), ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
-			ImGui::TextUnformatted(EditrGUI::GetInstance()->ShiftJISToUTF8(_buildLog).c_str());
+			ImGui::TextUnformatted(GUI::GetInstance()->ShiftJISToUTF8(_buildLog).c_str());
 			ImGui::EndChild();
 		}
 	}

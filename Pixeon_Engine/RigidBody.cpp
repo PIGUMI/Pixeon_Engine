@@ -1,7 +1,7 @@
 #include "RigidBody.h"
 #include "Object.h"
 #include "Scene.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -191,7 +191,7 @@ void RigidBody::UInit()
 
 void RigidBody::DrawInspector()
 {
-	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::CollapsingHeader(SJ(label.c_str()).c_str()))return;
 	label = "RigidBodyTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));

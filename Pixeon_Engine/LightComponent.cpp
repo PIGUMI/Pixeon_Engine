@@ -1,7 +1,7 @@
 #include "LightComponent.h"
 #include "Object.h"
 #include "Scene.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include "IMGUI/imgui.h"
 
 void LightComponent::Init(Object* owner) {
@@ -46,7 +46,7 @@ DirectX::XMFLOAT3 LightComponent::GetWorldDirection() const {
 }
 
 void LightComponent::DrawInspector() {
-	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string label = SJ(_ComponentName.c_str());
 	std::string Ptr = std::to_string((uintptr_t)this);
 	label += "###" + Ptr;
