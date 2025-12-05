@@ -21,6 +21,7 @@ Animator2D::Animator2D()
   fTotalDuration_(0.0f)
 {
 }
+
 Animator2D::~Animator2D()
 {
 	for(auto obj : KeyFrames_)
