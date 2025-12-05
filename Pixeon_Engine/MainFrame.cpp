@@ -1,40 +1,45 @@
-#include "EngineManager.h"
+#include "MainFrame.h"
+// パイプライン
 #include "System.h"
 #include "GameRenderTarget.h"
+// GUI
 #include "EditrGUI.h"
-#include "PostEffectBase.h"
+// アセット管理クラス
+#include "AssetManager.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
-#include "AssetManager.h"
 #include "SceneManger.h"
 #include "SettingManager.h"
 #include "ShaderManager.h"
 #include "ComponentManager.h"
 #include "ScriptManager.h"
 #include "ResourceService.h"
+
 #include "Animator2D.h"
 #include "_Geometry.h"
+
 #include "Input.h"
 #include "Scene.h"
+
 #include <crtdbg.h>
 
-EngineManager* EngineManager::instance_ = nullptr;
+MainFrame* MainFrame::instance_ = nullptr;
 
-EngineManager* EngineManager::GetInstance() {
+MainFrame* MainFrame::GetInstance() {
 	if (instance_ == nullptr) {
-		instance_ = new EngineManager();
+		instance_ = new MainFrame();
 	}
 	return instance_;
 }
 
-void EngineManager::DeleteInstance() {
+void MainFrame::DeleteInstance() {
 	if (instance_ != nullptr) {
 		delete instance_;
 		instance_ = nullptr;
 	}
 }
 
-int EngineManager::Init(const EngineConfig& InPut)
+int MainFrame::Init(const EngineConfig& InPut)
 {
 	/* メンバー変数の初期化 */
 	m_bInGame_ = false;
@@ -101,7 +106,7 @@ int EngineManager::Init(const EngineConfig& InPut)
 	return 0;
 }
 
-void EngineManager::Update()
+void MainFrame::Update()
 {
 	// フレーム制御
 	DWORD currentTime = timeGetTime();
@@ -124,7 +129,7 @@ void EngineManager::Update()
 	}
 }
 
-void EngineManager::Draw() {
+void MainFrame::Draw() {
 	if (bUpdateDraw) {
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 		EditorDraw();
@@ -132,7 +137,7 @@ void EngineManager::Draw() {
 	}
 }
 
-void EngineManager::UnInit() {
+void MainFrame::UnInit() {
 	// Prefabの保存
 	SavePrefabs();
 	/* Prefabのデリート処理 */
@@ -165,11 +170,11 @@ void EngineManager::UnInit() {
 	CoUninitialize();
 }
 
-ID3D11ShaderResourceView* EngineManager::GetGameRender() {
+ID3D11ShaderResourceView* MainFrame::GetGameRender() {
 	return m_gameRenderTarget_->GetShaderResourceView();
 }
 
-bool EngineManager::AddPrefab(Object* prefab)
+bool MainFrame::AddPrefab(Object* prefab)
 {
 	try
 	{
@@ -191,7 +196,7 @@ bool EngineManager::AddPrefab(Object* prefab)
 	}
 }
 
-Object* EngineManager::GetPrefabByName(const std::string& name)
+Object* MainFrame::GetPrefabByName(const std::string& name)
 {
 	for (auto prefab : prefabs_) {
 		if (prefab->GetObjectName() == name) {
@@ -200,15 +205,15 @@ Object* EngineManager::GetPrefabByName(const std::string& name)
 	}
 	return nullptr;
 }
-// 配列からPrefabを削除
-void EngineManager::RemovePrefab(Object* ptr)
+
+void MainFrame::RemovePrefab(Object* ptr)
 {
 	prefabs_.erase(std::remove(prefabs_.begin(), prefabs_.end(), ptr), prefabs_.end());
 	delete ptr;
 	ptr = nullptr;
 }
 
-void EngineManager::EditorUpdate() {
+void MainFrame::EditorUpdate() {
 	ScriptManager::Instance().Update();
 	ShaderManager::GetInstance()->UpdateAndCompileShaders();
 	EditrGUI::GetInstance()->Update();
@@ -216,7 +221,7 @@ void EngineManager::EditorUpdate() {
 	m_bIsBeginPlayCalled = false;
 }
 
-void EngineManager::InGameUpdate() {
+void MainFrame::InGameUpdate() {
 	if (!m_bIsBeginPlayCalled) {
 		SceneManger::GetInstance()->BeginPlay();
 		m_bIsBeginPlayCalled = true;
@@ -224,7 +229,7 @@ void EngineManager::InGameUpdate() {
 	SceneManger::GetInstance()->PlayUpdate();
 }
 
-void EngineManager::EditorDraw() {
+void MainFrame::EditorDraw() {
 	m_gameRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
 
 	switch (EditrGUI::GetInstance()->GetGuiMode()) {
@@ -252,20 +257,20 @@ void EngineManager::EditorDraw() {
 	DirectX11::GetInstance()->EndDraw();
 }
 
-void EngineManager::InGameDraw() {
+void MainFrame::InGameDraw() {
 	DirectX11::GetInstance()->BeginDraw();
 	SceneManger::GetInstance()->Draw();
 	DirectX11::GetInstance()->EndDraw();
 }
 
-EngineManager::EngineManager()
+MainFrame::MainFrame()
 	:lastUpdateTime_(0), bUpdateDraw(false), targetFrameTime_(16.67f), deltaTime_(0.0f), m_hWnd_(0),
 	m_gameRenderTarget_(nullptr), m_bInGame_(false), m_bIsShowGUI_(false), m_bIsBeginPlayCalled(false)
 {
 	prefabs_.clear();
 }
 
-void EngineManager::SavePrefabs()
+void MainFrame::SavePrefabs()
 {
 	std::vector<Object*> SaveObjects;
 	SaveObjects = prefabs_;
@@ -319,7 +324,7 @@ void EngineManager::SavePrefabs()
 	}
 }
 
-void EngineManager::LoadPrefabs()
+void MainFrame::LoadPrefabs()
 {
 	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + "Prefab" + ".meta";
 	std::ifstream inFile(filePath);

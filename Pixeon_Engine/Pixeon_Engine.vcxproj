@@ -152,7 +152,8 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="EditrGUI.h" />
-    <ClInclude Include="EngineManager.h" />
+    <ClInclude Include="EngineFrame.h" />
+    <ClInclude Include="MainFrame.h" />
     <ClInclude Include="ErrorLog.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GameRenderTarget.h" />
@@ -209,7 +210,8 @@
     <ClCompile Include="EditorGUI_Hierarchy.cpp" />
     <ClCompile Include="EditorGUI_Inspector.cpp" />
     <ClCompile Include="EditorGUI_Prefab.cpp" />
-    <ClCompile Include="EngineManager.cpp" />
+    <ClCompile Include="EngineFrame.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="ErrorLog.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameRenderTarget.cpp" />

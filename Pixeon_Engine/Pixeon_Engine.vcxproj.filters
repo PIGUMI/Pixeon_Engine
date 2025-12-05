@@ -5,59 +5,53 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\GUI">
-      <UniqueIdentifier>{443e4728-733e-47c8-ae1e-17c40449c28d}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\MainFrame">
+      <UniqueIdentifier>{a05cca16-2aee-4170-a41e-9f84dfdb0487}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\GUI\Internal processing">
-      <UniqueIdentifier>{1af6bf24-6530-4d11-8f14-13991b5e4774}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\Engine">
+      <UniqueIdentifier>{a59b5566-e94c-496d-af17-e8f4177691e3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\GUI\View">
-      <UniqueIdentifier>{306ee381-2d50-4435-99d5-f6e344be05b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Other">
-      <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\App">
-      <UniqueIdentifier>{5a1d980f-b464-49e8-b984-996914f8d0cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Manager">
+    <Filter Include="ソース ファイル\Engine\Manager">
       <UniqueIdentifier>{a767e929-0ea9-4db3-922d-cf813b1b6179}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Build">
-      <UniqueIdentifier>{29a1df0a-7715-475e-b585-e94b358d5269}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Component">
+    <Filter Include="ソース ファイル\Engine\Component">
       <UniqueIdentifier>{27dfb793-5b5a-4ad2-aafd-2cbf1dbe4f30}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Archive">
-      <UniqueIdentifier>{694d96e6-a20e-4058-8d62-c8138137cc42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Assets">
-      <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Tool">
-      <UniqueIdentifier>{f78a1d59-4c18-4465-9d69-766bc08c1956}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\BaseClass">
-      <UniqueIdentifier>{9a907b63-a5b3-4191-b9c2-d7e18ab2d61f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Sys">
-      <UniqueIdentifier>{db6a1d7e-36d0-4766-a177-40a57d57ba05}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Component\3DModel">
+    <Filter Include="ソース ファイル\Engine\Component\3DModel">
       <UniqueIdentifier>{f27f271d-0778-4977-b2a5-e4ff12965620}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Component\physics">
+    <Filter Include="ソース ファイル\Engine\Component\physics">
       <UniqueIdentifier>{eaf903e9-45be-4578-8e93-a61e6b3246ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Component\basics">
+    <Filter Include="ソース ファイル\Engine\Component\basics">
       <UniqueIdentifier>{ee58dcc4-2263-4b31-b840-34f4461c602c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Component\Renderer">
+    <Filter Include="ソース ファイル\Engine\Component\Renderer">
       <UniqueIdentifier>{e2bda8b6-348b-4a15-968c-f9e574f95498}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Component\Other">
+    <Filter Include="ソース ファイル\Engine\Component\Other">
       <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\Other">
+      <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Animator2DEditor">
+      <UniqueIdentifier>{ec7645fa-7e8c-4f5d-b450-6146287e5f88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Animator2DEditor\Animator2D">
+      <UniqueIdentifier>{37caf2ce-cb5c-4114-9424-f1b8a1069438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\GUI">
+      <UniqueIdentifier>{443e4728-733e-47c8-ae1e-17c40449c28d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\GUI\Internal processing">
+      <UniqueIdentifier>{1af6bf24-6530-4d11-8f14-13991b5e4774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\GUI\View">
+      <UniqueIdentifier>{306ee381-2d50-4435-99d5-f6e344be05b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Sys">
+      <UniqueIdentifier>{db6a1d7e-36d0-4766-a177-40a57d57ba05}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
@@ -66,327 +60,342 @@
     <Filter Include="ソース ファイル\リソース ファイル\memo">
       <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Animator2D">
-      <UniqueIdentifier>{37caf2ce-cb5c-4114-9424-f1b8a1069438}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\MainFrame\Archive">
+      <UniqueIdentifier>{694d96e6-a20e-4058-8d62-c8138137cc42}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Drawing">
-      <UniqueIdentifier>{47a24c30-a7c9-4049-9471-04a08c063b48}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\MainFrame\Assets">
+      <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\BaseClass">
+      <UniqueIdentifier>{9a907b63-a5b3-4191-b9c2-d7e18ab2d61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\App">
+      <UniqueIdentifier>{d95ae04f-911c-4eef-b41d-a1c2a2310a79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\Frame">
+      <UniqueIdentifier>{fd38ca51-27e2-45b8-82e5-7b9eef7346a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
-      <Filter>ソース ファイル\BaseClass</Filter>
-    </ClCompile>
-    <ClCompile Include="StartUp.cpp">
-      <Filter>ソース ファイル\App</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClCompile>
     <ClCompile Include="System.cpp">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="SceneManger.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui.cpp">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_demo.cpp">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_draw.cpp">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_impl_dx11.cpp">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_impl_win32.cpp">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_tables.cpp">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_widgets.cpp">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>ソース ファイル\BaseClass</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClCompile>
     <ClCompile Include="GameRenderTarget.cpp">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="EditorGUI.cpp">
-      <Filter>ソース ファイル\GUI\View</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="SettingManager.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="ComponentManager.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="EditorGUI_Content.cpp">
-      <Filter>ソース ファイル\GUI\View</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="EditorGUI_Hierarchy.cpp">
-      <Filter>ソース ファイル\GUI\View</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="EditorGUI_Inspector.cpp">
-      <Filter>ソース ファイル\GUI\View</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="HashUtill.cpp">
-      <Filter>ソース ファイル\Archive</Filter>
+      <Filter>ソース ファイル\MainFrame\Archive</Filter>
     </ClCompile>
     <ClCompile Include="ModelManager.cpp">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClCompile>
     <ClCompile Include="ResourceService.cpp">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClCompile>
     <ClCompile Include="ErrorLog.cpp">
-      <Filter>ソース ファイル\Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineManager.cpp">
-      <Filter>ソース ファイル\App</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="ScriptManager.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="IScript.cpp">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="API.cpp">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="AnimationDebug.cpp">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="EditorGUI_Prefab.cpp">
-      <Filter>ソース ファイル\GUI\View</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="AnimationComponent.cpp">
-      <Filter>ソース ファイル\Component\3DModel</Filter>
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClCompile>
     <ClCompile Include="ModelRender.cpp">
-      <Filter>ソース ファイル\Component\3DModel</Filter>
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClCompile>
     <ClCompile Include="RigidBody.cpp">
-      <Filter>ソース ファイル\Component\physics</Filter>
+      <Filter>ソース ファイル\Engine\Component\physics</Filter>
     </ClCompile>
     <ClCompile Include="LightComponent.cpp">
-      <Filter>ソース ファイル\Component\3DModel</Filter>
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
-      <Filter>ソース ファイル\Component\basics</Filter>
+      <Filter>ソース ファイル\Engine\Component\basics</Filter>
     </ClCompile>
     <ClCompile Include="Geometry.cpp">
-      <Filter>ソース ファイル\Component\basics</Filter>
+      <Filter>ソース ファイル\Engine\Component\basics</Filter>
     </ClCompile>
     <ClCompile Include="ImageRender.cpp">
-      <Filter>ソース ファイル\Component\Renderer</Filter>
+      <Filter>ソース ファイル\Engine\Component\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="ScripComponent.cpp">
-      <Filter>ソース ファイル\Component\Other</Filter>
+      <Filter>ソース ファイル\Engine\Component\Other</Filter>
     </ClCompile>
     <ClCompile Include="BoxCollision.cpp">
-      <Filter>ソース ファイル\Component\physics</Filter>
+      <Filter>ソース ファイル\Engine\Component\physics</Filter>
     </ClCompile>
     <ClCompile Include="_Geometry.cpp">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="EditorGUI_Animator2D.cpp">
-      <Filter>ソース ファイル\GUI\View</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="Animator2D.cpp">
-      <Filter>ソース ファイル\BaseClass</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClCompile>
     <ClCompile Include="Animator2DComponent.cpp">
-      <Filter>ソース ファイル\Component\Other</Filter>
+      <Filter>ソース ファイル\Engine\Component\Other</Filter>
     </ClCompile>
     <ClCompile Include="TimelineEditor.cpp">
-      <Filter>ソース ファイル\Animator2D</Filter>
+      <Filter>ソース ファイル\Animator2DEditor\Animator2D</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrame.cpp">
+      <Filter>ソース ファイル\MainFrame\App</Filter>
+    </ClCompile>
+    <ClCompile Include="StartUp.cpp">
+      <Filter>ソース ファイル\MainFrame\App</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineFrame.cpp">
+      <Filter>ソース ファイル\Engine\Frame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
-      <Filter>ソース ファイル\BaseClass</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClInclude>
     <ClInclude Include="Component.h">
-      <Filter>ソース ファイル\BaseClass</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClInclude>
     <ClInclude Include="System.h">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="SceneManger.h">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imstb_truetype.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui_impl_dx11.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui_impl_win32.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui_internal.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imstb_rectpack.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imstb_textedit.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imconfig.h">
-      <Filter>ソース ファイル\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>ソース ファイル\BaseClass</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClInclude>
     <ClInclude Include="GameRenderTarget.h">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="EditrGUI.h">
-      <Filter>ソース ファイル\GUI\View</Filter>
-    </ClInclude>
-    <ClInclude Include="StartUp.h">
-      <Filter>ソース ファイル\App</Filter>
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClInclude>
     <ClInclude Include="PostEffectBase.h">
-      <Filter>ソース ファイル\BaseClass</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClInclude>
     <ClInclude Include="SettingManager.h">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="ComponentManager.h">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Struct.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="ArchiveFormat.h">
-      <Filter>ソース ファイル\Archive</Filter>
+      <Filter>ソース ファイル\MainFrame\Archive</Filter>
     </ClInclude>
     <ClInclude Include="HashUtill.h">
-      <Filter>ソース ファイル\Archive</Filter>
+      <Filter>ソース ファイル\MainFrame\Archive</Filter>
     </ClInclude>
     <ClInclude Include="ModelManager.h">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClInclude>
     <ClInclude Include="ResourceService.h">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClInclude>
     <ClInclude Include="AssetTypes.h">
-      <Filter>ソース ファイル\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\Assets</Filter>
     </ClInclude>
     <ClInclude Include="ErrorLog.h">
-      <Filter>ソース ファイル\Sys</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineManager.h">
-      <Filter>ソース ファイル\App</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="File.h">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="ScriptManager.h">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="IScript.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="API.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="BoneNodeMapping.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="WeightFix.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="AnimationDebug.h">
-      <Filter>ソース ファイル\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="MatrixUtil.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="CollisionManager.h">
-      <Filter>ソース ファイル\Manager</Filter>
+      <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="AnimationComponent.h">
-      <Filter>ソース ファイル\Component\3DModel</Filter>
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="ModelRender.h">
-      <Filter>ソース ファイル\Component\3DModel</Filter>
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="RigidBody.h">
-      <Filter>ソース ファイル\Component\physics</Filter>
+      <Filter>ソース ファイル\Engine\Component\physics</Filter>
     </ClInclude>
     <ClInclude Include="LightComponent.h">
-      <Filter>ソース ファイル\Component\3DModel</Filter>
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
-      <Filter>ソース ファイル\Component\basics</Filter>
+      <Filter>ソース ファイル\Engine\Component\basics</Filter>
     </ClInclude>
     <ClInclude Include="Geometry.h">
-      <Filter>ソース ファイル\Component\basics</Filter>
+      <Filter>ソース ファイル\Engine\Component\basics</Filter>
     </ClInclude>
     <ClInclude Include="ImageRender.h">
-      <Filter>ソース ファイル\Component\Renderer</Filter>
+      <Filter>ソース ファイル\Engine\Component\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="ScripComponent.h">
-      <Filter>ソース ファイル\Component\Other</Filter>
+      <Filter>ソース ファイル\Engine\Component\Other</Filter>
     </ClInclude>
     <ClInclude Include="BoxCollision.h">
-      <Filter>ソース ファイル\Component\physics</Filter>
+      <Filter>ソース ファイル\Engine\Component\physics</Filter>
     </ClInclude>
     <ClInclude Include="_Geometry.h">
-      <Filter>ソース ファイル\Other</Filter>
+      <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="Animator2D.h">
-      <Filter>ソース ファイル\BaseClass</Filter>
+      <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClInclude>
     <ClInclude Include="Animator2DComponent.h">
-      <Filter>ソース ファイル\Component\Other</Filter>
+      <Filter>ソース ファイル\Engine\Component\Other</Filter>
     </ClInclude>
     <ClInclude Include="TimelineEditor.h">
-      <Filter>ソース ファイル\Animator2D</Filter>
+      <Filter>ソース ファイル\Animator2DEditor\Animator2D</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrame.h">
+      <Filter>ソース ファイル\MainFrame\App</Filter>
+    </ClInclude>
+    <ClInclude Include="StartUp.h">
+      <Filter>ソース ファイル\MainFrame\App</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineFrame.h">
+      <Filter>ソース ファイル\Engine\Frame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
