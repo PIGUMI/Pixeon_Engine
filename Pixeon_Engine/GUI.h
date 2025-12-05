@@ -33,7 +33,7 @@ private:
 	void SettingWindow();
 	void InputDebugWindow();
 	void ShaderEditorWindow();
-private:
+public:
 	bool bSceneCreateWindow_;
 	bool bShaderListWindow_;
 	bool bAssetsManagerWindow_;

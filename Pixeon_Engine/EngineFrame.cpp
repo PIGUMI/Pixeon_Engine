@@ -45,6 +45,8 @@ void EngineFrame::Init()
 	ArchiveIcon_= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Archive.png", DirectX11::GetInstance()->GetDevice());
 	ExeIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Exe.png", DirectX11::GetInstance()->GetDevice());
 	ObjectIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Object.png", DirectX11::GetInstance()->GetDevice());
+	FbxIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/fbx.png", DirectX11::GetInstance()->GetDevice());
+	SceneIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Scene.png", DirectX11::GetInstance()->GetDevice());
 }
 
 void EngineFrame::Update()
@@ -73,6 +75,17 @@ void EngineFrame::Draw()
 
 void EngineFrame::UnInit()
 {
+	delete ImgIcon_;
+	delete SoundIcon_;
+	delete FbxIcon_;
+	delete SceneIcon_;
+	delete FolderIcon_;
+	delete ShaderIcon_;
+	delete ScriptIcon_;
+	delete JsonIcon_;
+	delete ArchiveIcon_;
+	delete ExeIcon_;
+	delete ObjectIcon_;
 	SavePrefabs();
 	for (auto prefab : prefabs_) {
 		if (prefab) {
