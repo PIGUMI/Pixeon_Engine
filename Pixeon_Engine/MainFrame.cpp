@@ -105,6 +105,7 @@ void MainFrame::Update()
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
+			EngineFrame::GetInstance()->Update();
 			break;
 		case SoftWareMode::ANIMTOR2D:
 			break;
@@ -129,6 +130,7 @@ void MainFrame::Draw()
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
+			EngineFrame::GetInstance()->Draw();
 			break;
 		case SoftWareMode::ANIMTOR2D:
 			break;
@@ -148,6 +150,7 @@ void MainFrame::Draw()
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
+			EngineFrame::GetInstance()->DrawGUI();
 			break;
 		case SoftWareMode::ANIMTOR2D:
 			break;

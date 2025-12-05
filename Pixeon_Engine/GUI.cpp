@@ -2,12 +2,14 @@
 #include "System.h"
 #include "MainFrame.h"
 #include "File.h"
+#include "Input.h"
 
 #include "AssetManager.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
 #include "ModelManager.h"
 #include "SoundManager.h"
+#include "SettingManager.h"
 
 #include "SceneManger.h"
 #include "Scene.h"
@@ -104,6 +106,9 @@ void GUI::BeginDraw()
 	TextureManagerWindow();
 	ModelManagerWindow();
 	SoundManagerWindow();
+	SettingWindow();
+	InputDebugWindow();
+	ShaderEditorWindow();
 }
 
 void GUI::EndDraw()
@@ -163,11 +168,13 @@ void GUI::MainMenuBar()
 			if (ImGui::MenuItem(ShiftJISToUTF8("環境設定").c_str())) bSettingWindow_ = true;
 			ImGui::EndMenu();
 		}
+
 		if (ImGui::BeginMenu(ShiftJISToUTF8("編集").c_str()))
 		{
 			if (ImGui::MenuItem(ShiftJISToUTF8("入力デバック").c_str())) bInputDebugWindow_ = true;
 			ImGui::EndMenu();
 		}
+
 		if (ImGui::BeginMenu(ShiftJISToUTF8("ツール").c_str()))
 		{
 			if (ImGui::MenuItem(ShiftJISToUTF8("シェーダーエディタ").c_str())) bShaderEditorWindow_ = true;
@@ -182,11 +189,13 @@ void GUI::MainMenuBar()
 
 		ImGui::EndMenuBar();
 	}
+	ImGui::PopStyleVar();
+	ImGui::End();
 }
 
 void GUI::SceneCreateWindow()
 {
-	if (!bAssetsManagerWindow_)return;
+	if (!bSceneCreateWindow_)return;
 	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 	if (ImGui::Begin(ShiftJISToUTF8("シーン作成##SceneManager_CreateScene").c_str(), &bSceneCreateWindow_, flags)) {
@@ -298,6 +307,184 @@ void GUI::SoundManagerWindow()
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 	if (ImGui::Begin(ShiftJISToUTF8("サウンドマネージャー").c_str(), &bSoundManagerWindow_, flags)) {
 		SoundManager::Instance()->DrawDebugGUI();
+		ImGui::End();
+	}
+}
+
+void GUI::SettingWindow()
+{
+	if (!bSettingWindow_)return;
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+	if (ImGui::Begin(ShiftJISToUTF8("環境設定").c_str(), &bSettingWindow_, flags)) {
+		ImGui::Text(ShiftJISToUTF8("パスの設定").c_str());
+		ImGui::Separator();
+		std::string assetsPath = SettingManager::GetInstance()->GetAssetsFilePath();
+		char assetsBuffer[256];
+		strncpy_s(assetsBuffer, assetsPath.c_str(), sizeof(assetsBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("アセットフォルダ").c_str(), assetsBuffer, sizeof(assetsBuffer)))SettingManager::GetInstance()->SetAssetsFilePath(assetsBuffer);
+		ImGui::Text(ShiftJISToUTF8("* アセットフォルダパスを変えた場合再起動してください").c_str());
+		std::string archivePath = SettingManager::GetInstance()->GetArchiveFilePath();
+		char archiveBuffer[256];
+		strncpy_s(archiveBuffer, archivePath.c_str(), sizeof(archiveBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("アーカイブフォルダ").c_str(), archiveBuffer, sizeof(archiveBuffer)))SettingManager::GetInstance()->SetArchiveFilePath(archiveBuffer);
+		std::string scenePath = SettingManager::GetInstance()->GetSceneFilePath();
+		char sceneBuffer[256];
+		strncpy_s(sceneBuffer, scenePath.c_str(), sizeof(sceneBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("シーンフォルダ").c_str(), sceneBuffer, sizeof(sceneBuffer)))SettingManager::GetInstance()->SetSceneFilePath(sceneBuffer);
+		std::string shaderPath = SettingManager::GetInstance()->GetShaderFilePath();
+		char shaderBuffer[256];
+		strncpy_s(shaderBuffer, shaderPath.c_str(), sizeof(shaderBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("シェーダーフォルダ").c_str(), shaderBuffer, sizeof(shaderBuffer)))SettingManager::GetInstance()->SetShaderFilePath(shaderBuffer);
+		std::string csoPath = SettingManager::GetInstance()->GetCSOFilePath();
+		char csoBuffer[256];
+		strncpy_s(csoBuffer, csoPath.c_str(), sizeof(csoBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("CSOフォルダ").c_str(), csoBuffer, sizeof(csoBuffer)))SettingManager::GetInstance()->SetCSOFilePath(csoBuffer);
+		std::string PackingTool = SettingManager::GetInstance()->GetPackingToolFilePath();
+		char PackingToolBuffer[256];
+		strncpy_s(PackingToolBuffer, PackingTool.c_str(), sizeof(PackingToolBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("PackingTool").c_str(), PackingToolBuffer, sizeof(PackingToolBuffer)))SettingManager::GetInstance()->SetPackingToolFilePath(PackingToolBuffer);
+
+		char ExternelToolBuffer[256];
+		std::string ExternelTool = SettingManager::GetInstance()->GetExternelToolPath();
+		strncpy_s(ExternelToolBuffer, ExternelTool.c_str(), sizeof(ExternelToolBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("外部ツールフォルダ").c_str(), ExternelToolBuffer, sizeof(ExternelToolBuffer)))SettingManager::GetInstance()->SetExternelToolPath(ExternelToolBuffer);
+
+		char ScriptDllBuffer[256];
+		std::string ScriptDllPath = SettingManager::GetInstance()->GetDLLFilePath();
+		strncpy_s(ScriptDllBuffer, ScriptDllPath.c_str(), sizeof(ScriptDllBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("スクリプトDLLフォルダ").c_str(), ScriptDllBuffer, sizeof(ScriptDllBuffer)))SettingManager::GetInstance()->SetDLLFilePath(ScriptDllBuffer);
+
+		char ScriptSourceBuffer[256];
+		std::string ScriptSourcePath = SettingManager::GetInstance()->GetScriptFilePath();
+		strncpy_s(ScriptSourceBuffer, ScriptSourcePath.c_str(), sizeof(ScriptSourceBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("スクリプトソースフォルダ").c_str(), ScriptSourceBuffer, sizeof(ScriptSourceBuffer)))SettingManager::GetInstance()->SetScriptFilePath(ScriptSourceBuffer);
+
+		ImGui::Text(ShiftJISToUTF8("レンダリング設定").c_str());
+		ImGui::Separator();
+		bool bZBuffer = SettingManager::GetInstance()->GetZBuffer();
+		if (ImGui::Checkbox(ShiftJISToUTF8("Zバッファを有効にする").c_str(), &bZBuffer))SettingManager::GetInstance()->SetZBuffer(bZBuffer);
+
+		int autoSaveInterval = SettingManager::GetInstance()->GetAutoSaveInterval();
+		if (ImGui::InputInt(ShiftJISToUTF8("自動保存間隔（分）").c_str(), &autoSaveInterval)) {
+			if (autoSaveInterval < 1) autoSaveInterval = 1;
+			SettingManager::GetInstance()->SetAutoSaveInterval(autoSaveInterval);
+		}
+
+		ImGui::Text(ShiftJISToUTF8("バックグラウンドカラーを変更").c_str());
+		DirectX::XMFLOAT4 Color;
+		Color = SettingManager::GetInstance()->GetBackgroundColor();
+		float color[4] = { Color.x, Color.y, Color.z, Color.w };
+		if (ImGui::ColorEdit4(ShiftJISToUTF8("背景色").c_str(), color)) {
+			SettingManager::GetInstance()->SetBackgroundColor(DirectX::XMFLOAT4(color[0], color[1], color[2], color[3]));
+		}
+
+		ImGui::Text(ShiftJISToUTF8("マウス感度設定").c_str());
+		float mouseSensitivity = SettingManager::GetInstance()->GetMouseSensitivity();
+		if (ImGui::SliderFloat(ShiftJISToUTF8("マウス感度:").c_str(), &mouseSensitivity, 0.01f, 1.0f))SettingManager::GetInstance()->SetMouseSensitivity(mouseSensitivity);
+	}
+	ImGui::End();
+}
+
+void GUI::InputDebugWindow()
+{
+	if (!bInputDebugWindow_)return;
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+	if (ImGui::Begin(ShiftJISToUTF8("入力デバック").c_str(), &bInputDebugWindow_, flags))
+	{
+		ImGui::Text(ShiftJISToUTF8("マウスの移動量").c_str());
+		ImGui::Text(ShiftJISToUTF8("X:").c_str());
+		ImGui::SameLine();
+		int X;
+		// 座標を取得
+		X = MouseMoveX();
+		// 文字列に変換して表示
+		ImGui::Text(std::to_string(X).c_str());
+		ImGui::Text(ShiftJISToUTF8("Y:").c_str());
+		ImGui::SameLine();
+		int Y;
+		// 座標を取得
+		Y = MouseMoveY();
+		// 文字列に変換して表示
+		ImGui::Text(std::to_string(Y).c_str());
+
+		// マウスのホイール量
+		int Wheel;
+		Wheel = (int)MouseWheel();
+		ImGui::Text(ShiftJISToUTF8("ホイール:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(std::to_string(Wheel).c_str());
+
+		int A;
+		A = (int)MouseWheelForward();
+		ImGui::Text(ShiftJISToUTF8("ホイール前方向ノッチ数:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(std::to_string(A).c_str());
+
+		int B;
+		B = (int)MouseWheelBackward();
+		ImGui::Text(ShiftJISToUTF8("ホイール後方向ノッチ数:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(std::to_string(B).c_str());
+
+		ImGui::Separator();
+		ImGui::Text(ShiftJISToUTF8("キーボードの入力状態").c_str());
+		for (int i = 0; i < 256; i++) {
+			if (IsKeyPress(i)) {
+				ImGui::Text(ShiftJISToUTF8(("キーコード " + std::to_string(i) + " が押されています").c_str()).c_str());
+			}
+		}
+		ImGui::End();
+	}
+}
+
+void GUI::ShaderEditorWindow()
+{
+	if (!bShaderEditorWindow_)return;
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+	if (
+		ImGui::Begin(ShiftJISToUTF8("シェーダー作成").c_str(), &bShaderEditorWindow_, flags)) {
+		ImGui::Text(ShiftJISToUTF8("シェーダーエディターウインドウです").c_str());
+		ImGui::Text(ShiftJISToUTF8("シェーダーファイルフォルダ:").c_str());
+		ImGui::SameLine();
+		ImGui::Text(ShiftJISToUTF8(SettingManager::GetInstance()->GetShaderFilePath()).c_str());
+		ImGui::Separator();
+		ImGui::Text(ShiftJISToUTF8("説明").c_str());
+		ImGui::TextWrapped(ShiftJISToUTF8("シェーダーファイルを編集した後、保存すると自動的にコンパイルされます。").c_str());
+		ImGui::TextWrapped(ShiftJISToUTF8("コンパイルエラーが発生した場合、メッセージボックスで通知されます。").c_str());
+		static char shaderName[128] = "";
+		ImGui::InputText(ShiftJISToUTF8("シェーダー名").c_str(), shaderName, sizeof(shaderName));
+		static int shaderType = 0;
+		const char* shaderTypes[] = { "Vertex Shader", "Pixel Shader" };
+		ImGui::Combo(ShiftJISToUTF8("シェーダータイプ").c_str(), &shaderType, shaderTypes, IM_ARRAYSIZE(shaderTypes));
+		if (ImGui::Button(ShiftJISToUTF8("新規シェーダーファイル作成").c_str(), ImVec2(180, 0))) {
+			if (strlen(shaderName) == 0) {
+				MessageBoxA(NULL, "シェーダー名を入力してください。", "エラー", MB_OK | MB_ICONERROR);
+			}
+			else {
+				std::string name = shaderName;
+				if (shaderType == 0) {
+					name = "VS_" + name;
+					if (ShaderManager::GetInstance()->CreateHLSLTemplate(name, "VS")) {
+						MessageBoxA(NULL, "頂点シェーダーのテンプレートを作成しました。", "成功", MB_OK | MB_ICONINFORMATION);
+					}
+					else {
+						MessageBoxA(NULL, "シェーダーファイルの作成に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+					}
+				}
+				else {
+					name = "PS_" + name;
+					if (ShaderManager::GetInstance()->CreateHLSLTemplate(name, "PS")) {
+						MessageBoxA(NULL, "ピクセルシェーダーのテンプレートを作成しました。", "成功", MB_OK | MB_ICONINFORMATION);
+					}
+					else {
+						MessageBoxA(NULL, "シェーダーファイルの作成に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+					}
+				}
+			}
+		}
 		ImGui::End();
 	}
 }

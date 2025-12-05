@@ -43,10 +43,6 @@ void RigidBody::BeginPlay()
 						physicsWorld->addRigidBody(pRigidBody_);
 						bAddedToWorld_ = true;
 
-						EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-							_Parent->GetObjectName() + "‚ğ•¨—¢ŠE‚É’Ç‰Á‚µ‚Ü‚µ‚½iUserPointer: " +
-							std::to_string(reinterpret_cast<uintptr_t>(pRigidBody_->getUserPointer())) + ")");
-
 						pRigidBody_->setActivationState(ACTIVE_TAG);
 						pRigidBody_->forceActivationState(ACTIVE_TAG);
 
@@ -58,9 +54,6 @@ void RigidBody::BeginPlay()
 					}
 					else
 					{
-						EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-							_Parent->GetObjectName() + " - " +
-							"RigidBody‚ª–³Œø‚Å‚·");
 						if (pRigidBody_)
 						{
 							if (pRigidBody_->getMotionState())
@@ -76,9 +69,6 @@ void RigidBody::BeginPlay()
 			}
 			catch (...)
 			{
-				EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-					_Parent->GetObjectName() + " - " +
-					"RigidBody‚Ì’Ç‰Á’†‚É—áŠO‚ª”­¶‚µ‚Ü‚µ‚½");
 				if (pRigidBody_)
 				{
 					if (pRigidBody_->getMotionState())
@@ -95,12 +85,6 @@ void RigidBody::BeginPlay()
 				}
 				bAddedToWorld_ = false;
 			}
-		}
-		else
-		{
-			EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-				_Parent->GetObjectName() + " - " +
-				"•¨—¢ŠE‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
 		}
 	}
 }

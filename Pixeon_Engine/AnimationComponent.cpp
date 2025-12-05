@@ -127,7 +127,6 @@ void AnimationComponent::BeginPlay() {
 	DumpBoneChannelMapping(m_resource.get());
 	int fixCount = RebindBoneNodeIndices(m_resource.get());
 	if (fixCount > 0) {
-		EditrGUI::GetInstance()->WriteLog("[BeginPlay] Fixed " + std::to_string(fixCount) + " bone mappings");
 	}
 	for (auto& rtClip : m_clips) {
 		RebindChannelNodeIndices(m_resource.get(), rtClip);
@@ -136,9 +135,6 @@ void AnimationComponent::BeginPlay() {
 
 	int missing = 0;
 	for (auto& b : m_resource->bones) if (b.nodeIndex < 0) ++missing;
-	EditrGUI::GetInstance()->WriteLog("[Animation BeginPlay] clips=" + std::to_string(m_clips.size()) +
-		" bones=" + std::to_string(m_resource->bones.size()) +
-		" boneMissingNodeIndex=" + std::to_string(missing));
 
 	m_nodeToBone.clear();
 	for (size_t i = 0; i < m_resource->bones.size(); ++i)

@@ -30,6 +30,9 @@ private:
 	void TextureManagerWindow();
 	void ModelManagerWindow();
 	void SoundManagerWindow();
+	void SettingWindow();
+	void InputDebugWindow();
+	void ShaderEditorWindow();
 private:
 	bool bSceneCreateWindow_;
 	bool bShaderListWindow_;
