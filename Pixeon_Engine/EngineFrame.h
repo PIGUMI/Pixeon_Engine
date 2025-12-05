@@ -33,8 +33,11 @@ public: // Prefabä«óù
 public: // Getter / Setter
 	bool IsInGame() const { return bInGame_; }
 	void SetInGame(bool inGame) { bInGame_ = inGame; }
+	bool IsShowGUI() const { return bShowGUI_; }
+	void SetShowGUI(bool showGUI) { bShowGUI_ = showGUI; }
 private:
 	bool bInGame_ = false;
+	bool bShowGUI_ = true;
 	bool bBeginPlayCalled_ = false;
 
 	std::vector<Object*> prefabs_;

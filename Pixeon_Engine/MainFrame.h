@@ -54,6 +54,7 @@ public:
 	HWND GetWindowHandle() const { return m_hWnd_; }
 	float GetDeltaTime() { return deltaTime_; }
 	GameRenderTarget* GetGameRenderTarget() const { return m_gameRenderTarget_; }
+	ID3D11ShaderResourceView* GetGameRenderTargetSRV();
 	void SetSoftwareMode(SoftWareMode mode) { softwareMode_ = mode; }
 	SoftWareMode GetSoftwareMode() const { return softwareMode_; }
 private:

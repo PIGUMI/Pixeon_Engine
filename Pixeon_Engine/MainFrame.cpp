@@ -189,4 +189,9 @@ void MainFrame::UnInit() {
 	CoUninitialize();
 }
 
+ID3D11ShaderResourceView* MainFrame::GetGameRenderTargetSRV()
+{
+	return m_gameRenderTarget_->GetShaderResourceView();
+}
+
 

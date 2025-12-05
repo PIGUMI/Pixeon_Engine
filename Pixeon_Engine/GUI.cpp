@@ -189,8 +189,7 @@ void GUI::MainMenuBar()
 
 		ImGui::EndMenuBar();
 	}
-	ImGui::PopStyleVar();
-	ImGui::End();
+
 }
 
 void GUI::SceneCreateWindow()
