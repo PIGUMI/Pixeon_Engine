@@ -42,6 +42,8 @@ struct KeyFrame
 	ImageRender* Image = nullptr;	// 描画対象（ランタイム解決）
 };
 
+
+
 inline vec2 operator+(const vec2& a, const vec2& b) { return { a.x + b.x, a.y + b.y }; }
 inline vec2 operator-(const vec2& a, const vec2& b) { return { a.x - b.x, a.y - b.y }; }
 inline vec2 operator*(const vec2& v, float s) { return { v.x * s, v.y * s }; }

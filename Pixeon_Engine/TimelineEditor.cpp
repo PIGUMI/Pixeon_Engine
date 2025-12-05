@@ -60,9 +60,22 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
         }
         else
         {
-            if (ImGui::MenuItem("ƒƒjƒ…[€–Ú2"))
+            if (ImGui::MenuItem(EditrGUI::GetInstance()->ShiftJISToUTF8("NewKeyFrame").c_str()))
             {
-                // ˆ—
+                KeyFrame newKeyFrame;
+				newKeyFrame.CurveInfo.StartPoint    = { 0.0f, 0.0f };
+				newKeyFrame.CurveInfo.ControlPoint1 = { 0.0f, 0.0f };
+				newKeyFrame.CurveInfo.ControlPoint2 = { 1.0f, 1.0f };
+				newKeyFrame.CurveInfo.EndPoint      = { 1.0f, 1.0f };
+                newKeyFrame.EndTime                 = 1.0f;
+                newKeyFrame.StartTime               = 0.0f;
+				newKeyFrame.EndTransform.Position   = { 0.0f, 0.0f };
+				newKeyFrame.EndTransform.Rotation   = { 0.0f, 0.0f };
+				newKeyFrame.EndTransform.Scale      = { 1.0f, 1.0f };
+				newKeyFrame.StartTransform = newKeyFrame.EndTransform;
+                newKeyFrame.Layer = 0;
+				newKeyFrame.Image = new ImageRender();
+                animator->AddKeyFrame(newKeyFrame);
             }
         }
         ImGui::EndPopup();
