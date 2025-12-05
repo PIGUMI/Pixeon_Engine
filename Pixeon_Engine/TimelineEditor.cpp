@@ -1,5 +1,6 @@
 #define NOMINMAX
 #include "TimelineEditor.h"
+#include "Input.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -14,8 +15,6 @@ TimelineEditor::~TimelineEditor()
 
 void TimelineEditor::DrawTimeline(Animator2D* animator)
 {
-    //if (!animator) return;
-
     ImGui::BeginChild("Timeline", ImVec2(0, 0), true);
 
     ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -40,8 +39,24 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 
         // 入力処理
         HandleInput(animator);
+
+		// 総時間更新
+		std::vector<KeyFrame>*keyframes = animator->GetKeyFramePtr();
+		float maxTime = 0.0f;
+        for(auto & kf : *keyframes)
+        {
+            if(kf.EndTime > maxTime)
+            {
+                maxTime = kf.EndTime;
+			}
+		}
+		animator->SetTotalTime(maxTime);
     }
- 
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec2 mousePos = io.MousePos;
+
+    // 右クリックでコンテキストメニューオープン
     if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
         ImGui::OpenPopup("TimelineContextMenu");
@@ -54,8 +69,8 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
         {
             if (ImGui::MenuItem(EditrGUI::GetInstance()->ShiftJISToUTF8("新規プロジェクトの作成").c_str()))
             {
-				Animator2D* newAnimator = new Animator2D();
-				EditrGUI::GetInstance()->SetAnimator2D(newAnimator);
+                Animator2D* newAnimator = new Animator2D();
+                EditrGUI::GetInstance()->SetAnimator2D(newAnimator);
             }
         }
         else
@@ -63,23 +78,47 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
             if (ImGui::MenuItem(EditrGUI::GetInstance()->ShiftJISToUTF8("NewKeyFrame").c_str()))
             {
                 KeyFrame newKeyFrame;
-				newKeyFrame.CurveInfo.StartPoint    = { 0.0f, 0.0f };
-				newKeyFrame.CurveInfo.ControlPoint1 = { 0.0f, 0.0f };
-				newKeyFrame.CurveInfo.ControlPoint2 = { 1.0f, 1.0f };
-				newKeyFrame.CurveInfo.EndPoint      = { 1.0f, 1.0f };
-                newKeyFrame.EndTime                 = 1.0f;
-                newKeyFrame.StartTime               = 0.0f;
-				newKeyFrame.EndTransform.Position   = { 0.0f, 0.0f };
-				newKeyFrame.EndTransform.Rotation   = { 0.0f, 0.0f };
-				newKeyFrame.EndTransform.Scale      = { 1.0f, 1.0f };
-				newKeyFrame.StartTransform = newKeyFrame.EndTransform;
+                newKeyFrame.CurveInfo.StartPoint = { 0.0f, 0.0f };
+                newKeyFrame.CurveInfo.ControlPoint1 = { 0.0f, 0.0f };
+                newKeyFrame.CurveInfo.ControlPoint2 = { 1.0f, 1.0f };
+                newKeyFrame.CurveInfo.EndPoint = { 1.0f, 1.0f };
+                newKeyFrame.EndTime = 1.0f;
+                newKeyFrame.StartTime = 0.0f;
+                newKeyFrame.EndTransform.Position = { 0.0f, 0.0f };
+                newKeyFrame.EndTransform.Rotation = { 0.0f, 0.0f };
+                newKeyFrame.EndTransform.Scale = { 1.0f, 1.0f };
+                newKeyFrame.StartTransform = newKeyFrame.EndTransform;
                 newKeyFrame.Layer = 0;
-				newKeyFrame.Image = new ImageRender();
+                newKeyFrame.Image = new ImageRender();
                 animator->AddKeyFrame(newKeyFrame);
             }
         }
         ImGui::EndPopup();
     }
+
+    static int FreezeTime = 0;
+
+    if (animator)
+    {
+        if (IsKeyPress(VK_LEFT) && FreezeTime <= 0)
+        {
+            float MoveTime = 0.0f;
+            MoveTime = animator->fNowTime_ - 0.1f;
+            animator->fNowTime_ = std::clamp(MoveTime, 0.0f, animator->GetTotalTime());
+            FreezeTime = 5;
+        }
+        if (IsKeyPress(VK_RIGHT) && FreezeTime <= 0)
+        {
+            float MoveTime = 0.0f;
+            MoveTime = animator->fNowTime_ + 0.1f;
+            animator->fNowTime_ = std::clamp(MoveTime, 0.0f, animator->GetTotalTime());
+            FreezeTime = 5;
+        }
+    }
+    if (FreezeTime > 0)
+    {
+        FreezeTime--;
+	}
 
     ImGui::EndChild();
 

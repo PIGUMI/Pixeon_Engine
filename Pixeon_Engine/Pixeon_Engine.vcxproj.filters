@@ -23,9 +23,6 @@
     <Filter Include="ソース ファイル\Manager">
       <UniqueIdentifier>{a767e929-0ea9-4db3-922d-cf813b1b6179}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Drawing">
-      <UniqueIdentifier>{47a24c30-a7c9-4049-9471-04a08c063b48}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Build">
       <UniqueIdentifier>{29a1df0a-7715-475e-b585-e94b358d5269}</UniqueIdentifier>
     </Filter>
@@ -71,6 +68,9 @@
     </Filter>
     <Filter Include="ソース ファイル\Animator2D">
       <UniqueIdentifier>{37caf2ce-cb5c-4114-9424-f1b8a1069438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Drawing">
+      <UniqueIdentifier>{47a24c30-a7c9-4049-9471-04a08c063b48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
