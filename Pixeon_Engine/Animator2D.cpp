@@ -50,13 +50,11 @@ void Animator2D::Update()
 	{
 		if (bLoop_)
 		{
-			// 再生開始を現在時刻に合わせる（playhead を 0 に戻す）
 			fStartTime_ = static_cast<float>(nowSec);
 			fNowTime_ = 0.0f;
 		}
 		else
 		{
-			// 末尾に固定
 			fNowTime_ = fTotalDuration_;
 		}
 	}
