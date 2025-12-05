@@ -39,7 +39,7 @@ void ComponentManager::Init() {
 	_ComponentName[(int)COMPONENT_TYPE::RIGIDBODY] = "RigidBody";
 	_ComponentName[(int)COMPONENT_TYPE::BOX_COLLISION] = "BoxCollision";
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATOR2D] = "Animator2D";
- }
+}
 
 Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
 	if (!owner) return nullptr;

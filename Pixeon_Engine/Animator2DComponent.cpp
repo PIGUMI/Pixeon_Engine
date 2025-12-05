@@ -14,15 +14,15 @@ void Animator2DComponent::Init(Object* Prt)
 	Animator2D* Test = new Animator2D;
 	KeyFrame kf;
 
-	kf.CurveInfo.StartPoint		= { 0.0f,0.0f };
-	kf.CurveInfo.EndPoint		= { 1.0f,1.0f };
-	kf.CurveInfo.ControlPoint1	= { 0.0f,0.0f };
-	kf.CurveInfo.ControlPoint2	= { 1.0f,1.0f };
+	kf.CurveInfo.StartPoint = { 0.0f,0.0f };
+	kf.CurveInfo.EndPoint = { 1.0f,1.0f };
+	kf.CurveInfo.ControlPoint1 = { 0.0f,0.0f };
+	kf.CurveInfo.ControlPoint2 = { 1.0f,1.0f };
 	kf.StartTime = 0.0f;
 	kf.EndTime = 1.0f;
 
 	kf.StartTransform.Scale = { 1.0f, 1.0f };
-	kf.EndTransform.Scale	= { 1.0f, 1.0f };
+	kf.EndTransform.Scale = { 1.0f, 1.0f };
 	kf.StartTransform.Position = { 0.0f,0.0f };
 	kf.EndTransform.Position = { 0.0f,1.0f };
 
@@ -30,7 +30,7 @@ void Animator2DComponent::Init(Object* Prt)
 	kf.Image = new ImageRender();
 	kf.Image->Init(Prt);
 	kf.Image->SetTextureName("AlphaTest.png");
-	
+
 	//Test->SetViewMode(Animator2D::ViewMode::Billboard);
 	Test->AddKeyFrame(kf);
 	Test->SetTotalTime(2.0f);
@@ -44,7 +44,6 @@ void Animator2DComponent::Init(Object* Prt)
 	Test->AddKeyFrame(kf);
 
 	_animators.push_back(Test);
-
 }
 
 void Animator2DComponent::InGameUpdate()
@@ -67,8 +66,7 @@ void Animator2DComponent::DrawInspector()
 	std::string Ptr = std::to_string((uintptr_t)this);
 	label += "###" + Ptr;
 	if (!ImGui::CollapsingHeader(EditrGUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
-	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)){
-
+	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
 		ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("プロファイルパス").c_str());
@@ -87,7 +85,7 @@ void Animator2DComponent::DrawInspector()
 			animator->LoadFile(Path);
 		}
 
-		for(auto& animator : _animators) {
+		for (auto& animator : _animators) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str());
@@ -110,7 +108,6 @@ void Animator2DComponent::DrawInspector()
 			std::string viewModeStr = (animator->GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
 			ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8(viewModeStr).c_str());
 		}
-	
 
 		ImGui::EndTable();
 	}

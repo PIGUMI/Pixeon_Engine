@@ -1,9 +1,10 @@
 ﻿#define NOMINMAX
 #include "AnimationComponent.h"
-#include "AnimationDebug.h"
-#include "EngineManager.h"
+#include "MainFrame.h"
+#include "GUI.h"
 #include "ErrorLog.h"
 #include "IMGUI/imgui.h"
+#include "AnimationDebug.h"
 #include <algorithm>
 #include <set>
 #include <cmath>
@@ -154,7 +155,7 @@ void AnimationComponent::InGameUpdate() {
 	if (!m_playing || m_paused) return;
 	if (m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return;
 
-	float dt = EngineManager::GetInstance()->GetDeltaTime();
+	float dt = MainFrame::GetInstance()->GetDeltaTime();
 	dt = std::min(dt, 0.1f);
 	UpdateAnimation(dt);
 	RebuildBoneMatrices();

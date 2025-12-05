@@ -15,16 +15,16 @@ static double GetTimeSeconds()
 
 Animator2D::Animator2D()
 	:bLoop_(false),
-  bFirst_(true),
-  fStartTime_(0.0f),
-  fNowTime_(0.0f),
-  fTotalDuration_(0.0f)
+	bFirst_(true),
+	fStartTime_(0.0f),
+	fNowTime_(0.0f),
+	fTotalDuration_(0.0f)
 {
 }
 
 Animator2D::~Animator2D()
 {
-	for(auto obj : KeyFrames_)
+	for (auto obj : KeyFrames_)
 	{
 		delete obj.Image;
 		obj.Image = nullptr;
@@ -203,9 +203,9 @@ void Animator2D::Draw()
 {
 	std::vector<KeyFrame*> ActiveKeyFrames;
 	// アクティブなキーフレームを収集
-	for(auto obj : KeyFrames_)
+	for (auto obj : KeyFrames_)
 	{
-		if(obj.Active)
+		if (obj.Active)
 		{
 			ActiveKeyFrames.push_back(&obj);
 		}

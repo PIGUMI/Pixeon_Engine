@@ -1,9 +1,8 @@
 #include "API.h"
-#include "EngineManager.h"
 #include "Object.h"
 #include "Scene.h"
 #include "SceneManger.h"
-
+#include "EngineFrame.h"
 #include "Input.h"
 #include "Component.h"
 #include "CameraComponent.h"
@@ -82,7 +81,7 @@ extern "C" {
 	PIXEON_API APIResult GetPrefabObject(const char* prefabName, GameObjectHandle* outObject)
 	{
 		if (prefabName == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* prefabObject = EngineManager::GetInstance()->GetPrefabByName(prefabName);
+		Object* prefabObject = EngineFrame::GetInstance()->GetPrefabByName(prefabName);
 		if (prefabObject == nullptr)return PN_ERROR_NOT_FOUND;
 		*outObject = reinterpret_cast<GameObjectHandle*>(prefabObject);
 		return PN_SUCCESS;

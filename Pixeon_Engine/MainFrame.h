@@ -23,6 +23,11 @@
 class GameRenderTarget;
 class Object;
 
+enum class SoftWareMode {
+	ENGINE,
+	ANIMTOR2D,
+};
+
 class MainFrame {
 private:
 	using clock = std::chrono::steady_clock;
@@ -39,47 +44,19 @@ public:
 public:
 	static MainFrame* GetInstance();
 	static void DeleteInstance();
-
+public:
 	int Init(const EngineConfig& InPut);
 	void Update();
 	void Draw();
 	void UnInit();
-
+public:
 	// Window Handle éÊìæ
 	HWND GetWindowHandle() const { return m_hWnd_; }
-	// EditorModeÇÃÇ›óLå¯
-	ID3D11ShaderResourceView* GetGameRender();
-
-	// Setter / Getter
-	bool IsInGame() const { return m_bInGame_; }
-	void SetInGame(bool inGame) { m_bInGame_ = inGame; }
-
-	bool IsShowGUI() const { return m_bIsShowGUI_; }
-	void SetShowGUI(bool isShow) { m_bIsShowGUI_ = isShow; }
-
 	float GetDeltaTime() { return deltaTime_; }
-
-	bool AddPrefab(Object* prefab);
-	std::vector<Object*> GetPrefabs() const { return prefabs_; }
-	Object* GetPrefabByName(const std::string& name);
-	void RemovePrefab(Object* ptr);
 	GameRenderTarget* GetGameRenderTarget() const { return m_gameRenderTarget_; }
-
+	void SetSoftwareMode(SoftWareMode mode) { softwareMode_ = mode; }
+	SoftWareMode GetSoftwareMode() const { return softwareMode_; }
 private:
-	void EditorUpdate();
-	void InGameUpdate();
-	void EditorDraw();
-	void InGameDraw();
-
-	MainFrame();
-	~MainFrame() {};
-
-	void SavePrefabs();
-	void LoadPrefabs();
-
-private:
-	static MainFrame* instance_;
-
 	DWORD lastUpdateTime_;
 	bool bUpdateDraw;
 	float targetFrameTime_;
@@ -87,13 +64,12 @@ private:
 
 	HWND m_hWnd_;
 	GameRenderTarget* m_gameRenderTarget_;
-	// ÉQÅ[ÉÄíÜîªíË
-	bool m_bInGame_;
-	// GUIï\é¶îªíË
-	bool m_bIsShowGUI_;
-	bool m_bIsBeginPlayCalled;
-	/* Prefab */
-	std::vector<Object*> prefabs_;
-};
 
+	SoftWareMode softwareMode_;
+private:
+	MainFrame() = default;
+	~MainFrame() = default;
+private:
+	static MainFrame* instance_;
+};
 #endif // !MAIN_FRAME_H

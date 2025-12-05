@@ -79,7 +79,6 @@ extern"C" {
 	PIXEON_API APIResult AddGameObject(SceneHandle scene, GameObjectHandle object);
 	PIXEON_API APIResult GetPrefabObject(const char* prefabName, GameObjectHandle* outObject);
 	PIXEON_API APIResult RemoveGameObject(SceneHandle scene, GameObjectHandle object);
-
 }
 
 /* 入力関するAPI */
@@ -91,7 +90,6 @@ extern"C"
 	PIXEON_API APIResult IsKeyRelease(char Key, bool* outReleased);
 	PIXEON_API APIResult IsKeyRepeat(char Key, bool* outRepeated);
 	PIXEON_API APIResult GetMouseMove(int* outX, int* outY);
-
 }
 
 /* コンポーネントに関するAPI */

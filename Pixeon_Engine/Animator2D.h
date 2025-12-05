@@ -42,8 +42,6 @@ struct KeyFrame
 	ImageRender* Image = nullptr;	// 描画対象（ランタイム解決）
 };
 
-
-
 inline vec2 operator+(const vec2& a, const vec2& b) { return { a.x + b.x, a.y + b.y }; }
 inline vec2 operator-(const vec2& a, const vec2& b) { return { a.x - b.x, a.y - b.y }; }
 inline vec2 operator*(const vec2& v, float s) { return { v.x * s, v.y * s }; }
@@ -71,7 +69,6 @@ inline vec2 EvalCubicBezier(const vec2& p0, const vec2& p1, const vec2& p2, cons
 	p.y = uuu * p0.y + 3.0f * uu * t * p1.y + 3.0f * u * tt * p2.y + ttt * p3.y;
 	return p;
 }
-
 
 class Animator2D
 {

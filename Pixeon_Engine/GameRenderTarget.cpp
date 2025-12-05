@@ -165,7 +165,6 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context)
 	DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();
 	float clearColor[4] = { Temp.x, Temp.y, Temp.z,1.0f };
 
-
 	context->ClearRenderTargetView(m_pRTV, clearColor);
 	if (m_pDSV)
 		context->ClearDepthStencilView(m_pDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);

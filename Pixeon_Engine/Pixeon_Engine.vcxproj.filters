@@ -60,12 +60,6 @@
     <Filter Include="ソース ファイル\リソース ファイル\memo">
       <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\MainFrame\Archive">
-      <UniqueIdentifier>{694d96e6-a20e-4058-8d62-c8138137cc42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\MainFrame\Assets">
-      <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\MainFrame\BaseClass">
       <UniqueIdentifier>{9a907b63-a5b3-4191-b9c2-d7e18ab2d61f}</UniqueIdentifier>
     </Filter>
@@ -74,6 +68,12 @@
     </Filter>
     <Filter Include="ソース ファイル\Engine\Frame">
       <UniqueIdentifier>{fd38ca51-27e2-45b8-82e5-7b9eef7346a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Sys\Archive">
+      <UniqueIdentifier>{694d96e6-a20e-4058-8d62-c8138137cc42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\AssetManager">
+      <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -113,47 +113,32 @@
     <ClCompile Include="GameRenderTarget.cpp">
       <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClCompile>
-    <ClCompile Include="EditorGUI.cpp">
-      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
-    </ClCompile>
     <ClCompile Include="SettingManager.cpp">
       <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="ComponentManager.cpp">
       <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="EditorGUI_Content.cpp">
-      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorGUI_Hierarchy.cpp">
-      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorGUI_Inspector.cpp">
-      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="HashUtill.cpp">
-      <Filter>ソース ファイル\MainFrame\Archive</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys\Archive</Filter>
     </ClCompile>
     <ClCompile Include="ModelManager.cpp">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceService.cpp">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
-    </ClCompile>
-    <ClCompile Include="ErrorLog.cpp">
-      <Filter>ソース ファイル\MainFrame\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
       <Filter>ソース ファイル\MainFrame\Sys</Filter>
@@ -169,12 +154,6 @@
     </ClCompile>
     <ClCompile Include="API.cpp">
       <Filter>ソース ファイル\Engine\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationDebug.cpp">
-      <Filter>ソース ファイル\MainFrame\Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorGUI_Prefab.cpp">
-      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
       <Filter>ソース ファイル\Engine\Manager</Filter>
@@ -209,9 +188,6 @@
     <ClCompile Include="_Geometry.cpp">
       <Filter>ソース ファイル\Engine\Other</Filter>
     </ClCompile>
-    <ClCompile Include="EditorGUI_Animator2D.cpp">
-      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
-    </ClCompile>
     <ClCompile Include="Animator2D.cpp">
       <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClCompile>
@@ -229,6 +205,15 @@
     </ClCompile>
     <ClCompile Include="EngineFrame.cpp">
       <Filter>ソース ファイル\Engine\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineFrame_GUI.cpp">
+      <Filter>ソース ファイル\Engine\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationDebug.cpp">
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -274,9 +259,6 @@
     <ClInclude Include="GameRenderTarget.h">
       <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClInclude>
-    <ClInclude Include="EditrGUI.h">
-      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
-    </ClInclude>
     <ClInclude Include="PostEffectBase.h">
       <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClInclude>
@@ -293,31 +275,28 @@
       <Filter>ソース ファイル\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="ArchiveFormat.h">
-      <Filter>ソース ファイル\MainFrame\Archive</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys\Archive</Filter>
     </ClInclude>
     <ClInclude Include="HashUtill.h">
-      <Filter>ソース ファイル\MainFrame\Archive</Filter>
+      <Filter>ソース ファイル\MainFrame\Sys\Archive</Filter>
     </ClInclude>
     <ClInclude Include="ModelManager.h">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="ResourceService.h">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="AssetTypes.h">
-      <Filter>ソース ファイル\MainFrame\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="ErrorLog.h">
-      <Filter>ソース ファイル\MainFrame\Sys</Filter>
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="File.h">
       <Filter>ソース ファイル\MainFrame\Sys</Filter>
@@ -339,9 +318,6 @@
     </ClInclude>
     <ClInclude Include="WeightFix.h">
       <Filter>ソース ファイル\Engine\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationDebug.h">
-      <Filter>ソース ファイル\MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="MatrixUtil.h">
       <Filter>ソース ファイル\Engine\Other</Filter>
@@ -396,6 +372,12 @@
     </ClInclude>
     <ClInclude Include="EngineFrame.h">
       <Filter>ソース ファイル\Engine\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationDebug.h">
+      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

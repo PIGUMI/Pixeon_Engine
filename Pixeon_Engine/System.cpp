@@ -2,7 +2,6 @@
 #include "DirectXTex/TextureLoad.h"
 #include "IMGUI/imgui.h"
 #include "IMGUI/imgui_impl_dx11.h"
-#include "EngineManager.h"
 #include "SettingManager.h"
 
 DirectX11* DirectX11::instance;
