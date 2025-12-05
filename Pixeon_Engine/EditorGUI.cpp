@@ -104,6 +104,13 @@ void EditrGUI::Init() {
 }
 
 void EditrGUI::Update() {
+	if (GuiMode)
+	{
+		if (SelectedAnimator2D)
+		{
+			SelectedAnimator2D->EditorUpdate();
+		}
+	}
 }
 
 void EditrGUI::Draw()

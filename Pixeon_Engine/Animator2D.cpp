@@ -129,6 +129,77 @@ void Animator2D::Update()
 	}
 }
 
+void Animator2D::EditorUpdate()
+{
+	// すべてのキーフレームを参照でループし、アクティブ判定と適用
+	for (auto& obj : KeyFrames_)
+	{
+		// アクティブ条件：StartTime <= now <= EndTime
+		obj.Active = (fNowTime_ >= obj.StartTime && fNowTime_ <= obj.EndTime);
+
+		if (!obj.Active) continue;
+		if (obj.Image == nullptr) continue;
+
+		// 区間の経過と長さ
+		float elapsed = fNowTime_ - obj.StartTime;
+		float duration = obj.EndTime - obj.StartTime;
+		// duration が 0 なら瞬時に最終値を適用
+		float tNormalized = 0.0f;
+		if (duration <= 0.0f) tNormalized = 1.0f;
+		else tNormalized = std::clamp(elapsed / duration, 0.0f, 1.0f);
+
+		// 位置の補間（ベジェ）
+		if (obj.StartTransform.Position != obj.EndTransform.Position)
+		{
+			vec2 pos = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Position, obj.EndTransform.Position, elapsed, duration);
+			DirectX::XMFLOAT2 Pos;
+			Pos.x = pos.x;
+			Pos.y = pos.y;
+			obj.Image->SetOffset2D(Pos);
+			obj.Image->SetOffset3D(DirectX::XMFLOAT3(pos.x, pos.y, 0.0f));
+		}
+
+		if (obj.StartTransform.Rotation != obj.EndTransform.Rotation)
+		{
+			vec2 rot = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Rotation, obj.EndTransform.Rotation, elapsed, duration);
+			// TODO: ImageRender に回転を適用する API があれば呼ぶ
+			// 例: obj.Image->SetRotation(rot.x);
+			(void)rot; // 未使用時の警告回避
+		}
+
+		// スケール
+		if (obj.StartTransform.Scale != obj.EndTransform.Scale)
+		{
+			vec2 scl = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Scale, obj.EndTransform.Scale, elapsed, duration);
+			DirectX::XMFLOAT2 Scl;
+			Scl.x = scl.x;
+			Scl.y = scl.y;
+			obj.Image->SetSize2D(Scl);
+			obj.Image->SetSizeWorld(Scl);
+		}
+
+		// UV 位置
+		if (obj.StartTransform.UVPostion != obj.EndTransform.UVPostion)
+		{
+			vec2 uvp = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVPostion, obj.EndTransform.UVPostion, elapsed, duration);
+			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
+			uvRect.x = uvp.x;
+			uvRect.y = uvp.y;
+			//obj.Image->SetUVRect(uvRect);
+		}
+
+		// UV スケール
+		if (obj.StartTransform.UVScale != obj.EndTransform.UVScale)
+		{
+			vec2 uvs = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVScale, obj.EndTransform.UVScale, elapsed, duration);
+			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
+			uvRect.z = uvs.x;
+			uvRect.w = uvs.y;
+			//obj.Image->SetUVRect(uvRect);
+		}
+	}
+}
+
 void Animator2D::Draw()
 {
 	std::vector<KeyFrame*> ActiveKeyFrames;

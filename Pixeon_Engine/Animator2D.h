@@ -85,6 +85,7 @@ public:
 	Animator2D();
 	~Animator2D();
 	void Update();
+	void EditorUpdate();
 	void Draw();
 
 	void SaveFile();
