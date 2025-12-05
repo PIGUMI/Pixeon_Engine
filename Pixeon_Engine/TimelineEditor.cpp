@@ -15,7 +15,7 @@ TimelineEditor::~TimelineEditor()
 
 void TimelineEditor::DrawTimeline(Animator2D* animator)
 {
-    ImGui::BeginChild("Timeline", ImVec2(0, 0), true);
+    ImGui::BeginChild("Timeline", ImVec2(0, 290), true);
 
     ImDrawList* drawList = ImGui::GetWindowDrawList();
     ImVec2 canvasPos = ImGui::GetCursorScreenPos();
@@ -91,6 +91,16 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
                 newKeyFrame.Layer = 0;
                 newKeyFrame.Image = new ImageRender();
                 animator->AddKeyFrame(newKeyFrame);
+            }
+            
+            if (selectedKeyFrame_)
+            {
+                if (ImGui::MenuItem(EditrGUI::GetInstance()->ShiftJISToUTF8("DeleteKeyFrame").c_str()))
+                {
+                    animator->RemoveKeyFrame(selectedKeyFrame_);
+                    selectedKeyFrame_ = nullptr;
+                    EditrGUI::GetInstance()->SetSelectedKeyFrame(nullptr);
+				}
             }
         }
         ImGui::EndPopup();
@@ -295,6 +305,7 @@ void TimelineEditor::HandleInput(Animator2D* animator)
     {
         // KeyFrameの選択とドラッグ開始
         selectedKeyFrame_ = nullptr;
+        EditrGUI::GetInstance()->SetSelectedKeyFrame(nullptr);
 
         for (auto& kf : *animator->GetKeyFramePtr())
         {
@@ -307,6 +318,7 @@ void TimelineEditor::HandleInput(Animator2D* animator)
                 mousePos.y >= y + 5 && mousePos.y <= y + layerHeight_ - 5)
             {
                 selectedKeyFrame_ = &kf;
+				EditrGUI::GetInstance()->SetSelectedKeyFrame(&kf);
 
                 // リサイズハンドルチェック
                 if (mousePos.x <= startX + 5)
@@ -368,11 +380,14 @@ void TimelineEditor::HandleInput(Animator2D* animator)
 
     HandleContextMenu(animator, selectedKeyFrame_);
 
-    // マウスホイールでズーム
-    if (io.MouseWheel != 0.0f)
+    if (IsKeyPress(VK_CONTROL))
     {
-        timeScale_ += io.MouseWheel * 10.0f;
-        timeScale_ = std::clamp(timeScale_, 10.0f, 500.0f);
+        // マウスホイールでズーム
+        if (io.MouseWheel != 0.0f)
+        {
+            timeScale_ += io.MouseWheel * 10.0f;
+            timeScale_ = std::clamp(timeScale_, 10.0f, 500.0f);
+        }
     }
 }
 

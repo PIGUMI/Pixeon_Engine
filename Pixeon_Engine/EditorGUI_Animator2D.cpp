@@ -31,6 +31,20 @@ void EditrGUI::KeyFrameEditorGUI()
 {
 	ImGui::Begin(ShiftJISToUTF8("KeyFrameEditor").c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
 
+	if (!SelectedAnimator2D || !SelectedKeyFrame)
+	{
+		ImGui::End();
+		return;
+	}
+
+	if (ImGui::Button(ShiftJISToUTF8("íœ").c_str()) || IsKeyTrigger(VK_DELETE))
+	{
+		SelectedAnimator2D->RemoveKeyFrame(SelectedKeyFrame);
+		SelectedKeyFrame = nullptr;
+	}
+
+
+
 	ImGui::End();
 }
 

@@ -34,6 +34,7 @@ public:
 	int GetGuiMode() const { return GuiMode; }
 	Animator2D* GetAnimator2D() const { return SelectedAnimator2D; }
 	void SetAnimator2D(Animator2D* animator) { SelectedAnimator2D = animator; }
+	void SetSelectedKeyFrame(KeyFrame* keyframe) { SelectedKeyFrame = keyframe; }
 private:
 	void WindowGUI();
 	void EditorModeGUI();
