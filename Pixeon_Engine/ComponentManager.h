@@ -14,7 +14,6 @@ public:
 	enum class COMPONENT_TYPE {
 		NONE = -1,
 		CAMERA,
-		GEOMETRY,
 		LIGHT,
 		IMAGE,
 		SCRIPT,
