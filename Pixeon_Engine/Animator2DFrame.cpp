@@ -1,4 +1,5 @@
 #include "Animator2DFrame.h"
+#include "Input.h"
 #include "TimelineEditor.h"
 
 Animator2DFrame* Animator2DFrame::instance = nullptr;
@@ -30,6 +31,13 @@ void Animator2DFrame::Init()
 void Animator2DFrame::Update()
 {
 	// XVˆ—
+	if(IsKeyPress(VK_CONTROL) && IsKeyTrigger('S'))
+	{
+		if (animator_)
+		{
+			animator_->SaveFile();
+		}
+	}
 }
 
 void Animator2DFrame::Draw()
@@ -39,6 +47,13 @@ void Animator2DFrame::Draw()
 
 void Animator2DFrame::UnInit()
 {
+	MessageBox(nullptr, "Animator2DFrame UnInit", "Info", MB_OK);
+	if (animator_)
+	{
+		animator_->SaveFile();
+		delete animator_;
+		animator_ = nullptr;
+	}
 	if (timelineEditor_)
 	{
 		delete timelineEditor_;

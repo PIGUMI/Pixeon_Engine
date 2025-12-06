@@ -1,0 +1,76 @@
+{
+    "KeyFrames": [
+        {
+            "Active": false,
+            "CurveInfo": {
+                "ControlPoint1": [
+                    0.0,
+                    0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EndTime": 3.4000003337860107,
+            "EndTransform": {
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPostion": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "Image": "\n0\n128 128\n1 1\n0 0\n0 0 0\n0 0 1 1\n1 1 1 1\n",
+            "Layer": 0,
+            "StartTime": 2.4000000953674316,
+            "StartTransform": {
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPostion": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    0.0,
+                    0.0
+                ]
+            }
+        }
+    ],
+    "Loop": false,
+    "ProjectName": "Animator2D",
+    "TotalDuration": 3.4000003337860107
+}
