@@ -75,6 +75,9 @@
     <Filter Include="ソース ファイル\MainFrame\AssetManager">
       <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Animator2DEditor\Frame">
+      <UniqueIdentifier>{37ebd7f7-be21-4dfd-8658-8ef283c670b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -208,6 +211,15 @@
     </ClCompile>
     <ClCompile Include="AnimationDebug.cpp">
       <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator2DFrame.cpp">
+      <Filter>ソース ファイル\Animator2DEditor\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator2DFrame_GUI.cpp">
+      <Filter>ソース ファイル\Animator2DEditor\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineEditor.cpp">
+      <Filter>ソース ファイル\Animator2DEditor\Animator2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -366,6 +378,12 @@
     </ClInclude>
     <ClInclude Include="AnimationDebug.h">
       <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator2DFrame.h">
+      <Filter>ソース ファイル\Animator2DEditor\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineEditor.h">
+      <Filter>ソース ファイル\Animator2DEditor\Animator2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

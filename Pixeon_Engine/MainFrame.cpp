@@ -8,14 +8,15 @@
 #include "TextureManager.h"
 #include "SettingManager.h"
 #include "ShaderManager.h"
+#include "SoundManager.h"
 #include "ComponentManager.h"
 #include "ScriptManager.h"
 #include "ResourceService.h"
 // 入力処理
 #include "Input.h"
-
 // ソフトウェアモード
 #include "EngineFrame.h"
+#include "Animator2DFrame.h"
 
 #include <crtdbg.h>
 
@@ -86,6 +87,7 @@ int MainFrame::Init(const EngineConfig& InPut)
 	InitInput();
 
 	EngineFrame::GetInstance()->Init();
+	Animator2DFrame::GetInstance()->Init();
 
 	return 0;
 }
@@ -108,6 +110,7 @@ void MainFrame::Update()
 			EngineFrame::GetInstance()->Update();
 			break;
 		case SoftWareMode::ANIMTOR2D:
+			Animator2DFrame::GetInstance()->Update();
 			break;
 		default:
 			break;
@@ -133,6 +136,7 @@ void MainFrame::Draw()
 			EngineFrame::GetInstance()->Draw();
 			break;
 		case SoftWareMode::ANIMTOR2D:
+			Animator2DFrame::GetInstance()->Draw();
 			break;
 		default:
 			break;
@@ -153,6 +157,7 @@ void MainFrame::Draw()
 			EngineFrame::GetInstance()->DrawGUI();
 			break;
 		case SoftWareMode::ANIMTOR2D:
+			Animator2DFrame::GetInstance()->DrawGUI();
 			break;
 		default:
 			break;
@@ -165,8 +170,12 @@ void MainFrame::Draw()
 }
 
 void MainFrame::UnInit() {
-
 	EngineFrame::GetInstance()->UnInit();
+	Animator2DFrame::GetInstance()->UnInit();
+
+	EngineFrame::DestroyInstance();
+	Animator2DFrame::DestroyInstance();
+
 	UninitInput();
 	// AssetManager の自動同期停止
 	AssetManager::Instance()->StopAutoSync();
@@ -175,14 +184,17 @@ void MainFrame::UnInit() {
 	// 破棄処理
 	// マネージャーの破棄
 	GUI::DestroyInstance();
-	AssetManager::DeleteInstance();
 	ComponentManager::DestroyInstance();
 	SettingManager::DestroyInstance();
-	ShaderManager::DestroyInstance();
-	TextureManager::DeleteInstance();
-	ModelManager::DeleteInstance();
-	ResourceService::DeleteInstance();
 	ScriptManager::Release();
+	ShaderManager::DestroyInstance();
+
+	AssetManager::DeleteInstance();
+	ModelManager::DeleteInstance();
+	TextureManager::DeleteInstance();
+	SoundManager::DeleteInstance();
+
+	ResourceService::DeleteInstance();
 
 	DirectX11::GetInstance()->Uninit();
 	DirectX11::DestroyInstance();

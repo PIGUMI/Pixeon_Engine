@@ -141,6 +141,7 @@
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationDebug.h" />
     <ClInclude Include="Animator2DComponent.h" />
+    <ClInclude Include="Animator2DFrame.h" />
     <ClInclude Include="API.h" />
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Animator2D.h" />
+    <ClInclude Include="TimelineEditor.h" />
     <ClInclude Include="WeightFix.h" />
     <ClInclude Include="_Geometry.h" />
   </ItemGroup>
@@ -195,6 +197,8 @@
     <ClCompile Include="AnimationComponent.cpp" />
     <ClCompile Include="AnimationDebug.cpp" />
     <ClCompile Include="Animator2DComponent.cpp" />
+    <ClCompile Include="Animator2DFrame.cpp" />
+    <ClCompile Include="Animator2DFrame_GUI.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BoxCollision.cpp" />
@@ -235,6 +239,7 @@
     <ClCompile Include="System.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Animator2D.cpp" />
+    <ClCompile Include="TimelineEditor.cpp" />
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>
