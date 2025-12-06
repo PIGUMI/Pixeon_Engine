@@ -1,7 +1,7 @@
 {
     "KeyFrames": [
         {
-            "Active": false,
+            "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -20,11 +20,11 @@
                     0.0
                 ]
             },
-            "EndTime": 3.4000003337860107,
+            "EndTime": 1.0,
             "EndTransform": {
                 "Position": [
                     0.0,
-                    0.0
+                    500.0
                 ],
                 "Rotation": [
                     0.0,
@@ -35,17 +35,17 @@
                     1.0
                 ],
                 "UVPostion": [
-                    0.0,
+                    2.5223372357846707e-44,
                     0.0
                 ],
                 "UVScale": [
-                    0.0,
-                    0.0
+                    -4.916350924204149e-23,
+                    5.179759643530254e-41
                 ]
             },
-            "Image": "\n0\n128 128\n1 1\n0 0\n0 0 0\n0 0 1 1\n1 1 1 1\n",
-            "Layer": 0,
-            "StartTime": 2.4000000953674316,
+            "Image": "\n3\n128 128\n1 1\n0 3.33067e-13\n0 3.33067e-13 0\n0 0 1 1\n1 1 1 1\n",
+            "Layer": 1,
+            "StartTime": 0.0,
             "StartTransform": {
                 "Position": [
                     0.0,
@@ -60,17 +60,86 @@
                     1.0
                 ],
                 "UVPostion": [
-                    0.0,
+                    2.5223372357846707e-44,
                     0.0
                 ],
                 "UVScale": [
+                    -4.916350924204149e-23,
+                    5.179759643530254e-41
+                ]
+            }
+        },
+        {
+            "Active": true,
+            "CurveInfo": {
+                "ControlPoint1": [
                     0.0,
                     0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EndTime": 1.0,
+            "EndTransform": {
+                "Position": [
+                    500.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPostion": [
+                    2.5223372357846707e-44,
+                    0.0
+                ],
+                "UVScale": [
+                    -4.916350924204149e-23,
+                    5.179759643530254e-41
+                ]
+            },
+            "Image": "\n3\n128 128\n1 1\n3.33067e-13 0\n3.33067e-13 0 0\n0 0 1 1\n1 1 1 1\n",
+            "Layer": 0,
+            "StartTime": 0.0,
+            "StartTransform": {
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPostion": [
+                    2.5223372357846707e-44,
+                    0.0
+                ],
+                "UVScale": [
+                    -4.916350924204149e-23,
+                    5.179759643530254e-41
                 ]
             }
         }
     ],
     "Loop": false,
     "ProjectName": "Animator2D",
-    "TotalDuration": 3.4000003337860107
+    "TotalDuration": 1.0
 }

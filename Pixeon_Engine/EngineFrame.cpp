@@ -75,17 +75,61 @@ void EngineFrame::Draw()
 
 void EngineFrame::UnInit()
 {
-	delete ImgIcon_;
-	delete SoundIcon_;
-	delete FbxIcon_;
-	delete SceneIcon_;
-	delete FolderIcon_;
-	delete ShaderIcon_;
-	delete ScriptIcon_;
-	delete JsonIcon_;
-	delete ArchiveIcon_;
-	delete ExeIcon_;
-	delete ObjectIcon_;
+	if (ImgIcon_)
+	{
+		ImgIcon_->Release();
+		ImgIcon_ = nullptr;
+	}
+	if(SoundIcon_)
+	{
+		SoundIcon_->Release();
+		SoundIcon_ = nullptr;
+	}
+	if(FbxIcon_)
+	{
+		FbxIcon_->Release();
+		FbxIcon_ = nullptr;
+	}
+	if(SceneIcon_)
+	{
+		SceneIcon_->Release();
+		SceneIcon_ = nullptr;
+	}
+	if (FolderIcon_)
+	{
+		FolderIcon_->Release();
+		FolderIcon_ = nullptr;
+	}
+	if (ShaderIcon_)
+	{
+		ShaderIcon_->Release();
+		ShaderIcon_ = nullptr;
+	}
+	if (ScriptIcon_)
+	{
+		ScriptIcon_->Release();
+		ScriptIcon_ = nullptr;
+	}
+	if(JsonIcon_)
+	{
+		JsonIcon_->Release();
+		JsonIcon_ = nullptr;
+	}
+	if(ArchiveIcon_)
+	{
+		ArchiveIcon_->Release();
+		ArchiveIcon_ = nullptr;
+	}
+	if(ExeIcon_)
+	{
+		ExeIcon_->Release();
+		ExeIcon_ = nullptr;
+	}
+	if (ObjectIcon_)
+	{
+		ObjectIcon_->Release();
+		ObjectIcon_ = nullptr;
+	}
 	SavePrefabs();
 	for (auto prefab : prefabs_) {
 		if (prefab) {

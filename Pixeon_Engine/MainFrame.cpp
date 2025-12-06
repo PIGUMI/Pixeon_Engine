@@ -170,8 +170,8 @@ void MainFrame::Draw()
 }
 
 void MainFrame::UnInit() {
-	EngineFrame::GetInstance()->UnInit();
 	Animator2DFrame::GetInstance()->UnInit();
+	EngineFrame::GetInstance()->UnInit();
 
 	EngineFrame::DestroyInstance();
 	Animator2DFrame::DestroyInstance();

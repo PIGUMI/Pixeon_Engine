@@ -91,6 +91,7 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 				newKeyFrame.StartTransform = newKeyFrame.EndTransform;
 				newKeyFrame.Layer = 0;
 				newKeyFrame.Image = new ImageRender();
+				newKeyFrame.Image->Init(nullptr);
 				animator->AddKeyFrame(newKeyFrame);
 			}
 

@@ -475,7 +475,6 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 
 void ImageRender::Draw() {
 	if (!m_ready) return;
-
 	auto* dx = DirectX11::GetInstance();
 	auto ctx = dx->GetContext();
 	if (!ctx) return;

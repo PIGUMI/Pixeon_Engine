@@ -38,16 +38,23 @@ void Animator2DFrame::Update()
 			animator_->SaveFile();
 		}
 	}
+	if (animator_)
+	{
+		animator_->SetViewMode(Animator2D::ViewMode::UI);
+		animator_->EditorUpdate();
+	}
 }
 
 void Animator2DFrame::Draw()
 {
-	// •`‰æˆ—
+	if (animator_)
+	{
+		animator_->Draw();
+	}
 }
 
 void Animator2DFrame::UnInit()
 {
-	MessageBox(nullptr, "Animator2DFrame UnInit", "Info", MB_OK);
 	if (animator_)
 	{
 		animator_->SaveFile();

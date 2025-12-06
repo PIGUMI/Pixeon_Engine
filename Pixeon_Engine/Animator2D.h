@@ -39,6 +39,7 @@ struct KeyFrame
 	CurveData CurveInfo;			// ベジェ情報
 	UITransform StartTransform;		// 開始トランスフォーム
 	UITransform EndTransform;		// 終了トランスフォーム
+	UITransform NowTransform;		// 現在トランスフォーム（編集用）
 	ImageRender* Image = nullptr;	// 描画対象（ランタイム解決）
 };
 
@@ -84,6 +85,7 @@ public:
 	void Update();
 	void EditorUpdate();
 	void Draw();
+	void Debug();
 
 	void SaveFile();
 	void LoadFile(std::string FilePath);
@@ -120,4 +122,5 @@ public:
 	float fTotalDuration_ = 0.0f; // 総再生時間（秒）
 	std::vector<KeyFrame> KeyFrames_; // キーフレーム群
 	ViewMode viewMode_ = ViewMode::UI;
+	int DrawCount = 0;
 };
