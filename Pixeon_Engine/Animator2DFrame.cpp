@@ -1,4 +1,5 @@
 #include "Animator2DFrame.h"
+#include "TimelineEditor.h"
 
 Animator2DFrame* Animator2DFrame::instance = nullptr;
 
@@ -23,7 +24,7 @@ void Animator2DFrame::DestroyInstance()
 
 void Animator2DFrame::Init()
 {
-	// ‰Šú‰»ˆ—
+	timelineEditor_ = new TimelineEditor();
 }
 
 void Animator2DFrame::Update()
@@ -38,6 +39,10 @@ void Animator2DFrame::Draw()
 
 void Animator2DFrame::UnInit()
 {
-	// I—¹ˆ—
+	if (timelineEditor_)
+	{
+		delete timelineEditor_;
+		timelineEditor_ = nullptr;
+	}
 }
 

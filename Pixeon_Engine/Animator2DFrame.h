@@ -3,6 +3,8 @@
 
 class Animator2D;
 struct KeyFrame;
+class TimelineEditor;
+
 
 class Animator2DFrame
 {
@@ -21,8 +23,13 @@ public:
 	KeyFrame* GetSelectedKeyFrame() const { return selectedKeyFrame_; }
 	void SetSelectedKeyFrame(KeyFrame* keyframe) { selectedKeyFrame_ = keyframe; }
 private:
+	void DrawTimeline();
+	void DrawView();
+	void DrawKeyFrameEditor();
+private:
 	Animator2D* animator_ = nullptr;
 	KeyFrame* selectedKeyFrame_ = nullptr;
+	TimelineEditor* timelineEditor_ = nullptr;
 private:
 	static Animator2DFrame* instance;
 };
