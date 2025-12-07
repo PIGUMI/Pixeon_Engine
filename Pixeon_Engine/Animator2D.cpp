@@ -44,7 +44,7 @@ void Animator2D::Update()
 
 	// 再生ヘッド（秒）
 	fNowTime_ = static_cast<float>(nowSec - static_cast<double>(fStartTime_));
-
+	bEnded_ = false;
 	// ループ処理: 総時間を超えたらループ開始
 	if (fTotalDuration_ > 0.0f && fNowTime_ >= fTotalDuration_)
 	{
@@ -55,6 +55,7 @@ void Animator2D::Update()
 		}
 		else
 		{
+			bEnded_ = true;
 			fNowTime_ = fTotalDuration_;
 		}
 	}

@@ -109,6 +109,9 @@ public:
 	void SetViewMode(ViewMode mode) { viewMode_ = mode; }
 	ViewMode GetViewMode() const { return viewMode_; }
 
+	void SetFirstFlag(bool first) { bFirst_ = first; }
+	bool GetEndedFlag() const { return bEnded_; }
+
 private:
 	// ベジェによるイージング（elapsed: 経過秒, duration: 区間秒）
 	vec2 EaseByBezierCurve(const CurveData& curve, const vec2& startvalue, const vec2& endvalue, float elapsed, float duration = 1.0f);
@@ -117,6 +120,7 @@ public:
 	std::string Name_ = "Animator2D"; // アニメーション名
 	bool bLoop_ = false;// ループ
 	bool bFirst_ = true; // 初回フラグ
+	bool bEnded_ = false; // 再生終了フラグ
 	float fStartTime_ = 0.0f; // 再生開始時刻（秒）
 	float fNowTime_ = 0.0f;   // 現在の再生時刻（秒、0..total）
 	float fTotalDuration_ = 0.0f; // 総再生時間（秒）

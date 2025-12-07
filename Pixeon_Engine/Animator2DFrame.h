@@ -30,6 +30,7 @@ private:
 	Animator2D* animator_ = nullptr;
 	KeyFrame* selectedKeyFrame_ = nullptr;
 	TimelineEditor* timelineEditor_ = nullptr;
+	bool isPlaying_ = false;
 private:
 	static Animator2DFrame* instance;
 };

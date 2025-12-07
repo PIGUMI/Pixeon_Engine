@@ -43,7 +43,7 @@ void Animator2DFrame::DrawGUI()
 	ImGui::End();
 	ImGui::PopStyleVar();
 
-	if(animator_)animator_->Debug();
+	//if(animator_)animator_->Debug();
 
 	DrawTimeline();
 	DrawView();

@@ -40,8 +40,24 @@ void Animator2DFrame::Update()
 	}
 	if (animator_)
 	{
+		if(IsKeyTrigger(VK_SPACE))
+		{
+			isPlaying_ = !isPlaying_;
+			if (isPlaying_)animator_->SetFirstFlag(true);
+		}
 		animator_->SetViewMode(Animator2D::ViewMode::UI);
-		animator_->EditorUpdate();
+		if(isPlaying_)
+		{ 
+			animator_->Update();
+			if(animator_->GetEndedFlag())
+			{
+				isPlaying_ = false;
+			}
+		}
+		else
+		{
+			animator_->EditorUpdate();
+		}
 	}
 }
 

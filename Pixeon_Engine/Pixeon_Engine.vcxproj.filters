@@ -221,6 +221,9 @@
     <ClCompile Include="TimelineEditor.cpp">
       <Filter>ソース ファイル\Animator2DEditor\Animator2D</Filter>
     </ClCompile>
+    <ClCompile Include="Animator2DManager.cpp">
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -384,6 +387,9 @@
     </ClInclude>
     <ClInclude Include="TimelineEditor.h">
       <Filter>ソース ファイル\Animator2DEditor\Animator2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator2DManager.h">
+      <Filter>ソース ファイル\MainFrame\AssetManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
