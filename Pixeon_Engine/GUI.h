@@ -49,4 +49,3 @@ private:
 private:
 	static GUI* instance;
 };
-

@@ -36,7 +36,6 @@ void MainFrame::DeleteInstance() {
 	}
 }
 
-
 int MainFrame::Init(const EngineConfig& InPut)
 {
 	targetFrameTime_ = 1000.0f / 70.0f;
@@ -122,7 +121,7 @@ void MainFrame::Update()
 	}
 }
 
-void MainFrame::Draw() 
+void MainFrame::Draw()
 {
 	if (bUpdateDraw) {
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
@@ -205,5 +204,3 @@ ID3D11ShaderResourceView* MainFrame::GetGameRenderTargetSRV()
 {
 	return m_gameRenderTarget_->GetShaderResourceView();
 }
-
-

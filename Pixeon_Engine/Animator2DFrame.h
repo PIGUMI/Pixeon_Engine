@@ -5,7 +5,6 @@ class Animator2D;
 struct KeyFrame;
 class TimelineEditor;
 
-
 class Animator2DFrame
 {
 public:
@@ -36,4 +35,3 @@ private:
 };
 
 #endif // ANIMATOR2DFRAME_H
-

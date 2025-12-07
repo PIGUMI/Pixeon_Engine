@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <filesystem> 
+#include <filesystem>
 
 TimelineEditor::TimelineEditor()
 {
@@ -69,7 +69,7 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 	{
 		if (!animator)
 		{
-			if(ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを開く").c_str()))
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを開く").c_str()))
 			{
 				RequestOpenProjectPopup();
 			}
@@ -309,7 +309,6 @@ void TimelineEditor::DrawProjectLoadPopup()
 			}
 		}
 	}
-
 
 	if (ImGui::BeginPopupModal("LoadProject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("読み込むプロジェクトファイルを選択してください:").c_str());

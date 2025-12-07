@@ -14,13 +14,11 @@ void Animator2DFrame::DrawGUI()
 	static bool Animator2DFrame_dock_init = false;
 	if (!Animator2DFrame_dock_init)
 	{
-
 		Animator2DFrame_dock_init = true;
 
 		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceƒŠƒZƒbƒg
 		ImGui::DockBuilderAddNode(DockSpace, ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_DockSpace);
 		ImGui::DockBuilderSetNodeSize(DockSpace, viewport->Size);
-
 
 		ImGuiID dock_main_id = DockSpace;
 		ImGuiID dock_id_right;
@@ -52,9 +50,9 @@ void Animator2DFrame::DrawGUI()
 
 void Animator2DFrame::DrawTimeline()
 {
-	if(ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Animator2DTimeLine").c_str()))
+	if (ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Animator2DTimeLine").c_str()))
 	{
-		if(timelineEditor_)
+		if (timelineEditor_)
 		{
 			timelineEditor_->DrawTimeline(animator_);
 		}

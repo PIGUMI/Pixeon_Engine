@@ -15,7 +15,6 @@
 #include <comdef.h>
 #include <oleauto.h>
 
-
 void EngineFrame::HandleAssetContextMenu(const std::filesystem::path& path)
 {
 	std::string ext = path.extension().string();
@@ -139,7 +138,7 @@ void EngineFrame::DrawGUI()
 	ImGui::DockSpace(DockSpace, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
 	static bool EngineFrame_dock_init = false;
-	if (!EngineFrame_dock_init){
+	if (!EngineFrame_dock_init) {
 		EngineFrame_dock_init = true;
 		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceƒŠƒZƒbƒg
 		ImGui::DockBuilderAddNode(DockSpace, ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_DockSpace);
@@ -663,4 +662,3 @@ void EngineFrame::SceneRenameWindow()
 		ImGui::End();
 	}
 }
-

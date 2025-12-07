@@ -36,17 +36,17 @@ void EngineFrame::Init()
 	LineRenderer::GetInstance()->Initialize();
 	LoadPrefabs();
 
-	ImgIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/img.png", DirectX11::GetInstance()->GetDevice());
-	SoundIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Sound.png", DirectX11::GetInstance()->GetDevice());
+	ImgIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/img.png", DirectX11::GetInstance()->GetDevice());
+	SoundIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Sound.png", DirectX11::GetInstance()->GetDevice());
 	FolderIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/File.png", DirectX11::GetInstance()->GetDevice());
 	ShaderIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/HLSL.png", DirectX11::GetInstance()->GetDevice());
 	ScriptIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Script.png", DirectX11::GetInstance()->GetDevice());
-	JsonIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Json.png", DirectX11::GetInstance()->GetDevice());
-	ArchiveIcon_= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Archive.png", DirectX11::GetInstance()->GetDevice());
-	ExeIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Exe.png", DirectX11::GetInstance()->GetDevice());
+	JsonIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Json.png", DirectX11::GetInstance()->GetDevice());
+	ArchiveIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Archive.png", DirectX11::GetInstance()->GetDevice());
+	ExeIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Exe.png", DirectX11::GetInstance()->GetDevice());
 	ObjectIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Object.png", DirectX11::GetInstance()->GetDevice());
-	FbxIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/fbx.png", DirectX11::GetInstance()->GetDevice());
-	SceneIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Scene.png", DirectX11::GetInstance()->GetDevice());
+	FbxIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/fbx.png", DirectX11::GetInstance()->GetDevice());
+	SceneIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Scene.png", DirectX11::GetInstance()->GetDevice());
 }
 
 void EngineFrame::Update()
@@ -67,7 +67,6 @@ void EngineFrame::Update()
 	}
 }
 
-
 void EngineFrame::Draw()
 {
 	SceneManger::GetInstance()->Draw();
@@ -80,17 +79,17 @@ void EngineFrame::UnInit()
 		ImgIcon_->Release();
 		ImgIcon_ = nullptr;
 	}
-	if(SoundIcon_)
+	if (SoundIcon_)
 	{
 		SoundIcon_->Release();
 		SoundIcon_ = nullptr;
 	}
-	if(FbxIcon_)
+	if (FbxIcon_)
 	{
 		FbxIcon_->Release();
 		FbxIcon_ = nullptr;
 	}
-	if(SceneIcon_)
+	if (SceneIcon_)
 	{
 		SceneIcon_->Release();
 		SceneIcon_ = nullptr;
@@ -110,17 +109,17 @@ void EngineFrame::UnInit()
 		ScriptIcon_->Release();
 		ScriptIcon_ = nullptr;
 	}
-	if(JsonIcon_)
+	if (JsonIcon_)
 	{
 		JsonIcon_->Release();
 		JsonIcon_ = nullptr;
 	}
-	if(ArchiveIcon_)
+	if (ArchiveIcon_)
 	{
 		ArchiveIcon_->Release();
 		ArchiveIcon_ = nullptr;
 	}
-	if(ExeIcon_)
+	if (ExeIcon_)
 	{
 		ExeIcon_->Release();
 		ExeIcon_ = nullptr;

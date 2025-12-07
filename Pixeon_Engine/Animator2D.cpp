@@ -247,7 +247,7 @@ void Animator2D::Debug()
 	ImGui::Text("%s", msg.c_str());
 
 	int Count = 0;
-	for(auto kf : KeyFrames_)
+	for (auto kf : KeyFrames_)
 	{
 		msg = "KeyFrame " + std::to_string(Count) + ": ";
 		ImGui::Text("%s", msg.c_str());
@@ -256,7 +256,7 @@ void Animator2D::Debug()
 		ImGui::Text("%s", msg.c_str());
 		msg = "NowPos" + std::to_string(Count) + ": (" + std::to_string(kf.NowTransform.Position.x) + ", " + std::to_string(kf.NowTransform.Position.y) + ")";
 		ImGui::Text("%s", msg.c_str());
-		if(kf.Active)
+		if (kf.Active)
 		{
 			ImGui::Text("Status: Active");
 		}
@@ -269,7 +269,6 @@ void Animator2D::Debug()
 	}
 	msg = "Draw Count: " + std::to_string(DrawCount);
 	ImGui::Text("%s", msg.c_str());
-
 
 	ImGui::End();
 }
