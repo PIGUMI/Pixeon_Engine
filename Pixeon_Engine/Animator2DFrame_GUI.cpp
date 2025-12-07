@@ -2,7 +2,7 @@
 #include "MainFrame.h"
 #include "GUI.h"
 #include "Input.h"
-
+#include "AssetManager.h"
 #include "TimelineEditor.h"
 
 void Animator2DFrame::DrawGUI()
@@ -46,8 +46,10 @@ void Animator2DFrame::DrawGUI()
 
 	DrawTimeline();
 	DrawView();
-	DrawKeyFrameEditor();
 	DrawAnimatorControl();
+	DrawKeyFrameEditor();
+	if (wantOpenTexturePopup_)ImGui::OpenPopup("LoadTexture");
+	DrawTextureLoadPopup();
 }
 
 void Animator2DFrame::DrawTimeline()
@@ -138,12 +140,10 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 	//テクスチャの設定
 	static char TexturePath[256] = {};
-	// 入力
-	ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("テクスチャパス").c_str(), TexturePath, sizeof(TexturePath));
-	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("適用").c_str()))
+
+	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("テクスチャ選択").c_str()))
 	{
-		selectedKeyFrame_->Texture = TexturePath;
-		selectedKeyFrame_->Image->SetTextureName(TexturePath);
+		wantOpenTexturePopup_ = true;
 	}
 
 	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str()) || IsKeyTrigger(VK_DELETE))
@@ -184,3 +184,30 @@ void Animator2DFrame::DrawAnimatorControl()
 	ImGui::End();
 }
 
+void Animator2DFrame::DrawTextureLoadPopup()
+{
+	if (ImGui::BeginPopupModal("LoadTexture", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		static char filter[128] = "";
+		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("フィルタ").c_str(), filter, sizeof(filter));
+		auto texList = AssetManager::Instance()->GetCachedTextureNames();
+		ImGui::BeginChild("ImgTexList", ImVec2(420, 260), true);
+		for (int i = 0; i < (int)texList.size(); ++i) {
+			const std::string& n = texList[i];
+			if (filter[0] && n.find(filter) == std::string::npos) continue;
+			if (ImGui::Selectable(n.c_str(), false)) {
+				selectedKeyFrame_->Texture = n;
+				selectedKeyFrame_->Image->SetTextureName(n);
+				wantOpenTexturePopup_ = false;
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::EndChild();
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("キャンセル").c_str()))
+		{
+			wantOpenTexturePopup_ = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+}

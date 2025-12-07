@@ -26,11 +26,13 @@ private:
 	void DrawView();
 	void DrawKeyFrameEditor();
 	void DrawAnimatorControl();
+	void DrawTextureLoadPopup();
 private:
 	Animator2D* animator_ = nullptr;
 	KeyFrame* selectedKeyFrame_ = nullptr;
 	TimelineEditor* timelineEditor_ = nullptr;
 	bool isPlaying_ = false;
+	bool wantOpenTexturePopup_ = false;
 private:
 	static Animator2DFrame* instance;
 };
