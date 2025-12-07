@@ -3,8 +3,6 @@
 #include "ModelManager.h"
 #include "AssetManager.h"
 #include "System.h"
-#include "ErrorLog.h"
-#include "EditrGUI.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -87,7 +85,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& 
 std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::string& logicalName) {
 	std::vector<uint8_t> data;
 	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
-		ErrorLogger::Instance().LogError("ModelManager", "Failed load asset: " + logicalName);
 		return nullptr;
 	}
 	Assimp::Importer importer;
@@ -103,8 +100,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 		aiProcess_FlipUVs);
 
 	if (!scene || !scene->mRootNode) {
-		ErrorLogger::Instance().LogError("ModelManager", "Assimp parse failed: " + logicalName +
-			(importer.GetErrorString()[0] ? (" (" + std::string(importer.GetErrorString()) + ")") : ""));
 		return nullptr;
 	}
 
@@ -117,7 +112,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 
 	auto device = DirectX11::GetInstance()->GetDevice();
 	if (!device) {
-		ErrorLogger::Instance().LogError("ModelManager", "Device null");
 		return nullptr;
 	}
 	{ // VB
@@ -127,7 +121,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		D3D11_SUBRESOURCE_DATA srd{ vertices.data(),0,0 };
 		if (FAILED(device->CreateBuffer(&bd, &srd, shared->vb.GetAddressOf()))) {
-			ErrorLogger::Instance().LogError("ModelManager", "VB creation failed");
 			return nullptr;
 		}
 	}
@@ -138,7 +131,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		D3D11_SUBRESOURCE_DATA srd{ indices.data(),0,0 };
 		if (FAILED(device->CreateBuffer(&bd, &srd, shared->ib.GetAddressOf()))) {
-			ErrorLogger::Instance().LogError("ModelManager", "IB creation failed");
 			return nullptr;
 		}
 	}
@@ -311,7 +303,6 @@ void ModelManager::ProcessMaterials(const aiScene* scene,
 std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath) {
 	if (rawPath.empty()) return {};
 	if (rawPath[0] == '*') {
-		ErrorLogger::Instance().LogError("ModelManager", "Embedded texture unsupported: " + rawPath);
 		return {};
 	}
 	std::string norm = MM_NormalizePath(rawPath);
@@ -350,8 +341,6 @@ std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, co
 			return c;
 		}
 	}
-	ErrorLogger::Instance().LogError("ModelManager",
-		"Texture not found: " + rawPath + " (tried " + std::to_string(uniq.size()) + " paths)", false, 3);
 	return {};
 }
 
@@ -446,9 +435,6 @@ void ModelManager::BuildNodeHierarchy(aiNode* node,
 	int parentIndex) {
 	std::string nm = node->mName.C_Str();
 
-	// ==============================
-	// 🔴 補助ノードは完全にスキップ
-	// ==============================
 	if (nm.find("$AssimpFbx") != std::string::npos)
 	{
 		for (uint32_t i = 0; i < node->mNumChildren; ++i)

@@ -4,6 +4,7 @@
 #include "CameraComponent.h"
 #include "Object.h"
 #include "Scene.h"
+#include "GUI.h"
 
 void CameraComponent::Init(Object* Prt) {
 	_Parent = Prt;
@@ -58,11 +59,11 @@ void CameraComponent::InGameUpdate() {
 }
 
 void CameraComponent::DrawInspector() {
-	std::string label = EditrGUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
+	std::string label = GUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
 	std::string Ptr = std::to_string((uintptr_t)this);
 	label += "###" + Ptr;
 
-	if (ImGui::CollapsingHeader(EditrGUI::GetInstance()->ShiftJISToUTF8(label).c_str())) {
+	if (ImGui::CollapsingHeader(GUI::GetInstance()->ShiftJISToUTF8(label).c_str())) {
 		if (ImGui::BeginTable("CameraTable", 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::Text("Position");
@@ -116,7 +117,7 @@ void CameraComponent::DrawInspector() {
 			ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##IsChangeCalculation", &_IsChangeCalculation);
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(EditrGUI::GetInstance()->ShiftJISToUTF8("Œ»Ý‚ÌƒJƒƒ‰‚ðØ‚è‘Ö‚¦‚é").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Œ»Ý‚ÌƒJƒƒ‰‚ðØ‚è‘Ö‚¦‚é").c_str());
 			ImGui::TableSetColumnIndex(1);
 			if (ImGui::Button("Set Main Camera")) {
 				_Parent->GetParentScene()->SetMainCamera(this);

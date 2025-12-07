@@ -1,10 +1,10 @@
 #include "Animator2D.h"
 #include "SettingManager.h"
+#include "GUI.h"
 #include <nlohmann/json.hpp>
 #include <chrono>
 #include <algorithm>
 
-// 現在時刻（秒）を返すヘルパー
 static double GetTimeSeconds()
 {
 	using clock = std::chrono::steady_clock;
@@ -15,15 +15,16 @@ static double GetTimeSeconds()
 
 Animator2D::Animator2D()
 	:bLoop_(false),
-  bFirst_(true),
-  fStartTime_(0.0f),
-  fNowTime_(0.0f),
-  fTotalDuration_(0.0f)
+	bFirst_(true),
+	fStartTime_(0.0f),
+	fNowTime_(0.0f),
+	fTotalDuration_(0.0f)
 {
 }
+
 Animator2D::~Animator2D()
 {
-	for(auto obj : KeyFrames_)
+	for (auto obj : KeyFrames_)
 	{
 		delete obj.Image;
 		obj.Image = nullptr;
@@ -43,19 +44,18 @@ void Animator2D::Update()
 
 	// 再生ヘッド（秒）
 	fNowTime_ = static_cast<float>(nowSec - static_cast<double>(fStartTime_));
-
+	bEnded_ = false;
 	// ループ処理: 総時間を超えたらループ開始
 	if (fTotalDuration_ > 0.0f && fNowTime_ >= fTotalDuration_)
 	{
 		if (bLoop_)
 		{
-			// 再生開始を現在時刻に合わせる（playhead を 0 に戻す）
 			fStartTime_ = static_cast<float>(nowSec);
 			fNowTime_ = 0.0f;
 		}
 		else
 		{
-			// 末尾に固定
+			bEnded_ = true;
 			fNowTime_ = fTotalDuration_;
 		}
 	}
@@ -85,6 +85,7 @@ void Animator2D::Update()
 			Pos.x = pos.x;
 			Pos.y = pos.y;
 			obj.Image->SetOffset2D(Pos);
+			obj.Image->SetOffset3D(DirectX::XMFLOAT3(pos.x, pos.y, 0.0f));
 		}
 
 		if (obj.StartTransform.Rotation != obj.EndTransform.Rotation)
@@ -128,39 +129,149 @@ void Animator2D::Update()
 	}
 }
 
-void Animator2D::Draw()
+void Animator2D::EditorUpdate()
 {
-	std::vector<KeyFrame*> ActiveKeyFrames;
-	// アクティブなキーフレームを収集
-	for(auto obj : KeyFrames_)
+	for (auto& obj : KeyFrames_)
 	{
-		if(obj.Active)
+		obj.Active = (fNowTime_ >= obj.StartTime && fNowTime_ <= obj.EndTime);
+
+		if (!obj.Active) continue;
+		if (obj.Image == nullptr) continue;
+
+		float elapsed = fNowTime_ - obj.StartTime;
+		float duration = obj.EndTime - obj.StartTime;
+		float tNormalized = 0.0f;
+		if (duration <= 0.0f) tNormalized = 1.0f;
+		else tNormalized = std::clamp(elapsed / duration, 0.0f, 1.0f);
+
+		// 位置の補間（ベジェ）
+		if (obj.StartTransform.Position != obj.EndTransform.Position)
 		{
-			ActiveKeyFrames.push_back(&obj);
+			vec2 pos = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Position, obj.EndTransform.Position, elapsed, duration);
+			DirectX::XMFLOAT2 Pos;
+			Pos.x = pos.x;
+			Pos.y = pos.y;
+			obj.NowTransform.Position = pos;
+			obj.Image->SetOffset2D(Pos);
+			obj.Image->SetOffset3D(DirectX::XMFLOAT3(pos.x, pos.y, 0.0f));
+		}
+
+		if (obj.StartTransform.Rotation != obj.EndTransform.Rotation)
+		{
+			vec2 rot = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Rotation, obj.EndTransform.Rotation, elapsed, duration);
+			// TODO: ImageRender に回転を適用する API があれば呼ぶ
+			// 例: obj.Image->SetRotation(rot.x);
+			obj.NowTransform.Rotation = rot;
+			(void)rot;
+		}
+
+		// スケール
+		if (obj.StartTransform.Scale != obj.EndTransform.Scale)
+		{
+			vec2 scl = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Scale, obj.EndTransform.Scale, elapsed, duration);
+			DirectX::XMFLOAT2 Scl;
+			Scl.x = scl.x;
+			Scl.y = scl.y;
+			obj.NowTransform.Scale = scl;
+			obj.Image->SetSize2D(Scl);
+			obj.Image->SetSizeWorld(Scl);
+		}
+
+		// UV 位置
+		if (obj.StartTransform.UVPostion != obj.EndTransform.UVPostion)
+		{
+			vec2 uvp = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVPostion, obj.EndTransform.UVPostion, elapsed, duration);
+			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
+			uvRect.x = uvp.x;
+			uvRect.y = uvp.y;
+			obj.NowTransform.UVPostion = uvp;
+			//obj.Image->SetUVRect(uvRect);
+		}
+
+		// UV スケール
+		if (obj.StartTransform.UVScale != obj.EndTransform.UVScale)
+		{
+			vec2 uvs = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVScale, obj.EndTransform.UVScale, elapsed, duration);
+			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
+			uvRect.z = uvs.x;
+			uvRect.w = uvs.y;
+			obj.NowTransform.UVScale = uvs;
+			//obj.Image->SetUVRect(uvRect);
 		}
 	}
+}
+
+void Animator2D::Draw()
+{
+	std::vector<KeyFrame> SortedKeyFrames = KeyFrames_;
+
 	// レイヤー順にソート
-	std::sort(ActiveKeyFrames.begin(), ActiveKeyFrames.end(),
-		[](const KeyFrame* a, const KeyFrame* b) {
-			return a->Layer < b->Layer;
+	std::sort(SortedKeyFrames.begin(), SortedKeyFrames.end(),
+		[](const KeyFrame& a, const KeyFrame& b)
+		{
+			return a.Layer < b.Layer;
 		});
-	// アクティブなキーフレームの ImageRender を描画
-	for (auto kf : ActiveKeyFrames)
+
+	DrawCount = 0;
+
+	for (auto& kf : SortedKeyFrames)
 	{
-		if (kf->Image)
+		if (!kf.Active) continue;
+		if (kf.Image == nullptr) continue;
+		DrawCount++;
+		if (kf.Image)
 		{
 			switch (viewMode_)
 			{
 			case Animator2D::UI:
-				kf->Image->SetPlacementMode(ImageRender::PlacementMode::UI);
+				kf.Image->SetPlacementMode(ImageRender::PlacementMode::UI);
 				break;
 			case Animator2D::Billboard:
-				kf->Image->SetPlacementMode(ImageRender::PlacementMode::Billboard);
+				kf.Image->SetPlacementMode(ImageRender::PlacementMode::Billboard);
 				break;
 			}
-			kf->Image->Draw();
+			kf.Image->Draw();
 		}
+		kf.Image->Draw();
+		DrawCount++;
 	}
+}
+
+void Animator2D::Debug()
+{
+	ImGui::Begin("Animator2D Debug");
+
+	ImGui::Text("Project Name: %s", Name_.c_str());
+	std::string msg;
+	msg = "KeyFrames Count: " + std::to_string(KeyFrames_.size());
+	ImGui::Text("%s", msg.c_str());
+
+	int Count = 0;
+	for(auto kf : KeyFrames_)
+	{
+		msg = "KeyFrame " + std::to_string(Count) + ": ";
+		ImGui::Text("%s", msg.c_str());
+		msg = "Pos" + std::to_string(Count) + ": (" + std::to_string(kf.StartTransform.Position.x) + ", " + std::to_string(kf.StartTransform.Position.y) + ") -> ("
+			+ std::to_string(kf.EndTransform.Position.x) + ", " + std::to_string(kf.EndTransform.Position.y) + ")";
+		ImGui::Text("%s", msg.c_str());
+		msg = "NowPos" + std::to_string(Count) + ": (" + std::to_string(kf.NowTransform.Position.x) + ", " + std::to_string(kf.NowTransform.Position.y) + ")";
+		ImGui::Text("%s", msg.c_str());
+		if(kf.Active)
+		{
+			ImGui::Text("Status: Active");
+		}
+		else
+		{
+			ImGui::Text("Status: Inactive");
+		}
+		Count++;
+		ImGui::Separator();
+	}
+	msg = "Draw Count: " + std::to_string(DrawCount);
+	ImGui::Text("%s", msg.c_str());
+
+
+	ImGui::End();
 }
 
 void Animator2D::SaveFile()
@@ -195,11 +306,7 @@ void Animator2D::SaveFile()
 		kfJson["EndTransform"]["Scale"] = { kf.EndTransform.Scale.x, kf.EndTransform.Scale.y };
 		kfJson["EndTransform"]["UVScale"] = { kf.EndTransform.UVScale.x, kf.EndTransform.UVScale.y };
 		kfJson["EndTransform"]["UVPostion"] = { kf.EndTransform.UVPostion.x, kf.EndTransform.UVPostion.y };
-
-		// ImageRender の保存
-		std::ostringstream oss;
-		kf.Image->SaveToFile(oss);
-		kfJson["Image"] = oss.str();
+		kfJson["Texture"] = kf.Texture;
 		KeyFramesJson.push_back(kfJson);
 	}
 	SaveJson["KeyFrames"] = KeyFramesJson;
@@ -262,12 +369,10 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.EndTransform.Scale = { startTransJson["Scale"][0].get<float>(), startTransJson["Scale"][1].get<float>() };
 			kf.EndTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.EndTransform.UVPostion = { startTransJson["UVPostion"][0].get<float>(), startTransJson["UVPostion"][1].get<float>() };
-			// ImageRender の読み込み
-			if (kfJson.contains("Image")) {
-				std::istringstream iss(kfJson["Image"].get<std::string>());
-				kf.Image = new ImageRender();
-				kf.Image->LoadFromFile(iss);
-			}
+			kf.Texture = kfJson["Texture"].get<std::string>();
+			kf.Image = new ImageRender();
+			kf.Image->Init(nullptr);
+			kf.Image->SetTextureName(kf.Texture);
 			KeyFrames_.push_back(kf);
 		}
 	}

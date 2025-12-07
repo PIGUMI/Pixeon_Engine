@@ -5,9 +5,8 @@
 #include "AssetManager.h"
 #include "CameraComponent.h"
 #include "SettingManager.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include "IMGUI/imgui.h"
-#include "ErrorLog.h"
 
 using namespace DirectX;
 
@@ -25,7 +24,6 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 	m_modelPath = logicalPath;
 	m_model = ModelManager::Instance()->LoadOrGet(logicalPath);
 	if (!m_model) {
-		ErrorLogger::Instance().LogError("ModelRenderComponent", "Failed load model: " + logicalPath);
 		m_ready = false;
 		return false;
 	}
@@ -256,7 +254,6 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 		std::string msg = "SubMesh " + std::to_string(submeshIdx) +
 			" Issue=" + issueNames[(int)issue] + " | " + detail;
 		if (mat && !mat->texName.empty()) msg += " | path=" + mat->texName;
-		ErrorLogger::Instance().LogError("TextureBind", msg, false, 1);
 	}
 }
 
@@ -376,7 +373,6 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		auto dev = DirectX11::GetInstance()->GetDevice();
 		if (FAILED(dev->CreateBuffer(&bd, nullptr, s_boneCB.GetAddressOf()))) {
-			ErrorLogger::Instance().LogError("ModelRenderComponent", "Bone CB create failed");
 			return;
 		}
 	}
@@ -401,7 +397,6 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 			auto& m = m_boneMatrices[i];
 			log += " b" + std::to_string(i) + "T(" + std::to_string(m._41) + "," + std::to_string(m._42) + "," + std::to_string(m._43) + ")";
 		}
-		EditrGUI::GetInstance()->WriteLog(log);
 	}
 }
 
@@ -441,7 +436,7 @@ void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4
 
 void ModelRenderComponent::DrawInspector() {
 	// ImGui 表示用
-	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string title;
 	title = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::CollapsingHeader(title.c_str())) return;
@@ -544,7 +539,7 @@ void ModelRenderComponent::DrawInspector() {
 	// モーダル本体（BeginPopupModalに入れない問題の対策：OpenPopup直後の同フレームで必ず呼ぶ）
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		// ShowTextureSelectPopup内ではEndPopupを呼ばない
-		auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
 
@@ -557,7 +552,7 @@ void ModelRenderComponent::DrawInspector() {
 		for (int i = 0; i < (int)list.size(); ++i) {
 			const std::string& rawName = list[i];
 			if (filter[0] && rawName.find(filter) == std::string::npos) continue;
-			std::string dispName = EditrGUI::GetInstance()->ShiftJISToUTF8(rawName.c_str());
+			std::string dispName = GUI::GetInstance()->ShiftJISToUTF8(rawName.c_str());
 			bool selected = (highlight == i);
 			if (ImGui::Selectable(dispName.c_str(), selected)) {
 				highlight = i;
@@ -603,7 +598,7 @@ void ModelRenderComponent::ShowModelSelectPopup()
 {
 	if (ImGui::BeginPopupModal("ModelSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ(部分一致)").c_str(), filter, sizeof(filter));
@@ -624,7 +619,7 @@ void ModelRenderComponent::ShowModelSelectPopup()
 			const std::string& rawName = list[i];
 			if (filter[0] && rawName.find(filter) == std::string::npos) continue;
 
-			std::string dispName = EditrGUI::GetInstance()->ShiftJISToUTF8(rawName.c_str());
+			std::string dispName = GUI::GetInstance()->ShiftJISToUTF8(rawName.c_str());
 			bool selected = (currentHighlight == i);
 			if (ImGui::Selectable(dispName.c_str(), selected))
 			{
@@ -673,7 +668,7 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		MessageBox(nullptr, "デバッグ: テクスチャ選択ポップアップ表示1", "Debug", MB_OK);
-		auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
@@ -690,7 +685,7 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
 			const std::string& rawName = list[i];
 			if (filter[0] && rawName.find(filter) == std::string::npos) continue;
 
-			std::string dispName = EditrGUI::GetInstance()->ShiftJISToUTF8(rawName.c_str());
+			std::string dispName = GUI::GetInstance()->ShiftJISToUTF8(rawName.c_str());
 			bool selected = (highlight == i);
 			if (ImGui::Selectable(dispName.c_str(), selected)) {
 				highlight = i;

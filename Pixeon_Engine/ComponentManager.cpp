@@ -1,7 +1,6 @@
 #include "ComponentManager.h"
 #include "Component.h"
 #include "CameraComponent.h"
-#include "Geometry.h"
 #include "ModelRender.h"
 #include "LightComponent.h"
 #include "ImageRender.h"
@@ -30,7 +29,6 @@ void ComponentManager::DestroyInstance() {
 
 void ComponentManager::Init() {
 	_ComponentName[(int)COMPONENT_TYPE::CAMERA] = "Camera";
-	_ComponentName[(int)COMPONENT_TYPE::GEOMETRY] = "Geometry";
 	_ComponentName[(int)COMPONENT_TYPE::MODEL] = "Model";
 	_ComponentName[(int)COMPONENT_TYPE::LIGHT] = "Light";
 	_ComponentName[(int)COMPONENT_TYPE::IMAGE] = "ImageRender";
@@ -39,7 +37,7 @@ void ComponentManager::Init() {
 	_ComponentName[(int)COMPONENT_TYPE::RIGIDBODY] = "RigidBody";
 	_ComponentName[(int)COMPONENT_TYPE::BOX_COLLISION] = "BoxCollision";
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATOR2D] = "Animator2D";
- }
+}
 
 Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
 	if (!owner) return nullptr;
@@ -50,9 +48,6 @@ Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
 	{
 	case ComponentManager::COMPONENT_TYPE::CAMERA:
 		component = owner->AddComponent<CameraComponent>();
-		break;
-	case ComponentManager::COMPONENT_TYPE::GEOMETRY:
-		component = owner->AddComponent<Geometry>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::MODEL:
 		component = owner->AddComponent<ModelRenderComponent>();

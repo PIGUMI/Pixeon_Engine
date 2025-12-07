@@ -15,4 +15,3 @@ public:
 private:
 	std::vector<Animator2D*> _animators;
 };
-

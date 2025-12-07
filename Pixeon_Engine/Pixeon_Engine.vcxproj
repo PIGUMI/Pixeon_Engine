@@ -141,6 +141,8 @@
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationDebug.h" />
     <ClInclude Include="Animator2DComponent.h" />
+    <ClInclude Include="Animator2DFrame.h" />
+    <ClInclude Include="Animator2DManager.h" />
     <ClInclude Include="API.h" />
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
@@ -151,12 +153,11 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
-    <ClInclude Include="EditrGUI.h" />
-    <ClInclude Include="EngineManager.h" />
-    <ClInclude Include="ErrorLog.h" />
+    <ClInclude Include="EngineFrame.h" />
+    <ClInclude Include="GUI.h" />
+    <ClInclude Include="MainFrame.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GameRenderTarget.h" />
-    <ClInclude Include="Geometry.h" />
     <ClInclude Include="HashUtill.h" />
     <ClInclude Include="ImageRender.h" />
     <ClInclude Include="IMGUI\imconfig.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Animator2D.h" />
+    <ClInclude Include="TimelineEditor.h" />
     <ClInclude Include="WeightFix.h" />
     <ClInclude Include="_Geometry.h" />
   </ItemGroup>
@@ -196,23 +198,21 @@
     <ClCompile Include="AnimationComponent.cpp" />
     <ClCompile Include="AnimationDebug.cpp" />
     <ClCompile Include="Animator2DComponent.cpp" />
+    <ClCompile Include="Animator2DFrame.cpp" />
+    <ClCompile Include="Animator2DFrame_GUI.cpp" />
+    <ClCompile Include="Animator2DManager.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BoxCollision.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
-    <ClCompile Include="EditorGUI_Animator2D.cpp" />
-    <ClCompile Include="EditrGUI.cpp" />
-    <ClCompile Include="EditrGUI_Content.cpp" />
-    <ClCompile Include="EditrGUI_Hierarchy.cpp" />
-    <ClCompile Include="EditrGUI_Inspector.cpp" />
-    <ClCompile Include="EditrGUI_Prefab.cpp" />
-    <ClCompile Include="EngineManager.cpp" />
-    <ClCompile Include="ErrorLog.cpp" />
+    <ClCompile Include="EngineFrame.cpp" />
+    <ClCompile Include="EngineFrame_GUI.cpp" />
+    <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameRenderTarget.cpp" />
-    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="HashUtill.cpp" />
     <ClCompile Include="ImageRender.cpp" />
     <ClCompile Include="IMGUI\imgui.cpp" />
@@ -241,6 +241,7 @@
     <ClCompile Include="System.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Animator2D.cpp" />
+    <ClCompile Include="TimelineEditor.cpp" />
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>

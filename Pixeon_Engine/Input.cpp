@@ -1,7 +1,7 @@
 #include "Input.h"
 #include "StartUp.h"
 #include "System.h"
-#include "EngineManager.h"
+#include "MainFrame.h"
 #include <cstring>
 #include <WinUser.h>
 
@@ -74,7 +74,7 @@ void UpdateInput(HWND hWnd)
 	if (!bMouseFreeze) {
 		while (ShowCursor(FALSE) >= 0);
 		POINT centerScreen = { 1920 / 2, 1080 / 2 };
-		ClientToScreen(EngineManager::GetInstance()->GetWindowHandle(), &centerScreen);
+		ClientToScreen(MainFrame::GetInstance()->GetWindowHandle(), &centerScreen);
 		SetCursorPos(centerScreen.x, centerScreen.y);
 
 		// ’†‰›‚É–ß‚µ‚½‚Ì‚Å prevMousePos ‚à’†‰›‚É‚·‚é

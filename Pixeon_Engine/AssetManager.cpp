@@ -2,7 +2,6 @@
 #include <fstream>
 #include <Windows.h>
 #include "IMGUI/imgui.h"
-#include "ErrorLog.h"
 
 AssetManager* AssetManager::s_instance_ = nullptr;
 
@@ -70,7 +69,6 @@ bool AssetManager::LoadAsset(const std::string& logicalName, std::vector<uint8_t
 	std::filesystem::path p = std::filesystem::path(m_root_) / norm;
 	std::ifstream ifs(p, std::ios::binary);
 	if (!ifs) {
-		ErrorLogger::Instance().LogError("AssetManager", "Failed to open asset: " + norm);
 		return false;
 	}
 	ifs.seekg(0, std::ios::end);
@@ -79,7 +77,6 @@ bool AssetManager::LoadAsset(const std::string& logicalName, std::vector<uint8_t
 	outData.resize(sz);
 	ifs.read((char*)outData.data(), sz);
 	if (!ifs) {
-		ErrorLogger::Instance().LogError("AssetManager", "Failed to read asset: " + norm);
 		return false;
 	}
 	{
@@ -105,7 +102,6 @@ void AssetManager::PushChange(ChangeType type, const std::string& path) {
 void AssetManager::StartAutoSync(std::chrono::milliseconds interval, bool recursive) {
 	if (m_watchRunning_.load()) return;
 	if (m_root_.empty()) {
-		ErrorLogger::Instance().LogError("AssetManager", "StartAutoSync failed: root not set.");
 		return;
 	}
 	m_interval_ = interval;
@@ -119,7 +115,6 @@ void AssetManager::StopAutoSync() {
 	if (!m_watchRunning_.load()) return;
 	m_watchRunning_ = false;
 	if (m_watchThread_.joinable()) m_watchThread_.join();
-	OutputDebugStringA("[AssetManager] AutoSync stopped.\n");
 }
 
 void AssetManager::WatchLoop() {
@@ -144,7 +139,6 @@ void AssetManager::PerformScan() {
 
 	const path rootPath(m_root_);
 	if (!exists(rootPath)) {
-		OutputDebugStringA("[AssetManager] Root path does not exist.\n");
 		return;
 	}
 

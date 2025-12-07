@@ -2,7 +2,6 @@
 #include "AssetManager.h"
 #include "System.h"
 #include "DirectXTex/DirectXTex.h"
-#include "ErrorLog.h"
 #include "IMGUI/imgui.h"
 #include <algorithm>
 #include <Windows.h>
@@ -32,7 +31,6 @@ void TextureManager::UnInit() {
 
 void TextureManager::SetFail(const std::string& name, const std::string& reason) {
 	m_failReasons[name] = reason;
-	ErrorLogger::Instance().LogError("TextureManager", name + " : " + reason, false, 1);
 }
 std::string TextureManager::GetLastFailReason(const std::string& name) const {
 	auto it = m_failReasons.find(name);

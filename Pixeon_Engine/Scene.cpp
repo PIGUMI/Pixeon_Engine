@@ -3,7 +3,6 @@
 #include "Object.h"
 #include "ComponentManager.h"
 #include "SettingManager.h"
-#include "EngineManager.h"
 #include "Component.h"
 #include "LightComponent.h"
 #include "RigidBody.h"
@@ -106,6 +105,7 @@ void Scene::BeginPlay() {
 }
 
 void Scene::EditUpdate() {
+	InGame = false;
 	if (!EndPlayCalled)
 	{
 		EndPlayCalled = true;
@@ -176,6 +176,7 @@ void Scene::EditUpdate() {
 }
 
 void Scene::PlayUpdate() {
+	InGame = true;
 	// 非同期追加の処理
 	ProcessThreadSafeAdditions();
 	// オブジェクトの追加処理
@@ -301,7 +302,7 @@ void Scene::Draw() {
 
 void Scene::SaveToFile() {
 	std::vector<Object*> SaveObjects;
-	if (EngineManager::GetInstance()->IsInGame()) {
+	if (InGame) {
 		SaveObjects = _SaveObjects;
 	}
 	else {

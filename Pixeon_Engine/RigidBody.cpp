@@ -1,7 +1,7 @@
 #include "RigidBody.h"
 #include "Object.h"
 #include "Scene.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -43,10 +43,6 @@ void RigidBody::BeginPlay()
 						physicsWorld->addRigidBody(pRigidBody_);
 						bAddedToWorld_ = true;
 
-						EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-							_Parent->GetObjectName() + "Çï®óùê¢äEÇ…í«â¡ÇµÇ‹ÇµÇΩÅiUserPointer: " +
-							std::to_string(reinterpret_cast<uintptr_t>(pRigidBody_->getUserPointer())) + ")");
-
 						pRigidBody_->setActivationState(ACTIVE_TAG);
 						pRigidBody_->forceActivationState(ACTIVE_TAG);
 
@@ -58,9 +54,6 @@ void RigidBody::BeginPlay()
 					}
 					else
 					{
-						EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-							_Parent->GetObjectName() + " - " +
-							"RigidBodyÇ™ñ≥å¯Ç≈Ç∑");
 						if (pRigidBody_)
 						{
 							if (pRigidBody_->getMotionState())
@@ -76,9 +69,6 @@ void RigidBody::BeginPlay()
 			}
 			catch (...)
 			{
-				EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-					_Parent->GetObjectName() + " - " +
-					"RigidBodyÇÃí«â¡íÜÇ…ó·äOÇ™î≠ê∂ÇµÇ‹ÇµÇΩ");
 				if (pRigidBody_)
 				{
 					if (pRigidBody_->getMotionState())
@@ -95,12 +85,6 @@ void RigidBody::BeginPlay()
 				}
 				bAddedToWorld_ = false;
 			}
-		}
-		else
-		{
-			EditrGUI::GetInstance()->WriteLog("[RigidBody] " +
-				_Parent->GetObjectName() + " - " +
-				"ï®óùê¢äEÇ™ë∂ç›ÇµÇ‹ÇπÇÒ");
 		}
 	}
 }
@@ -191,7 +175,7 @@ void RigidBody::UInit()
 
 void RigidBody::DrawInspector()
 {
-	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::CollapsingHeader(SJ(label.c_str()).c_str()))return;
 	label = "RigidBodyTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));

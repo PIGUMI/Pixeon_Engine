@@ -72,6 +72,7 @@ private:
 	CollisionManager* _collisionManager = nullptr;
 	int _MainCameraNumber = -1;
 	bool EndPlayCalled = false;
+	bool InGame = false;
 
 	// •¨—‰‰Z‚ÉŠÖ‚·‚é•Ï”
 	btDiscreteDynamicsWorld* pPhysicsWorld = nullptr;

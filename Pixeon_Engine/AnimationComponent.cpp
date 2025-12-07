@@ -1,9 +1,9 @@
 ﻿#define NOMINMAX
 #include "AnimationComponent.h"
-#include "AnimationDebug.h"
-#include "EngineManager.h"
-#include "ErrorLog.h"
+#include "MainFrame.h"
+#include "GUI.h"
 #include "IMGUI/imgui.h"
+#include "AnimationDebug.h"
 #include <algorithm>
 #include <set>
 #include <cmath>
@@ -26,9 +26,9 @@ std::shared_ptr<ModelSharedResource> AnimationComponent::GetResource() {
 
 void AnimationComponent::BeginPlay() {
 	m_renderer = GetRenderer();
-	if (!m_renderer) { ErrorLogger::Instance().LogError("Animation", "Renderer not found"); return; }
+	if (!m_renderer) return;
 	m_resource = GetResource();
-	if (!m_resource) { ErrorLogger::Instance().LogError("Animation", "Resource null"); return; }
+	if (!m_resource) return;
 
 	// クリップ構築（キー統合）
 	m_clips.clear();
@@ -127,7 +127,6 @@ void AnimationComponent::BeginPlay() {
 	DumpBoneChannelMapping(m_resource.get());
 	int fixCount = RebindBoneNodeIndices(m_resource.get());
 	if (fixCount > 0) {
-		EditrGUI::GetInstance()->WriteLog("[BeginPlay] Fixed " + std::to_string(fixCount) + " bone mappings");
 	}
 	for (auto& rtClip : m_clips) {
 		RebindChannelNodeIndices(m_resource.get(), rtClip);
@@ -136,9 +135,6 @@ void AnimationComponent::BeginPlay() {
 
 	int missing = 0;
 	for (auto& b : m_resource->bones) if (b.nodeIndex < 0) ++missing;
-	EditrGUI::GetInstance()->WriteLog("[Animation BeginPlay] clips=" + std::to_string(m_clips.size()) +
-		" bones=" + std::to_string(m_resource->bones.size()) +
-		" boneMissingNodeIndex=" + std::to_string(missing));
 
 	m_nodeToBone.clear();
 	for (size_t i = 0; i < m_resource->bones.size(); ++i)
@@ -154,7 +150,7 @@ void AnimationComponent::InGameUpdate() {
 	if (!m_playing || m_paused) return;
 	if (m_currentClip < 0 || m_currentClip >= (int)m_clips.size()) return;
 
-	float dt = EngineManager::GetInstance()->GetDeltaTime();
+	float dt = MainFrame::GetInstance()->GetDeltaTime();
 	dt = std::min(dt, 0.1f);
 	UpdateAnimation(dt);
 	RebuildBoneMatrices();

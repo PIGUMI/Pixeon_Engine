@@ -1,6 +1,5 @@
 #define NOMINMAX
 #include "ImageRender.h"
-#include "EngineManager.h"
 #include "GameRenderTarget.h"
 #include "SettingManager.h"
 
@@ -8,6 +7,7 @@
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
 Microsoft::WRL::ComPtr<ID3D11BlendState> ImageRender::s_alphaBlendState;
+Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImageRender::s_depthStencilState;
 
 ImageRender::ImageRender() {
 	_ComponentName = "ImageRender";
@@ -106,12 +106,17 @@ bool ImageRender::EnsureBlendState() {
 	if (s_alphaBlendState) return true;
 	D3D11_BLEND_DESC desc = {};
 	desc.RenderTarget[0].BlendEnable = TRUE;
-	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+
+	// 以下の設定に変更
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // SRC_ALPHA → ONE に変更
 	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+
+	// アルファチャンネルのブレンド設定も変更
 	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;  // ZERO → INV_SRC_ALPHA に変更
 	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
 	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	HRESULT hr = dev->CreateBlendState(&desc, s_alphaBlendState.GetAddressOf());
@@ -203,6 +208,17 @@ bool ImageRender::EnsureBuffers() {
 		if (FAILED(hr)) return false;
 	}
 	return true;
+}
+
+bool ImageRender::EnsureDepthStencilState() {
+	if (s_depthStencilState) return true;
+	D3D11_DEPTH_STENCIL_DESC desc = {};
+	desc.DepthEnable = FALSE; // 2DではこれでOK
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	desc.StencilEnable = FALSE;
+	auto dev = DirectX11::GetInstance()->GetDevice();
+	HRESULT hr = dev->CreateDepthStencilState(&desc, s_depthStencilState.GetAddressOf());
+	return SUCCEEDED(hr);
 }
 
 void ImageRender::UpdateVB(const Vertex v[4]) {
@@ -459,7 +475,6 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 
 void ImageRender::Draw() {
 	if (!m_ready) return;
-
 	auto* dx = DirectX11::GetInstance();
 	auto ctx = dx->GetContext();
 	if (!ctx) return;
@@ -468,6 +483,13 @@ void ImageRender::Draw() {
 	if (!EnsureConstantBuffer()) return;
 	if (!EnsureBuffers()) return;
 	if (!EnsureBlendState()) return;
+	if (!EnsureDepthStencilState()) return;
+
+	// ブレンドステートとDepthStencilStateを先に設定
+	float blendFactor[4] = { 0,0,0,0 };
+	UINT sampleMask = 0xFFFFFFFF;
+	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
+	ctx->OMSetDepthStencilState(s_depthStencilState.Get(), 0);
 
 	Vertex v[4]{};
 	int mode2DFlag = 0;
@@ -530,15 +552,11 @@ void ImageRender::Draw() {
 	ID3D11SamplerState* smp = s_linearSmp.Get();
 	ctx->PSSetSamplers(0, 1, &smp);
 
-	float blendFactor[4] = { 0,0,0,0 };
-	UINT sampleMask = 0xFFFFFFFF;
-	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
-
 	ctx->DrawIndexed(6, 0, 0);
 }
 
 void ImageRender::DrawInspector() {
-	auto SJ = [](const char* s)->std::string { return EditrGUI::GetInstance()->ShiftJISToUTF8(s); };
+	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string title = _ComponentName + "##" + std::to_string((uintptr_t)this);
 	if (!ImGui::CollapsingHeader(SJ(title.c_str()).c_str()))
 		return;

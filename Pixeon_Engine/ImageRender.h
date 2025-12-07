@@ -9,7 +9,7 @@
 #include "ShaderManager.h"
 #include "Scene.h"
 #include "CameraComponent.h"
-#include "EditrGUI.h"
+#include "GUI.h"
 #include "AssetManager.h"
 #include "System.h"
 
@@ -77,6 +77,7 @@ private:
 	bool EnsureConstantBuffer();
 	bool EnsureBuffers();
 	bool EnsureBlendState();
+	bool EnsureDepthStencilState();
 
 	void UpdateVertices2D(Vertex outV[4], float& outZClip);
 	void UpdateVerticesBillboard(Vertex outV[4]);
@@ -89,6 +90,7 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_whiteTexSRV;
 	static Microsoft::WRL::ComPtr<ID3D11SamplerState> s_linearSmp;
 	static Microsoft::WRL::ComPtr<ID3D11BlendState> s_alphaBlendState;
+	static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> s_depthStencilState;
 private:
 	// ÉäÉ\Å[ÉX
 	std::string m_textureName;

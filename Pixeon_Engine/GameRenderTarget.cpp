@@ -162,9 +162,8 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context)
 
 	context->RSSetViewports(1, &m_viewport);
 
-	DirectX::XMFLOAT4 Temp;
-	Temp = SettingManager::GetInstance()->GetBackgroundColor();
-	float clearColor[4] = { Temp.x, Temp.y, Temp.z, Temp.w };
+	DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();
+	float clearColor[4] = { Temp.x, Temp.y, Temp.z,1.0f };
 
 	context->ClearRenderTargetView(m_pRTV, clearColor);
 	if (m_pDSV)
@@ -173,7 +172,6 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context)
 
 void GameRenderTarget::End()
 {
-	// Šù‘¶‚ÌŽÀ‘•‚ð‚»‚Ì‚Ü‚ÜˆÛŽ
 	RenderTarget* defaultRTV = DirectX11::GetInstance()->GetDefaultRTV();
 	DepthStencil* defaultDSV = DirectX11::GetInstance()->GetDefaultDSV();
 

@@ -5,11 +5,11 @@
 
 #include <windowsx.h>
 #include "System.h"
-#include "EngineManager.h"
 #include "Input.h"
 #include "IMGUI/imgui_impl_win32.h"
 #include "IMGUI/imgui_impl_dx11.h"
 #include "StartUp.h"
+#include "MainFrame.h"
 
 // ƒo[ƒWƒ‡ƒ“
 int g_nScreenWidth = 1920;
@@ -23,9 +23,9 @@ extern "C" {
 		return 110.0f;
 	}
 
-	__declspec(dllexport) int SoftInit(const EngineManager::EngineConfig& config) {
+	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {
 		int nResult = 0;
-		nResult = EngineManager::GetInstance()->Init(config);
+		nResult = MainFrame::GetInstance()->Init(config);
 		g_nScreenHeight = config.screenHeight;
 		g_nScreenWidth = config.screenWidth;
 		g_bRun = true;
@@ -34,16 +34,16 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void SoftUpdate(HWND hwnd) {
-		EngineManager::GetInstance()->Update();
+		MainFrame::GetInstance()->Update();
 	}
 
 	__declspec(dllexport) void SoftDraw() {
-		EngineManager::GetInstance()->Draw();
+		MainFrame::GetInstance()->Draw();
 	}
 
 	__declspec(dllexport) void SoftShutDown() {
-		EngineManager::GetInstance()->UnInit();
-		EngineManager::DeleteInstance();
+		MainFrame::GetInstance()->UnInit();
+		MainFrame::DeleteInstance();
 	}
 
 	__declspec(dllexport) bool IsEngineRunning() {
