@@ -60,6 +60,14 @@ void Animator2DFrame::DrawTimeline()
 		}
 		ImGui::End();
 	}
+	if (timelineEditor_ && timelineEditor_->ConsumeOpenProjectPopupRequest()) {
+		ImGui::OpenPopup("LoadProject");
+	}
+
+	// モーダル描画（必ず End() の外で実行）
+	if (timelineEditor_) {
+		timelineEditor_->DrawProjectLoadPopup();
+	}
 }
 
 void Animator2DFrame::DrawView()
@@ -124,24 +132,24 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	selectedKeyFrame_->EndTransform.Rotation.x = endRot.x;
 	selectedKeyFrame_->EndTransform.Rotation.y = endRot.y;
 
+	DirectX::XMFLOAT4 startColor = selectedKeyFrame_->Image->GetColor();
+	ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("開始カラー").c_str(), &startColor.x);
+	selectedKeyFrame_->Image->SetColor(startColor);
+
 	//テクスチャの設定
-	char TexturePath[256] = {};
+	static char TexturePath[256] = {};
 	// 入力
 	ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("テクスチャパス").c_str(), TexturePath, sizeof(TexturePath));
 	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("適用").c_str()))
 	{
+		selectedKeyFrame_->Texture = TexturePath;
 		selectedKeyFrame_->Image->SetTextureName(TexturePath);
 	}
-
-
 
 	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str()) || IsKeyTrigger(VK_DELETE))
 	{
 		animator_->RemoveKeyFrame(selectedKeyFrame_);
 		animator_ = nullptr;
 	}
-
-
-
 	ImGui::End();
 }

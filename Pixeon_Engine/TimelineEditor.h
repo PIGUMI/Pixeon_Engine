@@ -1,6 +1,8 @@
 #pragma once
 #include "Animator2D.h"
 #include "IMGUI/imgui.h"
+#include <vector>
+#include <string>
 
 class TimelineEditor
 {
@@ -14,13 +16,18 @@ public:
 	// 設定
 	void SetZoom(float zoom) { timeScale_ = zoom; }
 	float GetZoom() const { return timeScale_; }
-
+	void DrawProjectLoadPopup();
+	void RequestOpenProjectPopup() { wantOpenProjectPopup_ = true; }
+	// 要求を取得してクリア（呼んだ側が OpenPopup を実行する）
+	bool ConsumeOpenProjectPopupRequest() { return wantOpenProjectPopup_; }
+	void ClearOpenProjectPopupRequest() { wantOpenProjectPopup_ = false; }
 private:
 	// タイムライン要素の描画
 	void DrawTimeRuler(float totalDuration);
 	void DrawPlayhead(float currentTime);
 	void DrawLayers(Animator2D* animator);
 	void DrawKeyFrame(KeyFrame* keyframe, int layerIndex);
+
 
 	// 入力処理
 	void HandleInput(Animator2D* animator);
@@ -35,6 +42,8 @@ private:
 	ImVec2 GetTimelineOrigin() const;
 
 private:
+	std::vector<std::string> projectFiles_;
+	int selectedProjectIndex_ = -1;
 	// タイムライン設定
 	float timeScale_ = 100.0f;          // ピクセル/秒
 	float scrollX_ = 0.0f;              // 横スクロール量
@@ -51,6 +60,7 @@ private:
 	bool isDragging_ = false;
 	bool isResizingLeft_ = false;
 	bool isResizingRight_ = false;
+	bool wantOpenProjectPopup_ = false;
 	ImVec2 dragStartPos_;
 	float dragStartTime_ = 0.0f;
 

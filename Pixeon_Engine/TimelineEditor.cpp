@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <filesystem> 
 
 TimelineEditor::TimelineEditor()
 {
@@ -68,6 +69,10 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 	{
 		if (!animator)
 		{
+			if(ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを開く").c_str()))
+			{
+				RequestOpenProjectPopup();
+			}
 			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("新規プロジェクトの作成").c_str()))
 			{
 				Animator2D* newAnimator = new Animator2D();
@@ -107,7 +112,6 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 		}
 		ImGui::EndPopup();
 	}
-
 	static int FreezeTime = 0;
 
 	if (animator)
@@ -290,6 +294,49 @@ void TimelineEditor::DrawKeyFrame(KeyFrame* keyframe, int layerIndex)
 		ImVec2(endX - 5, y + 5),
 		ImVec2(endX, y + layerHeight_ - 5),
 		IM_COL32(255, 255, 255, 200));
+}
+
+void TimelineEditor::DrawProjectLoadPopup()
+{
+	if (projectFiles_.empty()) {
+		const std::string projectDir = "SceneRoot/Editor/Project/";
+		projectFiles_.clear();
+		for (const auto& entry : std::filesystem::directory_iterator(projectDir)) {
+			if (entry.is_regular_file()) {
+				if (entry.path().extension() == ".anim2d") {
+					projectFiles_.push_back(entry.path().filename().string());
+				}
+			}
+		}
+	}
+
+
+	if (ImGui::BeginPopupModal("LoadProject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("読み込むプロジェクトファイルを選択してください:").c_str());
+		ImGui::Separator();
+
+		// ファイルをリスト表示
+		for (int i = 0; i < projectFiles_.size(); ++i) {
+			bool selected = (i == selectedProjectIndex_);
+			if (ImGui::Selectable(projectFiles_[i].c_str(), selected)) {
+				selectedProjectIndex_ = i;
+				if (selectedProjectIndex_ < 0 && selectedProjectIndex_ >= projectFiles_.size())return;
+				std::string selectedFilePath = "SceneRoot/Editor/Project/" + projectFiles_[selectedProjectIndex_];
+				Animator2D* newAnimator = new Animator2D();
+				newAnimator->LoadFile(selectedFilePath);
+				Animator2DFrame::GetInstance()->SetAnimator(newAnimator);
+				ClearOpenProjectPopupRequest();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::Separator();
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("キャンセル").c_str())) {
+			ClearOpenProjectPopupRequest();
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
 }
 
 void TimelineEditor::HandleInput(Animator2D* animator)

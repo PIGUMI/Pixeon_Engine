@@ -41,6 +41,7 @@ struct KeyFrame
 	UITransform EndTransform;		// 終了トランスフォーム
 	UITransform NowTransform;		// 現在トランスフォーム（編集用）
 	ImageRender* Image = nullptr;	// 描画対象（ランタイム解決）
+	std::string Texture;			// テクスチャ名（保存用） 
 };
 
 inline vec2 operator+(const vec2& a, const vec2& b) { return { a.x + b.x, a.y + b.y }; }

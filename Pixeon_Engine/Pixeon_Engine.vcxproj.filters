@@ -14,24 +14,6 @@
     <Filter Include="ソース ファイル\Engine\Manager">
       <UniqueIdentifier>{a767e929-0ea9-4db3-922d-cf813b1b6179}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Engine\Component">
-      <UniqueIdentifier>{27dfb793-5b5a-4ad2-aafd-2cbf1dbe4f30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Engine\Component\3DModel">
-      <UniqueIdentifier>{f27f271d-0778-4977-b2a5-e4ff12965620}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Engine\Component\physics">
-      <UniqueIdentifier>{eaf903e9-45be-4578-8e93-a61e6b3246ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Engine\Component\basics">
-      <UniqueIdentifier>{ee58dcc4-2263-4b31-b840-34f4461c602c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Engine\Component\Renderer">
-      <UniqueIdentifier>{e2bda8b6-348b-4a15-968c-f9e574f95498}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Engine\Component\Other">
-      <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Engine\Other">
       <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
     </Filter>
@@ -77,6 +59,24 @@
     </Filter>
     <Filter Include="ソース ファイル\Animator2DEditor\Frame">
       <UniqueIdentifier>{37ebd7f7-be21-4dfd-8658-8ef283c670b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Component">
+      <UniqueIdentifier>{27dfb793-5b5a-4ad2-aafd-2cbf1dbe4f30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Component\3DModel">
+      <UniqueIdentifier>{f27f271d-0778-4977-b2a5-e4ff12965620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Component\physics">
+      <UniqueIdentifier>{eaf903e9-45be-4578-8e93-a61e6b3246ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Component\basics">
+      <UniqueIdentifier>{ee58dcc4-2263-4b31-b840-34f4461c602c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Component\Renderer">
+      <UniqueIdentifier>{e2bda8b6-348b-4a15-968c-f9e574f95498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainFrame\Component\Other">
+      <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -162,28 +162,28 @@
       <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="AnimationComponent.cpp">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClCompile>
     <ClCompile Include="ModelRender.cpp">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClCompile>
     <ClCompile Include="RigidBody.cpp">
-      <Filter>ソース ファイル\Engine\Component\physics</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\physics</Filter>
     </ClCompile>
     <ClCompile Include="LightComponent.cpp">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
-      <Filter>ソース ファイル\Engine\Component\basics</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\basics</Filter>
     </ClCompile>
     <ClCompile Include="ImageRender.cpp">
-      <Filter>ソース ファイル\Engine\Component\Renderer</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="ScripComponent.cpp">
-      <Filter>ソース ファイル\Engine\Component\Other</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\Other</Filter>
     </ClCompile>
     <ClCompile Include="BoxCollision.cpp">
-      <Filter>ソース ファイル\Engine\Component\physics</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\physics</Filter>
     </ClCompile>
     <ClCompile Include="_Geometry.cpp">
       <Filter>ソース ファイル\Engine\Other</Filter>
@@ -192,7 +192,7 @@
       <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClCompile>
     <ClCompile Include="Animator2DComponent.cpp">
-      <Filter>ソース ファイル\Engine\Component\Other</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\Other</Filter>
     </ClCompile>
     <ClCompile Include="MainFrame.cpp">
       <Filter>ソース ファイル\MainFrame\App</Filter>
@@ -210,7 +210,7 @@
       <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="AnimationDebug.cpp">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClCompile>
     <ClCompile Include="Animator2DFrame.cpp">
       <Filter>ソース ファイル\Animator2DEditor\Frame</Filter>
@@ -335,28 +335,28 @@
       <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="AnimationComponent.h">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="ModelRender.h">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="RigidBody.h">
-      <Filter>ソース ファイル\Engine\Component\physics</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\physics</Filter>
     </ClInclude>
     <ClInclude Include="LightComponent.h">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
-      <Filter>ソース ファイル\Engine\Component\basics</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\basics</Filter>
     </ClInclude>
     <ClInclude Include="ImageRender.h">
-      <Filter>ソース ファイル\Engine\Component\Renderer</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="ScripComponent.h">
-      <Filter>ソース ファイル\Engine\Component\Other</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\Other</Filter>
     </ClInclude>
     <ClInclude Include="BoxCollision.h">
-      <Filter>ソース ファイル\Engine\Component\physics</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\physics</Filter>
     </ClInclude>
     <ClInclude Include="_Geometry.h">
       <Filter>ソース ファイル\Engine\Other</Filter>
@@ -365,7 +365,7 @@
       <Filter>ソース ファイル\MainFrame\BaseClass</Filter>
     </ClInclude>
     <ClInclude Include="Animator2DComponent.h">
-      <Filter>ソース ファイル\Engine\Component\Other</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\Other</Filter>
     </ClInclude>
     <ClInclude Include="MainFrame.h">
       <Filter>ソース ファイル\MainFrame\App</Filter>
@@ -380,7 +380,7 @@
       <Filter>ソース ファイル\MainFrame\GUI\View</Filter>
     </ClInclude>
     <ClInclude Include="AnimationDebug.h">
-      <Filter>ソース ファイル\Engine\Component\3DModel</Filter>
+      <Filter>ソース ファイル\MainFrame\Component\3DModel</Filter>
     </ClInclude>
     <ClInclude Include="Animator2DFrame.h">
       <Filter>ソース ファイル\Animator2DEditor\Frame</Filter>

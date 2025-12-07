@@ -306,11 +306,7 @@ void Animator2D::SaveFile()
 		kfJson["EndTransform"]["Scale"] = { kf.EndTransform.Scale.x, kf.EndTransform.Scale.y };
 		kfJson["EndTransform"]["UVScale"] = { kf.EndTransform.UVScale.x, kf.EndTransform.UVScale.y };
 		kfJson["EndTransform"]["UVPostion"] = { kf.EndTransform.UVPostion.x, kf.EndTransform.UVPostion.y };
-
-		// ImageRender ÇÃï€ë∂
-		std::ostringstream oss;
-		kf.Image->SaveToFile(oss);
-		kfJson["Image"] = oss.str();
+		kfJson["Texture"] = kf.Texture;
 		KeyFramesJson.push_back(kfJson);
 	}
 	SaveJson["KeyFrames"] = KeyFramesJson;
@@ -373,12 +369,10 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.EndTransform.Scale = { startTransJson["Scale"][0].get<float>(), startTransJson["Scale"][1].get<float>() };
 			kf.EndTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.EndTransform.UVPostion = { startTransJson["UVPostion"][0].get<float>(), startTransJson["UVPostion"][1].get<float>() };
-			// ImageRender ÇÃì«Ç›çûÇ›
-			if (kfJson.contains("Image")) {
-				std::istringstream iss(kfJson["Image"].get<std::string>());
-				kf.Image = new ImageRender();
-				kf.Image->LoadFromFile(iss);
-			}
+			kf.Texture = kfJson["Texture"].get<std::string>();
+			kf.Image = new ImageRender();
+			kf.Image->Init(nullptr);
+			kf.Image->SetTextureName(kf.Texture);
 			KeyFrames_.push_back(kf);
 		}
 	}
