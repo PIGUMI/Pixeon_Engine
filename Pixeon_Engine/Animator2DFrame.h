@@ -25,6 +25,7 @@ private:
 	void DrawTimeline();
 	void DrawView();
 	void DrawKeyFrameEditor();
+	void DrawAnimatorControl();
 private:
 	Animator2D* animator_ = nullptr;
 	KeyFrame* selectedKeyFrame_ = nullptr;

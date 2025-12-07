@@ -34,6 +34,7 @@ void Animator2DFrame::DrawGUI()
 
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Animator2DTimeLine").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("KeyFrameEditor").c_str(), dock_id_right);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Animator2DControl").c_str(), dock_id_right);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Animator2DView").c_str(), dock_main_id);
 		ImGui::DockBuilderFinish(DockSpace);
 	}
@@ -46,6 +47,7 @@ void Animator2DFrame::DrawGUI()
 	DrawTimeline();
 	DrawView();
 	DrawKeyFrameEditor();
+	DrawAnimatorControl();
 }
 
 void Animator2DFrame::DrawTimeline()
@@ -151,3 +153,34 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	}
 	ImGui::End();
 }
+
+void Animator2DFrame::DrawAnimatorControl()
+{
+	if (ImGui::Begin("Animator2DControl",nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)){
+
+		if (animator_) {
+			std::string ProjectName = animator_->Name_;
+			char buf[256];
+			strcpy_s(buf, ProjectName.c_str());
+			if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str(), buf, sizeof(buf))) {
+				animator_->Name_ = std::string(buf);
+			}
+			std::string msg;
+			msg = animator_->bLoop_ ? "ループ再生: 有効" : "ループ再生: 無効";
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fTotalDuration_);
+			ImGui::SameLine();
+			ImGui::Checkbox(GUI::GetInstance()->ShiftJISToUTF8("ループ再生").c_str(), &animator_->bLoop_);
+			msg = "総再生時間: " + std::to_string(animator_->fTotalDuration_) + " 秒";
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fTotalDuration_);
+			msg = "現在の再生時間: " + std::to_string(animator_->fNowTime_) + " 秒";
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fNowTime_);
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを閉じる").c_str())) {
+				delete animator_;
+				animator_ = nullptr;
+				isPlaying_ = false;
+			}
+		}
+	}
+	ImGui::End();
+}
+
