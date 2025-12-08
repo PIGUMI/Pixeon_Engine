@@ -5,9 +5,7 @@
 #include "SceneManger.h"
 #include "Scene.h"
 #include "Object.h"
-
 #include "SettingManager.h"
-
 #include <filesystem>
 #include <vector>
 #include <string>
@@ -185,18 +183,18 @@ void EngineFrame::GameViewWindow()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
 
 	// Ä¶E’âŽ~ƒ{ƒ^ƒ“
-	if (EngineFrame::GetInstance()->IsInGame()) {
+	if (!EngineFrame::GetInstance()->IsInGame()) {
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ä¶").c_str(), ImVec2(70, 0)))
 		{
 			EngineFrame::GetInstance()->SetInGame(true);
-			EngineFrame::GetInstance()->SetShowGUI(true);
+			EngineFrame::GetInstance()->SetShowGUI(false);
 		}
 	}
 	else {
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("’âŽ~").c_str(), ImVec2(70, 0)))
 		{
 			EngineFrame::GetInstance()->SetInGame(false);
-			EngineFrame::GetInstance()->SetShowGUI(false);
+			EngineFrame::GetInstance()->SetShowGUI(true);
 			SelectedObject = nullptr;
 		}
 	}

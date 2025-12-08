@@ -26,12 +26,13 @@ struct UITransform
 	DirectX::XMFLOAT2 UVPosition	= { 0.0f,0.0f };
 };
 
+// キーフレーム情報
 struct KeyFrame
 {
 	bool Active = false;			// アクティブ状態
 	int Layer = 0;					// レイヤー
 	float StartTime = 0.0f;			// 開始秒
-	float EndTime = 0.0f;			// 終了秒
+	float EndTime = 1.0f;			// 終了秒
 	CurveData CurveInfo;			// ベジェ情報
 	UITransform StartTransform;		// 開始トランスフォーム
 	UITransform EndTransform;		// 終了トランスフォーム
@@ -39,7 +40,6 @@ struct KeyFrame
 	ImageRender* Image = nullptr;	// 描画対象（ランタイム解決）
 	std::string Texture;			// テクスチャ名（保存用）
 };
-
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
 
@@ -56,7 +56,7 @@ inline DirectX::XMFLOAT2 EvalCubicBezier(const DirectX::XMFLOAT2& p0, const Dire
 	p.y = uuu * p0.y + 3.0f * uu * t * p1.y + 3.0f * u * tt * p2.y + ttt * p3.y;
 	return p;
 }
-
+// Animator2D ProjectData
 class Animator2D
 {
 public:
@@ -109,7 +109,7 @@ public:
 	bool bFirst_ = true; // 初回フラグ
 	bool bEnded_ = false; // 再生終了フラグ
 	float fStartTime_ = 0.0f; // 再生開始時刻（秒）
-	float fNowTime_ = 0.0f;   // 現在の再生時刻（秒、0..total）
+	float fNowTime_ = 0.0f;   // 現在の再生時刻（秒）
 	float fTotalDuration_ = 0.0f; // 総再生時間（秒）
 	std::vector<KeyFrame> KeyFrames_; // キーフレーム群
 	ViewMode viewMode_ = ViewMode::UI;

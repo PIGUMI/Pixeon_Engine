@@ -7,6 +7,7 @@
 #include "Object.h"
 #include "_Geometry.h"
 #include "GUI.h"
+#include "Input.h"
 
 EngineFrame* EngineFrame::instance = nullptr;
 
@@ -36,8 +37,8 @@ void EngineFrame::Init()
 	LineRenderer::GetInstance()->Initialize();
 	LoadPrefabs();
 
-	ImgIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/img.png", DirectX11::GetInstance()->GetDevice());
-	SoundIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Sound.png", DirectX11::GetInstance()->GetDevice());
+	ImgIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/img.png", DirectX11::GetInstance()->GetDevice());
+	SoundIcon_	= GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Sound.png", DirectX11::GetInstance()->GetDevice());
 	FolderIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/File.png", DirectX11::GetInstance()->GetDevice());
 	ShaderIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/HLSL.png", DirectX11::GetInstance()->GetDevice());
 	ScriptIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Script.png", DirectX11::GetInstance()->GetDevice());
@@ -64,6 +65,10 @@ void EngineFrame::Update()
 	{
 		bBeginPlayCalled_ = false;
 		SceneManger::GetInstance()->EditUpdate();
+	}
+	if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))
+	{
+		bShowGUI_ = !bShowGUI_;
 	}
 }
 
@@ -157,6 +162,7 @@ bool EngineFrame::AddPrefab(Object* prefab)
 			count++;
 		}
 		prefabs_.push_back(Copy);
+		return true;
 	}
 	catch (...)
 	{

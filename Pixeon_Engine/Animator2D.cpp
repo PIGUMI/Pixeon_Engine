@@ -165,13 +165,13 @@ void Animator2D::SaveFile()
 		kfJson["StartTransform"]["Rotation"] = { kf.StartTransform.Rotation.x, kf.StartTransform.Rotation.y };
 		kfJson["StartTransform"]["Scale"] = { kf.StartTransform.Scale.x, kf.StartTransform.Scale.y };
 		kfJson["StartTransform"]["UVScale"] = { kf.StartTransform.UVScale.x, kf.StartTransform.UVScale.y };
-		kfJson["StartTransform"]["UVPostion"] = { kf.StartTransform.UVPosition.x, kf.StartTransform.UVPosition.y };
+		kfJson["StartTransform"]["UVPosition"] = { kf.StartTransform.UVPosition.x, kf.StartTransform.UVPosition.y };
 		// EndTransform
 		kfJson["EndTransform"]["Position"] = { kf.EndTransform.Position.x, kf.EndTransform.Position.y };
 		kfJson["EndTransform"]["Rotation"] = { kf.EndTransform.Rotation.x, kf.EndTransform.Rotation.y };
 		kfJson["EndTransform"]["Scale"] = { kf.EndTransform.Scale.x, kf.EndTransform.Scale.y };
 		kfJson["EndTransform"]["UVScale"] = { kf.EndTransform.UVScale.x, kf.EndTransform.UVScale.y };
-		kfJson["EndTransform"]["UVPostion"] = { kf.EndTransform.UVPosition.x, kf.EndTransform.UVPosition.y };
+		kfJson["EndTransform"]["UVPosition"] = { kf.EndTransform.UVPosition.x, kf.EndTransform.UVPosition.y };
 		kfJson["Texture"] = kf.Texture;
 		KeyFramesJson.push_back(kfJson);
 	}
