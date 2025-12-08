@@ -376,9 +376,8 @@ DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const Di
 	if (t <= 0.0f) return startvalue;
 	if (t >= 1.0f) return endvalue;
 
-
 	DirectX::XMFLOAT2 authoredVec = XMFLOAT2Subtract(curve.EndPoint, curve.StartPoint);
-	DirectX::XMFLOAT2 currentVec = XMFLOAT2Subtract(endvalue,startvalue);
+	DirectX::XMFLOAT2 currentVec = XMFLOAT2Subtract(endvalue, startvalue);
 	float authoredLen = Length(authoredVec);
 	float currentLen = Length(currentVec);
 
@@ -393,8 +392,8 @@ DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const Di
 	DirectX::XMFLOAT2 offset2 = XMFLOAT2Subtract(curve.ControlPoint2, curve.EndPoint);
 
 	DirectX::XMFLOAT2 p0 = startvalue;
-	DirectX::XMFLOAT2 p1 = XMFLOAT2Add(startvalue,XMFLOAT2Multiply(offset1,scale));
-	DirectX::XMFLOAT2 p2 = XMFLOAT2Add(endvalue,XMFLOAT2Multiply(offset2, scale));
+	DirectX::XMFLOAT2 p1 = XMFLOAT2Add(startvalue, XMFLOAT2Multiply(offset1, scale));
+	DirectX::XMFLOAT2 p2 = XMFLOAT2Add(endvalue, XMFLOAT2Multiply(offset2, scale));
 	DirectX::XMFLOAT2 p3 = endvalue;
 
 	return EvalCubicBezier(p0, p1, p2, p3, std::clamp(t, 0.0f, 1.0f));

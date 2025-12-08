@@ -45,7 +45,7 @@ void Animator2DComponent::DrawInspector()
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		if(ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Animator2D追加").c_str()))
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Animator2D追加").c_str()))
 		{
 			ImGui::OpenPopup("AddAnimator2D");
 		}
@@ -64,7 +64,7 @@ void Animator2DComponent::DrawInspector()
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("再生時間").c_str());
 			ImGui::TableSetColumnIndex(1);
 			msg = std::to_string(animator->fNowTime_);
-			msg +=" / ";
+			msg += " / ";
 			msg += std::to_string(animator->GetTotalTime());
 			ImGui::Text(msg.c_str());
 			ImGui::TableNextRow();
@@ -83,7 +83,7 @@ void Animator2DComponent::DrawInspector()
 				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定:UI").c_str());
 			}
 			ImGui::TableSetColumnIndex(1);
-			if(ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ビュー切替##" + animator->GetProjectName() + Ptr).c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ビュー切替##" + animator->GetProjectName() + Ptr).c_str()))
 			{
 				if (animator->GetViewMode() == Animator2D::ViewMode::Billboard)
 				{
@@ -108,7 +108,6 @@ void Animator2DComponent::DrawInspector()
 		}
 		ImGui::EndTable();
 	}
-
 }
 
 void Animator2DComponent::DrawAnimator2DPopup()

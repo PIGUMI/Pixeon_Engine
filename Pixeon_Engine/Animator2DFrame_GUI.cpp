@@ -134,7 +134,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	selectedKeyFrame_->EndTransform.Rotation.x = endRot.x;
 	selectedKeyFrame_->EndTransform.Rotation.y = endRot.y;
 
-
 	//テクスチャの設定
 	static char TexturePath[256] = {};
 
@@ -153,8 +152,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 void Animator2DFrame::DrawAnimatorControl()
 {
-	if (ImGui::Begin("Animator2DControl",nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)){
-
+	if (ImGui::Begin("Animator2DControl", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)) {
 		if (animator_) {
 			std::string ProjectName = animator_->Name_;
 			char buf[256];
