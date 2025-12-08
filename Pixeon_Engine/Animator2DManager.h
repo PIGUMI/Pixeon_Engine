@@ -7,7 +7,7 @@ public:
 	static Animator2DManager* GetInstance();
 	static void DestroyInstance();
 public:
-	Animator2D GetAnimator2D(const std::string& name);
+	Animator2D* GetAnimator2D(const std::string& name);
 	void ResetAllAnimator2D();
 private:
 	std::vector<Animator2D*> animator2Ds;

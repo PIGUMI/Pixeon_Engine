@@ -17,14 +17,14 @@ void Animator2DComponent::Init(Object* Prt)
 void Animator2DComponent::InGameUpdate()
 {
 	for (auto& animator : _animators) {
-		animator.Update();
+		animator->Update();
 	}
 }
 
 void Animator2DComponent::Draw()
 {
 	for (auto& animator : _animators) {
-		animator.Draw();
+		animator->Draw();
 	}
 }
 
@@ -50,22 +50,22 @@ void Animator2DComponent::DrawInspector()
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(animator.GetProjectName().c_str());
+			ImGui::Text(animator->GetProjectName().c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("総再生時間").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(std::to_string(animator.GetTotalTime()).c_str());
+			ImGui::Text(std::to_string(animator->GetTotalTime()).c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(animator.GetLoop() ? GUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : GUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
+			ImGui::Text(animator->GetLoop() ? GUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : GUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定").c_str());
 			ImGui::TableSetColumnIndex(1);
-			std::string viewModeStr = (animator.GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
+			std::string viewModeStr = (animator->GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(viewModeStr).c_str());
 		}
 
@@ -98,7 +98,7 @@ void Animator2DComponent::DrawAnimator2DPopup()
 			if (ImGui::Selectable(projectFiles_[i].c_str(), selected)) {
 				selectedProjectIndex_ = i;
 				if (selectedProjectIndex_ < 0 && selectedProjectIndex_ >= projectFiles_.size())return;
-				Animator2D newAnimator = Animator2DManager::GetInstance()->GetAnimator2D(projectFiles_[selectedProjectIndex_]);
+				Animator2D* newAnimator = Animator2DManager::GetInstance()->GetAnimator2D(projectFiles_[selectedProjectIndex_]);
 				_animators.push_back(newAnimator);
 				ImGui::CloseCurrentPopup();
 			}

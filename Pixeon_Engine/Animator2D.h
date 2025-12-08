@@ -98,6 +98,7 @@ public:
 	void SetFirstFlag(bool first) { bFirst_ = first; }
 	bool GetEndedFlag() const { return bEnded_; }
 
+	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
 	// ベジェによるイージング

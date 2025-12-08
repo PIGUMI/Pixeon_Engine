@@ -296,6 +296,26 @@ void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 		[ptr](const KeyFrame& kf) { return &kf == ptr; }), KeyFrames_.end());
 }
 
+Animator2D* Animator2D::Copy()
+{
+	Animator2D* newAnimator = new Animator2D();
+	newAnimator->Name_ = this->Name_;
+	newAnimator->bLoop_ = this->bLoop_;
+	newAnimator->fTotalDuration_ = this->fTotalDuration_;
+	for (const auto& kf : this->KeyFrames_)
+	{
+		KeyFrame newKf = kf;
+		if (kf.Image)
+		{
+			newKf.Image = new ImageRender();
+			newKf.Image->Init(nullptr);
+			newKf.Image->SetTextureName(kf.Texture);
+		}
+		newAnimator->KeyFrames_.push_back(newKf);
+	}
+	return newAnimator;
+}
+
 void Animator2D::KeyFrameUpdate()
 {
 	for (auto& obj : KeyFrames_)
