@@ -12,6 +12,9 @@ public:
 
 	void DrawInspector() override;
 
+	void SaveToFile(std::ostream& out) override;
+	void LoadFromFile(std::istream& in) override;
+
 private:
 	void DrawAnimator2DPopup();
 
