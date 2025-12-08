@@ -13,5 +13,10 @@ public:
 	void DrawInspector() override;
 
 private:
-	std::vector<Animator2D*> _animators;
+	void DrawAnimator2DPopup();
+
+private:
+	std::vector<std::string> projectFiles_;
+	int selectedProjectIndex_ = -1;
+	std::vector<Animator2D> _animators;
 };

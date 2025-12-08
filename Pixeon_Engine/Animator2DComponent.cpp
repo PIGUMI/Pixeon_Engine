@@ -1,5 +1,7 @@
 #include "Animator2DComponent.h"
 #include "Animator2D.h"
+#include "SettingManager.h"
+#include "Animator2DManager.h"
 #include "ImageRender.h"
 #include "GUI.h"
 #include <string>
@@ -10,53 +12,19 @@ void Animator2DComponent::Init(Object* Prt)
 	_ComponentName = "Animator2DComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::ANIMATOR2D;
 	_animators.clear();
-
-	Animator2D* Test = new Animator2D;
-	KeyFrame kf;
-
-	kf.CurveInfo.StartPoint = { 0.0f,0.0f };
-	kf.CurveInfo.EndPoint = { 1.0f,1.0f };
-	kf.CurveInfo.ControlPoint1 = { 0.0f,0.0f };
-	kf.CurveInfo.ControlPoint2 = { 1.0f,1.0f };
-	kf.StartTime = 0.0f;
-	kf.EndTime = 1.0f;
-
-	kf.StartTransform.Scale = { 1.0f, 1.0f };
-	kf.EndTransform.Scale = { 1.0f, 1.0f };
-	kf.StartTransform.Position = { 0.0f,0.0f };
-	kf.EndTransform.Position = { 0.0f,1.0f };
-
-	kf.Layer = 1;
-	kf.Image = new ImageRender();
-	kf.Image->Init(Prt);
-	kf.Image->SetTextureName("AlphaTest.png");
-
-	//Test->SetViewMode(Animator2D::ViewMode::Billboard);
-	Test->AddKeyFrame(kf);
-	Test->SetTotalTime(2.0f);
-	Test->SetLoop(true);
-
-	kf.StartTransform.Position = { 0.0f,1.0f };
-	kf.EndTransform.Position = { 0.0f,0.0f };
-	kf.StartTime = 1.0f;
-	kf.EndTime = 2.0f;
-
-	Test->AddKeyFrame(kf);
-
-	_animators.push_back(Test);
 }
 
 void Animator2DComponent::InGameUpdate()
 {
 	for (auto& animator : _animators) {
-		animator->Update();
+		animator.Update();
 	}
 }
 
 void Animator2DComponent::Draw()
 {
 	for (auto& animator : _animators) {
-		animator->Draw();
+		animator.Draw();
 	}
 }
 
@@ -69,46 +37,76 @@ void Animator2DComponent::DrawInspector()
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("プロファイルパス").c_str());
-		ImGui::TableSetColumnIndex(1);
-		// パスの入力
-		char Path[256] = "";
-		if (ImGui::InputText(("Path##" + Ptr).c_str(), Path, sizeof(Path))) {}
-
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0);
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("読み込み").c_str());
-		ImGui::TableSetColumnIndex(1);
-		// 読み込みボタン
-		if (ImGui::Button(("##Load" + Ptr).c_str())) {
-			Animator2D* animator = new Animator2D;
-			animator->LoadFile(Path);
+		if(ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Animator2D追加").c_str()))
+		{
+			ImGui::OpenPopup("AddAnimator2D");
 		}
+		DrawAnimator2DPopup();
+		ImGui::TableSetColumnIndex(1);
+
 
 		for (auto& animator : _animators) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(animator->GetProjectName().c_str());
+			ImGui::Text(animator.GetProjectName().c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("総再生時間").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(std::to_string(animator->GetTotalTime()).c_str());
+			ImGui::Text(std::to_string(animator.GetTotalTime()).c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(animator->GetLoop() ? GUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : GUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
+			ImGui::Text(animator.GetLoop() ? GUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : GUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定").c_str());
 			ImGui::TableSetColumnIndex(1);
-			std::string viewModeStr = (animator->GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
+			std::string viewModeStr = (animator.GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(viewModeStr).c_str());
 		}
 
 		ImGui::EndTable();
+	}
+
+}
+
+void Animator2DComponent::DrawAnimator2DPopup()
+{
+	if (ImGui::BeginPopupModal("AddAnimator2D", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
+		ImGui::Text(SJ("Animator2D追加します").c_str());
+
+		if (projectFiles_.empty()) {
+			const std::string projectDir = SettingManager::GetInstance()->GetAnimator2DProjectFilePath();
+			projectFiles_.clear();
+			for (const auto& entry : std::filesystem::directory_iterator(projectDir)) {
+				if (entry.is_regular_file()) {
+					if (entry.path().extension() == ".anim2d") {
+						projectFiles_.push_back(entry.path().filename().string());
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < projectFiles_.size(); ++i) {
+			bool selected = (i == selectedProjectIndex_);
+			if (ImGui::Selectable(projectFiles_[i].c_str(), selected)) {
+				selectedProjectIndex_ = i;
+				if (selectedProjectIndex_ < 0 && selectedProjectIndex_ >= projectFiles_.size())return;
+				Animator2D newAnimator = Animator2DManager::GetInstance()->GetAnimator2D(projectFiles_[selectedProjectIndex_]);
+				_animators.push_back(newAnimator);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::Separator();
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("キャンセル").c_str())) {
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
 	}
 }

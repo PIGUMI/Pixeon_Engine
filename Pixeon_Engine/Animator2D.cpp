@@ -27,8 +27,11 @@ Animator2D::~Animator2D()
 {
 	for (auto obj : KeyFrames_)
 	{
-		delete obj.Image;
-		obj.Image = nullptr;
+		if (obj.Image)
+		{
+			delete obj.Image;
+			obj.Image = nullptr;
+		}
 	}
 }
 
