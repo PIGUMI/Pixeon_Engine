@@ -9,9 +9,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\リソース ファイル\memo">
-      <UniqueIdentifier>{e62021d2-e41a-4fed-80a4-80f24a664dfd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\1_MainFrame">
       <UniqueIdentifier>{a05cca16-2aee-4170-a41e-9f84dfdb0487}</UniqueIdentifier>
     </Filter>
@@ -224,6 +221,9 @@
     <ClCompile Include="Animator2DManager.cpp">
       <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
     </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -391,10 +391,8 @@
     <ClInclude Include="Animator2DManager.h">
       <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="20251202.txt">
-      <Filter>ソース ファイル\リソース ファイル\memo</Filter>
-    </Text>
+    <ClInclude Include="Math.h">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

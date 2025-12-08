@@ -7,27 +7,23 @@
 #include "Struct.h"
 #include "ImageRender.h"
 
-struct vec2
-{
-	float x;
-	float y;
-};
-
+/* ベジェ曲線情報 */
 struct CurveData
 {
-	vec2 StartPoint;
-	vec2 ControlPoint1;
-	vec2 ControlPoint2;
-	vec2 EndPoint;
+	DirectX::XMFLOAT2 StartPoint	= { 0.0f,0.0f };
+	DirectX::XMFLOAT2 ControlPoint1 = { 0.0f,0.0f};
+	DirectX::XMFLOAT2 ControlPoint2 = { 1.0f,1.0f };
+	DirectX::XMFLOAT2 EndPoint		= { 1.0f,1.0f };
 };
 
+// 2Dベクトル
 struct UITransform
 {
-	vec2 Position;
-	vec2 Rotation;
-	vec2 Scale;
-	vec2 UVScale;
-	vec2 UVPostion;
+	DirectX::XMFLOAT2 Position	= { 0.0f,0.0f };
+	DirectX::XMFLOAT2 Rotation	= { 0.0f,0.0f };
+	DirectX::XMFLOAT2 Scale			= { 100.0f,100.0f };
+	DirectX::XMFLOAT2 UVScale		= { 1.0f,1.0f };
+	DirectX::XMFLOAT2 UVPosition	= { 0.0f,0.0f };
 };
 
 struct KeyFrame
@@ -44,21 +40,10 @@ struct KeyFrame
 	std::string Texture;			// テクスチャ名（保存用）
 };
 
-inline vec2 operator+(const vec2& a, const vec2& b) { return { a.x + b.x, a.y + b.y }; }
-inline vec2 operator-(const vec2& a, const vec2& b) { return { a.x - b.x, a.y - b.y }; }
-inline vec2 operator*(const vec2& v, float s) { return { v.x * s, v.y * s }; }
-inline bool operator==(const vec2& a, const vec2& b) noexcept
-{
-	return a.x == b.x && a.y == b.y;
-}
-inline bool operator!=(const vec2& a, const vec2& b) noexcept
-{
-	return !(a == b);
-}
 
-inline float Length(const vec2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
+inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
 
-inline vec2 EvalCubicBezier(const vec2& p0, const vec2& p1, const vec2& p2, const vec2& p3, float t)
+inline DirectX::XMFLOAT2 EvalCubicBezier(const DirectX::XMFLOAT2& p0, const DirectX::XMFLOAT2& p1, const DirectX::XMFLOAT2& p2, const DirectX::XMFLOAT2& p3, float t)
 {
 	float u = 1.0f - t;
 	float tt = t * t;
@@ -66,7 +51,7 @@ inline vec2 EvalCubicBezier(const vec2& p0, const vec2& p1, const vec2& p2, cons
 	float uuu = uu * u;
 	float ttt = tt * t;
 
-	vec2 p = { 0.0f, 0.0f };
+	DirectX::XMFLOAT2 p = { 0.0f, 0.0f };
 	p.x = uuu * p0.x + 3.0f * uu * t * p1.x + 3.0f * u * tt * p2.x + ttt * p3.x;
 	p.y = uuu * p0.y + 3.0f * uu * t * p1.y + 3.0f * u * tt * p2.y + ttt * p3.y;
 	return p;
@@ -114,8 +99,9 @@ public:
 	bool GetEndedFlag() const { return bEnded_; }
 
 private:
-	// ベジェによるイージング（elapsed: 経過秒, duration: 区間秒）
-	vec2 EaseByBezierCurve(const CurveData& curve, const vec2& startvalue, const vec2& endvalue, float elapsed, float duration = 1.0f);
+	void KeyFrameUpdate();
+	// ベジェによるイージング
+	DirectX::XMFLOAT2 EaseByBezierCurve(const CurveData& curve, const DirectX::XMFLOAT2& startvalue, const DirectX::XMFLOAT2& endvalue, float elapsed, float duration = 1.0f);
 
 public:
 	std::string Name_ = "Animator2D"; // アニメーション名
