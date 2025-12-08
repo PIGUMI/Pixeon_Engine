@@ -99,7 +99,17 @@ void Animator2D::Draw()
 				break;
 			}
 			PreviewImage->SetOffset2D(kf.NowTransform.Position);
-			PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x, kf.NowTransform.Position.y, 0.0f));
+			if (owner_)
+			{
+				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
+					owner_->GetTransform().position.x + kf.NowTransform.Position.x,
+					owner_->GetTransform().position.y + kf.NowTransform.Position.y,
+					owner_->GetTransform().position.z));
+			}
+			else
+			{
+				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x, kf.NowTransform.Position.y, 0.0f));
+			}
 			PreviewImage->SetSize2D(kf.NowTransform.Scale);
 			PreviewImage->SetUVRect(DirectX::XMFLOAT4(
 				kf.NowTransform.UVPosition.x,
@@ -109,7 +119,10 @@ void Animator2D::Draw()
 			PreviewImage->SetTextureName(kf.Texture);
 			PreviewImage->Draw();
 		}
-		PreviewImage->Draw();
+		else
+		{
+			MessageBox(nullptr, "Animator2D Draw Error: PreviewImage is nullptr", "Error", MB_OK | MB_ICONERROR);
+		}
 		DrawCount++;
 	}
 }
@@ -296,6 +309,12 @@ void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 		[ptr](const KeyFrame& kf) { return &kf == ptr; }), KeyFrames_.end());
 }
 
+void Animator2D::SetOwner(Object* owner)
+{
+	owner_ = owner;
+	PreviewImage->SetParent(owner);
+}
+
 Animator2D* Animator2D::Copy()
 {
 	Animator2D* newAnimator = new Animator2D();
@@ -327,38 +346,20 @@ void Animator2D::KeyFrameUpdate()
 		else tNormalized = std::clamp(elapsed / duration, 0.0f, 1.0f);
 
 		// 位置
-		if (XMFLOAT2Equal(obj.StartTransform.Position, obj.EndTransform.Position) == false)
-		{
-			DirectX::XMFLOAT2 Pos = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Position, obj.EndTransform.Position, elapsed, duration);
-			obj.NowTransform.Position = Pos;
-		}
+		DirectX::XMFLOAT2 Pos = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Position, obj.EndTransform.Position, elapsed, duration);
+		obj.NowTransform.Position = Pos;
 		// 回転
-		if (XMFLOAT2Equal(obj.StartTransform.Rotation, obj.EndTransform.Rotation) == false)
-		{
-			DirectX::XMFLOAT2 Rot = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Rotation, obj.EndTransform.Rotation, elapsed, duration);
-			// TODO: ImageRender に回転を適用する API があれば呼ぶ
-			// 例: obj.Image->SetRotation(rot.x);
-			obj.NowTransform.Rotation = Rot;
-			(void)Rot;
-		}
+		DirectX::XMFLOAT2 Rot = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Rotation, obj.EndTransform.Rotation, elapsed, duration);
+		obj.NowTransform.Rotation = Rot;
 		// スケール
-		if (XMFLOAT2Equal(obj.StartTransform.Scale, obj.EndTransform.Scale) == false)
-		{
-			DirectX::XMFLOAT2 Scl = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Scale, obj.EndTransform.Scale, elapsed, duration);
-			obj.NowTransform.Scale = Scl;
-		}
+		DirectX::XMFLOAT2 Scl = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Scale, obj.EndTransform.Scale, elapsed, duration);
+		obj.NowTransform.Scale = Scl;
 		// UV 位置
-		if (XMFLOAT2Equal(obj.StartTransform.UVPosition, obj.EndTransform.UVPosition) == false)
-		{
-			DirectX::XMFLOAT2 uvp = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVPosition, obj.EndTransform.UVPosition, elapsed, duration);
-			obj.NowTransform.UVPosition = uvp;
-		}
+		DirectX::XMFLOAT2 uvp = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVPosition, obj.EndTransform.UVPosition, elapsed, duration);
+		obj.NowTransform.UVPosition = uvp;
 		// UV スケール
-		if (XMFLOAT2Equal(obj.StartTransform.UVScale, obj.EndTransform.UVScale) == false)
-		{
-			DirectX::XMFLOAT2 uvs = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVScale, obj.EndTransform.UVScale, elapsed, duration);
-			obj.NowTransform.UVScale = uvs;
-		}
+		DirectX::XMFLOAT2 uvs = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVScale, obj.EndTransform.UVScale, elapsed, duration);
+		obj.NowTransform.UVScale = uvs;
 	}
 }
 

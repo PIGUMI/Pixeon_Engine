@@ -12,6 +12,7 @@
 #include "ComponentManager.h"
 #include "ScriptManager.h"
 #include "ResourceService.h"
+#include "Animator2DManager.h"
 // 入力処理
 #include "Input.h"
 // ソフトウェアモード
@@ -187,7 +188,7 @@ void MainFrame::UnInit() {
 	SettingManager::DestroyInstance();
 	ScriptManager::Release();
 	ShaderManager::DestroyInstance();
-
+	Animator2DManager::GetInstance()->ResetAllAnimator2D();
 	AssetManager::DeleteInstance();
 	ModelManager::DeleteInstance();
 	TextureManager::DeleteInstance();

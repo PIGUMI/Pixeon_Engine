@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Struct.h"
 #include "ImageRender.h"
+#include "Object.h"
 
 /* ベジェ曲線情報 */
 struct CurveData
@@ -97,6 +98,8 @@ public:
 	void SetFirstFlag(bool first) { bFirst_ = first; }
 	bool GetEndedFlag() const { return bEnded_; }
 
+	void SetOwner(Object* owner);
+
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
@@ -115,4 +118,5 @@ public:
 	ViewMode viewMode_ = ViewMode::UI;
 	ImageRender* PreviewImage = nullptr; // プレビュー用イメージ
 	int DrawCount = 0;
+	Object* owner_ = nullptr;
 };

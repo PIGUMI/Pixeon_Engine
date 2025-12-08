@@ -28,6 +28,14 @@ void Animator2DComponent::Draw()
 	}
 }
 
+void Animator2DComponent::UInit()
+{
+	for (auto& animator : _animators) {
+		delete animator;
+		animator = nullptr;
+	}
+}
+
 void Animator2DComponent::DrawInspector()
 {
 	std::string label = GUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
@@ -44,7 +52,7 @@ void Animator2DComponent::DrawInspector()
 		DrawAnimator2DPopup();
 		ImGui::TableSetColumnIndex(1);
 
-
+		std::string msg;
 		for (auto& animator : _animators) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
@@ -53,33 +61,51 @@ void Animator2DComponent::DrawInspector()
 			ImGui::Text(animator->GetProjectName().c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("総再生時間").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("再生時間").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(std::to_string(animator->GetTotalTime()).c_str());
+			msg = std::to_string(animator->fNowTime_);
+			msg +=" / ";
+			msg += std::to_string(animator->GetTotalTime());
+			ImGui::Text(msg.c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(animator->GetLoop() ? GUI::GetInstance()->ShiftJISToUTF8("有効").c_str() : GUI::GetInstance()->ShiftJISToUTF8("無効").c_str());
+			ImGui::Checkbox(("##LoopSetting" + animator->GetProjectName() + Ptr).c_str(), &animator->bLoop_);
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定").c_str());
+			if (animator->GetViewMode() == Animator2D::ViewMode::Billboard)
+			{
+				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定:ビルボード").c_str());
+			}
+			else
+			{
+				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定:UI").c_str());
+			}
 			ImGui::TableSetColumnIndex(1);
-			std::string viewModeStr = (animator->GetViewMode() == Animator2D::ViewMode::Billboard) ? "Billboard" : "Fixed";
-			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(viewModeStr).c_str());
+			if(ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ビュー切替##" + animator->GetProjectName() + Ptr).c_str()))
+			{
+				if (animator->GetViewMode() == Animator2D::ViewMode::Billboard)
+				{
+					animator->SetViewMode(Animator2D::ViewMode::UI);
+				}
+				else
+				{
+					animator->SetViewMode(Animator2D::ViewMode::Billboard);
+				}
+			}
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str());
 			ImGui::TableSetColumnIndex(1);
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str())) {
+			std::string msg = "削除##" + animator->GetProjectName() + Ptr;
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str())) {
 				_animators.erase(std::remove(_animators.begin(), _animators.end(), animator), _animators.end());
 				delete animator;
 				animator = nullptr;
 				break;
 			}
-
 		}
-
 		ImGui::EndTable();
 	}
 
@@ -110,6 +136,7 @@ void Animator2DComponent::DrawAnimator2DPopup()
 				selectedProjectIndex_ = i;
 				if (selectedProjectIndex_ < 0 && selectedProjectIndex_ >= projectFiles_.size())return;
 				Animator2D* newAnimator = Animator2DManager::GetInstance()->GetAnimator2D(projectFiles_[selectedProjectIndex_]);
+				newAnimator->SetOwner(_Parent);
 				_animators.push_back(newAnimator);
 				animatorNames_.push_back(projectFiles_[selectedProjectIndex_]);
 				ImGui::CloseCurrentPopup();
@@ -144,7 +171,8 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		in.read(reinterpret_cast<char*>(&nameLength), sizeof(int));
 		std::string projectName(nameLength, ' ');
 		in.read(&projectName[0], nameLength);
-		Animator2D* animator = Animator2DManager::GetInstance()->GetAnimator2D(projectName);
+		Animator2D* animator = Animator2DManager::GetInstance()->GetAnimator2D(projectName + ".anim2d");
+		animator->SetOwner(_Parent);
 		_animators.push_back(animator);
 		animatorNames_.push_back(projectName);
 	}

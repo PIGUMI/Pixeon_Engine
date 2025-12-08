@@ -18,6 +18,8 @@ public:
 	virtual void UInit() {}
 	virtual void DrawInspector() {}
 
+	void SetParent(Object* parent) { _Parent = parent; }
+
 public:
 	virtual void SaveToFile(std::ostream& out) {}
 	virtual void LoadFromFile(std::istream& in) {}
