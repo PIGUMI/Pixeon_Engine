@@ -111,6 +111,7 @@ void Animator2DComponent::DrawAnimator2DPopup()
 				if (selectedProjectIndex_ < 0 && selectedProjectIndex_ >= projectFiles_.size())return;
 				Animator2D* newAnimator = Animator2DManager::GetInstance()->GetAnimator2D(projectFiles_[selectedProjectIndex_]);
 				_animators.push_back(newAnimator);
+				animatorNames_.push_back(projectFiles_[selectedProjectIndex_]);
 				ImGui::CloseCurrentPopup();
 			}
 		}
@@ -124,37 +125,27 @@ void Animator2DComponent::DrawAnimator2DPopup()
 
 void Animator2DComponent::SaveToFile(std::ostream& out)
 {
-	// コンポーネントの数を書き込む
-	size_t animatorCount = _animators.size();
-	out.write(reinterpret_cast<const char*>(&animatorCount), sizeof(size_t));
-	// 各コンポーネントのデータを書き込む
+	int animatorCount = static_cast<int>(_animators.size());
+	out.write(reinterpret_cast<const char*>(&animatorCount), sizeof(int));
 	for (const auto& animator : _animators) {
-		// プロジェクト名の長さと内容を書き込む
-		size_t nameLength = animator->GetProjectName().size();
-		out.write(reinterpret_cast<const char*>(&nameLength), sizeof(size_t));
-		out.write(animator->GetProjectName().c_str(), nameLength);
+		std::string projectName = animator->GetProjectName();
+		int nameLength = static_cast<int>(projectName.size());
+		out.write(reinterpret_cast<const char*>(&nameLength), sizeof(int));
+		out.write(projectName.c_str(), nameLength);
 	}
 }
 
 void Animator2DComponent::LoadFromFile(std::istream& in)
 {
-	// 既存のコンポーネントを削除
-	for (auto& animator : _animators) {
-		delete animator;
-	}
-	_animators.clear();
-	// コンポーネントの数を読み込む
-	size_t animatorCount = 0;
-	in.read(reinterpret_cast<char*>(&animatorCount), sizeof(size_t));
-	// 各コンポーネントのデータを読み込む
-	for (size_t i = 0; i < animatorCount; ++i) {
-		// プロジェクト名の長さと内容を読み込む
-		size_t nameLength = 0;
-		in.read(reinterpret_cast<char*>(&nameLength), sizeof(size_t));
+	int animatorCount = 0;
+	in.read(reinterpret_cast<char*>(&animatorCount), sizeof(int));
+	for (int i = 0; i < animatorCount; ++i) {
+		int nameLength = 0;
+		in.read(reinterpret_cast<char*>(&nameLength), sizeof(int));
 		std::string projectName(nameLength, ' ');
 		in.read(&projectName[0], nameLength);
-		// Animator2Dマネージャーから取得して追加
 		Animator2D* animator = Animator2DManager::GetInstance()->GetAnimator2D(projectName);
 		_animators.push_back(animator);
+		animatorNames_.push_back(projectName);
 	}
 }

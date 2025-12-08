@@ -21,17 +21,16 @@ Animator2D::Animator2D()
 	fNowTime_(0.0f),
 	fTotalDuration_(0.0f)
 {
+	PreviewImage = new ImageRender();
+	PreviewImage->Init(nullptr);
 }
 
 Animator2D::~Animator2D()
 {
-	for (auto obj : KeyFrames_)
+	if (PreviewImage)
 	{
-		if (obj.Image)
-		{
-			delete obj.Image;
-			obj.Image = nullptr;
-		}
+		delete PreviewImage;
+		PreviewImage = nullptr;
 	}
 }
 
@@ -87,22 +86,30 @@ void Animator2D::Draw()
 	for (auto& kf : SortedKeyFrames)
 	{
 		if (!kf.Active) continue;
-		if (kf.Image == nullptr) continue;
 		DrawCount++;
-		if (kf.Image)
+		if (PreviewImage)
 		{
 			switch (viewMode_)
 			{
 			case Animator2D::UI:
-				kf.Image->SetPlacementMode(ImageRender::PlacementMode::UI);
+				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::UI);
 				break;
 			case Animator2D::Billboard:
-				kf.Image->SetPlacementMode(ImageRender::PlacementMode::Billboard);
+				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::Billboard);
 				break;
 			}
-			kf.Image->Draw();
+			PreviewImage->SetOffset2D(kf.NowTransform.Position);
+			PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x, kf.NowTransform.Position.y, 0.0f));
+			PreviewImage->SetSize2D(kf.NowTransform.Scale);
+			PreviewImage->SetUVRect(DirectX::XMFLOAT4(
+				kf.NowTransform.UVPosition.x,
+				kf.NowTransform.UVPosition.y,
+				kf.NowTransform.UVScale.x,
+				kf.NowTransform.UVScale.y));
+			PreviewImage->SetTextureName(kf.Texture);
+			PreviewImage->Draw();
 		}
-		kf.Image->Draw();
+		PreviewImage->Draw();
 		DrawCount++;
 	}
 }
@@ -239,9 +246,6 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.EndTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.EndTransform.UVPosition = { startTransJson["UVPosition"][0].get<float>(), startTransJson["UVPosition"][1].get<float>() };
 			kf.Texture = kfJson["Texture"].get<std::string>();
-			kf.Image = new ImageRender();
-			kf.Image->Init(nullptr);
-			kf.Image->SetTextureName(kf.Texture);
 			KeyFrames_.push_back(kf);
 		}
 	}
@@ -277,8 +281,6 @@ void Animator2D::LoadCache(std::ifstream& in)
 		// EndTransform
 		in.read(reinterpret_cast<char*>(&kf.EndTransform), sizeof(UITransform));
 		// ImageRender の読み込み
-		kf.Image = new ImageRender();
-		kf.Image->LoadFromFile(in);
 		KeyFrames_.push_back(kf);
 	}
 }
@@ -290,8 +292,6 @@ void Animator2D::AddKeyFrame(const KeyFrame& keyframe)
 
 void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 {
-	delete ptr->Image;
-	ptr->Image = nullptr;
 	KeyFrames_.erase(std::remove_if(KeyFrames_.begin(), KeyFrames_.end(),
 		[ptr](const KeyFrame& kf) { return &kf == ptr; }), KeyFrames_.end());
 }
@@ -305,12 +305,6 @@ Animator2D* Animator2D::Copy()
 	for (const auto& kf : this->KeyFrames_)
 	{
 		KeyFrame newKf = kf;
-		if (kf.Image)
-		{
-			newKf.Image = new ImageRender();
-			newKf.Image->Init(nullptr);
-			newKf.Image->SetTextureName(kf.Texture);
-		}
 		newAnimator->KeyFrames_.push_back(newKf);
 	}
 	return newAnimator;
@@ -324,7 +318,6 @@ void Animator2D::KeyFrameUpdate()
 		obj.Active = (fNowTime_ >= obj.StartTime && fNowTime_ <= obj.EndTime);
 
 		if (!obj.Active) continue;
-		if (obj.Image == nullptr) continue;
 
 		float elapsed = fNowTime_ - obj.StartTime;
 		float duration = obj.EndTime - obj.StartTime;
@@ -338,8 +331,6 @@ void Animator2D::KeyFrameUpdate()
 		{
 			DirectX::XMFLOAT2 Pos = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Position, obj.EndTransform.Position, elapsed, duration);
 			obj.NowTransform.Position = Pos;
-			obj.Image->SetOffset2D(Pos);
-			obj.Image->SetOffset3D(DirectX::XMFLOAT3(Pos.x, Pos.y, 0.0f));
 		}
 		// 回転
 		if (XMFLOAT2Equal(obj.StartTransform.Rotation, obj.EndTransform.Rotation) == false)
@@ -355,28 +346,18 @@ void Animator2D::KeyFrameUpdate()
 		{
 			DirectX::XMFLOAT2 Scl = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Scale, obj.EndTransform.Scale, elapsed, duration);
 			obj.NowTransform.Scale = Scl;
-			obj.Image->SetSize2D(Scl);
-			obj.Image->SetSizeWorld(Scl);
 		}
 		// UV 位置
 		if (XMFLOAT2Equal(obj.StartTransform.UVPosition, obj.EndTransform.UVPosition) == false)
 		{
 			DirectX::XMFLOAT2 uvp = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVPosition, obj.EndTransform.UVPosition, elapsed, duration);
-			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
-			uvRect.x = uvp.x;
-			uvRect.y = uvp.y;
 			obj.NowTransform.UVPosition = uvp;
-			obj.Image->SetUVRect(uvRect);
 		}
 		// UV スケール
 		if (XMFLOAT2Equal(obj.StartTransform.UVScale, obj.EndTransform.UVScale) == false)
 		{
 			DirectX::XMFLOAT2 uvs = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVScale, obj.EndTransform.UVScale, elapsed, duration);
-			DirectX::XMFLOAT4 uvRect = obj.Image->GetUVRect();
-			uvRect.z = uvs.x;
-			uvRect.w = uvs.y;
 			obj.NowTransform.UVScale = uvs;
-			obj.Image->SetUVRect(uvRect);
 		}
 	}
 }

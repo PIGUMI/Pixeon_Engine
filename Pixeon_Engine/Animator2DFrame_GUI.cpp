@@ -134,9 +134,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	selectedKeyFrame_->EndTransform.Rotation.x = endRot.x;
 	selectedKeyFrame_->EndTransform.Rotation.y = endRot.y;
 
-	DirectX::XMFLOAT4 startColor = selectedKeyFrame_->Image->GetColor();
-	ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("開始カラー").c_str(), &startColor.x);
-	selectedKeyFrame_->Image->SetColor(startColor);
 
 	//テクスチャの設定
 	static char TexturePath[256] = {};
@@ -197,7 +194,6 @@ void Animator2DFrame::DrawTextureLoadPopup()
 			if (filter[0] && n.find(filter) == std::string::npos) continue;
 			if (ImGui::Selectable(n.c_str(), false)) {
 				selectedKeyFrame_->Texture = n;
-				selectedKeyFrame_->Image->SetTextureName(n);
 				wantOpenTexturePopup_ = false;
 				ImGui::CloseCurrentPopup();
 			}

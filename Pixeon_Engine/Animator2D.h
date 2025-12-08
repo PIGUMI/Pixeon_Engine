@@ -37,7 +37,6 @@ struct KeyFrame
 	UITransform StartTransform;		// 開始トランスフォーム
 	UITransform EndTransform;		// 終了トランスフォーム
 	UITransform NowTransform;		// 現在トランスフォーム（編集用）
-	ImageRender* Image = nullptr;	// 描画対象（ランタイム解決）
 	std::string Texture;			// テクスチャ名（保存用）
 };
 
@@ -114,5 +113,6 @@ public:
 	float fTotalDuration_ = 0.0f; // 総再生時間（秒）
 	std::vector<KeyFrame> KeyFrames_; // キーフレーム群
 	ViewMode viewMode_ = ViewMode::UI;
+	ImageRender* PreviewImage = nullptr; // プレビュー用イメージ
 	int DrawCount = 0;
 };

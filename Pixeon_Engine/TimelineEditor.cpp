@@ -84,8 +84,6 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("NewKeyFrame").c_str()))
 			{
 				KeyFrame newKeyFrame;
-				newKeyFrame.Image = new ImageRender();
-				newKeyFrame.Image->Init(nullptr);
 				animator->AddKeyFrame(newKeyFrame);
 			}
 
