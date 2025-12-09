@@ -45,3 +45,19 @@ void Animator2DManager::ResetAllAnimator2D()
 	}
 	animator2Ds.clear();
 }
+
+void Animator2DManager::RemoveAllAnimator2D(std::string DeleteName)
+{
+	for (auto it = animator2Ds.begin(); it != animator2Ds.end(); )
+	{
+		if ((*it)->GetProjectName() == DeleteName)
+		{
+			delete *it;
+			it = animator2Ds.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}

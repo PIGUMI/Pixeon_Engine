@@ -9,6 +9,7 @@ public:
 public:
 	Animator2D* GetAnimator2D(const std::string& name);
 	void ResetAllAnimator2D();
+	void RemoveAllAnimator2D(std::string DeleteName);
 private:
 	std::vector<Animator2D*> animator2Ds;
 private:

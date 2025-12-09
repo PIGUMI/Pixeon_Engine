@@ -1,6 +1,7 @@
 #include "Animator2DFrame.h"
 #include "Input.h"
 #include "TimelineEditor.h"
+#include "Animator2DManager.h"
 
 Animator2DFrame* Animator2DFrame::instance = nullptr;
 
@@ -35,6 +36,7 @@ void Animator2DFrame::Update()
 		if (animator_)
 		{
 			animator_->SaveFile();
+			Animator2DManager::GetInstance()->RemoveAllAnimator2D(animator_->GetProjectName());
 		}
 	}
 	if (animator_)
@@ -64,6 +66,7 @@ void Animator2DFrame::Draw()
 {
 	if (animator_)
 	{
+		animator_->SetEditorMode(true);
 		animator_->Draw();
 	}
 }

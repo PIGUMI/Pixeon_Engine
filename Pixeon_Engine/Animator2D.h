@@ -100,6 +100,8 @@ public:
 
 	void SetOwner(Object* owner);
 
+	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
+
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
@@ -119,4 +121,5 @@ public:
 	ImageRender* PreviewImage = nullptr; // プレビュー用イメージ
 	int DrawCount = 0;
 	Object* owner_ = nullptr;
+	bool bEditorMode_ = false; // エディターモード
 };

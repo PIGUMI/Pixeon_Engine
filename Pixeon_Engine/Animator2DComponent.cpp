@@ -24,6 +24,7 @@ void Animator2DComponent::InGameUpdate()
 void Animator2DComponent::Draw()
 {
 	for (auto& animator : _animators) {
+		animator->SetEditorMode(false);
 		animator->Draw();
 	}
 }
