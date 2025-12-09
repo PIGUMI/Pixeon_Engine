@@ -9,9 +9,19 @@ public:
 	void Init(Object* Prt) override;
 	void InGameUpdate() override;
 	void Draw() override;
+	void UInit() override;
 
 	void DrawInspector() override;
 
+	void SaveToFile(std::ostream& out) override;
+	void LoadFromFile(std::istream& in) override;
+
 private:
+	void DrawAnimator2DPopup();
+
+private:
+	std::vector<std::string> projectFiles_;
+	int selectedProjectIndex_ = -1;
+	std::vector<std::string> animatorNames_;
 	std::vector<Animator2D*> _animators;
 };

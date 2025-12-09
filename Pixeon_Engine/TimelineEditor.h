@@ -28,7 +28,6 @@ private:
 	void DrawLayers(Animator2D* animator);
 	void DrawKeyFrame(KeyFrame* keyframe, int layerIndex);
 
-
 	// “ü—Íˆ—
 	void HandleInput(Animator2D* animator);
 	void HandleKeyFrameDrag(KeyFrame* keyframe);

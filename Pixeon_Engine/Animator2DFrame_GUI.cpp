@@ -2,7 +2,7 @@
 #include "MainFrame.h"
 #include "GUI.h"
 #include "Input.h"
-
+#include "AssetManager.h"
 #include "TimelineEditor.h"
 
 void Animator2DFrame::DrawGUI()
@@ -14,13 +14,11 @@ void Animator2DFrame::DrawGUI()
 	static bool Animator2DFrame_dock_init = false;
 	if (!Animator2DFrame_dock_init)
 	{
-
 		Animator2DFrame_dock_init = true;
 
 		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceリセット
 		ImGui::DockBuilderAddNode(DockSpace, ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_DockSpace);
 		ImGui::DockBuilderSetNodeSize(DockSpace, viewport->Size);
-
 
 		ImGuiID dock_main_id = DockSpace;
 		ImGuiID dock_id_right;
@@ -36,6 +34,7 @@ void Animator2DFrame::DrawGUI()
 
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Animator2DTimeLine").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("KeyFrameEditor").c_str(), dock_id_right);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Animator2DControl").c_str(), dock_id_right);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Animator2DView").c_str(), dock_main_id);
 		ImGui::DockBuilderFinish(DockSpace);
 	}
@@ -47,14 +46,17 @@ void Animator2DFrame::DrawGUI()
 
 	DrawTimeline();
 	DrawView();
+	DrawAnimatorControl();
 	DrawKeyFrameEditor();
+	if (wantOpenTexturePopup_)ImGui::OpenPopup("LoadTexture");
+	DrawTextureLoadPopup();
 }
 
 void Animator2DFrame::DrawTimeline()
 {
-	if(ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Animator2DTimeLine").c_str()))
+	if (ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Animator2DTimeLine").c_str()))
 	{
-		if(timelineEditor_)
+		if (timelineEditor_)
 		{
 			timelineEditor_->DrawTimeline(animator_);
 		}
@@ -132,18 +134,12 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	selectedKeyFrame_->EndTransform.Rotation.x = endRot.x;
 	selectedKeyFrame_->EndTransform.Rotation.y = endRot.y;
 
-	DirectX::XMFLOAT4 startColor = selectedKeyFrame_->Image->GetColor();
-	ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("開始カラー").c_str(), &startColor.x);
-	selectedKeyFrame_->Image->SetColor(startColor);
-
 	//テクスチャの設定
 	static char TexturePath[256] = {};
-	// 入力
-	ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("テクスチャパス").c_str(), TexturePath, sizeof(TexturePath));
-	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("適用").c_str()))
+
+	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("テクスチャ選択").c_str()))
 	{
-		selectedKeyFrame_->Texture = TexturePath;
-		selectedKeyFrame_->Image->SetTextureName(TexturePath);
+		wantOpenTexturePopup_ = true;
 	}
 
 	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str()) || IsKeyTrigger(VK_DELETE))
@@ -152,4 +148,60 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		animator_ = nullptr;
 	}
 	ImGui::End();
+}
+
+void Animator2DFrame::DrawAnimatorControl()
+{
+	if (ImGui::Begin("Animator2DControl", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)) {
+		if (animator_) {
+			std::string ProjectName = animator_->Name_;
+			char buf[256];
+			strcpy_s(buf, ProjectName.c_str());
+			if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("プロジェクト名").c_str(), buf, sizeof(buf))) {
+				animator_->Name_ = std::string(buf);
+			}
+			std::string msg;
+			msg = animator_->bLoop_ ? "ループ再生: 有効" : "ループ再生: 無効";
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fTotalDuration_);
+			ImGui::SameLine();
+			ImGui::Checkbox(GUI::GetInstance()->ShiftJISToUTF8("ループ再生").c_str(), &animator_->bLoop_);
+			msg = "総再生時間: " + std::to_string(animator_->fTotalDuration_) + " 秒";
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fTotalDuration_);
+			msg = "現在の再生時間: " + std::to_string(animator_->fNowTime_) + " 秒";
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fNowTime_);
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを閉じる").c_str())) {
+				delete animator_;
+				animator_ = nullptr;
+				isPlaying_ = false;
+			}
+		}
+	}
+	ImGui::End();
+}
+
+void Animator2DFrame::DrawTextureLoadPopup()
+{
+	if (ImGui::BeginPopupModal("LoadTexture", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		static char filter[128] = "";
+		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("フィルタ").c_str(), filter, sizeof(filter));
+		auto texList = AssetManager::Instance()->GetCachedTextureNames();
+		ImGui::BeginChild("ImgTexList", ImVec2(420, 260), true);
+		for (int i = 0; i < (int)texList.size(); ++i) {
+			const std::string& n = texList[i];
+			if (filter[0] && n.find(filter) == std::string::npos) continue;
+			if (ImGui::Selectable(n.c_str(), false)) {
+				selectedKeyFrame_->Texture = n;
+				wantOpenTexturePopup_ = false;
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::EndChild();
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("キャンセル").c_str()))
+		{
+			wantOpenTexturePopup_ = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 }

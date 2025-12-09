@@ -20,12 +20,12 @@ public: // シングルトンパターン
 	static EngineFrame* GetInstance();
 	static void DestroyInstance();
 public: // 4大処理
-	void Init() ;
-	void Update() ;
-	void Draw() ;
-	void UnInit() ;
+	void Init();
+	void Update();
+	void Draw();
+	void UnInit();
 public: // GUI
-	void DrawGUI() ;
+	void DrawGUI();
 public: // Prefab管理
 	bool AddPrefab(Object* prefab);
 	std::vector<Object*> GetPrefabs() { return prefabs_; }
@@ -77,4 +77,3 @@ private:
 private:
 	static EngineFrame* instance;
 };
-

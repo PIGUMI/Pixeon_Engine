@@ -22,19 +22,19 @@ void Animator2DManager::DestroyInstance()
 	}
 }
 
-Animator2D Animator2DManager::GetAnimator2D(const std::string& name)
+Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 {
 	for (auto animator : animator2Ds)
 	{
 		if (animator->GetProjectName() == name)
 		{
-			return *animator;
+			return animator->Copy();
 		}
 	}
 	Animator2D* newAnimator = new Animator2D();
 	newAnimator->LoadFile(SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + name);
 	animator2Ds.push_back(newAnimator);
-	return *newAnimator;
+	return newAnimator->Copy();
 }
 
 void Animator2DManager::ResetAllAnimator2D()

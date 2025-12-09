@@ -84,13 +84,13 @@ void GUI::Init()
 	colors[ImGuiCol_Text] = ImVec4(0.88f, 0.90f, 0.94f, 1.00f);
 	colors[ImGuiCol_TextDisabled] = ImVec4(0.45f, 0.48f, 0.54f, 1.00f);
 
-	bSceneCreateWindow_		= false;
-	bShaderListWindow_		= false;
-	bAssetsManagerWindow_	= false;
-	bTextureManagerWindow_	= false;
-	bModelManagerWindow_	= false;
-	bSoundManagerWindow_	= false;
-	bSettingWindow_			= false;
+	bSceneCreateWindow_ = false;
+	bShaderListWindow_ = false;
+	bAssetsManagerWindow_ = false;
+	bTextureManagerWindow_ = false;
+	bModelManagerWindow_ = false;
+	bSoundManagerWindow_ = false;
+	bSettingWindow_ = false;
 }
 
 void GUI::BeginDraw()
@@ -116,7 +116,6 @@ void GUI::EndDraw()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
-
 
 void GUI::MainMenuBar()
 {
@@ -189,7 +188,6 @@ void GUI::MainMenuBar()
 
 		ImGui::EndMenuBar();
 	}
-
 }
 
 void GUI::SceneCreateWindow()
@@ -487,7 +485,6 @@ void GUI::ShaderEditorWindow()
 		ImGui::End();
 	}
 }
-
 
 std::string GUI::ShiftJISToUTF8(const std::string& str)
 {

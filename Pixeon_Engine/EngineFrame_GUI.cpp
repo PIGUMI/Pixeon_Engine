@@ -5,16 +5,13 @@
 #include "SceneManger.h"
 #include "Scene.h"
 #include "Object.h"
-
 #include "SettingManager.h"
-
 #include <filesystem>
 #include <vector>
 #include <string>
 #include <Windows.h>
 #include <comdef.h>
 #include <oleauto.h>
-
 
 void EngineFrame::HandleAssetContextMenu(const std::filesystem::path& path)
 {
@@ -139,7 +136,7 @@ void EngineFrame::DrawGUI()
 	ImGui::DockSpace(DockSpace, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
 	static bool EngineFrame_dock_init = false;
-	if (!EngineFrame_dock_init){
+	if (!EngineFrame_dock_init) {
 		EngineFrame_dock_init = true;
 		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceリセット
 		ImGui::DockBuilderAddNode(DockSpace, ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_DockSpace);
@@ -186,18 +183,18 @@ void EngineFrame::GameViewWindow()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
 
 	// 再生・停止ボタン
-	if (EngineFrame::GetInstance()->IsInGame()) {
+	if (!EngineFrame::GetInstance()->IsInGame()) {
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("再生").c_str(), ImVec2(70, 0)))
 		{
 			EngineFrame::GetInstance()->SetInGame(true);
-			EngineFrame::GetInstance()->SetShowGUI(true);
+			EngineFrame::GetInstance()->SetShowGUI(false);
 		}
 	}
 	else {
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("停止").c_str(), ImVec2(70, 0)))
 		{
 			EngineFrame::GetInstance()->SetInGame(false);
-			EngineFrame::GetInstance()->SetShowGUI(false);
+			EngineFrame::GetInstance()->SetShowGUI(true);
 			SelectedObject = nullptr;
 		}
 	}
@@ -663,4 +660,3 @@ void EngineFrame::SceneRenameWindow()
 		ImGui::End();
 	}
 }
-

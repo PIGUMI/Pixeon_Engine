@@ -22,7 +22,6 @@ void Animator2DFrame::DestroyInstance()
 	}
 }
 
-
 void Animator2DFrame::Init()
 {
 	timelineEditor_ = new TimelineEditor();
@@ -31,7 +30,7 @@ void Animator2DFrame::Init()
 void Animator2DFrame::Update()
 {
 	// XVˆ—
-	if(IsKeyPress(VK_CONTROL) && IsKeyTrigger('S'))
+	if (IsKeyPress(VK_CONTROL) && IsKeyTrigger('S'))
 	{
 		if (animator_)
 		{
@@ -40,16 +39,16 @@ void Animator2DFrame::Update()
 	}
 	if (animator_)
 	{
-		if(IsKeyTrigger(VK_SPACE))
+		if (IsKeyTrigger(VK_SPACE))
 		{
 			isPlaying_ = !isPlaying_;
 			if (isPlaying_)animator_->SetFirstFlag(true);
 		}
 		animator_->SetViewMode(Animator2D::ViewMode::UI);
-		if(isPlaying_)
-		{ 
+		if (isPlaying_)
+		{
 			animator_->Update();
-			if(animator_->GetEndedFlag())
+			if (animator_->GetEndedFlag())
 			{
 				isPlaying_ = false;
 			}
@@ -83,4 +82,3 @@ void Animator2DFrame::UnInit()
 		timelineEditor_ = nullptr;
 	}
 }
-

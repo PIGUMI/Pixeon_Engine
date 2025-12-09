@@ -12,6 +12,7 @@
 #include "ComponentManager.h"
 #include "ScriptManager.h"
 #include "ResourceService.h"
+#include "Animator2DManager.h"
 // 入力処理
 #include "Input.h"
 // ソフトウェアモード
@@ -35,7 +36,6 @@ void MainFrame::DeleteInstance() {
 		instance_ = nullptr;
 	}
 }
-
 
 int MainFrame::Init(const EngineConfig& InPut)
 {
@@ -122,7 +122,7 @@ void MainFrame::Update()
 	}
 }
 
-void MainFrame::Draw() 
+void MainFrame::Draw()
 {
 	if (bUpdateDraw) {
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
@@ -188,7 +188,7 @@ void MainFrame::UnInit() {
 	SettingManager::DestroyInstance();
 	ScriptManager::Release();
 	ShaderManager::DestroyInstance();
-
+	Animator2DManager::GetInstance()->ResetAllAnimator2D();
 	AssetManager::DeleteInstance();
 	ModelManager::DeleteInstance();
 	TextureManager::DeleteInstance();
@@ -205,5 +205,3 @@ ID3D11ShaderResourceView* MainFrame::GetGameRenderTargetSRV()
 {
 	return m_gameRenderTarget_->GetShaderResourceView();
 }
-
-

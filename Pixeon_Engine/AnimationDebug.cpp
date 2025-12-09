@@ -79,7 +79,7 @@ int RebindChannelNodeIndices(ModelSharedResource* res, AnimationClipRuntime& run
 }
 
 void QuickIntegrityReport(const ModelSharedResource* res) {
-	if (!res) {return; }
+	if (!res) { return; }
 	int boneMismatch = 0;
 	if (!res->clips.empty()) {
 		const auto& h = res->clips[0].nodeHierarchy;

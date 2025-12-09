@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <filesystem> 
+#include <filesystem>
 
 TimelineEditor::TimelineEditor()
 {
@@ -69,7 +69,7 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 	{
 		if (!animator)
 		{
-			if(ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを開く").c_str()))
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを開く").c_str()))
 			{
 				RequestOpenProjectPopup();
 			}
@@ -84,19 +84,6 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("NewKeyFrame").c_str()))
 			{
 				KeyFrame newKeyFrame;
-				newKeyFrame.CurveInfo.StartPoint = { 0.0f, 0.0f };
-				newKeyFrame.CurveInfo.ControlPoint1 = { 0.0f, 0.0f };
-				newKeyFrame.CurveInfo.ControlPoint2 = { 1.0f, 1.0f };
-				newKeyFrame.CurveInfo.EndPoint = { 1.0f, 1.0f };
-				newKeyFrame.EndTime = 1.0f;
-				newKeyFrame.StartTime = 0.0f;
-				newKeyFrame.EndTransform.Position = { 0.0f, 0.0f };
-				newKeyFrame.EndTransform.Rotation = { 0.0f, 0.0f };
-				newKeyFrame.EndTransform.Scale = { 1.0f, 1.0f };
-				newKeyFrame.StartTransform = newKeyFrame.EndTransform;
-				newKeyFrame.Layer = 0;
-				newKeyFrame.Image = new ImageRender();
-				newKeyFrame.Image->Init(nullptr);
 				animator->AddKeyFrame(newKeyFrame);
 			}
 
@@ -309,7 +296,6 @@ void TimelineEditor::DrawProjectLoadPopup()
 			}
 		}
 	}
-
 
 	if (ImGui::BeginPopupModal("LoadProject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("読み込むプロジェクトファイルを選択してください:").c_str());

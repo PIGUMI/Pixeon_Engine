@@ -171,6 +171,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IScript.h" />
     <ClInclude Include="LightComponent.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="MatrixUtil.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IScript.cpp" />
     <ClCompile Include="LightComponent.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelRender.cpp" />
     <ClCompile Include="Object.cpp" />
@@ -243,9 +245,6 @@
     <ClCompile Include="Animator2D.cpp" />
     <ClCompile Include="TimelineEditor.cpp" />
     <ClCompile Include="_Geometry.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="20251202.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
