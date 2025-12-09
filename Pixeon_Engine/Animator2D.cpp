@@ -100,17 +100,17 @@ void Animator2D::Draw()
 			}
 			if (bEditorMode_)
 			{
-				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * 100.0f,kf.NowTransform.Position.y * 100.0f });
+				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * -100.0f,kf.NowTransform.Position.y * -100.0f });
 				if (owner_)
 				{
 					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
-						owner_->GetTransform().position.x + (kf.NowTransform.Position.x * 100.0f),
-						owner_->GetTransform().position.y + (kf.NowTransform.Position.y * 100.0f),
+						owner_->GetTransform().position.x + (kf.NowTransform.Position.x * -100.0f),
+						owner_->GetTransform().position.y + (kf.NowTransform.Position.y * -100.0f),
 						owner_->GetTransform().position.z));
 				}
 				else
 				{
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3((kf.NowTransform.Position.x * 100.0f), (kf.NowTransform.Position.y * 100.0f), 0.0f));
+					PreviewImage->SetOffset3D(DirectX::XMFLOAT3((kf.NowTransform.Position.x * -100.0f), (kf.NowTransform.Position.y * -100.0f), 0.0f));
 				}
 				PreviewImage->SetSize2D(kf.NowTransform.Scale);
 				PreviewImage->SetUVRect(DirectX::XMFLOAT4(

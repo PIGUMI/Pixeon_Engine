@@ -1,7 +1,7 @@
 {
     "KeyFrames": [
         {
-            "Active": false,
+            "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -47,8 +47,8 @@
             "StartTime": 0.5,
             "StartTransform": {
                 "Position": [
-                    1.0,
-                    0.0
+                    0.0,
+                    1.0
                 ],
                 "Rotation": [
                     0.0,
@@ -70,7 +70,7 @@
             "Texture": "Test.jpg"
         },
         {
-            "Active": true,
+            "Active": false,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -92,8 +92,8 @@
             "EndTime": 0.5,
             "EndTransform": {
                 "Position": [
-                    1.0,
-                    0.0
+                    0.0,
+                    1.0
                 ],
                 "Rotation": [
                     0.0,

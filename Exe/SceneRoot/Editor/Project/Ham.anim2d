@@ -48,7 +48,7 @@
             "StartTransform": {
                 "Position": [
                     0.0,
-                    1.0
+                    -1.0
                 ],
                 "Rotation": [
                     0.0,
@@ -93,7 +93,7 @@
             "EndTransform": {
                 "Position": [
                     0.0,
-                    1.0
+                    -1.0
                 ],
                 "Rotation": [
                     0.0,
