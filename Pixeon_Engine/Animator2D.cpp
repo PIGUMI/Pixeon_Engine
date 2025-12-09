@@ -104,9 +104,9 @@ void Animator2D::Draw()
 				if (owner_)
 				{
 					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
-						owner_->GetTransform().position.x + (kf.NowTransform.Position.x * -100.0f),
-						owner_->GetTransform().position.y + (kf.NowTransform.Position.y * -100.0f),
-						owner_->GetTransform().position.z));
+						(kf.NowTransform.Position.x * -100.0f),
+						(kf.NowTransform.Position.y * -100.0f),
+						0.0f));
 				}
 				else
 				{
@@ -125,9 +125,9 @@ void Animator2D::Draw()
 				if (owner_)
 				{
 					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
-						owner_->GetTransform().position.x + kf.NowTransform.Position.x,
-						owner_->GetTransform().position.y + kf.NowTransform.Position.y,
-						owner_->GetTransform().position.z));
+						kf.NowTransform.Position.x,
+						kf.NowTransform.Position.y,
+						0.0f));
 				}
 				else
 				{
