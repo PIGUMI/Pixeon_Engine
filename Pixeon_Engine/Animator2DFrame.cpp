@@ -46,7 +46,7 @@ void Animator2DFrame::Update()
 			isPlaying_ = !isPlaying_;
 			if (isPlaying_)animator_->SetFirstFlag(true);
 		}
-		animator_->SetViewMode(Animator2D::ViewMode::UI);
+		animator_->SetViewMode(ViewMode::UI);
 		if (isPlaying_)
 		{
 			animator_->Update();

@@ -36,19 +36,26 @@ struct EditorFlag
 	bool bUVScale = false;
 };
 
+enum ViewMode
+{
+	UI,
+	Billboard,
+};
+
 // キーフレーム情報
 struct KeyFrame
 {
-	bool Active = false;			// アクティブ状態
-	int Layer = 0;					// レイヤー
-	float StartTime = 0.0f;			// 開始秒
-	float EndTime = 1.0f;			// 終了秒
-	CurveData CurveInfo;			// ベジェ情報
-	UITransform StartTransform;		// 開始トランスフォーム
-	UITransform EndTransform;		// 終了トランスフォーム
-	UITransform NowTransform;		// 現在トランスフォーム（編集用）
-	std::string Texture;			// テクスチャ名（保存用）
-	EditorFlag editorFlag;			// エディターフラグ
+	bool Active = false;				// アクティブ状態
+	int Layer = 0;						// レイヤー
+	float StartTime = 0.0f;				// 開始秒
+	float EndTime = 1.0f;				// 終了秒
+	CurveData CurveInfo;				// ベジェ情報
+	UITransform StartTransform;			// 開始トランスフォーム
+	UITransform EndTransform;			// 終了トランスフォーム
+	UITransform NowTransform;			// 現在トランスフォーム（編集用）
+	std::string Texture;				// テクスチャ名（保存用）
+	EditorFlag editorFlag;				// エディターフラグ
+	ViewMode viewMode = ViewMode::UI;	// 表示モード
 };
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
@@ -69,12 +76,6 @@ inline DirectX::XMFLOAT2 EvalCubicBezier(const DirectX::XMFLOAT2& p0, const Dire
 // Animator2D ProjectData
 class Animator2D
 {
-public:
-	enum ViewMode
-	{
-		UI,
-		Billboard,
-	};
 public:
 	Animator2D();
 	~Animator2D();

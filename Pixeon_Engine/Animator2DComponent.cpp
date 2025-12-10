@@ -75,7 +75,7 @@ void Animator2DComponent::DrawInspector()
 			ImGui::Checkbox(("##LoopSetting" + animator->GetProjectName() + Ptr).c_str(), &animator->bLoop_);
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			if (animator->GetViewMode() == Animator2D::ViewMode::Billboard)
+			if (animator->GetViewMode() == ViewMode::Billboard)
 			{
 				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定:ビルボード").c_str());
 			}
@@ -86,13 +86,13 @@ void Animator2DComponent::DrawInspector()
 			ImGui::TableSetColumnIndex(1);
 			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ビュー切替##" + animator->GetProjectName() + Ptr).c_str()))
 			{
-				if (animator->GetViewMode() == Animator2D::ViewMode::Billboard)
+				if (animator->GetViewMode() == ViewMode::Billboard)
 				{
-					animator->SetViewMode(Animator2D::ViewMode::UI);
+					animator->SetViewMode(ViewMode::UI);
 				}
 				else
 				{
-					animator->SetViewMode(Animator2D::ViewMode::Billboard);
+					animator->SetViewMode(ViewMode::Billboard);
 				}
 			}
 			ImGui::TableNextRow();

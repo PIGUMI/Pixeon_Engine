@@ -91,10 +91,10 @@ void Animator2D::Draw()
 		{
 			switch (viewMode_)
 			{
-			case Animator2D::UI:
+			case ViewMode::UI:
 				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::UI);
 				break;
-			case Animator2D::Billboard:
+			case ViewMode::Billboard:
 				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::Billboard);
 				break;
 			}
@@ -223,7 +223,8 @@ void Animator2D::SaveFile()
 		kfJson["EditorFlag"]["bRotation"] = kf.editorFlag.bRotation; 
 		kfJson["EditorFlag"]["bScale"] = kf.editorFlag.bScale; 
 		kfJson["EditorFlag"]["bUVPosition"] = kf.editorFlag.bUVPosition; 
-		kfJson["EditorFlag"]["bUVScale"] = kf.editorFlag.bUVScale; 
+		kfJson["EditorFlag"]["bUVScale"] = kf.editorFlag.bUVScale;
+		kfJson["ViewMode"] = static_cast<int>(kf.viewMode);
 		kfJson["Texture"] = kf.Texture;
 		KeyFramesJson.push_back(kfJson);
 	}
@@ -257,6 +258,10 @@ void Animator2D::LoadFile(std::string FilePath)
 	// ループ設定
 	if (LoadJson.contains("Loop")) {
 		bLoop_ = LoadJson["Loop"].get<bool>();
+	}
+	// 描画モード
+	if (LoadJson.contains("ViewMode")) {
+		viewMode_ = static_cast<ViewMode>(LoadJson["ViewMode"].get<int>());
 	}
 	// キーフレーム群
 	if (LoadJson.contains("KeyFrames")) {

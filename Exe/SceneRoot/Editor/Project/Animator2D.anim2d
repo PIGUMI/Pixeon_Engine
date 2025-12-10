@@ -4,12 +4,12 @@
             "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
-                    0.13317756354808807,
-                    0.7546728849411011
+                    1.0,
+                    0.0
                 ],
                 "ControlPoint2": [
-                    0.7920560836791992,
-                    0.4649532735347748
+                    1.0,
+                    0.0
                 ],
                 "EndPoint": [
                     1.0,
@@ -21,7 +21,7 @@
                 ]
             },
             "EditorFlag": {
-                "bPosition": false,
+                "bPosition": true,
                 "bRotation": false,
                 "bScale": false,
                 "bUVPosition": false,
@@ -31,7 +31,7 @@
             "EndTransform": {
                 "Position": [
                     0.0,
-                    0.0
+                    2.0
                 ],
                 "Rotation": [
                     0.0,
