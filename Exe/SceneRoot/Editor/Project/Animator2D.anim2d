@@ -74,7 +74,8 @@
                     1.0
                 ]
             },
-            "Texture": ""
+            "Texture": "",
+            "ViewMode": 0
         }
     ],
     "Loop": false,
