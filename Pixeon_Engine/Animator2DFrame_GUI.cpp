@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "AssetManager.h"
 #include "TimelineEditor.h"
+#include "EasingGraph.h"
 
 void Animator2DFrame::DrawGUI()
 {
@@ -114,7 +115,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			msg = "位置 ";
 		else
 			msg = "開始位置 ";
-		
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始位置").c_str(), &selectedKeyFrame_->StartTransform.Position.x, 0.1f);
@@ -146,7 +146,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			msg = "回転 ";
 		else
 			msg = "開始回転 ";
-
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始角度").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x, 0.1f);
@@ -177,7 +176,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			msg = "スケール ";
 		else
 			msg = "開始スケール ";
-
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始スケール").c_str(), &selectedKeyFrame_->StartTransform.Scale.x, 0.1f, 0.0f);
@@ -208,7 +206,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			msg = "UV位置 ";
 		else
 			msg = "開始UV位置 ";
-
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始UV位置").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f);
@@ -239,7 +236,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			msg = "UVスケール ";
 		else
 			msg = "開始UVスケール ";
-
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始UVスケール").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f);
@@ -280,7 +276,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 	/* イージングの作成 */
 	ImGui::Separator();
-	ImGui::Text(SJ("イージンググラフ実装途中").c_str());
+	DrawEasingGraph(selectedKeyFrame_->CurveInfo,"Easing",{430.0f,430.0f});
 	//////////////////////
 
 	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str()) || IsKeyTrigger(VK_DELETE))

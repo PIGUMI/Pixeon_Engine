@@ -4,12 +4,12 @@
             "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
-                    0.0,
-                    0.0
+                    0.13317756354808807,
+                    0.7546728849411011
                 ],
                 "ControlPoint2": [
-                    1.0,
-                    1.0
+                    0.7920560836791992,
+                    0.4649532735347748
                 ],
                 "EndPoint": [
                     1.0,
@@ -20,10 +20,17 @@
                     0.0
                 ]
             },
+            "EditorFlag": {
+                "bPosition": false,
+                "bRotation": false,
+                "bScale": false,
+                "bUVPosition": false,
+                "bUVScale": false
+            },
             "EndTime": 1.0,
             "EndTransform": {
                 "Position": [
-                    3.5999999046325684,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -47,7 +54,7 @@
             "StartTime": 0.0,
             "StartTransform": {
                 "Position": [
-                    3.5999999046325684,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -70,7 +77,7 @@
             "Texture": ""
         }
     ],
-    "Loop": true,
+    "Loop": false,
     "ProjectName": "Animator2D",
     "TotalDuration": 1.0
 }

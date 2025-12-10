@@ -219,6 +219,11 @@ void Animator2D::SaveFile()
 		kfJson["EndTransform"]["Scale"] = { kf.EndTransform.Scale.x, kf.EndTransform.Scale.y };
 		kfJson["EndTransform"]["UVScale"] = { kf.EndTransform.UVScale.x, kf.EndTransform.UVScale.y };
 		kfJson["EndTransform"]["UVPosition"] = { kf.EndTransform.UVPosition.x, kf.EndTransform.UVPosition.y };
+		kfJson["EditorFlag"]["bPosition"] = kf.editorFlag.bPosition; 
+		kfJson["EditorFlag"]["bRotation"] = kf.editorFlag.bRotation; 
+		kfJson["EditorFlag"]["bScale"] = kf.editorFlag.bScale; 
+		kfJson["EditorFlag"]["bUVPosition"] = kf.editorFlag.bUVPosition; 
+		kfJson["EditorFlag"]["bUVScale"] = kf.editorFlag.bUVScale; 
 		kfJson["Texture"] = kf.Texture;
 		KeyFramesJson.push_back(kfJson);
 	}
@@ -282,6 +287,14 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.EndTransform.Scale = { startTransJson["Scale"][0].get<float>(), startTransJson["Scale"][1].get<float>() };
 			kf.EndTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.EndTransform.UVPosition = { startTransJson["UVPosition"][0].get<float>(), startTransJson["UVPosition"][1].get<float>() };
+			// EditorFlag
+			auto editorFlagJson = kfJson["EditorFlag"];
+			kf.editorFlag.bPosition = editorFlagJson["bPosition"].get<bool>();
+			kf.editorFlag.bRotation = editorFlagJson["bRotation"].get<bool>();
+			kf.editorFlag.bScale = editorFlagJson["bScale"].get<bool>();
+			kf.editorFlag.bUVPosition = editorFlagJson["bUVPosition"].get<bool>();
+			kf.editorFlag.bUVScale = editorFlagJson["bUVScale"].get<bool>();
+			// Texture
 			kf.Texture = kfJson["Texture"].get<std::string>();
 			KeyFrames_.push_back(kf);
 		}

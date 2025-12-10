@@ -153,6 +153,7 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
+    <ClInclude Include="EasingGraph.h" />
     <ClInclude Include="EngineFrame.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="MainFrame.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
+    <ClCompile Include="EasingGraph.cpp" />
     <ClCompile Include="EngineFrame.cpp" />
     <ClCompile Include="EngineFrame_GUI.cpp" />
     <ClCompile Include="GUI.cpp" />
