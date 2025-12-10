@@ -23,8 +23,8 @@
             "EndTime": 1.0,
             "EndTransform": {
                 "Position": [
-                    0.699999988079071,
-                    0.20000000298023224
+                    3.5999999046325684,
+                    0.0
                 ],
                 "Rotation": [
                     0.0,
@@ -47,8 +47,8 @@
             "StartTime": 0.0,
             "StartTransform": {
                 "Position": [
-                    0.699999988079071,
-                    0.20000000298023224
+                    3.5999999046325684,
+                    0.0
                 ],
                 "Rotation": [
                     0.0,
@@ -70,7 +70,7 @@
             "Texture": ""
         }
     ],
-    "Loop": false,
+    "Loop": true,
     "ProjectName": "Animator2D",
     "TotalDuration": 1.0
 }

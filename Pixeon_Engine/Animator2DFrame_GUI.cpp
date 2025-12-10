@@ -240,7 +240,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		else
 			msg = "開始UVスケール ";
 
-		ImGui::TableNextRow();/*UVスケール*/
+		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始UVスケール").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f);
 		if (selectedKeyFrame_->editorFlag.bUVScale)
@@ -266,8 +266,8 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			selectedKeyFrame_->EndTransform.UVScale = selectedKeyFrame_->StartTransform.UVScale;
 		}
 
-
-		ImGui::TableNextRow();/*テクスチャ選択*/
+		/* テクスチャの設定GUI */
+		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("テクスチャ").c_str());
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("選択").c_str()))
@@ -277,6 +277,12 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 		ImGui::EndTable();
 	}
+
+	/* イージングの作成 */
+	ImGui::Separator();
+	ImGui::Text(SJ("イージンググラフ実装途中").c_str());
+	//////////////////////
+
 	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str()) || IsKeyTrigger(VK_DELETE))
 	{
 		animator_->RemoveKeyFrame(selectedKeyFrame_);

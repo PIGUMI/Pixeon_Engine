@@ -20,7 +20,7 @@
                     0.0
                 ]
             },
-            "EndTime": 1.9999998807907104,
+            "EndTime": 1.0,
             "EndTransform": {
                 "Position": [
                     0.0,
@@ -31,8 +31,8 @@
                     0.0
                 ],
                 "Scale": [
-                    200.0,
-                    200.0
+                    100.0,
+                    100.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -44,7 +44,7 @@
                 ]
             },
             "Layer": 0,
-            "StartTime": 1.0,
+            "StartTime": 0.5,
             "StartTransform": {
                 "Position": [
                     0.0,
@@ -55,8 +55,8 @@
                     0.0
                 ],
                 "Scale": [
-                    200.0,
-                    200.0
+                    100.0,
+                    100.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -89,7 +89,7 @@
                     0.0
                 ]
             },
-            "EndTime": 1.0,
+            "EndTime": 0.5,
             "EndTransform": {
                 "Position": [
                     0.0,
@@ -100,8 +100,8 @@
                     0.0
                 ],
                 "Scale": [
-                    200.0,
-                    200.0
+                    100.0,
+                    100.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -124,8 +124,8 @@
                     0.0
                 ],
                 "Scale": [
-                    200.0,
-                    200.0
+                    100.0,
+                    100.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -141,5 +141,5 @@
     ],
     "Loop": true,
     "ProjectName": "Ham",
-    "TotalDuration": 1.9999998807907104
+    "TotalDuration": 1.0
 }
