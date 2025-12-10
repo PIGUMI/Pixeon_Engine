@@ -23,7 +23,7 @@
             "EndTime": 1.0,
             "EndTransform": {
                 "Position": [
-                    -200.0,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -31,77 +31,8 @@
                     0.0
                 ],
                 "Scale": [
-                    100.0,
-                    100.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Layer": 1,
-            "StartTime": 0.0,
-            "StartTransform": {
-                "Position": [
-                    -200.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    100.0,
-                    100.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Texture": "noname.png"
-        },
-        {
-            "Active": true,
-            "CurveInfo": {
-                "ControlPoint1": [
-                    0.0,
-                    0.0
-                ],
-                "ControlPoint2": [
-                    1.0,
-                    1.0
-                ],
-                "EndPoint": [
-                    1.0,
-                    1.0
-                ],
-                "StartPoint": [
-                    0.0,
-                    0.0
-                ]
-            },
-            "EndTime": 1.0,
-            "EndTransform": {
-                "Position": [
-                    -200.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    100.0,
-                    100.0
+                    500.0,
+                    500.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -116,16 +47,16 @@
             "StartTime": 0.0,
             "StartTransform": {
                 "Position": [
-                    -200.0,
-                    150.0
+                    0.0,
+                    0.0
                 ],
                 "Rotation": [
                     0.0,
                     0.0
                 ],
                 "Scale": [
-                    100.0,
-                    100.0
+                    500.0,
+                    500.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -136,10 +67,10 @@
                     1.0
                 ]
             },
-            "Texture": ""
+            "Texture": "AlphaTest.png"
         }
     ],
-    "Loop": false,
+    "Loop": true,
     "ProjectName": "Test",
     "TotalDuration": 1.0
 }

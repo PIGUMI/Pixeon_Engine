@@ -27,6 +27,15 @@ struct UITransform
 	DirectX::XMFLOAT2 UVPosition = { 0.0f,0.0f };
 };
 
+struct EditorFlag
+{
+	bool bPosition = false;
+	bool bRotation = false;
+	bool bScale = false;
+	bool bUVPosition = false;
+	bool bUVScale = false;
+};
+
 // キーフレーム情報
 struct KeyFrame
 {
@@ -39,6 +48,7 @@ struct KeyFrame
 	UITransform EndTransform;		// 終了トランスフォーム
 	UITransform NowTransform;		// 現在トランスフォーム（編集用）
 	std::string Texture;			// テクスチャ名（保存用）
+	EditorFlag editorFlag;			// エディターフラグ
 };
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
