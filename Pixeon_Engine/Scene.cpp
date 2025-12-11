@@ -288,12 +288,14 @@ void Scene::Draw() {
 	std::vector<Object*> uiObjects;
 	
 	// UI���[�h��ImageRender���������I�u�W�F�N�g���������
+	// Note: �p�t�H�[�}���X����̂��߁A���傫�Ȃ�V�[���ł͕ʂ̃A�v���[�`���l�����K�v������
 	for (auto it = sortedList.begin(); it != sortedList.end(); ) {
 		Object* obj = *it;
 		bool isUIObject = false;
 		if (obj) {
 			// ImageRender�R���|�[�l���g�������UI���[�h�����m�F
-			for (auto& comp : obj->GetComponents()) {
+			const auto& components = obj->GetComponents();
+			for (auto& comp : components) {
 				if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::IMAGE) {
 					ImageRender* imgComp = dynamic_cast<ImageRender*>(comp);
 					if (imgComp && imgComp->GetPlacementMode() == ImageRender::PlacementMode::UI) {
