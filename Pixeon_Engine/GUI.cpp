@@ -551,7 +551,6 @@ ID3D11ShaderResourceView* GUI::LoadImg(const std::wstring& filename, ID3D11Devic
 	if (frame) frame->Release();
 	if (decoder) decoder->Release();
 	if (factory) factory->Release();
-	// COM は Main::UnInit() で終了処理されるため、ここでは終了処理不要
 
 	return srv;
 }
