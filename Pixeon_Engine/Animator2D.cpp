@@ -220,10 +220,10 @@ void Animator2D::SaveFile()
 		kfJson["EndTransform"]["Scale"] = { kf.EndTransform.Scale.x, kf.EndTransform.Scale.y };
 		kfJson["EndTransform"]["UVScale"] = { kf.EndTransform.UVScale.x, kf.EndTransform.UVScale.y };
 		kfJson["EndTransform"]["UVPosition"] = { kf.EndTransform.UVPosition.x, kf.EndTransform.UVPosition.y };
-		kfJson["EditorFlag"]["bPosition"] = kf.editorFlag.bPosition; 
-		kfJson["EditorFlag"]["bRotation"] = kf.editorFlag.bRotation; 
-		kfJson["EditorFlag"]["bScale"] = kf.editorFlag.bScale; 
-		kfJson["EditorFlag"]["bUVPosition"] = kf.editorFlag.bUVPosition; 
+		kfJson["EditorFlag"]["bPosition"] = kf.editorFlag.bPosition;
+		kfJson["EditorFlag"]["bRotation"] = kf.editorFlag.bRotation;
+		kfJson["EditorFlag"]["bScale"] = kf.editorFlag.bScale;
+		kfJson["EditorFlag"]["bUVPosition"] = kf.editorFlag.bUVPosition;
 		kfJson["EditorFlag"]["bUVScale"] = kf.editorFlag.bUVScale;
 		kfJson["Texture"] = kf.Texture;
 		KeyFramesJson.push_back(kfJson);

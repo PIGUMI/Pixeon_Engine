@@ -106,8 +106,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		ImGui::End();
 		return;
 	}
-	if (ImGui::BeginTable(SJ("KeyFrameEditor").c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)){
-
+	if (ImGui::BeginTable(SJ("KeyFrameEditor").c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		std::string msg;
 
 		/* 位置の設定GUI */
@@ -128,7 +127,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			{
 				selectedKeyFrame_->editorFlag.bPosition = false;
 			}
-
 		}
 		else
 		{
@@ -142,14 +140,14 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		}
 
 		/* 回転の設定GUI */
-		if(!selectedKeyFrame_->editorFlag.bRotation)
+		if (!selectedKeyFrame_->editorFlag.bRotation)
 			msg = "回転 ";
 		else
 			msg = "開始回転 ";
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始角度").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x, 0.1f);
-		if(selectedKeyFrame_->editorFlag.bRotation)
+		if (selectedKeyFrame_->editorFlag.bRotation)
 		{
 			ImGui::TableNextRow();/*終了角度*/
 			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了回転").c_str());
@@ -172,14 +170,14 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		}
 
 		/* スケールの設定GUI */
-		if(!selectedKeyFrame_->editorFlag.bScale)
+		if (!selectedKeyFrame_->editorFlag.bScale)
 			msg = "スケール ";
 		else
 			msg = "開始スケール ";
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始スケール").c_str(), &selectedKeyFrame_->StartTransform.Scale.x, 0.1f, 0.0f);
-		if(selectedKeyFrame_->editorFlag.bScale)
+		if (selectedKeyFrame_->editorFlag.bScale)
 		{
 			ImGui::TableNextRow();/*終了スケール*/
 			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了スケール").c_str());
@@ -202,14 +200,14 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		}
 
 		/* UV位置の設定GUI */
-		if(!selectedKeyFrame_->editorFlag.bUVPosition)
+		if (!selectedKeyFrame_->editorFlag.bUVPosition)
 			msg = "UV位置 ";
 		else
 			msg = "開始UV位置 ";
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始UV位置").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f);
-		if(selectedKeyFrame_->editorFlag.bUVPosition)
+		if (selectedKeyFrame_->editorFlag.bUVPosition)
 		{
 			ImGui::TableNextRow();/*終了UV位置*/
 			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了UV位置").c_str());
@@ -232,7 +230,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		}
 
 		/* UVスケールの設定GUI */
-		if(!selectedKeyFrame_->editorFlag.bUVScale)
+		if (!selectedKeyFrame_->editorFlag.bUVScale)
 			msg = "UVスケール ";
 		else
 			msg = "開始UVスケール ";
@@ -249,7 +247,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			{
 				selectedKeyFrame_->editorFlag.bUVScale = false;
 			}
-
 		}
 		else
 		{
@@ -276,7 +273,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 	/* イージングの作成 */
 	ImGui::Separator();
-	DrawEasingGraph(selectedKeyFrame_->CurveInfo,"Easing",{430.0f,430.0f});
+	DrawEasingGraph(selectedKeyFrame_->CurveInfo, "Easing", { 430.0f,430.0f });
 	//////////////////////
 
 	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str()) || IsKeyTrigger(VK_DELETE))

@@ -52,7 +52,7 @@ void Animator2DManager::RemoveAllAnimator2D(std::string DeleteName)
 	{
 		if ((*it)->GetProjectName() == DeleteName)
 		{
-			delete *it;
+			delete* it;
 			it = animator2Ds.erase(it);
 		}
 		else
