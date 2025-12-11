@@ -1,0 +1,184 @@
+{
+    "KeyFrames": [
+        {
+            "Active": true,
+            "CurveInfo": {
+                "ControlPoint1": [
+                    0.0,
+                    0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EditorFlag": {
+                "bPosition": true,
+                "bRotation": false,
+                "bScale": false,
+                "bUVPosition": false,
+                "bUVScale": false
+            },
+            "EndTime": 0.9999998807907104,
+            "EndTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    -1.5,
+                    0.5
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1600.0,
+                    400.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Layer": 0,
+            "StartTime": 0.0,
+            "StartTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    -1.5,
+                    -0.5
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1600.0,
+                    400.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Texture": "titletxt.png"
+        },
+        {
+            "Active": false,
+            "CurveInfo": {
+                "ControlPoint1": [
+                    0.0,
+                    0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EditorFlag": {
+                "bPosition": true,
+                "bRotation": false,
+                "bScale": false,
+                "bUVPosition": false,
+                "bUVScale": false
+            },
+            "EndTime": 1.9999998807907104,
+            "EndTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    -1.5,
+                    -0.5
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    800.0,
+                    200.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Layer": 0,
+            "StartTime": 1.0,
+            "StartTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    -1.5,
+                    0.5
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    800.0,
+                    200.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Texture": "titletxt.png"
+        }
+    ],
+    "Loop": true,
+    "ProjectName": "title",
+    "TotalDuration": 1.9999998807907104,
+    "ViewMode": 0
+}

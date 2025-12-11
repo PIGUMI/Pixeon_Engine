@@ -1,0 +1,62 @@
+{
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "0.02 -0.01 10 0 0 0 0.02 -0.01 0 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Camera",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "\u0001\u0000\u0000\u0000\u0005\u0000\u0000\u0000title\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+                    "Name": "Animator2DComponent",
+                    "Type": 8
+                }
+            ],
+            "Name": "UI",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "Title"
+    }
+}
