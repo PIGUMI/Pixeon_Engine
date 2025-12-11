@@ -60,8 +60,7 @@ public:
 	void SetOffset2D(const DirectX::XMFLOAT2& offset) { m_offset2D = offset; }
 	DirectX::XMFLOAT3 GetOffset3D() const { return m_offset3D; }
 	void SetOffset3D(const DirectX::XMFLOAT3& offset) { m_offset3D = offset; }
-	void SetOffsetRot(const DirectX::XMFLOAT3& rot) { m_offsetRot = rot; }
-	DirectX::XMFLOAT3 GetOffsetRot() const { return m_offsetRot; }
+
 private:
 	struct Vertex {
 		DirectX::XMFLOAT3 pos;
@@ -116,8 +115,6 @@ private:
 	DirectX::XMFLOAT4 m_uvRect = { 0.0f, 0.0f, 1.0f, 1.0f }; // u0,v0,u1,v1
 
 	DirectX::XMFLOAT4 m_color = { 1,1,1,1 };
-
-	DirectX::XMFLOAT3 m_offsetRot = { 0.0f, 0.0f, 0.0f }; //
 
 	// シェーダ名
 	std::string m_vsName = "VS_ImgQuad";

@@ -22,7 +22,7 @@ struct CurveData
 struct UITransform
 {
 	DirectX::XMFLOAT2 Position = { 0.0f,0.0f };
-	DirectX::XMFLOAT3 Rotation = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT2 Rotation = { 0.0f,0.0f };
 	DirectX::XMFLOAT2 Scale = { 100.0f,100.0f };
 	DirectX::XMFLOAT2 UVScale = { 1.0f,1.0f };
 	DirectX::XMFLOAT2 UVPosition = { 0.0f,0.0f };

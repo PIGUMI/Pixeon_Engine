@@ -2,6 +2,7 @@
 #include "ImageRender.h"
 #include "GameRenderTarget.h"
 #include "SettingManager.h"
+
 // static
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
@@ -33,8 +34,6 @@ void ImageRender::SaveToFile(std::ostream& out) {
 	out << m_sizeWorld.x << " " << m_sizeWorld.y << std::endl;
 	out << m_offset2D.x << " " << m_offset2D.y << std::endl;
 	out << m_offset3D.x << " " << m_offset3D.y << " " << m_offset3D.z << std::endl;
-	// m_offsetRot を XMFLOAT3 として保存 (deg)
-	out << m_offsetRot.x << " " << m_offsetRot.y << " " << m_offsetRot.z << std::endl;
 	out << m_uvRect.x << " " << m_uvRect.y << " " << m_uvRect.z << " " << m_uvRect.w << std::endl;
 	out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << std::endl;
 }
@@ -47,8 +46,6 @@ void ImageRender::LoadFromFile(std::istream& in) {
 	in >> m_sizeWorld.x >> m_sizeWorld.y;
 	in >> m_offset2D.x >> m_offset2D.y;
 	in >> m_offset3D.x >> m_offset3D.y >> m_offset3D.z;
-	// m_offsetRot を XMFLOAT3 として読み込み (deg)
-	in >> m_offsetRot.x >> m_offsetRot.y >> m_offsetRot.z;
 	in >> m_uvRect.x >> m_uvRect.y >> m_uvRect.z >> m_uvRect.w;
 	in >> m_color.x >> m_color.y >> m_color.z >> m_color.w;
 	if (!m_textureName.empty()) {
@@ -248,8 +245,6 @@ bool ImageRender::EnsureDepthStencilState() {
 	return SUCCEEDED(hr);
 }
 
-// VB更新
-
 void ImageRender::UpdateVB(const Vertex v[4]) {
 	auto ctx = DirectX11::GetInstance()->GetContext();
 	D3D11_MAPPED_SUBRESOURCE mp{};
@@ -260,10 +255,6 @@ void ImageRender::UpdateVB(const Vertex v[4]) {
 }
 
 void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
-	// 2D (スクリーン) は基本的に Z (roll) 回転を使う（deg -> rad）
-	float radZ = DirectX::XMConvertToRadians(-m_offsetRot.z); // 以前の向きと互換を保つため符号反転
-	float c = cosf(radZ), s = sinf(radZ);
-
 	if (!cam) {
 		float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
 		float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
@@ -273,39 +264,20 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 
 		float hw = m_size2D.x * 0.5f;
 		float hh = m_size2D.y * 0.5f;
-
-		// 四隅の相対オフセット (px)
-		DirectX::XMFLOAT2 offs[4] = {
-			{-hw, -hh},
-			{ hw, -hh},
-			{ hw,  hh},
-			{-hw,  hh},
-		};
-
 		auto toNDC = [&](float x, float y)->DirectX::XMFLOAT2 {
 			float ndcX = (x / W) * 2.0f - 1.0f;
 			float ndcY = 1.0f - (y / H) * 2.0f;
 			return { ndcX, ndcY };
 			};
-
-		for (int i = 0; i < 4; ++i) {
-			// Z 回転のみ適用
-			float dx = offs[i].x;
-			float dy = offs[i].y;
-			float rx = dx * c - dy * s;
-			float ry = dx * s + dy * c;
-			float sx = cx + rx;
-			float sy = cy + ry;
-			DirectX::XMFLOAT2 ndc = toNDC(sx, sy);
-			outV[i].pos = { ndc.x, ndc.y, 0.0f };
-		}
-
-		outV[0].uv = { m_uvRect.x, m_uvRect.y };
-		outV[1].uv = { m_uvRect.z, m_uvRect.y };
-		outV[2].uv = { m_uvRect.z, m_uvRect.w };
-		outV[3].uv = { m_uvRect.x, m_uvRect.w };
-
+		DirectX::XMFLOAT2 tl = toNDC(cx - hw, cy - hh);
+		DirectX::XMFLOAT2 tr = toNDC(cx + hw, cy - hh);
+		DirectX::XMFLOAT2 br = toNDC(cx + hw, cy + hh);
+		DirectX::XMFLOAT2 bl = toNDC(cx - hw, cy + hh);
 		outZClip = 0.0f;
+		outV[0] = { {tl.x, tl.y, outZClip}, {m_uvRect.x, m_uvRect.y} };
+		outV[1] = { {tr.x, tr.y, outZClip}, {m_uvRect.z, m_uvRect.y} };
+		outV[2] = { {br.x, br.y, outZClip}, {m_uvRect.z, m_uvRect.w} };
+		outV[3] = { {bl.x, bl.y, outZClip}, {m_uvRect.x, m_uvRect.w} };
 		return;
 	}
 
@@ -333,34 +305,21 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 	float hw = m_size2D.x * 0.5f;
 	float hh = m_size2D.y * 0.5f;
 
-	DirectX::XMFLOAT2 offs2[4] = {
-		{-hw, -hh},
-		{ hw, -hh},
-		{ hw,  hh},
-		{-hw,  hh},
-	};
-
-	auto toNDC2 = [&](float x, float y)->DirectX::XMFLOAT2 {
+	auto toNDC = [&](float x, float y)->DirectX::XMFLOAT2 {
 		float ndcX2 = (x / W) * 2.0f - 1.0f;
 		float ndcY2 = 1.0f - (y / H) * 2.0f;
 		return { ndcX2, ndcY2 };
 		};
 
-	for (int i = 0; i < 4; ++i) {
-		float dx = offs2[i].x;
-		float dy = offs2[i].y;
-		float rx = dx * c - dy * s;
-		float ry = dx * s + dy * c;
-		float sx = px + rx;
-		float sy = py + ry;
-		DirectX::XMFLOAT2 ndc = toNDC2(sx, sy);
-		outV[i].pos = { ndc.x, ndc.y, outZClip };
-	}
+	DirectX::XMFLOAT2 tl = toNDC(px - hw, py - hh);
+	DirectX::XMFLOAT2 tr = toNDC(px + hw, py - hh);
+	DirectX::XMFLOAT2 br = toNDC(px + hw, py + hh);
+	DirectX::XMFLOAT2 bl = toNDC(px - hw, py + hh);
 
-	outV[0].uv = { m_uvRect.x, m_uvRect.y };
-	outV[1].uv = { m_uvRect.z, m_uvRect.y };
-	outV[2].uv = { m_uvRect.z, m_uvRect.w };
-	outV[3].uv = { m_uvRect.x, m_uvRect.w };
+	outV[0] = { {tl.x, tl.y, outZClip}, {m_uvRect.x, m_uvRect.y} };
+	outV[1] = { {tr.x, tr.y, outZClip}, {m_uvRect.z, m_uvRect.y} };
+	outV[2] = { {br.x, br.y, outZClip}, {m_uvRect.z, m_uvRect.w} };
+	outV[3] = { {bl.x, bl.y, outZClip}, {m_uvRect.x, m_uvRect.w} };
 }
 
 void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
@@ -379,15 +338,6 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&right));
 	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&up));
 
-	// m_offsetRot (deg) -> ラジアン、符号は以前と互換性を保つため反転
-	float pitch = DirectX::XMConvertToRadians(-m_offsetRot.x);
-	float yaw = DirectX::XMConvertToRadians(-m_offsetRot.y);
-	float roll = DirectX::XMConvertToRadians(-m_offsetRot.z);
-	DirectX::XMMATRIX rotM = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-
-	DirectX::XMVECTOR rRot = DirectX::XMVector3Normalize(DirectX::XMVector3TransformNormal(vRight, rotM));
-	DirectX::XMVECTOR uRot = DirectX::XMVector3Normalize(DirectX::XMVector3TransformNormal(vUp, rotM));
-
 	Transform t = _Parent->GetTransform();
 	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
 	DirectX::XMVECTOR off = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&m_offset3D), R);
@@ -396,21 +346,22 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 	float hw = m_sizeWorld.x * 0.5f;
 	float hh = m_sizeWorld.y * 0.5f;
 
+	// オペレーター式のあいまいさ回避のため演算を明示的に関数化
 	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(rRot, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(uRot, DirectX::XMVectorReplicate(hh))
+		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
+		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
 	);
 	DirectX::XMVECTOR tr = DirectX::XMVectorAdd(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(rRot, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(uRot, DirectX::XMVectorReplicate(hh))
+		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
+		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
 	);
 	DirectX::XMVECTOR br = DirectX::XMVectorSubtract(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(rRot, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(uRot, DirectX::XMVectorReplicate(hh))
+		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
+		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
 	);
 	DirectX::XMVECTOR bl = DirectX::XMVectorSubtract(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(rRot, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(uRot, DirectX::XMVectorReplicate(hh))
+		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
+		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
 	);
 
 	DirectX::XMFLOAT3 f;
@@ -423,18 +374,8 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 	Transform t = _Parent->GetTransform();
 	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
-
-	// m_offsetRot をローカル回転として適用 (deg -> rad), 符号反転して互換性を保つ
-	float pitch = DirectX::XMConvertToRadians(-m_offsetRot.x);
-	float yaw = DirectX::XMConvertToRadians(-m_offsetRot.y);
-	float roll = DirectX::XMConvertToRadians(-m_offsetRot.z);
-	DirectX::XMMATRIX rotM = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-
-	// オブジェクト回転にオフセット回転を乗算（オブジェクト回転 -> オフセット回転）
-	DirectX::XMMATRIX ROffset = DirectX::XMMatrixMultiply(R, rotM);
-
-	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(ROffset.r[0]);
-	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(ROffset.r[1]);
+	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(R.r[0]);
+	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(R.r[1]);
 
 	DirectX::XMVECTOR off = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&m_offset3D), R);
 	DirectX::XMVECTOR center = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&t.position), off);
@@ -469,83 +410,85 @@ void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 void ImageRender::UpdateVerticesUI(Vertex outV[4])
 {
 	if (!cam) {
-		// カメラがない場合は 2D と同様 (既存挙動)
+		// カメラが無い場合はとりあえず 2D と同じ扱いにフォールバック
 		float dummyZ = 0.0f;
 		UpdateVertices2D(outV, dummyZ);
 		return;
 	}
 
-	// View / inverse(View) / Projection を取得
+	// カメラの View 行列 → 逆行列から right/up/forward を取得
 	DirectX::XMMATRIX V = cam->GetView();
 	DirectX::XMMATRIX invV = DirectX::XMMatrixInverse(nullptr, V);
-	DirectX::XMMATRIX P = cam->GetProjection();
 
-	// UI をカメラ前方の固定距離に配置
-	const float uiDistance = 3.0f;
-	// ビュー空間での中心点 (ビュー空間座標)
-	DirectX::XMVECTOR centerView = DirectX::XMVectorSet(0.0f, 0.0f, uiDistance, 1.0f);
+	DirectX::XMFLOAT3 camPosF(
+		invV.r[3].m128_f32[0],
+		invV.r[3].m128_f32[1],
+		invV.r[3].m128_f32[2]
+	);
+	DirectX::XMFLOAT3 rightF(
+		invV.r[0].m128_f32[0],
+		invV.r[0].m128_f32[1],
+		invV.r[0].m128_f32[2]
+	);
+	DirectX::XMFLOAT3 upF(
+		invV.r[1].m128_f32[0],
+		invV.r[1].m128_f32[1],
+		invV.r[1].m128_f32[2]
+	);
+	DirectX::XMFLOAT3 fwdF(
+		invV.r[2].m128_f32[0],
+		invV.r[2].m128_f32[1],
+		invV.r[2].m128_f32[2]
+	);
 
-	// スクリーンサイズ（ピクセル）
-	float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
-	float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
-	if (W <= 0.0f || H <= 0.0f) {
-		// 退避: おかしな値なら 2D と同様に処理
-		float dummyZ = 0.0f;
-		UpdateVertices2D(outV, dummyZ);
-		return;
-	}
+	DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&camPosF);
+	DirectX::XMVECTOR right = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&rightF));
+	DirectX::XMVECTOR up = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&upF));
+	DirectX::XMVECTOR fwd = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&fwdF));
 
-	// カメラの Projection から垂直 FOV を復元して、
-	// 距離 uiDistance におけるビュー空間の垂直サイズを計算する
-	// DirectX の一般的な Perspective 行列では m._22 = cot(fovY/2)
-	float p22 = P.r[1].m128_f32[1];
-	if (p22 == 0.0f) p22 = 1.0f;
-	float fovY = 2.0f * atanf(1.0f / p22);
-	float viewHeightAtDist = 2.0f * uiDistance * tanf(fovY * 0.5f);
-	float aspect = W / H;
-	float viewWidthAtDist = viewHeightAtDist * aspect;
+	// UI の基準距離（カメラの前 d メートル）
+	float uiDistance = 3.0f; // 必要に応じて Inspector から弄れるようにしてもよい
+	DirectX::XMVECTOR baseCenter = DirectX::XMVectorAdd(
+		camPos,
+		DirectX::XMVectorScale(fwd, uiDistance)
+	);
 
-	// UI モードでは Inspector で指定する m_size2D (px) を使って、
-	// 距離 uiDistance におけるワールド単位の半幅・半高を算出する
-	float worldPerPixelY = viewHeightAtDist / H;
-	float worldPerPixelX = viewWidthAtDist / W;
+	// m_offset2D を「画面右・上方向オフセット」として解釈
+	// → X: 画面右方向（right）, Y: 画面上方向（up）
+	DirectX::XMVECTOR offsetWorld =
+		DirectX::XMVectorAdd(
+			DirectX::XMVectorScale(right, m_offset2D.x),
+			DirectX::XMVectorScale(up, m_offset2D.y)
+		);
 
-	float halfW_viewUnits = (m_size2D.x * 0.5f) * worldPerPixelX;
-	float halfH_viewUnits = (m_size2D.y * 0.5f) * worldPerPixelY;
+	DirectX::XMVECTOR center = DirectX::XMVectorAdd(baseCenter, offsetWorld);
 
-	// 回転行列（ビュー空間での回転）
-	// m_offsetRot は度で保持している前提。符号は従来の互換に合わせて反転している点に注意。
-	float pitch = DirectX::XMConvertToRadians(-m_offsetRot.x);
-	float yaw = DirectX::XMConvertToRadians(-m_offsetRot.y);
-	float roll = DirectX::XMConvertToRadians(-m_offsetRot.z);
-	DirectX::XMMATRIX rotView = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+	float hw = m_sizeWorld.x * 0.5f;
+	float hh = m_sizeWorld.y * 0.5f;
 
-	// ビュー空間での四隅（Y up）
-	DirectX::XMVECTOR cornersView[4];
-	// top-left, top-right, bottom-right, bottom-left (ビュー空間の Y は上方向)
-	cornersView[0] = DirectX::XMVectorSet(-halfW_viewUnits, halfH_viewUnits, 0.0f, 0.0f); // TL
-	cornersView[1] = DirectX::XMVectorSet(halfW_viewUnits, halfH_viewUnits, 0.0f, 0.0f); // TR
-	cornersView[2] = DirectX::XMVectorSet(halfW_viewUnits, -halfH_viewUnits, 0.0f, 0.0f); // BR
-	cornersView[3] = DirectX::XMVectorSet(-halfW_viewUnits, -halfH_viewUnits, 0.0f, 0.0f); // BL
+	// クワッド頂点をカメラの right/up ベクトル基準で生成
+	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
+		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
+	DirectX::XMVECTOR tr = DirectX::XMVectorAdd(
+		DirectX::XMVectorAdd(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
+	DirectX::XMVECTOR br = DirectX::XMVectorSubtract(
+		DirectX::XMVectorAdd(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
+	DirectX::XMVECTOR bl = DirectX::XMVectorSubtract(
+		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
+		DirectX::XMVectorScale(up, hh)
+	);
 
-	for (int i = 0; i < 4; ++i) {
-		// ビュー空間で回転を適用 (回転はビュー空間ベースなのでカメラ回転に影響されない)
-		DirectX::XMVECTOR rotated = DirectX::XMVector3TransformNormal(cornersView[i], rotView);
-		// 中心に足してビュー空間上の座標を得る
-		DirectX::XMVECTOR posView = DirectX::XMVectorAdd(centerView, rotated);
-		// ビュー空間 -> ワールド空間に変換
-		DirectX::XMVECTOR posWorld = DirectX::XMVector3TransformCoord(posView, invV);
-		// 書き出し
-		DirectX::XMFLOAT3 f;
-		DirectX::XMStoreFloat3(&f, posWorld);
-		outV[i].pos = f;
-	}
-
-	// UV は通常どおり
-	outV[0].uv = { m_uvRect.x, m_uvRect.y };
-	outV[1].uv = { m_uvRect.z, m_uvRect.y };
-	outV[2].uv = { m_uvRect.z, m_uvRect.w };
-	outV[3].uv = { m_uvRect.x, m_uvRect.w };
+	DirectX::XMFLOAT3 f;
+	DirectX::XMStoreFloat3(&f, tl); outV[0].pos = f; outV[0].uv = { m_uvRect.x, m_uvRect.y };
+	DirectX::XMStoreFloat3(&f, tr); outV[1].pos = f; outV[1].uv = { m_uvRect.z, m_uvRect.y };
+	DirectX::XMStoreFloat3(&f, br); outV[2].pos = f; outV[2].uv = { m_uvRect.z, m_uvRect.w };
+	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
 }
 
 void ImageRender::Draw() {
@@ -636,7 +579,7 @@ void ImageRender::DrawInspector() {
 	if (!ImGui::CollapsingHeader(SJ(title.c_str()).c_str()))
 		return;
 
-	ImGui::Text("%s", SJ("テクスチャ:").c_str());
+	ImGui::Text("%s", SJ("テクスチャ名:").c_str());
 	ImGui::SameLine();
 	ImGui::Text("%s", m_textureName.empty() ? "(none)" : m_textureName.c_str());
 	ImGui::SameLine();
@@ -665,7 +608,7 @@ void ImageRender::DrawInspector() {
 		ImGui::Text("(%d x %d)", (int)m_texture->width, (int)m_texture->height);
 	}
 
-	std::string modeLabels[4] = { SJ("2D"), SJ("Billboard"), SJ("3D"), SJ("UI") };
+	std::string modeLabels[4] = { SJ("2D配置"), SJ("ビルボード"), SJ("3D配置"),SJ("UI") };
 	int modeIdx = (int)m_mode;
 	if (ImGui::BeginCombo(SJ("配置モード").c_str(), modeLabels[modeIdx].c_str())) {
 		for (int i = 0; i < 4; ++i) {
@@ -687,22 +630,19 @@ void ImageRender::DrawInspector() {
 		ImGui::InputFloat2(SJ("サイズ(ワールド)").c_str(), (float*)&m_sizeWorld);
 	}
 
-	// m_offsetRot を XYZ で編集 (度)
-	ImGui::InputFloat3(SJ("回転(度) XYZ").c_str(), (float*)&m_offsetRot);
-
 	ImGui::InputFloat4("UV(u0,v0,u1,v1)", (float*)&m_uvRect);
 	m_uvRect.x = Clamp(m_uvRect.x, 0.0f, 1.0f);
 	m_uvRect.y = Clamp(m_uvRect.y, 0.0f, 1.0f);
 	m_uvRect.z = Clamp(m_uvRect.z, 0.0f, 1.0f);
 	m_uvRect.w = Clamp(m_uvRect.w, 0.0f, 1.0f);
 
-	ImGui::ColorEdit4(SJ("色").c_str(), (float*)&m_color);
+	ImGui::ColorEdit4(SJ("カラー").c_str(), (float*)&m_color);
 
 	if (ImGui::TreeNode(SJ("シェーダ設定").c_str())) {
 		auto* sm = ShaderManager::GetInstance();
 		static std::vector<std::string> vsList;
 		static std::vector<std::string> psList;
-		if (ImGui::Button(SJ("更新リスト").c_str())) {
+		if (ImGui::Button(SJ("リスト更新").c_str())) {
 			vsList = sm->GetShaderList("VS");
 			psList = sm->GetShaderList("PS");
 		}
