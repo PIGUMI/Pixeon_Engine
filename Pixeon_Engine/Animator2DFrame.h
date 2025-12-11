@@ -1,6 +1,8 @@
 #ifndef ANIMATOR2DFRAME_H
 #define ANIMATOR2DFRAME_H
 
+#include "CameraComponent.h"
+
 class Animator2D;
 struct KeyFrame;
 class TimelineEditor;
@@ -33,6 +35,7 @@ private:
 	TimelineEditor* timelineEditor_ = nullptr;
 	bool isPlaying_ = false;
 	bool wantOpenTexturePopup_ = false;
+	CameraComponent* tempCamera_ = nullptr;
 private:
 	static Animator2DFrame* instance;
 };

@@ -32,12 +32,16 @@ public:
 	~ImageRender();
 
 	void Init(Object* owner) override;
+	void InGameUpdate() override;
+	void EditUpdate() override;
+	void Update();
 	void Draw() override;
 	void DrawInspector() override;
 	void UInit() override;
 
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
+	void SetCamera(CameraComponent* ptr);
 
 	void SetTextureName(const std::string& name);
 	const std::string& GetTextureName() const { return m_textureName; }
@@ -98,7 +102,7 @@ private:
 
 	// 表示設定
 	PlacementMode m_mode = PlacementMode::Screen2D;
-
+	CameraComponent* cam = nullptr;
 	// 2D: ピクセル単位, 3D/Billboard: ワールド単位
 	DirectX::XMFLOAT2 m_size2D = { 128.0f, 128.0f };
 	DirectX::XMFLOAT2 m_sizeWorld = { 1.0f, 1.0f };

@@ -27,10 +27,13 @@ void Animator2DFrame::DestroyInstance()
 void Animator2DFrame::Init()
 {
 	timelineEditor_ = new TimelineEditor();
+	tempCamera_ = new CameraComponent();
+	tempCamera_->Init(nullptr);
 }
 
 void Animator2DFrame::Update()
 {
+	tempCamera_->EditUpdate();
 	// XVˆ—
 	if (IsKeyPress(VK_CONTROL) && IsKeyTrigger('S'))
 	{
@@ -68,6 +71,7 @@ void Animator2DFrame::Draw()
 	if (animator_)
 	{
 		animator_->SetEditorMode(true);
+		//animator_-> SetTempCamera(tempCamera_);
 		animator_->Draw();
 	}
 }

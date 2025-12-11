@@ -53,6 +53,11 @@ void ImageRender::LoadFromFile(std::istream& in) {
 	}
 }
 
+void ImageRender::SetCamera(CameraComponent* ptr)
+{
+	cam = ptr;
+}
+
 void ImageRender::Init(Object* owner) {
 	_Parent = owner;
 	_ComponentName = "ImageRender";
@@ -66,6 +71,25 @@ void ImageRender::Init(Object* owner) {
 	EnsureConstantBuffer();
 	EnsureBuffers();
 	m_ready = true;
+}
+
+void ImageRender::InGameUpdate()
+{
+	Update();
+}
+
+void ImageRender::EditUpdate()
+{
+	Update();
+}
+
+void ImageRender::Update()
+{
+	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
+	if (scene)
+	{
+		cam = scene ? scene->GetMainCamera() : nullptr;
+	}
 }
 
 void ImageRender::SetTextureName(const std::string& name) {
@@ -231,8 +255,6 @@ void ImageRender::UpdateVB(const Vertex v[4]) {
 }
 
 void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
-	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
-	CameraComponent* cam = scene ? scene->GetMainCamera() : nullptr;
 	if (!cam) {
 		float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
 		float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
@@ -301,8 +323,6 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 }
 
 void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
-	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
-	CameraComponent* cam = scene ? scene->GetMainCamera() : nullptr;
 	if (!cam) {
 		float dummyZ = 0.0f;
 		UpdateVertices2D(outV, dummyZ);
@@ -389,8 +409,6 @@ void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 
 void ImageRender::UpdateVerticesUI(Vertex outV[4])
 {
-	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
-	CameraComponent* cam = scene ? scene->GetMainCamera() : nullptr;
 	if (!cam) {
 		// カメラが無い場合はとりあえず 2D と同じ扱いにフォールバック
 		float dummyZ = 0.0f;

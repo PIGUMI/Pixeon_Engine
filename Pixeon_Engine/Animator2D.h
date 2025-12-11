@@ -7,6 +7,7 @@
 #include "Struct.h"
 #include "ImageRender.h"
 #include "Object.h"
+#include "CameraComponent.h"
 
 /* ベジェ曲線情報 */
 struct CurveData
@@ -113,6 +114,9 @@ public:
 	void SetOwner(Object* owner);
 
 	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
+	void PreviewUpdate();
+
+	void SetTempCamera(CameraComponent* camera) { tempCamera_ = camera; }
 
 	Animator2D* Copy();
 private:
@@ -134,4 +138,5 @@ public:
 	int DrawCount = 0;
 	Object* owner_ = nullptr;
 	bool bEditorMode_ = false; // エディターモード
+	CameraComponent* tempCamera_ = nullptr; // 一時カメラ
 };

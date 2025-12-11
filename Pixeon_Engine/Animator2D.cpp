@@ -117,6 +117,7 @@ void Animator2D::Draw()
 					kf.NowTransform.UVPosition.y,
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
+				PreviewImage->SetCamera(tempCamera_);
 			}
 			else
 			{
@@ -368,6 +369,11 @@ void Animator2D::SetOwner(Object* owner)
 {
 	owner_ = owner;
 	PreviewImage->SetParent(owner);
+}
+
+void Animator2D::PreviewUpdate()
+{
+	PreviewImage->Update();
 }
 
 Animator2D* Animator2D::Copy()

@@ -21,6 +21,13 @@ void Animator2DComponent::InGameUpdate()
 	}
 }
 
+void Animator2DComponent::EditUpdate()
+{
+	for (auto& animator : _animators) {
+		animator->PreviewUpdate();
+	}
+}
+
 void Animator2DComponent::Draw()
 {
 	int count = 0;
