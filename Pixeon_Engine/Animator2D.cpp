@@ -73,7 +73,6 @@ void Animator2D::EditorUpdate()
 void Animator2D::Draw()
 {
 	std::vector<KeyFrame> SortedKeyFrames = KeyFrames_;
-
 	// レイヤー順にソート
 	std::sort(SortedKeyFrames.begin(), SortedKeyFrames.end(),
 		[](const KeyFrame& a, const KeyFrame& b)
@@ -82,15 +81,13 @@ void Animator2D::Draw()
 		});
 
 	DrawCount = 0;
-
 	for (auto& kf : SortedKeyFrames)
 	{
-		if (!kf.Active) continue;
+		if (!kf.Active) continue;// 非アクティブスキップ
 		DrawCount++;
 		if (PreviewImage)
 		{
-			// 表示モード設定
-			switch (viewMode_)
+			switch (viewMode_)// 表示モード設定
 			{
 			case ViewMode::UI:
 				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::UI);
@@ -99,20 +96,20 @@ void Animator2D::Draw()
 				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::Billboard);
 				break;
 			}
-			// 変換情報設定
-			if (bEditorMode_)
+
+			if (bEditorMode_)// 変換情報設定
 			{
-				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * -100.0f,kf.NowTransform.Position.y * -100.0f });
+				PreviewImage->SetOffset2D(kf.NowTransform.Position);
 				if (owner_)
 				{
 					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
-						(kf.NowTransform.Position.x * -100.0f),
-						(kf.NowTransform.Position.y * -100.0f),
+						kf.NowTransform.Position.x,
+						kf.NowTransform.Position.y,
 						0.0f));
 				}
 				else
 				{
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3((kf.NowTransform.Position.x * -100.0f), (kf.NowTransform.Position.y * -100.0f), 0.0f));
+					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x, kf.NowTransform.Position.y, 0.0f));
 				}
 				PreviewImage->SetSize2D(kf.NowTransform.Scale);
 				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
@@ -142,6 +139,7 @@ void Animator2D::Draw()
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
 			}
+
 			PreviewImage->SetColor(kf.NowTransform.Color);
 			PreviewImage->SetTextureName(kf.Texture);
 			PreviewImage->Draw();

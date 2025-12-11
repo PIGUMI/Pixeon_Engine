@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "TimelineEditor.h"
 #include "Animator2DManager.h"
+#include "CameraComponent.h"
 
 Animator2DFrame* Animator2DFrame::instance = nullptr;
 
