@@ -37,6 +37,12 @@ void CameraComponent::EditUpdate() {
 		_Position.y = sinf(_Rotation.y) * _radius + _Fixation.y;
 		_Position.z = cosf(_Rotation.y) * cosf(_Rotation.x) * _radius + _Fixation.z;
 	}
+	if (_Parent)
+	{
+		auto trans = _Parent->GetTransform();
+		trans.position = _Fixation;
+		_Parent->SetTransform(trans);
+	}
 }
 
 void CameraComponent::InGameUpdate() {
@@ -55,6 +61,12 @@ void CameraComponent::InGameUpdate() {
 		_Position.x = cosf(_Rotation.y) * sinf(_Rotation.x) * _radius + _Fixation.x;
 		_Position.y = sinf(_Rotation.y) * _radius + _Fixation.y;
 		_Position.z = cosf(_Rotation.y) * cosf(_Rotation.x) * _radius + _Fixation.z;
+	}
+	if (_Parent)
+	{
+		auto trans = _Parent->GetTransform();
+		trans.position = _Position;
+		_Parent->SetTransform(trans);
 	}
 }
 

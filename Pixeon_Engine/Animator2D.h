@@ -114,9 +114,6 @@ public:
 
 	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
 	void PreviewUpdate();
-
-	void SetTempCamera(CameraComponent* camera) { tempCamera_ = camera; }
-
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
