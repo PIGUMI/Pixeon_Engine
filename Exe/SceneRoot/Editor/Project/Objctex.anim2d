@@ -1,0 +1,96 @@
+{
+    "KeyFrames": [
+        {
+            "Active": true,
+            "CurveInfo": {
+                "ControlPoint1": [
+                    0.0,
+                    0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EditorFlag": {
+                "bPosition": false,
+                "bRotation": false,
+                "bScale": false,
+                "bUVPosition": false,
+                "bUVScale": false
+            },
+            "EndTime": 1.0,
+            "EndTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Layer": 0,
+            "StartTime": 0.0,
+            "StartTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Texture": ""
+        }
+    ],
+    "Loop": false,
+    "ProjectName": "Objctex",
+    "TotalDuration": 1.0,
+    "ViewMode": 0
+}
