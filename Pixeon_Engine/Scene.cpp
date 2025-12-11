@@ -6,13 +6,14 @@
 #include "Component.h"
 #include "LightComponent.h"
 #include "RigidBody.h"
+#include "ImageRender.h"
 #include <thread>
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
 
-// ƒ‰ƒCƒg—pGPU’è”ƒoƒbƒtƒ@\‘¢‘Ì
+// ï¿½ï¿½ï¿½Cï¿½gï¿½pGPUï¿½è”ï¿½oï¿½bï¿½tï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½
 struct LightGPU {
 	DirectX::XMFLOAT3 position;
 	float intensity;
@@ -23,14 +24,14 @@ struct LightGPU {
 	float innerCos;
 	float outerCos;
 	float enabled;
-	float pad; // 16B ƒAƒ‰ƒCƒƒ“ƒg
+	float pad; // 16B ï¿½Aï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½g
 };
 
-// ƒ‰ƒCƒg—p’è”ƒoƒbƒtƒ@\‘¢‘Ì
+// ï¿½ï¿½ï¿½Cï¿½gï¿½pï¿½è”ï¿½oï¿½bï¿½tï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½
 static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
-// ŠJ•úˆ—
+// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Scene::~Scene()
 {
 	SaveToFile();
@@ -64,7 +65,7 @@ Scene::~Scene()
 }
 
 void Scene::Init() {
-	// “®“I”z—ñ‚Ì‰Šú‰»
+	// ï¿½ï¿½ï¿½Iï¿½zï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 	_objects.clear();
 	_ToBeAdded.clear();
 	_ToBeRemoved.clear();
@@ -82,7 +83,7 @@ void Scene::BeginPlay() {
 			_SaveObjects.push_back(cloneObj);
 		}
 	}
-	// •¨—‰‰Z‚ÉŠÖ‚·‚éƒR[ƒh
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ÉŠÖ‚ï¿½ï¿½ï¿½Rï¿½[ï¿½h
 	if (pPhysicsWorld)
 	{
 		while (pPhysicsWorld->getNumCollisionObjects() > 0)
@@ -97,7 +98,7 @@ void Scene::BeginPlay() {
 	}
 	//
 
-	// BeginPlay‚ğŒÄ‚Ño‚·
+	// BeginPlayï¿½ï¿½ï¿½Ä‚Ñoï¿½ï¿½
 	for (auto& obj : _objects) {
 		if (obj)obj->BeginPlay();
 	}
@@ -131,9 +132,9 @@ void Scene::EditUpdate() {
 			}
 		}
 	}
-	// ”ñ“¯Šú’Ç‰Á‚Ìˆ—
+	// ï¿½ñ“¯Šï¿½ï¿½Ç‰ï¿½ï¿½Ìï¿½ï¿½ï¿½
 	ProcessThreadSafeAdditions();
-	// ƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Áˆ—
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ì’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (auto& obj : _ToBeAdded) {
 		if (obj) {
 			obj->SetParentScene(this);
@@ -142,7 +143,7 @@ void Scene::EditUpdate() {
 	}
 	_ToBeAdded.clear();
 
-	// ƒJƒƒ‰ƒRƒ“ƒ|[ƒlƒ“ƒg‚ÌXV
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ÌXï¿½V
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -160,10 +161,10 @@ void Scene::EditUpdate() {
 	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
 	else _MainCameraNumber = -1;
 
-	// ƒIƒuƒWƒFƒNƒg‚ÌXV
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÌXï¿½V
 	for (auto& obj : _objects) if (obj)obj->EditUpdate();
 
-	// ƒIƒuƒWƒFƒNƒg‚Ìíœˆ—
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ìíœï¿½ï¿½ï¿½ï¿½
 	for (auto& obj : _ToBeRemoved) {
 		if (!obj) continue;
 		auto it = std::find(_objects.begin(), _objects.end(), obj);
@@ -177,9 +178,9 @@ void Scene::EditUpdate() {
 
 void Scene::PlayUpdate() {
 	InGame = true;
-	// ”ñ“¯Šú’Ç‰Á‚Ìˆ—
+	// ï¿½ñ“¯Šï¿½ï¿½Ç‰ï¿½ï¿½Ìï¿½ï¿½ï¿½
 	ProcessThreadSafeAdditions();
-	// ƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Áˆ—
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ì’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (auto& obj : _ToBeAdded) {
 		if (obj) {
 			obj->SetParentScene(this);
@@ -189,7 +190,7 @@ void Scene::PlayUpdate() {
 	}
 	_ToBeAdded.clear();
 
-	// ƒJƒƒ‰ƒRƒ“ƒ|[ƒlƒ“ƒg‚ÌXV
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ÌXï¿½V
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -207,7 +208,7 @@ void Scene::PlayUpdate() {
 	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
 	else _MainCameraNumber = -1;
 
-	/* •¨—ƒVƒ…ƒ~ƒŒ[ƒVƒ‡ƒ“‚ÌƒXƒeƒbƒv */
+	/* ï¿½ï¿½ï¿½ï¿½ï¿½Vï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ÌƒXï¿½eï¿½bï¿½v */
 	if (pPhysicsWorld)
 	{
 		try
@@ -226,7 +227,7 @@ void Scene::PlayUpdate() {
 					}
 				}
 
-				// –³Œø‚ÈƒIƒuƒWƒFƒNƒg‚ª‚È‚¢ê‡‚Ì‚İƒXƒeƒbƒv‚ği‚ß‚é
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ÈƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½Ì‚İƒXï¿½eï¿½bï¿½vï¿½ï¿½iï¿½ß‚ï¿½
 				if (!hasInvakudObjects)
 				{
 					float timeStep = 1.0f / 60.0f;
@@ -263,12 +264,12 @@ void Scene::PlayUpdate() {
 		}
 	}
 
-	// ƒIƒuƒWƒFƒNƒg‚ÌXV
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÌXï¿½V
 	for (auto& obj : _objects) if (obj)obj->InGameUpdate();
 
 	if (_collisionManager)_collisionManager->Update();
 
-	// ƒIƒuƒWƒFƒNƒg‚Ìíœˆ—
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ìíœï¿½ï¿½ï¿½ï¿½
 	for (auto& obj : _ToBeRemoved) {
 		if (!obj) continue;
 		auto it = std::find(_objects.begin(), _objects.end(), obj);
@@ -282,22 +283,56 @@ void Scene::PlayUpdate() {
 
 void Scene::Draw() {
 	UploadLightsToGPU();
-	// ƒIƒuƒWƒFƒNƒg‚Ì•`‰æ
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ì•`ï¿½ï¿½
 	std::vector<Object*> sortedList = _objects;
+	std::vector<Object*> uiObjects;
+	
+	// UIï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ImageRenderï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	for (auto it = sortedList.begin(); it != sortedList.end(); ) {
+		Object* obj = *it;
+		bool isUIObject = false;
+		if (obj) {
+			// ImageRenderï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½mï¿½F
+			for (auto& comp : obj->GetComponents()) {
+				if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::IMAGE) {
+					ImageRender* imgComp = dynamic_cast<ImageRender*>(comp);
+					if (imgComp && imgComp->GetPlacementMode() == ImageRender::PlacementMode::UI) {
+						isUIObject = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		if (isUIObject) {
+			uiObjects.push_back(obj);
+			it = sortedList.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+	
+	// ï¿½Êï¿½ï¿½ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åƒ\ï¿½[ï¿½g
 	if (_MainCamera) {
 		std::sort(sortedList.begin(), sortedList.end(), [this](Object* a, Object* b) {
 			if (!a || !b) return false;
-			// ƒJƒƒ‰‚©‚ç‚Ì‹——£‚ğŒvZ
+			// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Z
 			DirectX::XMFLOAT3 camPos = _MainCamera->GetPosition();
 			DirectX::XMFLOAT3 posA = a->GetTransform().position;
 			DirectX::XMFLOAT3 posB = b->GetTransform().position;
 			float distA = (camPos.x - posA.x) * (camPos.x - posA.x) + (camPos.y - posA.y) * (camPos.y - posA.y) + (camPos.z - posA.z) * (camPos.z - posA.z);
 			float distB = (camPos.x - posB.x) * (camPos.x - posB.x) + (camPos.y - posB.y) * (camPos.y - posB.y) + (camPos.z - posB.z) * (camPos.z - posB.z);
-			// ‹——£‚ª‹ß‚¢‡‚Éƒ\[ƒg
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½ï¿½Éƒ\ï¿½[ï¿½g
 			return distA < distB;
 			});
 	}
+	
+	// ï¿½Êï¿½ï¿½ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½`ï¿½ï¿½
 	for (auto& obj : sortedList) if (obj)obj->Draw();
+	
+	// UIï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ÅŒï¿½ÉˆÊ’uï¿½Éƒ\ï¿½[ï¿½gï¿½ï¿½ï¿½Äæ‚¸ï¿½ÉŒï¿½ï¿½Åï¿½ï¿½É`ï¿½ï¿½
+	for (auto& obj : uiObjects) if (obj)obj->Draw();
 }
 
 void Scene::SaveToFile() {
@@ -308,7 +343,7 @@ void Scene::SaveToFile() {
 	else {
 		SaveObjects = _objects;
 	}
-	// Œ»İ‚Ìæ“¾
+	// ï¿½ï¿½ï¿½İï¿½ï¿½ï¿½ï¿½Ìæ“¾
 	auto Now = std::chrono::system_clock::now();
 	auto in_time_t = std::chrono::system_clock::to_time_t(Now);
 	std::tm localtime;
@@ -318,19 +353,19 @@ void Scene::SaveToFile() {
 	SceneData["SceneSettings"]["Name"] = _name;
 	SceneData["SceneSettings"]["MainCameraNumber"] = _MainCameraNumber;
 
-	// ƒIƒuƒWƒFƒNƒgƒf[ƒ^‚Ì•Û‘¶
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½fï¿½[ï¿½^ï¿½Ì•Û‘ï¿½
 	nlohmann::json ObjectArray = nlohmann::json::array();
 
 	for (const auto& Object : SaveObjects) {
 		if (Object) {
-			// ƒIƒuƒWƒFƒNƒg‚ÌŠî–{î•ñ‚Ì•Û‘¶
+			// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÌŠï¿½{ï¿½ï¿½ï¿½Ì•Û‘ï¿½
 			nlohmann::json ObjectData;
 			ObjectData["Name"] = Object->GetObjectName();
 			ObjectData["Transform"]["Position"] = { Object->GetTransform().position.x, Object->GetTransform().position.y, Object->GetTransform().position.z };
 			ObjectData["Transform"]["Rotation"] = { Object->GetTransform().rotation.x, Object->GetTransform().rotation.y, Object->GetTransform().rotation.z };
 			ObjectData["Transform"]["Scale"] = { Object->GetTransform().scale.x,    Object->GetTransform().scale.y,    Object->GetTransform().scale.z };
 
-			// ƒRƒ“ƒ|[ƒlƒ“ƒgƒf[ƒ^‚Ì•Û‘¶
+			// ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½fï¿½[ï¿½^ï¿½Ì•Û‘ï¿½
 			nlohmann::json ComponentData = nlohmann::json::array();
 			for (const auto& comp : Object->GetComponents()) {
 				if (comp) {
@@ -349,12 +384,12 @@ void Scene::SaveToFile() {
 	}
 	SceneData["Objects"] = ObjectArray;
 
-	// ƒtƒ@ƒCƒ‹–¼‚Ì¶¬
+	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
 	std::string File;
 	File = SettingManager::GetInstance()->GetSceneFilePath() + _name + ".scene";
 	std::ofstream outFile(File);
 	if (outFile.is_open()) {
-		outFile << SceneData.dump(4); // ƒCƒ“ƒfƒ“ƒg•4‚Å•Û‘¶
+		outFile << SceneData.dump(4); // ï¿½Cï¿½ï¿½ï¿½fï¿½ï¿½ï¿½gï¿½ï¿½4ï¿½Å•Û‘ï¿½
 		outFile.close();
 	}
 }
@@ -363,7 +398,7 @@ void Scene::LoadToFile() {
 	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + _name + ".scene";
 	std::ifstream inFile(filePath);
 	if (!inFile.is_open()) {
-		// ƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚È‚©‚Á‚½ê‡Afalse‚ğ•Ô‚·
+		// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½Afalseï¿½ï¿½Ô‚ï¿½
 		return;
 	}
 
@@ -374,12 +409,12 @@ void Scene::LoadToFile() {
 	_name = sceneData["SceneSettings"]["Name"].get<std::string>();
 	_MainCameraNumber = sceneData["SceneSettings"]["MainCameraNumber"].get<int>();
 
-	// Objects‚Ì“Ç‚İ‚İ
+	// Objectsï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 	for (const auto& objData : sceneData["Objects"]) {
 		Object* newObj = new Object();
 		newObj->SetParentScene(this);
 		newObj->SetObjectName(objData["Name"].get<std::string>());
-		// Transform‚Ì“Ç‚İ‚İ
+		// Transformï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 		auto pos = objData["Transform"]["Position"];
 		auto rot = objData["Transform"]["Rotation"];
 		auto scl = objData["Transform"]["Scale"];
@@ -388,7 +423,7 @@ void Scene::LoadToFile() {
 		transform.rotation = { rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>() };
 		transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
 		newObj->SetTransform(transform);
-		// ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì“Ç‚İ‚İ
+		// ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 		for (const auto& compData : objData["Components"]) {
 			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
 			auto name = compData["Name"].get<std::string>();
@@ -400,13 +435,13 @@ void Scene::LoadToFile() {
 				newComp->LoadFromFile(iss);
 			}
 			else {
-				MessageBox(nullptr, "ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì’Ç‰Á‚É¸”s‚µ‚Ü‚µ‚½", "Error", MB_OK);
+				MessageBox(nullptr, "ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½Ì’Ç‰ï¿½ï¿½Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½", "Error", MB_OK);
 			}
 		}
 		AddObjectLocal(newObj);
 	}
 
-	// “o˜^‚³‚ê‚Ä‚¢‚éƒƒCƒ“ƒJƒƒ‰‚Æ“¯‚¶”Ô†‚ÌƒJƒƒ‰ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğ’T‚·
+	// ï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½éƒï¿½Cï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Æ“ï¿½ï¿½ï¿½ï¿½Ôï¿½ï¿½ÌƒJï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ï¿½Tï¿½ï¿½
 	for (auto& obj : _ToBeAdded) {
 		if (!obj) continue;
 		for (auto& comp : obj->GetComponents()) {
@@ -464,7 +499,7 @@ void Scene::UploadLightsToGPU() {
 	if (!gLightCB) {
 		D3D11_BUFFER_DESC bd{};
 		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(LightGPU) * kMaxLights + 16; // —]—T
+		bd.ByteWidth = sizeof(LightGPU) * kMaxLights + 16; // ï¿½]ï¿½T
 		bd.Usage = D3D11_USAGE_DYNAMIC;
 		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		dev->CreateBuffer(&bd, nullptr, &gLightCB);
@@ -486,14 +521,14 @@ void Scene::UploadLightsToGPU() {
 		lights[count].range = l->GetRange();
 		float innerRad = DirectX::XMConvertToRadians(l->GetSpotInner());
 		float outerRad = DirectX::XMConvertToRadians(l->GetSpotOuter());
-		lights[count].innerCos = cosf(innerRad * 0.5f); // ”¼Šp‚Åˆµ‚¤‚È‚ç“K‹X
+		lights[count].innerCos = cosf(innerRad * 0.5f); // ï¿½ï¿½ï¿½pï¿½Åˆï¿½ï¿½ï¿½ï¿½È‚ï¿½Kï¿½X
 		lights[count].outerCos = cosf(outerRad * 0.5f);
 		lights[count].enabled = 1.0f;
 		++count;
 	}
 
-	// ––”ö‚É LightCount ‚ğ–„‚ß‚é•Ê cbuffer ‚É•ª‚¯‚Ä‚à‚æ‚¢‚ª¡‰ñ‚Í“¯ƒoƒbƒtƒ@––”ö‚É‘‚©‚¸•Ê CB —pˆÓ
-	// ŠÈ‘f‰»‚Ì‚½‚ß LightCount —p’Ç‰Á cbuffer
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ LightCount ï¿½ğ–„‚ß‚ï¿½ï¿½ cbuffer ï¿½É•ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½æ‚¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í“ï¿½ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ CB ï¿½pï¿½ï¿½
+	// ï¿½È‘fï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ LightCount ï¿½pï¿½Ç‰ï¿½ cbuffer
 	struct LightCountCB { int count; float pad[3]; };
 	static ID3D11Buffer* gLightCountCB = nullptr;
 	if (!gLightCountCB) {
@@ -505,7 +540,7 @@ void Scene::UploadLightsToGPU() {
 		dev->CreateBuffer(&bd, nullptr, &gLightCountCB);
 	}
 
-	// XV
+	// ï¿½Xï¿½V
 	{
 		D3D11_MAPPED_SUBRESOURCE mp{};
 		if (SUCCEEDED(ctx->Map(gLightCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mp))) {
@@ -519,7 +554,7 @@ void Scene::UploadLightsToGPU() {
 		}
 	}
 
-	// PS ƒXƒe[ƒW‚ÖƒoƒCƒ“ƒh (b1=LightArray, b2=LightCount —á)
+	// PS ï¿½Xï¿½eï¿½[ï¿½Wï¿½Öƒoï¿½Cï¿½ï¿½ï¿½h (b1=LightArray, b2=LightCount ï¿½ï¿½)
 	ID3D11Buffer* cbs1[] = { gLightCB };
 	ctx->PSSetConstantBuffers(1, 1, cbs1);
 	ID3D11Buffer* cbs2[] = { gLightCountCB };
@@ -533,7 +568,7 @@ void Scene::InitPhysics()
 	pOverlappingPairCache = new btDbvtBroadphase();
 	pSolver = new btSequentialImpulseConstraintSolver();
 	pPhysicsWorld = new btDiscreteDynamicsWorld(pDispatcher, pOverlappingPairCache, pSolver, pCollisionConfig);
-	// d—Í‚Ìİ’è
+	// ï¿½dï¿½Í‚Ìİ’ï¿½
 	pPhysicsWorld->setGravity(btVector3(0, -9.81f, 0));
 }
 
