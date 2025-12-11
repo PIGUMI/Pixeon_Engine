@@ -23,9 +23,12 @@ void Animator2DComponent::InGameUpdate()
 
 void Animator2DComponent::Draw()
 {
+	int count = 0;
 	for (auto& animator : _animators) {
 		animator->SetEditorMode(false);
+		animator->SetViewMode(animatorViewModes_[count]);
 		animator->Draw();
+		count++;
 	}
 }
 
@@ -53,6 +56,7 @@ void Animator2DComponent::DrawInspector()
 		DrawAnimator2DPopup();
 		ImGui::TableSetColumnIndex(1);
 
+		int count = 0;
 		std::string msg;
 		for (auto& animator : _animators) {
 			ImGui::TableNextRow();
@@ -89,10 +93,12 @@ void Animator2DComponent::DrawInspector()
 				if (animator->GetViewMode() == ViewMode::Billboard)
 				{
 					animator->SetViewMode(ViewMode::UI);
+					animatorViewModes_[count] = ViewMode::UI;
 				}
 				else
 				{
 					animator->SetViewMode(ViewMode::Billboard);
+					animatorViewModes_[count] = ViewMode::Billboard;
 				}
 			}
 			ImGui::TableNextRow();
@@ -106,6 +112,7 @@ void Animator2DComponent::DrawInspector()
 				animator = nullptr;
 				break;
 			}
+			count++;
 		}
 		ImGui::EndTable();
 	}
@@ -139,6 +146,7 @@ void Animator2DComponent::DrawAnimator2DPopup()
 				newAnimator->SetOwner(_Parent);
 				_animators.push_back(newAnimator);
 				animatorNames_.push_back(projectFiles_[selectedProjectIndex_]);
+				animatorViewModes_.push_back(ViewMode::UI);
 				ImGui::CloseCurrentPopup();
 			}
 		}
@@ -160,6 +168,12 @@ void Animator2DComponent::SaveToFile(std::ostream& out)
 		out.write(reinterpret_cast<const char*>(&nameLength), sizeof(int));
 		out.write(projectName.c_str(), nameLength);
 	}
+	int viewModeCount = static_cast<int>(animatorViewModes_.size());
+	out.write(reinterpret_cast<const char*>(&viewModeCount), sizeof(int));
+	for (const auto& viewMode : animatorViewModes_) {
+		int mode = static_cast<int>(viewMode);
+		out.write(reinterpret_cast<const char*>(&mode), sizeof(int));
+	}
 }
 
 void Animator2DComponent::LoadFromFile(std::istream& in)
@@ -175,5 +189,12 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		animator->SetOwner(_Parent);
 		_animators.push_back(animator);
 		animatorNames_.push_back(projectName);
+	}
+	int viewModeCount = 0;
+	in.read(reinterpret_cast<char*>(&viewModeCount), sizeof(int));
+	for (int i = 0; i < viewModeCount; ++i) {
+		int mode = 0;
+		in.read(reinterpret_cast<char*>(&mode), sizeof(int));
+		animatorViewModes_.push_back(static_cast<ViewMode>(mode));
 	}
 }

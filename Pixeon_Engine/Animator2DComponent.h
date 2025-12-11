@@ -23,5 +23,6 @@ private:
 	std::vector<std::string> projectFiles_;
 	int selectedProjectIndex_ = -1;
 	std::vector<std::string> animatorNames_;
+	std::vector<ViewMode> animatorViewModes_;
 	std::vector<Animator2D*> _animators;
 };
