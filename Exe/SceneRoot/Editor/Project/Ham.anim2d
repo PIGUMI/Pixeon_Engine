@@ -1,7 +1,7 @@
 {
     "KeyFrames": [
         {
-            "Active": false,
+            "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -31,8 +31,8 @@
             "EndTransform": {
                 "Color": [
                     1.0,
-                    1.0,
-                    1.0,
+                    0.0,
+                    0.0,
                     1.0
                 ],
                 "Position": [
@@ -89,7 +89,7 @@
             "Texture": "1.png"
         },
         {
-            "Active": true,
+            "Active": false,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
