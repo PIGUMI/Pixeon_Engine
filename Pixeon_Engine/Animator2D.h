@@ -55,7 +55,6 @@ struct KeyFrame
 	UITransform NowTransform;			// 現在トランスフォーム（編集用）
 	std::string Texture;				// テクスチャ名（保存用）
 	EditorFlag editorFlag;				// エディターフラグ
-	ViewMode viewMode = ViewMode::UI;	// 表示モード
 };
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }

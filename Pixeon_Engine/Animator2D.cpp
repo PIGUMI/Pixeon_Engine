@@ -193,6 +193,7 @@ void Animator2D::SaveFile()
 	SaveJson["ProjectName"] = Name_;
 	SaveJson["TotalDuration"] = fTotalDuration_;
 	SaveJson["Loop"] = bLoop_;
+	SaveJson["ViewMode"] = static_cast<int>(viewMode_);
 	// キーフレーム群
 	nlohmann::json KeyFramesJson = nlohmann::json::array();
 	for (const auto& kf : KeyFrames_)
@@ -224,7 +225,6 @@ void Animator2D::SaveFile()
 		kfJson["EditorFlag"]["bScale"] = kf.editorFlag.bScale; 
 		kfJson["EditorFlag"]["bUVPosition"] = kf.editorFlag.bUVPosition; 
 		kfJson["EditorFlag"]["bUVScale"] = kf.editorFlag.bUVScale;
-		kfJson["ViewMode"] = static_cast<int>(kf.viewMode);
 		kfJson["Texture"] = kf.Texture;
 		KeyFramesJson.push_back(kfJson);
 	}

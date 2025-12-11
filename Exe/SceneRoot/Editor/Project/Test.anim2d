@@ -4,12 +4,12 @@
             "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
-                    1.0,
+                    0.0,
                     0.0
                 ],
                 "ControlPoint2": [
                     1.0,
-                    0.0
+                    1.0
                 ],
                 "EndPoint": [
                     1.0,
@@ -31,7 +31,7 @@
             "EndTransform": {
                 "Position": [
                     0.0,
-                    2.0
+                    -3.0
                 ],
                 "Rotation": [
                     0.0,
@@ -47,7 +47,7 @@
                 ],
                 "UVScale": [
                     1.0,
-                    1.0499999523162842
+                    1.0
                 ]
             },
             "Layer": 0,
@@ -55,7 +55,7 @@
             "StartTransform": {
                 "Position": [
                     0.0,
-                    -2.0
+                    3.0
                 ],
                 "Rotation": [
                     0.0,
@@ -71,14 +71,14 @@
                 ],
                 "UVScale": [
                     1.0,
-                    1.0499999523162842
+                    1.0
                 ]
             },
-            "Texture": "",
-            "ViewMode": 0
+            "Texture": ""
         }
     ],
-    "Loop": false,
-    "ProjectName": "Animator2D",
-    "TotalDuration": 1.0
+    "Loop": true,
+    "ProjectName": "Test",
+    "TotalDuration": 1.0,
+    "ViewMode": 0
 }
