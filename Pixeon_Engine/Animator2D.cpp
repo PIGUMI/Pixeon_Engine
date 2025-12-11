@@ -109,6 +109,10 @@ void Animator2D::Draw()
 					kf.NowTransform.UVPosition.y,
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
+				PreviewImage->SetOffsetRot(DirectX::XMFLOAT3(
+					kf.NowTransform.Rotation.x,
+					kf.NowTransform.Rotation.y,
+					kf.NowTransform.Rotation.z));
 
 				PreviewImage->SetCamera(tempCamera_);
 			}
@@ -124,6 +128,10 @@ void Animator2D::Draw()
 					kf.NowTransform.UVPosition.y,
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
+				PreviewImage->SetOffsetRot(DirectX::XMFLOAT3(
+					kf.NowTransform.Rotation.x,
+					kf.NowTransform.Rotation.y,
+					kf.NowTransform.Rotation.z));
 			}
 			PreviewImage->SetColor(kf.NowTransform.Color);
 			PreviewImage->SetTextureName(kf.Texture);
@@ -196,14 +204,14 @@ void Animator2D::SaveFile()
 		kfJson["CurveInfo"]["EndPoint"] = { kf.CurveInfo.EndPoint.x, kf.CurveInfo.EndPoint.y };
 		// StartTransform
 		kfJson["StartTransform"]["Position"] = { kf.StartTransform.Position.x, kf.StartTransform.Position.y };
-		kfJson["StartTransform"]["Rotation"] = { kf.StartTransform.Rotation.x, kf.StartTransform.Rotation.y };
+		kfJson["StartTransform"]["Rotation"] = { kf.StartTransform.Rotation.x, kf.StartTransform.Rotation.y ,kf.StartTransform.Rotation.z};
 		kfJson["StartTransform"]["Scale"] = { kf.StartTransform.Scale.x, kf.StartTransform.Scale.y };
 		kfJson["StartTransform"]["UVScale"] = { kf.StartTransform.UVScale.x, kf.StartTransform.UVScale.y };
 		kfJson["StartTransform"]["UVPosition"] = { kf.StartTransform.UVPosition.x, kf.StartTransform.UVPosition.y };
 		kfJson["StartTransform"]["Color"] = { kf.StartTransform.Color.x, kf.StartTransform.Color.y, kf.StartTransform.Color.z, kf.StartTransform.Color.w };
 		// EndTransform
 		kfJson["EndTransform"]["Position"] = { kf.EndTransform.Position.x, kf.EndTransform.Position.y };
-		kfJson["EndTransform"]["Rotation"] = { kf.EndTransform.Rotation.x, kf.EndTransform.Rotation.y };
+		kfJson["EndTransform"]["Rotation"] = { kf.EndTransform.Rotation.x, kf.EndTransform.Rotation.y ,kf.EndTransform.Rotation.z};
 		kfJson["EndTransform"]["Scale"] = { kf.EndTransform.Scale.x, kf.EndTransform.Scale.y };
 		kfJson["EndTransform"]["UVScale"] = { kf.EndTransform.UVScale.x, kf.EndTransform.UVScale.y };
 		kfJson["EndTransform"]["UVPosition"] = { kf.EndTransform.UVPosition.x, kf.EndTransform.UVPosition.y };
@@ -269,7 +277,7 @@ void Animator2D::LoadFile(std::string FilePath)
 			// StartTransform
 			auto startTransJson = kfJson["StartTransform"];
 			kf.StartTransform.Position = { startTransJson["Position"][0].get<float>(), startTransJson["Position"][1].get<float>() };
-			kf.StartTransform.Rotation = { startTransJson["Rotation"][0].get<float>(), startTransJson["Rotation"][1].get<float>() };
+			kf.StartTransform.Rotation = { startTransJson["Rotation"][0].get<float>(), startTransJson["Rotation"][1].get<float>(),startTransJson["Rotation"][2].get<float>()};
 			kf.StartTransform.Scale = { startTransJson["Scale"][0].get<float>(), startTransJson["Scale"][1].get<float>() };
 			kf.StartTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.StartTransform.UVPosition = { startTransJson["UVPosition"][0].get<float>(), startTransJson["UVPosition"][1].get<float>() };
@@ -281,7 +289,7 @@ void Animator2D::LoadFile(std::string FilePath)
 			// EndTransform
 			auto endTransJson = kfJson["EndTransform"];
 			kf.EndTransform.Position = { endTransJson["Position"][0].get<float>(), endTransJson["Position"][1].get<float>() };
-			kf.EndTransform.Rotation = { startTransJson["Rotation"][0].get<float>(), startTransJson["Rotation"][1].get<float>() };
+			kf.EndTransform.Rotation = { startTransJson["Rotation"][0].get<float>(), startTransJson["Rotation"][1].get<float>(),startTransJson["Rotation"][2].get<float>()};
 			kf.EndTransform.Scale = { startTransJson["Scale"][0].get<float>(), startTransJson["Scale"][1].get<float>() };
 			kf.EndTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.EndTransform.UVPosition = { startTransJson["UVPosition"][0].get<float>(), startTransJson["UVPosition"][1].get<float>() };
@@ -394,8 +402,13 @@ void Animator2D::KeyFrameUpdate()
 		DirectX::XMFLOAT2 Pos = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Position, obj.EndTransform.Position, elapsed, duration);
 		obj.NowTransform.Position = Pos;
 		// âÒì]
-		DirectX::XMFLOAT2 Rot = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Rotation, obj.EndTransform.Rotation, elapsed, duration);
-		obj.NowTransform.Rotation = Rot;
+		DirectX::XMFLOAT2 RotXY = { obj.StartTransform.Rotation.x,obj.StartTransform.Rotation.y };
+		DirectX::XMFLOAT2 EndRotXY = { obj.EndTransform.Rotation.x,obj.EndTransform.Rotation.y };
+		DirectX::XMFLOAT2 RotZT = { obj.StartTransform.Rotation.z,0.0f };
+		DirectX::XMFLOAT2 EndRotZT = { obj.EndTransform.Rotation.z,0.0f };
+		DirectX::XMFLOAT2 NewRotXY = EaseByBezierCurve(obj.CurveInfo, RotXY, EndRotXY, elapsed, duration);
+		DirectX::XMFLOAT2 NewRotZT = EaseByBezierCurve(obj.CurveInfo, RotZT, EndRotZT, elapsed, duration);
+		obj.NowTransform.Rotation = DirectX::XMFLOAT3(NewRotXY.x, NewRotXY.y, NewRotZT.x);
 		// ÉXÉPÅ[Éã
 		DirectX::XMFLOAT2 Scl = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Scale, obj.EndTransform.Scale, elapsed, duration);
 		obj.NowTransform.Scale = Scl;

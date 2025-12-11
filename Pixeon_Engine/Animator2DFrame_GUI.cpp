@@ -146,12 +146,12 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			msg = "開始回転 ";
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始角度").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x, 0.1f);
+		ImGui::TableSetColumnIndex(1); ImGui::DragFloat3(SJ("##開始角度").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x, 0.1f);
 		if (selectedKeyFrame_->editorFlag.bRotation)
 		{
 			ImGui::TableNextRow();/*終了角度*/
 			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了回転").c_str());
-			ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##終了角度").c_str(), &selectedKeyFrame_->EndTransform.Rotation.x, 0.1f);
+			ImGui::TableSetColumnIndex(1); ImGui::DragFloat3(SJ("##終了角度").c_str(), &selectedKeyFrame_->EndTransform.Rotation.x, 0.1f);
 			ImGui::SameLine();
 			if (ImGui::Button(SJ("詳細縮小##回転").c_str()))
 			{
