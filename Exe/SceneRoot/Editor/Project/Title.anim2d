@@ -1,7 +1,7 @@
 {
     "KeyFrames": [
         {
-            "Active": true,
+            "Active": false,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -89,7 +89,7 @@
             "Texture": "titletxt.png"
         },
         {
-            "Active": false,
+            "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
