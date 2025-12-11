@@ -25,6 +25,7 @@ struct UITransform
 	DirectX::XMFLOAT2 Scale = { 100.0f,100.0f };
 	DirectX::XMFLOAT2 UVScale = { 1.0f,1.0f };
 	DirectX::XMFLOAT2 UVPosition = { 0.0f,0.0f };
+	DirectX::XMFLOAT4 Color = { 1.0f,1.0f,1.0f,1.0f };
 };
 
 struct EditorFlag
@@ -34,6 +35,7 @@ struct EditorFlag
 	bool bScale = false;
 	bool bUVPosition = false;
 	bool bUVScale = false;
+	bool bColor = false;
 };
 
 enum ViewMode

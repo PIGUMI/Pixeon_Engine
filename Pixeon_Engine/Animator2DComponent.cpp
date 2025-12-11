@@ -108,6 +108,8 @@ void Animator2DComponent::DrawInspector()
 			std::string msg = "íœ##" + animator->GetProjectName() + Ptr;
 			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str())) {
 				_animators.erase(std::remove(_animators.begin(), _animators.end(), animator), _animators.end());
+				animatorNames_.erase(animatorNames_.begin() + count);
+				animatorViewModes_.erase(animatorViewModes_.begin() + count);
 				delete animator;
 				animator = nullptr;
 				break;

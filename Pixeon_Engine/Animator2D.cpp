@@ -89,6 +89,7 @@ void Animator2D::Draw()
 		DrawCount++;
 		if (PreviewImage)
 		{
+			// 表示モード設定
 			switch (viewMode_)
 			{
 			case ViewMode::UI:
@@ -98,6 +99,7 @@ void Animator2D::Draw()
 				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::Billboard);
 				break;
 			}
+			// 変換情報設定
 			if (bEditorMode_)
 			{
 				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * -100.0f,kf.NowTransform.Position.y * -100.0f });
@@ -140,6 +142,7 @@ void Animator2D::Draw()
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
 			}
+			PreviewImage->SetColor(kf.NowTransform.Color);
 			PreviewImage->SetTextureName(kf.Texture);
 			PreviewImage->Draw();
 		}
@@ -214,12 +217,14 @@ void Animator2D::SaveFile()
 		kfJson["StartTransform"]["Scale"] = { kf.StartTransform.Scale.x, kf.StartTransform.Scale.y };
 		kfJson["StartTransform"]["UVScale"] = { kf.StartTransform.UVScale.x, kf.StartTransform.UVScale.y };
 		kfJson["StartTransform"]["UVPosition"] = { kf.StartTransform.UVPosition.x, kf.StartTransform.UVPosition.y };
+		kfJson["StartTransform"]["Color"] = { kf.StartTransform.Color.x, kf.StartTransform.Color.y, kf.StartTransform.Color.z, kf.StartTransform.Color.w };
 		// EndTransform
 		kfJson["EndTransform"]["Position"] = { kf.EndTransform.Position.x, kf.EndTransform.Position.y };
 		kfJson["EndTransform"]["Rotation"] = { kf.EndTransform.Rotation.x, kf.EndTransform.Rotation.y };
 		kfJson["EndTransform"]["Scale"] = { kf.EndTransform.Scale.x, kf.EndTransform.Scale.y };
 		kfJson["EndTransform"]["UVScale"] = { kf.EndTransform.UVScale.x, kf.EndTransform.UVScale.y };
 		kfJson["EndTransform"]["UVPosition"] = { kf.EndTransform.UVPosition.x, kf.EndTransform.UVPosition.y };
+		kfJson["EndTransform"]["Color"] = { kf.EndTransform.Color.x, kf.EndTransform.Color.y, kf.EndTransform.Color.z, kf.EndTransform.Color.w };
 		kfJson["EditorFlag"]["bPosition"] = kf.editorFlag.bPosition;
 		kfJson["EditorFlag"]["bRotation"] = kf.editorFlag.bRotation;
 		kfJson["EditorFlag"]["bScale"] = kf.editorFlag.bScale;
@@ -285,6 +290,11 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.StartTransform.Scale = { startTransJson["Scale"][0].get<float>(), startTransJson["Scale"][1].get<float>() };
 			kf.StartTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.StartTransform.UVPosition = { startTransJson["UVPosition"][0].get<float>(), startTransJson["UVPosition"][1].get<float>() };
+			kf.StartTransform.Color = {
+				startTransJson["Color"][0].get<float>(),
+				startTransJson["Color"][1].get<float>(),
+				startTransJson["Color"][2].get<float>(),
+				startTransJson["Color"][3].get<float>() };
 			// EndTransform
 			auto endTransJson = kfJson["EndTransform"];
 			kf.EndTransform.Position = { endTransJson["Position"][0].get<float>(), endTransJson["Position"][1].get<float>() };
@@ -292,6 +302,11 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.EndTransform.Scale = { startTransJson["Scale"][0].get<float>(), startTransJson["Scale"][1].get<float>() };
 			kf.EndTransform.UVScale = { startTransJson["UVScale"][0].get<float>(), startTransJson["UVScale"][1].get<float>() };
 			kf.EndTransform.UVPosition = { startTransJson["UVPosition"][0].get<float>(), startTransJson["UVPosition"][1].get<float>() };
+			kf.EndTransform.Color = {
+				endTransJson["Color"][0].get<float>(),
+				endTransJson["Color"][1].get<float>(),
+				endTransJson["Color"][2].get<float>(),
+				endTransJson["Color"][3].get<float>() };
 			// EditorFlag
 			auto editorFlagJson = kfJson["EditorFlag"];
 			kf.editorFlag.bPosition = editorFlagJson["bPosition"].get<bool>();
@@ -402,6 +417,15 @@ void Animator2D::KeyFrameUpdate()
 		// UV スケール
 		DirectX::XMFLOAT2 uvs = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVScale, obj.EndTransform.UVScale, elapsed, duration);
 		obj.NowTransform.UVScale = uvs;
+		// 色
+		//情報を分割
+		DirectX::XMFLOAT2 ColorRB = { obj.StartTransform.Color.x, obj.StartTransform.Color.z };
+		DirectX::XMFLOAT2 ColorGA = { obj.StartTransform.Color.y, obj.StartTransform.Color.w };
+		DirectX::XMFLOAT2 EndColorRB = { obj.EndTransform.Color.x, obj.EndTransform.Color.z };
+		DirectX::XMFLOAT2 EndColorGA = { obj.EndTransform.Color.y, obj.EndTransform.Color.w };
+		DirectX::XMFLOAT2 NewColorRB = EaseByBezierCurve(obj.CurveInfo, ColorRB, EndColorRB, elapsed, duration);
+		DirectX::XMFLOAT2 NewColorGA = EaseByBezierCurve(obj.CurveInfo, ColorGA, EndColorGA, elapsed, duration);
+		obj.NowTransform.Color = DirectX::XMFLOAT4(NewColorRB.x, NewColorGA.x, NewColorRB.y, NewColorGA.y);
 	}
 }
 

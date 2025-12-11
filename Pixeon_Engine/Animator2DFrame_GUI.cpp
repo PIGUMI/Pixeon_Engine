@@ -199,6 +199,37 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			selectedKeyFrame_->EndTransform.Scale = selectedKeyFrame_->StartTransform.Scale;
 		}
 
+		/* 色の設定GUI */
+		if(!selectedKeyFrame_->editorFlag.bColor)
+			msg = "色 ";
+		else
+			msg = "開始色 ";
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
+		ImGui::TableSetColumnIndex(1); ImGui::ColorEdit4(SJ("##開始色").c_str(), &selectedKeyFrame_->StartTransform.Color.x);
+		if (selectedKeyFrame_->editorFlag.bColor)
+		{
+			ImGui::TableNextRow();/*終了色*/
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了色").c_str());
+			ImGui::TableSetColumnIndex(1); ImGui::ColorEdit4(SJ("##終了色").c_str(), &selectedKeyFrame_->EndTransform.Color.x);
+			ImGui::SameLine();
+			if (ImGui::Button(SJ("詳細縮小##色").c_str()))
+			{
+				selectedKeyFrame_->editorFlag.bColor = false;
+			}
+		}
+		else
+		{
+			ImGui::SameLine();
+			if (ImGui::Button(SJ("詳細展開##色").c_str()))
+			{
+				selectedKeyFrame_->editorFlag.bColor = true;
+			}
+			// 終了色を開始色と同じにする
+			selectedKeyFrame_->EndTransform.Color = selectedKeyFrame_->StartTransform.Color;
+		}
+
+
 		/* UV位置の設定GUI */
 		if (!selectedKeyFrame_->editorFlag.bUVPosition)
 			msg = "UV位置 ";
