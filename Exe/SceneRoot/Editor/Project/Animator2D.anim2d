@@ -74,11 +74,11 @@
                     1.0499999523162842
                 ]
             },
-            "Texture": "",
-            "ViewMode": 0
+            "Texture": ""
         }
     ],
-    "Loop": false,
+    "Loop": true,
     "ProjectName": "Animator2D",
-    "TotalDuration": 1.0
+    "TotalDuration": 1.0,
+    "ViewMode": 0
 }

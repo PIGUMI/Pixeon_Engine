@@ -420,23 +420,35 @@ DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const Di
 
 	DirectX::XMFLOAT2 authoredVec = XMFLOAT2Subtract(curve.EndPoint, curve.StartPoint);
 	DirectX::XMFLOAT2 currentVec = XMFLOAT2Subtract(endvalue, startvalue);
-	float authoredLen = Length(authoredVec);
-	float currentLen = Length(currentVec);
 
 	const float EPS = 1e-6f;
-	float scale = 1.0f;
-	if (authoredLen > EPS) {
-		scale = currentLen / authoredLen;
-	}
 
-	// コントロールポイントのオフセット（オーサー座標系 → 実座標系にスケール）
+	// 軸ごとのスケールを計算（authored が 0 の場合はその軸は 0 にする）
+	float scaleX = 1.0f, scaleY = 1.0f;
+	if (std::fabs(authoredVec.x) > EPS) scaleX = currentVec.x / authoredVec.x;
+	else scaleX = 0.0f;
+	if (std::fabs(authoredVec.y) > EPS) scaleY = currentVec.y / authoredVec.y;
+	else scaleY = 0.0f;
+
+	// コントロール点のオフセット（authored 空間 -> current 空間 に適用）
 	DirectX::XMFLOAT2 offset1 = XMFLOAT2Subtract(curve.ControlPoint1, curve.StartPoint);
 	DirectX::XMFLOAT2 offset2 = XMFLOAT2Subtract(curve.ControlPoint2, curve.EndPoint);
 
 	DirectX::XMFLOAT2 p0 = startvalue;
-	DirectX::XMFLOAT2 p1 = XMFLOAT2Add(startvalue, XMFLOAT2Multiply(offset1, scale));
-	DirectX::XMFLOAT2 p2 = XMFLOAT2Add(endvalue, XMFLOAT2Multiply(offset2, scale));
+	DirectX::XMFLOAT2 p1 = XMFLOAT2Add(startvalue, DirectX::XMFLOAT2{ offset1.x * scaleX, offset1.y * scaleY });
+	DirectX::XMFLOAT2 p2 = XMFLOAT2Add(endvalue, DirectX::XMFLOAT2{ offset2.x * scaleX, offset2.y * scaleY });
 	DirectX::XMFLOAT2 p3 = endvalue;
+
+	// start と end の差がほぼ 0 の軸は、その軸方向のコントロール点を強制固定して
+	// 不要な軸移動を防ぐ（例: X を固定したいなら p1.x/p2.x を開始 x に固定）
+	if (std::fabs(currentVec.x) < EPS) {
+		p1.x = p0.x;
+		p2.x = p3.x;
+	}
+	if (std::fabs(currentVec.y) < EPS) {
+		p1.y = p0.y;
+		p2.y = p3.y;
+	}
 
 	return EvalCubicBezier(p0, p1, p2, p3, std::clamp(t, 0.0f, 1.0f));
 }
