@@ -99,48 +99,32 @@ void Animator2D::Draw()
 
 			if (bEditorMode_)// •ÏŠ·î•ñÝ’è
 			{
-				PreviewImage->SetOffset2D(kf.NowTransform.Position);
-				if (owner_)
-				{
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
-						kf.NowTransform.Position.x,
-						kf.NowTransform.Position.y,
-						0.0f));
-				}
-				else
-				{
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x, kf.NowTransform.Position.y, 0.0f));
-				}
-				PreviewImage->SetSize2D(kf.NowTransform.Scale);
+				float Cor = 100.0f;// •â³’l
+				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * Cor , kf.NowTransform.Position.y * Cor });
+				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, 0.0f));
+				PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
+				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
 				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
 					kf.NowTransform.UVPosition.x,
 					kf.NowTransform.UVPosition.y,
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
+
 				PreviewImage->SetCamera(tempCamera_);
 			}
 			else
 			{
-				PreviewImage->SetOffset2D(kf.NowTransform.Position);
-				if (owner_)
-				{
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
-						kf.NowTransform.Position.x,
-						kf.NowTransform.Position.y,
-						0.0f));
-				}
-				else
-				{
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x, kf.NowTransform.Position.y, 0.0f));
-				}
-				PreviewImage->SetSize2D(kf.NowTransform.Scale);
+				float Cor = 0.4f;// •â³’l
+				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * Cor , kf.NowTransform.Position.y * Cor });
+				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, 0.0f));
+				PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
+				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
 				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
 					kf.NowTransform.UVPosition.x,
 					kf.NowTransform.UVPosition.y,
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
 			}
-
 			PreviewImage->SetColor(kf.NowTransform.Color);
 			PreviewImage->SetTextureName(kf.Texture);
 			PreviewImage->Draw();
