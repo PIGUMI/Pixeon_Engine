@@ -100,7 +100,7 @@ void Animator2D::Draw()
 			if (bEditorMode_)// •ÏŠ·î•ñÝ’è
 			{
 				float Cor = 100.0f;// •â³’l
-				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * Cor , kf.NowTransform.Position.y * Cor });
+				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * -Cor , kf.NowTransform.Position.y * Cor });
 				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, 0.0f));
 				PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
 				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
@@ -114,11 +114,11 @@ void Animator2D::Draw()
 			}
 			else
 			{
-				float Cor = 0.4f;// •â³’l
+				float Cor = -0.4f;// •â³’l
 				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * Cor , kf.NowTransform.Position.y * Cor });
 				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, 0.0f));
-				PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
-				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
+				PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * -Cor , kf.NowTransform.Scale.y * -Cor });
+				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * -Cor , kf.NowTransform.Scale.y * -Cor });
 				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
 					kf.NowTransform.UVPosition.x,
 					kf.NowTransform.UVPosition.y,

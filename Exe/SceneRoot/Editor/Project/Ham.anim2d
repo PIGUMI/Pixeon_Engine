@@ -1,15 +1,15 @@
 {
     "KeyFrames": [
         {
-            "Active": true,
+            "Active": false,
             "CurveInfo": {
                 "ControlPoint1": [
-                    0.4859813153743744,
-                    0.128504678606987
+                    0.0,
+                    1.0
                 ],
                 "ControlPoint2": [
-                    0.7196261882781982,
-                    0.336448609828949
+                    1.0,
+                    0.0
                 ],
                 "EndPoint": [
                     1.0,
@@ -31,13 +31,13 @@
             "EndTransform": {
                 "Color": [
                     1.0,
-                    0.0,
-                    0.0,
+                    1.0,
+                    1.0,
                     1.0
                 ],
                 "Position": [
-                    0.0,
-                    0.0
+                    -2.0,
+                    -2.0
                 ],
                 "Rotation": [
                     0.0,
@@ -66,7 +66,7 @@
                     1.0
                 ],
                 "Position": [
-                    -11.5,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -89,15 +89,15 @@
             "Texture": "1.png"
         },
         {
-            "Active": false,
+            "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
-                    0.06308411061763763,
-                    0.6028037667274475
+                    0.0,
+                    1.0
                 ],
                 "ControlPoint2": [
-                    0.14953270554542542,
-                    0.8341121673583984
+                    1.0,
+                    0.0
                 ],
                 "EndPoint": [
                     1.0,
@@ -115,16 +115,16 @@
                 "bUVPosition": false,
                 "bUVScale": false
             },
-            "EndTime": 1.4000002145767212,
+            "EndTime": 1.0,
             "EndTransform": {
                 "Color": [
                     1.0,
-                    1.0,
-                    1.0,
+                    0.0,
+                    0.0,
                     1.0
                 ],
                 "Position": [
-                    5.0,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -154,8 +154,8 @@
                     1.0
                 ],
                 "Position": [
-                    0.0,
-                    0.0
+                    -2.0,
+                    -2.0
                 ],
                 "Rotation": [
                     0.0,
@@ -179,6 +179,6 @@
     ],
     "Loop": true,
     "ProjectName": "Ham",
-    "TotalDuration": 1.4000002145767212,
+    "TotalDuration": 1.0,
     "ViewMode": 0
 }
