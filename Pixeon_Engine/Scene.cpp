@@ -287,7 +287,6 @@ void Scene::Draw() {
 	if (_MainCamera) {
 		std::sort(sortedList.begin(), sortedList.end(), [this](Object* a, Object* b) {
 			if (!a || !b) return false;
-			// ƒJƒƒ‰‚©‚ç‚Ì‹——£‚ðŒvŽZ
 			DirectX::XMFLOAT3 camPos = _MainCamera->GetPosition();
 			DirectX::XMFLOAT3 posA = a->GetTransform().position;
 			DirectX::XMFLOAT3 posB = b->GetTransform().position;
