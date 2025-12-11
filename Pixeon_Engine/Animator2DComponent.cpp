@@ -131,13 +131,13 @@ void Animator2DComponent::DrawInspector()
 				msg = "X:" + std::to_string(kf.NowTransform.Position.x);
 				msg += "Y:" + std::to_string(kf.NowTransform.Position.y);
 				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str());
-				
+
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
 				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("NowSize").c_str());
 				ImGui::TableSetColumnIndex(1);
 				msg = "X:" + std::to_string(kf.NowTransform.Scale.x);
-				msg +="Y:" + std::to_string(kf.NowTransform.Scale.y);
+				msg += "Y:" + std::to_string(kf.NowTransform.Scale.y);
 				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str());
 			}
 			count++;

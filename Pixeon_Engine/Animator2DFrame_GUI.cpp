@@ -229,7 +229,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			selectedKeyFrame_->EndTransform.Color = selectedKeyFrame_->StartTransform.Color;
 		}
 
-
 		/* UVˆÊ’u‚ÌÝ’èGUI */
 		if (!selectedKeyFrame_->editorFlag.bUVPosition)
 			msg = "UVˆÊ’u ";
