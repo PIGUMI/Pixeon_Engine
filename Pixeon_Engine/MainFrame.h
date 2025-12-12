@@ -58,11 +58,12 @@ private:
 	GameRenderTarget* m_gameRenderTarget_;
 	GameRenderTarget* m_uiRenderTarget_ = nullptr;
 	GameRenderTarget* m_finalRenderTarget_ = nullptr;
+	std::list<GameRenderTarget*> m_layerRenderTargets_;
 
 	SoftWareMode softwareMode_;
 private:
 	// CompositePass ‚ğ MainFrame ‚Ìƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾
-	void CompositePass(ID3D11ShaderResourceView* sceneSRV, ID3D11ShaderResourceView* uiSRV, GameRenderTarget* finalRT);
+	void CompositeLayers(const std::list<GameRenderTarget*>& renders, GameRenderTarget* finalView);
 
 private:
 	MainFrame() = default;
