@@ -14,11 +14,13 @@ public:
 	virtual void BeginPlay() {}
 	virtual void EditUpdate() {}
 	virtual void InGameUpdate() {}
-	virtual void Draw() {}
+	virtual void Draw(int Layer) {}
 	virtual void UInit() {}
 	virtual void DrawInspector() {}
 
 	void SetParent(Object* parent) { _Parent = parent; }
+	void SetLayerNumber(int layer) { _LayerNumber = layer; }
+	int GetLayerNumber() const { return _LayerNumber; }
 
 public:
 	virtual void SaveToFile(std::ostream& out) {}
@@ -35,5 +37,6 @@ public:
 protected:
 	std::string _ComponentName;
 	Object* _Parent;
+	int _LayerNumber = 0;
 	ComponentManager::COMPONENT_TYPE _Type = ComponentManager::COMPONENT_TYPE::NONE;
 };

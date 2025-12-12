@@ -29,13 +29,13 @@ void Animator2DComponent::EditUpdate()
 	}
 }
 
-void Animator2DComponent::Draw()
+void Animator2DComponent::Draw(int Layer)
 {
 	int count = 0;
 	for (auto& animator : _animators) {
 		animator->SetEditorMode(false);
 		animator->SetViewMode(animatorViewModes_[count]);
-		animator->Draw();
+		animator->Draw(Layer);
 		count++;
 	}
 }

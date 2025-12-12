@@ -32,7 +32,7 @@ public:
 	~ModelRenderComponent() = default;
 
 	void Init(Object* owner) override;
-	void Draw() override;
+	void Draw(int Layer) override;
 	void DrawInspector() override;
 
 	bool SetModel(const std::string& logicalPath);

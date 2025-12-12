@@ -280,14 +280,13 @@ void Scene::PlayUpdate() {
 	_ToBeRemoved.clear();
 }
 
-void Scene::Draw() {
+void Scene::Draw(int Layer) {
 	UploadLightsToGPU();
 	// オブジェクトの描画
 	std::vector<Object*> sortedList = _objects;
 	if (_MainCamera) {
 		std::sort(sortedList.begin(), sortedList.end(), [this](Object* a, Object* b) {
 			if (!a || !b) return false;
-			// カメラからの距離を計算
 			DirectX::XMFLOAT3 camPos = _MainCamera->GetPosition();
 			DirectX::XMFLOAT3 posA = a->GetTransform().position;
 			DirectX::XMFLOAT3 posB = b->GetTransform().position;
@@ -297,7 +296,17 @@ void Scene::Draw() {
 			return distA < distB;
 			});
 	}
-	for (auto& obj : sortedList) if (obj)obj->Draw();
+	for (auto& obj : sortedList)
+	{
+		if (obj)
+		{
+			obj->Draw(Layer);
+		}
+	}
+}
+
+void Scene::DrawUI()
+{
 }
 
 void Scene::SaveToFile() {

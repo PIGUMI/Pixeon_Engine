@@ -71,6 +71,7 @@ void ImageRender::Init(Object* owner) {
 	EnsureConstantBuffer();
 	EnsureBuffers();
 	m_ready = true;
+	_LayerNumber = 0;
 }
 
 void ImageRender::InGameUpdate()
@@ -491,7 +492,8 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
 }
 
-void ImageRender::Draw() {
+void ImageRender::Draw(int Layer) {
+	if (Layer != _LayerNumber)return;
 	if (!m_ready) return;
 	auto* dx = DirectX11::GetInstance();
 	auto ctx = dx->GetContext();
@@ -578,7 +580,9 @@ void ImageRender::DrawInspector() {
 	std::string title = _ComponentName + "##" + std::to_string((uintptr_t)this);
 	if (!ImGui::CollapsingHeader(SJ(title.c_str()).c_str()))
 		return;
-
+	ImGui::Text("%s", SJ("レイヤー").c_str());
+	ImGui::SameLine();
+	ImGui::InputInt("##layer", &_LayerNumber);
 	ImGui::Text("%s", SJ("テクスチャ名:").c_str());
 	ImGui::SameLine();
 	ImGui::Text("%s", m_textureName.empty() ? "(none)" : m_textureName.c_str());

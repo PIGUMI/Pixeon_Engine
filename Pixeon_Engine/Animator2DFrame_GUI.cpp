@@ -76,7 +76,7 @@ void Animator2DFrame::DrawTimeline()
 void Animator2DFrame::DrawView()
 {
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Animator2DView").c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
-	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetGameRenderTargetSRV();
+	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
 	ImVec2 size = ImGui::GetContentRegionAvail();
 	// アスペクト比16:9に合わせる
 	float aspect = 16.0f / 9.0f;

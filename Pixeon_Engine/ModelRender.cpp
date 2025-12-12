@@ -273,7 +273,8 @@ void ModelRenderComponent::EnsureDefaultBoneMatrices()
 	m_useBoneMatrices = true;
 }
 
-void ModelRenderComponent::Draw() {
+void ModelRenderComponent::Draw(int Layer) {
+	if (Layer != _LayerNumber) return;
 	if (!m_ready || !m_model) return;
 	Scene* scene = _Parent->GetParentScene();
 	if (!scene) return;

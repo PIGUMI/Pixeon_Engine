@@ -22,7 +22,7 @@ Animator2D::Animator2D()
 	fTotalDuration_(0.0f)
 {
 	PreviewImage = new ImageRender();
-	PreviewImage->Init(nullptr);
+	PreviewImage->Init(owner_);
 }
 
 Animator2D::~Animator2D()
@@ -61,7 +61,6 @@ void Animator2D::Update()
 			fNowTime_ = fTotalDuration_;
 		}
 	}
-
 	KeyFrameUpdate();
 }
 
@@ -70,7 +69,7 @@ void Animator2D::EditorUpdate()
 	KeyFrameUpdate();
 }
 
-void Animator2D::Draw()
+void Animator2D::Draw(int Layer)
 {
 	std::vector<KeyFrame> SortedKeyFrames = KeyFrames_;
 	// レイヤー順にソート
@@ -109,8 +108,6 @@ void Animator2D::Draw()
 					kf.NowTransform.UVPosition.y,
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
-
-				PreviewImage->SetCamera(tempCamera_);
 			}
 			else
 			{
@@ -127,7 +124,7 @@ void Animator2D::Draw()
 			}
 			PreviewImage->SetColor(kf.NowTransform.Color);
 			PreviewImage->SetTextureName(kf.Texture);
-			PreviewImage->Draw();
+			PreviewImage->Draw(Layer);
 		}
 		else
 		{

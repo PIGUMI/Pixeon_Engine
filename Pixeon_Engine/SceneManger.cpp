@@ -81,8 +81,8 @@ void SceneManger::PlayUpdate() {
 }
 
 // •`‰æ
-void SceneManger::Draw() {
-	if (_currentScene)_currentScene->Draw();
+void SceneManger::Draw(int Layer) {
+	if (_currentScene)_currentScene->Draw(Layer);
 }
 
 // ƒV[ƒ“‚Ì•ÏX

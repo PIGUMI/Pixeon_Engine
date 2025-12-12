@@ -4,21 +4,12 @@
 #define PIXEON_ENGINE_VERSION "1.1.0"
 #define PIXEON_ENGINE_INEDITOR true
 
-// ソフトウェア全体の管理を行うクラス
-// 全体管理を行う
-// シングルトン
-/*
-* Log
-* 2025/11/25 リファクタリング
-* 2025/12/01 リファクタリング
-* 2025/12/05 EngineManager から MainFrame に改名
-*/
-
 #include <Windows.h>
 #include <d3d11.h>
 #include <string>
 #include <vector>
 #include <chrono>
+#include <list>
 
 class GameRenderTarget;
 class Object;
@@ -50,11 +41,10 @@ public:
 	void Draw();
 	void UnInit();
 public:
-	// Window Handle 取得
+	// Window Handle ?擾
 	HWND GetWindowHandle() const { return m_hWnd_; }
 	float GetDeltaTime() { return deltaTime_; }
-	GameRenderTarget* GetGameRenderTarget() const { return m_gameRenderTarget_; }
-	ID3D11ShaderResourceView* GetGameRenderTargetSRV();
+	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
 	void SetSoftwareMode(SoftWareMode mode) { softwareMode_ = mode; }
 	SoftWareMode GetSoftwareMode() const { return softwareMode_; }
 private:
@@ -64,9 +54,14 @@ private:
 	float deltaTime_;
 
 	HWND m_hWnd_;
-	GameRenderTarget* m_gameRenderTarget_;
+	GameRenderTarget* m_finalRenderTarget_ = nullptr;
+	std::list<GameRenderTarget*> m_layerRenderTargets_;
 
 	SoftWareMode softwareMode_;
+private:
+	// CompositePass を MainFrame のメソッドとして宣言
+	void CompositeLayers(const std::list<GameRenderTarget*>& renders, GameRenderTarget* finalView);
+
 private:
 	MainFrame() = default;
 	~MainFrame() = default;

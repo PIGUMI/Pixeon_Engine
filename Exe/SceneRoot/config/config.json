@@ -3,13 +3,13 @@
     "AssetsFilePath": "SceneRoot/Assets/",
     "AutoSaveInterval": 5,
     "BackgroundColor": [
-        0.01423501968383789,
-        1.0,
         0.0,
+        1.0,
+        0.19928812980651855,
         1.0
     ],
     "ExternelTool": "SceneRoot/Tool/IN/",
     "MouseSensitivity": 0.009999999776482582,
     "SceneFilePath": "SceneRoot/Scene/",
-    "bZBuffer": true
+    "bZBuffer": false
 }

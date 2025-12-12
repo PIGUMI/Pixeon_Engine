@@ -72,9 +72,9 @@ void EngineFrame::Update()
 	}
 }
 
-void EngineFrame::Draw()
+void EngineFrame::Draw(int Layer)
 {
-	SceneManger::GetInstance()->Draw();
+	SceneManger::GetInstance()->Draw(Layer);
 }
 
 void EngineFrame::UnInit()

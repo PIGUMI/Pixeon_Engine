@@ -6,8 +6,6 @@
 #include <iostream>
 #include "Struct.h"
 #include "ImageRender.h"
-#include "Object.h"
-#include "CameraComponent.h"
 
 /* ベジェ曲線情報 */
 struct CurveData
@@ -23,7 +21,7 @@ struct UITransform
 {
 	DirectX::XMFLOAT2 Position = { 0.0f,0.0f };
 	DirectX::XMFLOAT2 Rotation = { 0.0f,0.0f };
-	DirectX::XMFLOAT2 Scale = { 100.0f,100.0f };
+	DirectX::XMFLOAT2 Scale = { 1.0f,1.0f };
 	DirectX::XMFLOAT2 UVScale = { 1.0f,1.0f };
 	DirectX::XMFLOAT2 UVPosition = { 0.0f,0.0f };
 	DirectX::XMFLOAT4 Color = { 1.0f,1.0f,1.0f,1.0f };
@@ -48,6 +46,7 @@ enum ViewMode
 // キーフレーム情報
 struct KeyFrame
 {
+	std::string KeyFrameName = "KeyFrame"; // キーフレーム名
 	bool Active = false;				// アクティブ状態
 	int Layer = 0;						// レイヤー
 	float StartTime = 0.0f;				// 開始秒
@@ -83,7 +82,7 @@ public:
 	~Animator2D();
 	void Update();
 	void EditorUpdate();
-	void Draw();
+	void Draw(int Layer = 0);
 	void Debug();
 
 	void SaveFile();
@@ -115,9 +114,6 @@ public:
 
 	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
 	void PreviewUpdate();
-
-	void SetTempCamera(CameraComponent* camera) { tempCamera_ = camera; }
-
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
@@ -138,5 +134,4 @@ public:
 	int DrawCount = 0;
 	Object* owner_ = nullptr;
 	bool bEditorMode_ = false; // エディターモード
-	CameraComponent* tempCamera_ = nullptr; // 一時カメラ
 };

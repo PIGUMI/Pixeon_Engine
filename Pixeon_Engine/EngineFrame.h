@@ -22,7 +22,7 @@ public: // シングルトンパターン
 public: // 4大処理
 	void Init();
 	void Update();
-	void Draw();
+	void Draw(int Layer);
 	void UnInit();
 public: // GUI
 	void DrawGUI();

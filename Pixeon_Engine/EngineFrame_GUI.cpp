@@ -204,7 +204,7 @@ void EngineFrame::GameViewWindow()
 	ImGui::Separator();
 
 	// --- ゲーム画面（プレビュー） ---
-	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetGameRenderTargetSRV();
+	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
 	ImVec2 size = ImGui::GetContentRegionAvail();
 	// アスペクト比16:9に合わせる
 	float aspect = 16.0f / 9.0f;

@@ -21,7 +21,8 @@ public:
 	virtual void BeginPlay();
 	virtual void EditUpdate();
 	virtual void PlayUpdate();
-	virtual void Draw();
+	virtual void Draw(int Layer);
+	virtual void DrawUI();
 
 public: // オブジェクトの追加と削除
 	bool AddObject(Object* obj);

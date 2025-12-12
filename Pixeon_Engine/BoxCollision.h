@@ -22,7 +22,7 @@ public:
 	void BeginPlay() override;
 	void EditUpdate() override;
 	void InGameUpdate() override;
-	void Draw() override;
+	void Draw(int Layer) override;
 	void UInit() override;
 
 	void DrawInspector() override;

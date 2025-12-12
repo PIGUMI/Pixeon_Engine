@@ -16,7 +16,7 @@ public:
 	virtual void BeginPlay();
 	virtual void EditUpdate();
 	virtual void InGameUpdate();
-	virtual void Draw();
+	virtual void Draw(int Layer);
 	virtual void UInit();
 
 	Object* Clone();
