@@ -2,7 +2,7 @@
 #include "System.h"
 #include "GameRenderTarget.h"
 #include "GUI.h"
-// ƒAƒZƒbƒgŠÇ—ƒNƒ‰ƒX
+// ï¿½Aï¿½Zï¿½bï¿½gï¿½Ç—ï¿½ï¿½Nï¿½ï¿½ï¿½X
 #include "AssetManager.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
@@ -13,9 +13,9 @@
 #include "ScriptManager.h"
 #include "ResourceService.h"
 #include "Animator2DManager.h"
-// “ü—Íˆ—
+// ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½
 #include "Input.h"
-// ƒ\ƒtƒgƒEƒFƒAƒ‚[ƒh
+// ï¿½\ï¿½tï¿½gï¿½Eï¿½Fï¿½Aï¿½ï¿½ï¿½[ï¿½h
 #include "EngineFrame.h"
 #include "Animator2DFrame.h"
 
@@ -45,45 +45,45 @@ int MainFrame::Init(const EngineConfig& InPut)
 	bUpdateDraw = false;;
 
 	SettingManager::GetInstance()->LoadConfig();
-	/* COM ‚Ì‰Šú‰» */
+	/* COM ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ */
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr)) return -1;
 
-	/* DirectX11 ‰Šú‰» */
+	/* DirectX11 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
 	if (FAILED(hr)) {
 		CoUninitialize();
 		return -1;
 	}
 
-	/* AssetManager ‰Šú‰» */
-	// AssetManager ‚Ìƒ‹[ƒgƒpƒXİ’è
+	/* AssetManager ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	// AssetManager ï¿½Ìƒï¿½ï¿½[ï¿½gï¿½pï¿½Xï¿½İ’ï¿½
 	AssetManager::Instance()->SetRoot(SettingManager::GetInstance()->GetAssetsFilePath());
-	// AssetManager ‚Ìƒ[ƒhƒ‚[ƒhİ’è
+	// AssetManager ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½[ï¿½hï¿½İ’ï¿½
 	AssetManager::Instance()->SetLoadMode(AssetManager::LoadMode::FromSource);
-	// AssetManager ‚Ì©“®“¯ŠúŠJn
+	// AssetManager ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½n
 	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
 
-	/* ƒGƒ“ƒWƒ“—pƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‰Šú‰» */
-	// ƒQ[ƒ€—pƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‰Šú‰»
+	/* ï¿½Gï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	// ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	m_gameRenderTarget_ = new GameRenderTarget();
-	// ƒQ[ƒ€—pƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‰Šú‰»
+	// ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	m_gameRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
-	// Zƒoƒbƒtƒ@İ’è
+	// Zï¿½oï¿½bï¿½tï¿½@ï¿½İ’ï¿½
 	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 
-	/* GUI‚Ì‰Šú‰» */
+	/* GUIï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ */
 	GUI::GetInstance()->Init();
-	/* ƒVƒF[ƒ_[ƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰» */
+	/* ï¿½Vï¿½Fï¿½[ï¿½_ï¿½[ï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ */
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
 
-	/* ƒRƒ“ƒ|[ƒlƒ“ƒgƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰» */
+	/* ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ */
 	ComponentManager::GetInstance()->Init();
 
-	/* ƒXƒNƒŠƒvƒgƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰» */
+	/* ï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½gï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ */
 	ScriptManager::Instance().RegisterAllScripts();
 
-	/* “ü—Í‰Šú‰» */
+	/* ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½ï¿½ï¿½ */
 	InitInput();
 
 	EngineFrame::GetInstance()->Init();
@@ -94,16 +94,16 @@ int MainFrame::Init(const EngineConfig& InPut)
 
 void MainFrame::Update()
 {
-	// ƒtƒŒ[ƒ€§Œä
+	// ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	DWORD currentTime = timeGetTime();
 	float deltaTime = static_cast<float>(currentTime - lastUpdateTime_);
 
 	if (deltaTime >= targetFrameTime_) {
-		// deltaTime ‚ğ•b’PˆÊ‚É•ÏŠ·
+		// deltaTime ï¿½ï¿½bï¿½Pï¿½Ê‚É•ÏŠï¿½
 		deltaTime_ = deltaTime * 0.001f; // ms -> s
-		// “ü—ÍXV
+		// ï¿½ï¿½ï¿½ÍXï¿½V
 		UpdateInput(GetWindowHandle());
-		// ƒ\ƒtƒgƒEƒFƒAƒ‚[ƒh‚²‚Æ‚ÌXVˆ—
+		// ï¿½\ï¿½tï¿½gï¿½Eï¿½Fï¿½Aï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½Æ‚ÌXï¿½Vï¿½ï¿½ï¿½ï¿½
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
@@ -116,7 +116,7 @@ void MainFrame::Update()
 			break;
 		}
 
-		// XVŠÔ‹L˜^
+		// ï¿½Xï¿½Vï¿½ï¿½ï¿½Ô‹Lï¿½^
 		lastUpdateTime_ = currentTime;
 		bUpdateDraw = true;
 	}
@@ -129,7 +129,7 @@ void MainFrame::Draw()
 
 		m_gameRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
 
-		// ƒ\ƒtƒgƒEƒFƒAƒ‚[ƒh‚²‚Æ‚Ì•`‰æˆ—
+		// ï¿½\ï¿½tï¿½gï¿½Eï¿½Fï¿½Aï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½Æ‚Ì•`ï¿½æˆï¿½ï¿½
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
@@ -144,13 +144,16 @@ void MainFrame::Draw()
 
 		m_gameRenderTarget_->End();
 
+		// GameRenderTargetï¿½ï¿½SRVï¿½Æ‚ï¿½ï¿½ÄgpFß‘Oï¿½ÉAï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½^ï¿½[ï¿½Qï¿½bï¿½gï¿½Æ‚ï¿½ï¿½Ä‚Ìƒoï¿½Cï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‰ï¿½ï¿½
+		// ï¿½Vï¿½Fï¿½[ï¿½_ï¿½[ï¿½ï¿½ï¿½\ï¿½[ï¿½Xï¿½Xï¿½ï¿½ï¿½bï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ä‚ï¿½SRVï¿½Æ‚ï¿½ï¿½Ä‚Ìgï¿½pï¿½ï¿½ï¿½ï¿½ï¿½mï¿½É‚ï¿½ï¿½ï¿½
 		ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
-		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-		ctx->PSSetShaderResources(0, 1, nullSRV);
+		ID3D11ShaderResourceView* nullSRVs[8] = { nullptr };
+		ctx->PSSetShaderResources(0, 8, nullSRVs);
+		ctx->VSSetShaderResources(0, 8, nullSRVs);
 
 		DirectX11::GetInstance()->BeginDraw();
 		GUI::GetInstance()->BeginDraw();
-		// ƒ\ƒtƒgƒEƒFƒAƒ‚[ƒh‚²‚Æ‚Ì•`‰æˆ—
+		// ï¿½\ï¿½tï¿½gï¿½Eï¿½Fï¿½Aï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½Æ‚Ì•`ï¿½æˆï¿½ï¿½
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
@@ -177,12 +180,12 @@ void MainFrame::UnInit() {
 	Animator2DFrame::DestroyInstance();
 
 	UninitInput();
-	// AssetManager ‚Ì©“®“¯Šú’â~
+	// AssetManager ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½~
 	AssetManager::Instance()->StopAutoSync();
-	// •Û‘¶
+	// ï¿½Û‘ï¿½
 	SettingManager::GetInstance()->SaveConfig();
-	// ”jŠüˆ—
-	// ƒ}ƒl[ƒWƒƒ[‚Ì”jŠü
+	// ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½Ì”jï¿½ï¿½
 	GUI::DestroyInstance();
 	ComponentManager::DestroyInstance();
 	SettingManager::DestroyInstance();
