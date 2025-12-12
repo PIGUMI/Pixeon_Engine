@@ -64,19 +64,15 @@ int MainFrame::Init(const EngineConfig& InPut)
 	// AssetManager の自動同期開始
 	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
 
-	/* エンジン用レンダーテクスチャ初期化 */
-	// ゲーム用レンダーテクスチャ初期化
-	m_gameRenderTarget_ = new GameRenderTarget();
-	// ゲーム用レンダーテクスチャ初期化
-	m_gameRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
-	// Zバッファ設定
-	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-	// UI用レンダーテクスチャ初期化
-	m_uiRenderTarget_ = new GameRenderTarget();
-	// UI用レンダーテクスチャ初期化
-	m_uiRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
-	// Zバッファ設定
-	m_uiRenderTarget_->SetRenderZBuffer(false);
+	// レイヤーレンダーテクスチャ初期化
+	for (int layer = 0; layer < 3; layer++)
+	{
+		GameRenderTarget* Layer = new GameRenderTarget();
+		Layer->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+		Layer->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
+		m_layerRenderTargets_.push_back(Layer);
+	}
+
 	m_finalRenderTarget_ = new GameRenderTarget();
 	m_finalRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
 	m_finalRenderTarget_->SetRenderZBuffer(false);
@@ -135,22 +131,27 @@ void MainFrame::Draw()
 {
 	if (bUpdateDraw) {
 
-		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-
-		m_gameRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-		// ソフトウェアモードごとの描画処理
-		switch (softwareMode_)
+		int LayerIndex = 0;
+		for(auto layerRT : m_layerRenderTargets_)
 		{
-		case SoftWareMode::ENGINE:
-			EngineFrame::GetInstance()->Draw(0);
-			break;
-		case SoftWareMode::ANIMTOR2D:
-			Animator2DFrame::GetInstance()->Draw();
-			break;
-		default:
-			break;
+			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
+			layerRT->Begin(DirectX11::GetInstance()->GetContext());
+			switch (softwareMode_)
+			{
+			case SoftWareMode::ENGINE:
+				EngineFrame::GetInstance()->Draw(0);
+				break;
+			case SoftWareMode::ANIMTOR2D:
+				Animator2DFrame::GetInstance()->Draw();
+				break;
+			default:
+				break;
+			}
+			layerRT->End();
+			LayerIndex++;
 		}
-		m_gameRenderTarget_->End();
+
+		CompositeLayers(m_layerRenderTargets_, m_finalRenderTarget_);
 
 		ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
@@ -203,25 +204,11 @@ void MainFrame::UnInit() {
 	ModelManager::DeleteInstance();
 	TextureManager::DeleteInstance();
 	SoundManager::DeleteInstance();
-
-	if(m_gameRenderTarget_){
-		delete m_gameRenderTarget_;
-		m_gameRenderTarget_ = nullptr;
-	}
-	if (m_uiRenderTarget_){
-		delete m_uiRenderTarget_;
-		m_uiRenderTarget_ = nullptr;
-	}
 	ResourceService::DeleteInstance();
 
 	DirectX11::GetInstance()->Uninit();
 	DirectX11::DestroyInstance();
 	CoUninitialize();
-}
-
-ID3D11ShaderResourceView* MainFrame::GetGameRenderTargetSRV()
-{
-	return m_gameRenderTarget_->GetShaderResourceView();
 }
 
 ID3D11ShaderResourceView* MainFrame::GetFinalRenderTargetSRV()

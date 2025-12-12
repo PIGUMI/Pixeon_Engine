@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <list>
 
 class GameRenderTarget;
 class Object;
@@ -43,7 +44,6 @@ public:
 	// Window Handle ?èÔ
 	HWND GetWindowHandle() const { return m_hWnd_; }
 	float GetDeltaTime() { return deltaTime_; }
-	GameRenderTarget* GetGameRenderTarget() const { return m_gameRenderTarget_; }
 	ID3D11ShaderResourceView* GetGameRenderTargetSRV();
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
 	void SetSoftwareMode(SoftWareMode mode) { softwareMode_ = mode; }
@@ -55,8 +55,6 @@ private:
 	float deltaTime_;
 
 	HWND m_hWnd_;
-	GameRenderTarget* m_gameRenderTarget_;
-	GameRenderTarget* m_uiRenderTarget_ = nullptr;
 	GameRenderTarget* m_finalRenderTarget_ = nullptr;
 	std::list<GameRenderTarget*> m_layerRenderTargets_;
 

@@ -71,6 +71,7 @@ void ImageRender::Init(Object* owner) {
 	EnsureConstantBuffer();
 	EnsureBuffers();
 	m_ready = true;
+	_LayerNumber = 0;
 }
 
 void ImageRender::InGameUpdate()
@@ -579,7 +580,9 @@ void ImageRender::DrawInspector() {
 	std::string title = _ComponentName + "##" + std::to_string((uintptr_t)this);
 	if (!ImGui::CollapsingHeader(SJ(title.c_str()).c_str()))
 		return;
-
+	ImGui::Text("%s", SJ("レイヤー").c_str());
+	ImGui::SameLine();
+	ImGui::InputInt("##layer", &_LayerNumber);
 	ImGui::Text("%s", SJ("テクスチャ名:").c_str());
 	ImGui::SameLine();
 	ImGui::Text("%s", m_textureName.empty() ? "(none)" : m_textureName.c_str());
