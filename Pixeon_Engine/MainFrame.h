@@ -44,7 +44,6 @@ public:
 	// Window Handle ?èÔ
 	HWND GetWindowHandle() const { return m_hWnd_; }
 	float GetDeltaTime() { return deltaTime_; }
-	ID3D11ShaderResourceView* GetGameRenderTargetSRV();
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
 	void SetSoftwareMode(SoftWareMode mode) { softwareMode_ = mode; }
 	SoftWareMode GetSoftwareMode() const { return softwareMode_; }
