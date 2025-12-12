@@ -408,7 +408,6 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 	sprintf_s(buf, "[CompositeLayers] Composited %d layers\n", layerCount);
 	OutputDebugStringA(buf);
 
-	// ★ デフォルトのレンダーターゲットに戻す
 	RenderTarget* defaultRTV = DirectX11::GetInstance()->GetDefaultRTV();
 	DepthStencil* defaultDSV = DirectX11::GetInstance()->GetDefaultDSV();
 	if (defaultRTV) {

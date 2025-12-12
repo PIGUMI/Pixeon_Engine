@@ -162,7 +162,6 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context, bool clearTarget)
 
 	context->RSSetViewports(1, &m_viewport);
 
-	// clearTarget ƒtƒ‰ƒO‚Å§Œä
 	if (clearTarget)
 	{
 		DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();

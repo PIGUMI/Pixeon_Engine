@@ -26,7 +26,7 @@ private:
 	D3D11_VIEWPORT m_viewport = {};
 	ID3D11Texture2D* m_pDepthStencilTexture = nullptr;
 	ID3D11DepthStencilView* m_pDSV = nullptr;
-	ID3D11ShaderResourceView* m_pDepthSRV = nullptr; // DoFópÇÃê[ìxSRV
+	ID3D11ShaderResourceView* m_pDepthSRV = nullptr;
 
 	bool m_isRenderZBuffer = false;
 };
