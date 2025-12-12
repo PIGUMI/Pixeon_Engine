@@ -168,7 +168,6 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context, bool clearTarget)
 		{
 			float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 			context->ClearRenderTargetView(m_pRTV, clearColor);
-		
 		}
 		else
 		{

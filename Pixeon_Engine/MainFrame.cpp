@@ -131,7 +131,7 @@ void MainFrame::Draw()
 {
 	if (bUpdateDraw) {
 		int LayerIndex = 0;
-		for(auto layerRT : m_layerRenderTargets_){
+		for (auto layerRT : m_layerRenderTargets_) {
 			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 			layerRT->Begin(DirectX11::GetInstance()->GetContext());
@@ -153,7 +153,7 @@ void MainFrame::Draw()
 		m_finalRenderTarget_->SetRenderZBuffer(false);
 		m_finalRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
 		for (auto layerRT : m_layerRenderTargets_) {
-			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(),0.0f,0.0,engineConfig_.screenWidth,engineConfig_.screenHeight);
+			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, engineConfig_.screenWidth, engineConfig_.screenHeight);
 		}
 		m_finalRenderTarget_->End();
 

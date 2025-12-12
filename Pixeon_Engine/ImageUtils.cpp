@@ -7,7 +7,6 @@
 using Microsoft::WRL::ComPtr;
 
 namespace ImageUtils {
-
 	struct V {
 		float p[3];
 		float uv[2];

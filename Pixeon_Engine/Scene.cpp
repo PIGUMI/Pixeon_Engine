@@ -34,7 +34,6 @@ static const int kMaxLights = 8;
 Scene::~Scene()
 {
 	SaveToFile();
-
 	for (auto& obj : _objects) {
 		if (obj) {
 			obj->UInit();
@@ -293,7 +292,7 @@ void Scene::Draw(int Layer) {
 			float distA = (camPos.x - posA.x) * (camPos.x - posA.x) + (camPos.y - posA.y) * (camPos.y - posA.y) + (camPos.z - posA.z) * (camPos.z - posA.z);
 			float distB = (camPos.x - posB.x) * (camPos.x - posB.x) + (camPos.y - posB.y) * (camPos.y - posB.y) + (camPos.z - posB.z) * (camPos.z - posB.z);
 			// ãóó£Ç™ãﬂÇ¢èáÇ…É\Å[Ég
-			return distA < distB;
+			return distA > distB;
 			});
 	}
 	for (auto& obj : sortedList)
