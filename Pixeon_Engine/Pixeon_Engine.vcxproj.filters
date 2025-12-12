@@ -227,6 +227,9 @@
     <ClCompile Include="EasingGraph.cpp">
       <Filter>ソース ファイル\3_Animator2DEditor\Animator2D</Filter>
     </ClCompile>
+    <ClCompile Include="ImageUtils.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -399,6 +402,9 @@
     </ClInclude>
     <ClInclude Include="EasingGraph.h">
       <Filter>ソース ファイル\3_Animator2DEditor\Animator2D</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageUtils.h">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -18,6 +18,7 @@ public:
 	bool IsRenderZBuffer() const { return m_isRenderZBuffer; }
 	int GetWidth() const { return (int)m_viewport.Width; }
 	int GetHeight() const { return (int)m_viewport.Height; }
+	void SetBlend(bool Enable);
 
 private:
 	ID3D11Texture2D* m_pTexture = nullptr;
@@ -29,4 +30,5 @@ private:
 	ID3D11ShaderResourceView* m_pDepthSRV = nullptr;
 
 	bool m_isRenderZBuffer = false;
+	bool m_isBlendEnabled = false;
 };

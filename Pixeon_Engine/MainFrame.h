@@ -58,6 +58,7 @@ private:
 	std::list<GameRenderTarget*> m_layerRenderTargets_;
 
 	SoftWareMode softwareMode_;
+	EngineConfig engineConfig_;
 private:
 	// CompositePass ‚ğ MainFrame ‚Ìƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾
 	void CompositeLayers(const std::list<GameRenderTarget*>& renders, GameRenderTarget* finalView);

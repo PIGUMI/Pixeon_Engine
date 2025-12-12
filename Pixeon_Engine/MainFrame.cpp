@@ -15,6 +15,7 @@
 #include "Input.h"
 #include "EngineFrame.h"
 #include "Animator2DFrame.h"
+#include "ImageUtils.h"
 #include <crtdbg.h>
 #include <d3dcompiler.h>
 #pragma comment(lib,"d3dcompiler.lib")
@@ -41,6 +42,7 @@ int MainFrame::Init(const EngineConfig& InPut)
 	lastUpdateTime_ = timeGetTime();
 	m_hWnd_ = InPut.wnd;
 	bUpdateDraw = false;;
+	engineConfig_ = InPut;
 
 	SettingManager::GetInstance()->LoadConfig();
 	/* COM ‚Ì‰Šú‰» */
@@ -129,8 +131,8 @@ void MainFrame::Draw()
 {
 	if (bUpdateDraw) {
 		int LayerIndex = 0;
-		for(auto layerRT : m_layerRenderTargets_)
-		{
+		for(auto layerRT : m_layerRenderTargets_){
+			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 			layerRT->Begin(DirectX11::GetInstance()->GetContext());
 			switch (softwareMode_)
@@ -148,7 +150,12 @@ void MainFrame::Draw()
 			LayerIndex++;
 		}
 
-		CompositeLayers(m_layerRenderTargets_, m_finalRenderTarget_);
+		m_finalRenderTarget_->SetRenderZBuffer(false);
+		m_finalRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
+		for (auto layerRT : m_layerRenderTargets_) {
+			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(),0.0f,0.0,engineConfig_.screenWidth,engineConfig_.screenHeight);
+		}
+		m_finalRenderTarget_->End();
 
 		// ƒƒCƒ“•`‰æ
 		DirectX11::GetInstance()->BeginDraw();
