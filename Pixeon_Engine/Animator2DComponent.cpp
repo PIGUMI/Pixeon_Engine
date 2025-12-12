@@ -29,7 +29,7 @@ void Animator2DComponent::EditUpdate()
 	}
 }
 
-void Animator2DComponent::Draw()
+void Animator2DComponent::Draw(int Layer)
 {
 	int count = 0;
 	for (auto& animator : _animators) {

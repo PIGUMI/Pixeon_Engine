@@ -491,7 +491,8 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
 }
 
-void ImageRender::Draw() {
+void ImageRender::Draw(int Layer) {
+	if (Layer != _LayerNumber)return;
 	if (!m_ready) return;
 	auto* dx = DirectX11::GetInstance();
 	auto ctx = dx->GetContext();

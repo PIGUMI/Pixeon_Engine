@@ -86,8 +86,9 @@ void BoxCollision::InGameUpdate()
 	EditUpdate();
 }
 
-void BoxCollision::Draw()
+void BoxCollision::Draw(int Layer)
 {
+	if (Layer != _LayerNumber) return;
 	if (_Parent)
 	{
 		auto transform = _Parent->GetTransform();

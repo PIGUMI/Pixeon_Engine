@@ -35,7 +35,7 @@ public:
 	void InGameUpdate() override;
 	void EditUpdate() override;
 	void Update();
-	void Draw() override;
+	void Draw(int Layer) override;
 	void DrawInspector() override;
 	void UInit() override;
 

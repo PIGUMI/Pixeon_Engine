@@ -9,7 +9,7 @@ public:
 	void Init(Object* Prt) override;
 	void InGameUpdate() override;
 	void EditUpdate() override;
-	void Draw() override;
+	void Draw(int Layer) override;
 	void UInit() override;
 
 	void DrawInspector() override;
