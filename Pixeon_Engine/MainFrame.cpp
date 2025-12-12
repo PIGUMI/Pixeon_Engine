@@ -141,7 +141,7 @@ void MainFrame::Draw()
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
-			EngineFrame::GetInstance()->Draw();
+			EngineFrame::GetInstance()->Draw(0);
 			break;
 		case SoftWareMode::ANIMTOR2D:
 			Animator2DFrame::GetInstance()->Draw();
@@ -150,20 +150,6 @@ void MainFrame::Draw()
 			break;
 		}
 		m_gameRenderTarget_->End();
-
-		//m_uiRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-		//switch (softwareMode_)
-		//{
-		//case SoftWareMode::ENGINE:
-		//	EngineFrame::GetInstance()->Draw();
-		//	break;
-		//case SoftWareMode::ANIMTOR2D:
-		//	break;
-		//default:
-		//	break;
-		//}
-		//m_uiRenderTarget_->End();
-		//CompositePass(m_gameRenderTarget_->GetShaderResourceView(), m_uiRenderTarget_->GetShaderResourceView(), m_finalRenderTarget_);
 
 		ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };

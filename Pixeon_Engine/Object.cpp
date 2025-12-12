@@ -24,10 +24,10 @@ void Object::InGameUpdate() {
 	}
 }
 
-void Object::Draw() {
+void Object::Draw(int Layer) {
 	for (auto comp : _components)
 	{
-		comp->Draw();
+		comp->Draw(Layer);
 	}
 }
 

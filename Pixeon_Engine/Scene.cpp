@@ -280,7 +280,7 @@ void Scene::PlayUpdate() {
 	_ToBeRemoved.clear();
 }
 
-void Scene::Draw() {
+void Scene::Draw(int Layer) {
 	UploadLightsToGPU();
 	// オブジェクトの描画
 	std::vector<Object*> sortedList = _objects;
@@ -300,7 +300,7 @@ void Scene::Draw() {
 	{
 		if (obj)
 		{
-			obj->Draw();
+			obj->Draw(Layer);
 		}
 	}
 }

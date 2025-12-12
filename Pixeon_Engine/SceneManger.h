@@ -25,7 +25,7 @@ public:
 	void BeginPlay();
 	void EditUpdate();
 	void PlayUpdate();
-	void Draw();
+	void Draw(int Layer);
 	void ChangeScene(std::string SceneName);
 
 	bool RenameFileInDirectory(const std::string& oldName, const std::string& newName);

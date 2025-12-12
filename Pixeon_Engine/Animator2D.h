@@ -82,7 +82,7 @@ public:
 	~Animator2D();
 	void Update();
 	void EditorUpdate();
-	void Draw();
+	void Draw(int Layer = 0);
 	void Debug();
 
 	void SaveFile();
