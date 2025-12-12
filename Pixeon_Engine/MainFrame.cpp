@@ -16,6 +16,8 @@
 #include "EngineFrame.h"
 #include "Animator2DFrame.h"
 #include <crtdbg.h>
+#include <d3dcompiler.h>
+#pragma comment(lib,"d3dcompiler.lib")
 
 MainFrame* MainFrame::instance_ = nullptr;
 
@@ -126,7 +128,6 @@ void MainFrame::Update()
 void MainFrame::Draw()
 {
 	if (bUpdateDraw) {
-
 		int LayerIndex = 0;
 		for(auto layerRT : m_layerRenderTargets_)
 		{
@@ -149,14 +150,9 @@ void MainFrame::Draw()
 
 		CompositeLayers(m_layerRenderTargets_, m_finalRenderTarget_);
 
-		ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
-		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-		ctx->PSSetShaderResources(0, 1, nullSRV);
-
 		// メイン描画
 		DirectX11::GetInstance()->BeginDraw();
 		GUI::GetInstance()->BeginDraw();
-		// ソフトウェアモードごとの描画処理
 		switch (softwareMode_)
 		{
 		case SoftWareMode::ENGINE:
@@ -178,10 +174,8 @@ void MainFrame::Draw()
 void MainFrame::UnInit() {
 	Animator2DFrame::GetInstance()->UnInit();
 	EngineFrame::GetInstance()->UnInit();
-
 	EngineFrame::DestroyInstance();
 	Animator2DFrame::DestroyInstance();
-
 	UninitInput();
 	// AssetManager の自動同期停止
 	AssetManager::Instance()->StopAutoSync();
@@ -230,26 +224,24 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 
 	ShaderManager* sm = ShaderManager::GetInstance();
 	const std::string vsName = "VS_ImgQuad";
-	const std::string psName = "PS_ImgQuad";
 
 	ID3D11VertexShader* vs = sm->GetVertexShader(vsName);
-	ID3D11PixelShader* ps = sm->GetPixelShader(psName);
-	if (!vs || !ps) {
+	if (!vs) {
 		sm->UpdateAndCompileShaders();
 		vs = sm->GetVertexShader(vsName);
-		ps = sm->GetPixelShader(psName);
-		if (!vs || !ps) {
-			OutputDebugStringA("[CompositeLayers] required shaders missing (VS_ImgQuad/PS_ImgQuad)\n");
+		if (!vs) {
+			OutputDebugStringA("[CompositeLayers] required VS missing (VS_ImgQuad)\n");
 			return;
 		}
 	}
 
-	// static リソース(1回生成)
+	// static リソース
 	static ID3D11Buffer* s_vb = nullptr;
 	static ID3D11InputLayout* s_layout = nullptr;
 	static ID3D11Buffer* s_cb = nullptr;
 	static ID3D11DepthStencilState* s_dsOff = nullptr;
 
+	// VB (6頂点クワッド)
 	if (!s_vb) {
 		struct V { float p[3]; float uv[2]; };
 		V verts[6] = {
@@ -271,6 +263,7 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 		}
 	}
 
+	// 入力レイアウト
 	if (!s_layout) {
 		const void* bc = nullptr; size_t bcSize = 0;
 		if (!sm->GetVSBytecode(vsName, &bc, &bcSize)) {
@@ -287,11 +280,12 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 		}
 	}
 
+	// CB（VS用）
 	if (!s_cb) {
 		struct CBVS { DirectX::XMMATRIX View; DirectX::XMMATRIX Proj; DirectX::XMFLOAT4 Color; int mode2D; float pad[3]; };
 		D3D11_BUFFER_DESC cbd{};
 		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		cbd.ByteWidth = sizeof(CBVS);
+		cbd.ByteWidth = (UINT)sizeof(CBVS);
 		cbd.Usage = D3D11_USAGE_DEFAULT;
 		if (FAILED(dev->CreateBuffer(&cbd, nullptr, &s_cb))) {
 			OutputDebugStringA("[CompositeLayers] Create CB failed\n");
@@ -299,6 +293,7 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 		}
 	}
 
+	// DepthStencilState（無効）
 	if (!s_dsOff) {
 		D3D11_DEPTH_STENCIL_DESC dsdesc{};
 		dsdesc.DepthEnable = FALSE;
@@ -310,16 +305,43 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 		}
 	}
 
-	// ★ FinalView のレンダーターゲットを直接取得して設定
+	static ID3D11PixelShader* s_compPS = nullptr;
+	static ID3DBlob* s_compPSBlob = nullptr;
+	if (!s_compPS) {
+		const char* psSrc =
+			"Texture2D gTex : register(t0);\n"
+			"SamplerState gSamp : register(s0);\n"
+			"struct PSIn { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; };\n"
+			"float4 PSMain(PSIn IN) : SV_Target\n"
+			"{\n"
+			"    float4 c = gTex.Sample(gSamp, IN.uv);\n"
+			"    float lum = dot(c.rgb, float3(0.299,0.587,0.114));\n"
+			"    float a = c.a;\n"
+			"    if (a < 0.001 && lum > 0.001) a = 1.0; // RGB があるのに alpha 0 の場合は 1 に\n"
+			"    return float4(c.rgb, a);\n"
+			"}\n";
+		ID3DBlob* err = nullptr;
+		HRESULT hr = D3DCompile(psSrc, strlen(psSrc), nullptr, nullptr, nullptr, "PSMain", "ps_4_0", 0, 0, &s_compPSBlob, &err);
+		if (FAILED(hr)) {
+			if (err) { OutputDebugStringA((const char*)err->GetBufferPointer()); err->Release(); }
+			OutputDebugStringA("[CompositeLayers] D3DCompile PS failed\n");
+		}
+		else {
+			if (FAILED(dev->CreatePixelShader(s_compPSBlob->GetBufferPointer(), s_compPSBlob->GetBufferSize(), nullptr, &s_compPS))) {
+				OutputDebugStringA("[CompositeLayers] CreatePixelShader failed\n");
+			}
+		}
+	}
+
+	// final RT セット（DSV は不要）
 	ID3D11RenderTargetView* rtv = finalView->GetRenderTargetView();
 	if (!rtv) {
 		OutputDebugStringA("[CompositeLayers] finalView RTV is null\n");
 		return;
 	}
-
 	ctx->OMSetRenderTargets(1, &rtv, nullptr);
 
-	// ビューポート設定
+	// ビューポート
 	D3D11_VIEWPORT vp = {};
 	vp.Width = (FLOAT)finalView->GetWidth();
 	vp.Height = (FLOAT)finalView->GetHeight();
@@ -329,93 +351,98 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 	vp.TopLeftY = 0;
 	ctx->RSSetViewports(1, &vp);
 
-	DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();
-	float clearColor[4] = { Temp.x, Temp.y, Temp.z, 1.0f };
-	ctx->ClearRenderTargetView(rtv, clearColor);
+	// final を不透明背景でクリア（alpha=1）
+	DirectX::XMFLOAT4 bg = SettingManager::GetInstance()->GetBackgroundColor();
+	const float finalClear[4] = { bg.x, bg.y, bg.z, 1.0f };
+	ctx->ClearRenderTargetView(rtv, finalClear);
 
-	// IA 設定
-	UINT stride = sizeof(float) * 5;
-	UINT offset = 0;
-	ctx->IASetVertexBuffers(0, 1, &s_vb, &stride, &offset);
-	ctx->IASetInputLayout(s_layout);
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// シェーダバインド
+	// シェーダ/IA/CB セット
 	ctx->VSSetShader(vs, nullptr, 0);
-	ctx->PSSetShader(ps, nullptr, 0);
-
-	// CB 更新(identity)
-	{
-		struct CBData { DirectX::XMMATRIX V; DirectX::XMMATRIX P; DirectX::XMFLOAT4 Color; int mode2D; float pad[3]; } cb;
-		cb.V = DirectX::XMMatrixIdentity();
-		cb.P = DirectX::XMMatrixIdentity();
-		cb.Color = DirectX::XMFLOAT4(1, 1, 1, 1);
-		cb.mode2D = 1;
-		ctx->UpdateSubresource(s_cb, 0, nullptr, &cb, 0, 0);
-		ID3D11Buffer* cbs[] = { s_cb };
-		ctx->VSSetConstantBuffers(0, 1, cbs);
-		ctx->PSSetConstantBuffers(0, 1, cbs);
+	if (s_compPS) ctx->PSSetShader(s_compPS, nullptr, 0);
+	else {
+		ID3D11PixelShader* fallbackPS = sm->GetPixelShader("PS_ImgQuad");
+		ctx->PSSetShader(fallbackPS, nullptr, 0);
 	}
 
-	// Depth 無効 / サンプラ
-	ctx->OMSetDepthStencilState(s_dsOff, 0);
-	DirectX11::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
+	// CB 更新（identity）
+	{
+		struct CBVS { DirectX::XMMATRIX View; DirectX::XMMATRIX Proj; DirectX::XMFLOAT4 Color; int mode2D; float pad[3]; };
+		CBVS cb{};
+		cb.View = DirectX::XMMatrixIdentity();
+		cb.Proj = DirectX::XMMatrixIdentity();
+		cb.Color = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+		cb.mode2D = 1;
+		ctx->UpdateSubresource(s_cb, 0, nullptr, &cb, 0, 0);
+		ctx->VSSetConstantBuffers(0, 1, &s_cb);
+	}
 
-	// ★ レイヤーを順番に合成
-	bool first = true;
+	// IA セット
+	UINT stride = sizeof(float) * 5;
+	UINT offset = 0;
+	ctx->IASetInputLayout(s_layout);
+	ctx->IASetVertexBuffers(0, 1, &s_vb, &stride, &offset);
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// サンプラ・ブレンド・深度無効
+	DirectX11::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
+	ctx->OMSetDepthStencilState(s_dsOff, 0);
+
+	// 合成ループ：
+	// - 最初の「有効な」レイヤーはブレンド無効（上書き：BLEND_NONE）で描画
+	// - 以降は ALPHA ブレンドで重ねる
+	bool firstDrawDone = false;
 	int layerCount = 0;
 	for (auto rt : renders)
 	{
-		if (!rt) {
-			OutputDebugStringA("[CompositeLayers] layer is null\n");
-			continue;
-		}
-
+		if (!rt) { layerCount++; continue; }
 		ID3D11ShaderResourceView* srv = rt->GetShaderResourceView();
-		if (!srv) {
-			char buf[256];
-			sprintf_s(buf, "[CompositeLayers] layer %d SRV is null\n", layerCount);
-			OutputDebugStringA(buf);
-			layerCount++;
-			continue;
-		}
+		if (!srv) { layerCount++; continue; }
 
-		// ★ ブレンドモードを描画前に必ず設定
-		if (first) {
-			DirectX11::GetInstance()->SetBlendMode(BLEND_NONE);
-			OutputDebugStringA("[CompositeLayers] Drawing first layer (BLEND_NONE)\n");
-			first = false;
+		// ブレンド設定
+		if (!firstDrawDone) {
+			DirectX11::GetInstance()->SetBlendMode(BLEND_NONE); // 上書き
+			firstDrawDone = true;
 		}
 		else {
-			DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA);
-			char buf[256];
-			sprintf_s(buf, "[CompositeLayers] Drawing layer %d (BLEND_ALPHA)\n", layerCount);
-			OutputDebugStringA(buf);
+			DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA); // SrcAlpha, InvSrcAlpha
 		}
 
-		// テクスチャをセットして描画
+		// SRV を PS にセット
 		ctx->PSSetShaderResources(0, 1, &srv);
+
+		// 描画
 		ctx->Draw(6, 0);
 
-		// アンバインド
+		// アンバインド（RT として再利用される可能性があるため）
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		ctx->PSSetShaderResources(0, 1, nullSRV);
 
 		layerCount++;
 	}
 
-	char buf[256];
-	sprintf_s(buf, "[CompositeLayers] Composited %d layers\n", layerCount);
-	OutputDebugStringA(buf);
+	// ログ
+	{
+		char buf[256];
+		sprintf_s(buf, "[CompositeLayers] Composited %d layers\n", layerCount);
+		OutputDebugStringA(buf);
+	}
 
+	// デフォルトに戻す
 	RenderTarget* defaultRTV = DirectX11::GetInstance()->GetDefaultRTV();
 	DepthStencil* defaultDSV = DirectX11::GetInstance()->GetDefaultDSV();
 	if (defaultRTV) {
 		DirectX11::GetInstance()->SetRenderTargets(1, &defaultRTV, defaultDSV);
 	}
 
-	// 念のためアンバインド
-	ID3D11ShaderResourceView* nullSRV2[1] = { nullptr };
-	ctx->PSSetShaderResources(0, 1, nullSRV2);
-	DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA);
+	// 後片付け（バインド解除）
+	ID3D11ShaderResourceView* nullSRVEnd[1] = { nullptr };
+	ctx->PSSetShaderResources(0, 1, nullSRVEnd);
+	ID3D11Buffer* nullVB[1] = { nullptr };
+	UINT zero = 0;
+	ctx->IASetVertexBuffers(0, 1, nullVB, &zero, &zero);
+	ctx->IASetInputLayout(nullptr);
+	ctx->VSSetShader(nullptr, nullptr, 0);
+	ctx->PSSetShader(nullptr, nullptr, 0);
+	ctx->OMSetDepthStencilState(nullptr, 0);
+	DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA); // 後で描画するパスのためにデフォルト復帰
 }
