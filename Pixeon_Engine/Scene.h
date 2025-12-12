@@ -22,6 +22,7 @@ public:
 	virtual void EditUpdate();
 	virtual void PlayUpdate();
 	virtual void Draw();
+	virtual void DrawUI();
 
 public: // オブジェクトの追加と削除
 	bool AddObject(Object* obj);

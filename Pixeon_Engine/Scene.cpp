@@ -296,7 +296,17 @@ void Scene::Draw() {
 			return distA < distB;
 			});
 	}
-	for (auto& obj : sortedList) if (obj)obj->Draw();
+	for (auto& obj : sortedList)
+	{
+		if (obj)
+		{
+			obj->Draw();
+		}
+	}
+}
+
+void Scene::DrawUI()
+{
 }
 
 void Scene::SaveToFile() {

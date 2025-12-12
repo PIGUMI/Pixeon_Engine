@@ -180,3 +180,10 @@ void GameRenderTarget::End()
 		DirectX11::GetInstance()->SetRenderTargets(1, &defaultRTV, defaultDSV);
 	}
 }
+
+void GameRenderTarget::Clear(ID3D11DeviceContext* context, float r, float g, float b, float a)
+{
+	if (!context || !m_pRTV) return;
+	float clearColor[4] = { r, g, b, a };
+	context->ClearRenderTargetView(m_pRTV, clearColor);
+}

@@ -1,5 +1,7 @@
 #include "Object.h"
 #include "Component.h"
+#include "ImageRender.h"
+#include "Animator2DComponent.h"
 
 void Object::Init() {
 }
@@ -23,7 +25,10 @@ void Object::InGameUpdate() {
 }
 
 void Object::Draw() {
-	for (auto comp : _components)comp->Draw();
+	for (auto comp : _components)
+	{
+		comp->Draw();
+	}
 }
 
 void Object::UInit() {

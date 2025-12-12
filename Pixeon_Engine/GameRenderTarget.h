@@ -9,7 +9,7 @@ public:
 	void InitWithDepthSRV(ID3D11Device* device, int width, int height); // DoFópÇÃèâä˙âª
 	void Begin(ID3D11DeviceContext* context);
 	void End();
-
+	void Clear(ID3D11DeviceContext* context, float r, float g, float b, float a);
 	ID3D11ShaderResourceView* GetShaderResourceView() const { return m_pSRV; }
 	ID3D11RenderTargetView* GetRenderTargetView() { return m_pRTV; }
 	ID3D11ShaderResourceView* GetDepthShaderResourceView() const { return m_pDepthSRV; } // DoFóp

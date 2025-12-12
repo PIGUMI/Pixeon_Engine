@@ -71,6 +71,15 @@ int MainFrame::Init(const EngineConfig& InPut)
 	m_gameRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
 	// Zバッファ設定
 	m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
+	// UI用レンダーテクスチャ初期化
+	m_uiRenderTarget_ = new GameRenderTarget();
+	// UI用レンダーテクスチャ初期化
+	m_uiRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+	// Zバッファ設定
+	m_uiRenderTarget_->SetRenderZBuffer(false);
+	m_finalRenderTarget_ = new GameRenderTarget();
+	m_finalRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+	m_finalRenderTarget_->SetRenderZBuffer(false);
 
 	/* GUIの初期化 */
 	GUI::GetInstance()->Init();
@@ -128,7 +137,6 @@ void MainFrame::Draw()
 		m_gameRenderTarget_->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 
 		m_gameRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-
 		// ソフトウェアモードごとの描画処理
 		switch (softwareMode_)
 		{
@@ -141,8 +149,21 @@ void MainFrame::Draw()
 		default:
 			break;
 		}
-
 		m_gameRenderTarget_->End();
+
+		//m_uiRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
+		//switch (softwareMode_)
+		//{
+		//case SoftWareMode::ENGINE:
+		//	EngineFrame::GetInstance()->Draw();
+		//	break;
+		//case SoftWareMode::ANIMTOR2D:
+		//	break;
+		//default:
+		//	break;
+		//}
+		//m_uiRenderTarget_->End();
+		//CompositePass(m_gameRenderTarget_->GetShaderResourceView(), m_uiRenderTarget_->GetShaderResourceView(), m_finalRenderTarget_);
 
 		ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
@@ -194,6 +215,14 @@ void MainFrame::UnInit() {
 	TextureManager::DeleteInstance();
 	SoundManager::DeleteInstance();
 
+	if(m_gameRenderTarget_){
+		delete m_gameRenderTarget_;
+		m_gameRenderTarget_ = nullptr;
+	}
+	if (m_uiRenderTarget_){
+		delete m_uiRenderTarget_;
+		m_uiRenderTarget_ = nullptr;
+	}
 	ResourceService::DeleteInstance();
 
 	DirectX11::GetInstance()->Uninit();
@@ -204,4 +233,186 @@ void MainFrame::UnInit() {
 ID3D11ShaderResourceView* MainFrame::GetGameRenderTargetSRV()
 {
 	return m_gameRenderTarget_->GetShaderResourceView();
+}
+
+ID3D11ShaderResourceView* MainFrame::GetFinalRenderTargetSRV()
+{
+	if (m_finalRenderTarget_) {
+		return m_finalRenderTarget_->GetShaderResourceView();
+	}
+	return nullptr;
+}
+
+void MainFrame::CompositePass(ID3D11ShaderResourceView* sceneSRV, ID3D11ShaderResourceView* uiSRV, GameRenderTarget* finalRT)
+{
+	if (!finalRT) {
+		OutputDebugStringA("[CompositePass] finalRT is null\n");
+		return;
+	}
+	auto dev = DirectX11::GetInstance()->GetDevice();
+	auto ctx = DirectX11::GetInstance()->GetContext();
+	if (!dev || !ctx) {
+		OutputDebugStringA("[CompositePass] device/context null\n");
+		return;
+	}
+
+	// デバッグログ
+	if (!sceneSRV) OutputDebugStringA("[CompositePass] sceneSRV is null\n");
+	if (!uiSRV)    OutputDebugStringA("[CompositePass] uiSRV is null\n");
+
+	ShaderManager* sm = ShaderManager::GetInstance();
+	const std::string vsName = "VS_ImgQuad";
+	const std::string psName = "PS_ImgQuad";
+
+	ID3D11VertexShader* vs = sm->GetVertexShader(vsName);
+	ID3D11PixelShader* ps = sm->GetPixelShader(psName);
+	if (!vs || !ps) {
+		// シェーダが無ければ再コンパイルを試みる
+		sm->UpdateAndCompileShaders();
+		vs = sm->GetVertexShader(vsName);
+		ps = sm->GetPixelShader(psName);
+		if (!vs || !ps) {
+			OutputDebugStringA("[CompositePass] required shaders missing (VS_ImgQuad/PS_ImgQuad)\n");
+			return;
+		}
+	}
+
+	// static リソース（一度だけ作る）
+	static ID3D11Buffer* s_vb = nullptr;
+	static ID3D11InputLayout* s_layout = nullptr;
+	static ID3D11Buffer* s_cb = nullptr;
+	static ID3D11DepthStencilState* s_dsOff = nullptr;
+
+	if (!s_vb) {
+		struct V { float p[3]; float uv[2]; };
+		V verts[6] = {
+			{ {-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f} },
+			{ { 1.0f,  1.0f, 0.0f}, {1.0f, 0.0f} },
+			{ { 1.0f, -1.0f, 0.0f}, {1.0f, 1.0f} },
+
+			{ {-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f} },
+			{ { 1.0f, -1.0f, 0.0f}, {1.0f, 1.0f} },
+			{ {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f} },
+		};
+		D3D11_BUFFER_DESC bd{};
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.ByteWidth = sizeof(verts);
+		bd.Usage = D3D11_USAGE_IMMUTABLE;
+		D3D11_SUBRESOURCE_DATA init{ verts, 0, 0 };
+		if (FAILED(dev->CreateBuffer(&bd, &init, &s_vb))) {
+			OutputDebugStringA("[CompositePass] Create VB failed\n");
+			return;
+		}
+	}
+
+	if (!s_layout) {
+		const void* bc = nullptr; size_t bcSize = 0;
+		if (!sm->GetVSBytecode(vsName, &bc, &bcSize)) {
+			OutputDebugStringA("[CompositePass] GetVSBytecode failed\n");
+			return;
+		}
+		D3D11_INPUT_ELEMENT_DESC desc[] = {
+			{ "POSITION",0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA,0 },
+			{ "TEXCOORD",0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA,0 },
+		};
+		if (FAILED(dev->CreateInputLayout(desc, _countof(desc), bc, bcSize, &s_layout))) {
+			OutputDebugStringA("[CompositePass] CreateInputLayout failed\n");
+			return;
+		}
+	}
+
+	if (!s_cb) {
+		struct CBVS { DirectX::XMMATRIX View; DirectX::XMMATRIX Proj; DirectX::XMFLOAT4 Color; int mode2D; float pad[3]; };
+		D3D11_BUFFER_DESC cbd{};
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.ByteWidth = sizeof(CBVS);
+		cbd.Usage = D3D11_USAGE_DEFAULT;
+		if (FAILED(dev->CreateBuffer(&cbd, nullptr, &s_cb))) {
+			OutputDebugStringA("[CompositePass] Create CB failed\n");
+			return;
+		}
+	}
+
+	if (!s_dsOff) {
+		D3D11_DEPTH_STENCIL_DESC dsdesc{};
+		dsdesc.DepthEnable = FALSE;
+		dsdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		dsdesc.StencilEnable = FALSE;
+		if (FAILED(dev->CreateDepthStencilState(&dsdesc, &s_dsOff))) {
+			OutputDebugStringA("[CompositePass] Create DepthStencilState failed\n");
+			return;
+		}
+	}
+
+	// 合成先をバインドして描画（scene -> ui の順で描画）
+	finalRT->Begin(ctx);
+
+	// IA
+	UINT stride = sizeof(float) * 5;
+	UINT offset = 0;
+	ctx->IASetVertexBuffers(0, 1, &s_vb, &stride, &offset);
+	ctx->IASetInputLayout(s_layout);
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// シェーダ
+	ctx->VSSetShader(vs, nullptr, 0);
+	ctx->PSSetShader(ps, nullptr, 0);
+
+	// CB 更新（identity）
+	struct CBData { DirectX::XMMATRIX V; DirectX::XMMATRIX P; DirectX::XMFLOAT4 Color; int mode2D; float pad[3]; } cb;
+	cb.V = DirectX::XMMatrixIdentity();
+	cb.P = DirectX::XMMatrixIdentity();
+	cb.Color = DirectX::XMFLOAT4(1, 1, 1, 1);
+	cb.mode2D = 1;
+	ctx->UpdateSubresource(s_cb, 0, nullptr, &cb, 0, 0);
+	ID3D11Buffer* cbs[] = { s_cb };
+	ctx->VSSetConstantBuffers(0, 1, cbs);
+	ctx->PSSetConstantBuffers(0, 1, cbs);
+
+	// Depth 無効 / サンプラ / blend
+	ctx->OMSetDepthStencilState(s_dsOff, 0);
+	DirectX11::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
+
+	// 1) scene を描く（sceneSRV が無ければ目立つ色で塗る）
+	if (sceneSRV) {
+		ctx->PSSetShaderResources(0, 1, &sceneSRV);
+		DirectX11::GetInstance()->SetBlendMode(BLEND_NONE);
+		ctx->Draw(6, 0);
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		ctx->PSSetShaderResources(0, 1, nullSRV);
+	}
+	else {
+		// デバッグ用: sceneSRV が無ければマゼンタで塗る
+		// 一時的に Color を変えて描く（完全に簡易的な手段）
+		cb.Color = DirectX::XMFLOAT4(1, 0, 1, 1);
+		cb.mode2D = 1;
+		ctx->UpdateSubresource(s_cb, 0, nullptr, &cb, 0, 0);
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		ctx->PSSetShaderResources(0, 1, nullSRV);
+		DirectX11::GetInstance()->SetBlendMode(BLEND_NONE);
+		ctx->Draw(6, 0);
+		// 後で元に戻すカラー
+		cb.Color = DirectX::XMFLOAT4(1, 1, 1, 1);
+		ctx->UpdateSubresource(s_cb, 0, nullptr, &cb, 0, 0);
+	}
+
+	// 2) UI を alpha 合成で重ねる（uiSRV があれば）
+	if (uiSRV) {
+		ctx->PSSetShaderResources(0, 1, &uiSRV);
+		DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA);
+		ctx->Draw(6, 0);
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		ctx->PSSetShaderResources(0, 1, nullSRV);
+	}
+
+	// 合成完了
+	finalRT->End();
+
+	// SRV を解除（念のため）
+	ID3D11ShaderResourceView* nullSRV2[1] = { nullptr };
+	ctx->PSSetShaderResources(0, 1, nullSRV2);
+	// ブレンドはデフォルトに戻しておく（Editor の既存コードが BLEND_ALPHA を期待しているので戻す）
+	DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA);
+
+	OutputDebugStringA("[CompositePass] completed\n");
 }
