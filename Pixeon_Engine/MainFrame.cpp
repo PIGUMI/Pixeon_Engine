@@ -2,7 +2,6 @@
 #include "System.h"
 #include "GameRenderTarget.h"
 #include "GUI.h"
-// アセット管理クラス
 #include "AssetManager.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
@@ -13,12 +12,9 @@
 #include "ScriptManager.h"
 #include "ResourceService.h"
 #include "Animator2DManager.h"
-// 入力処理
 #include "Input.h"
-// ソフトウェアモード
 #include "EngineFrame.h"
 #include "Animator2DFrame.h"
-
 #include <crtdbg.h>
 
 MainFrame* MainFrame::instance_ = nullptr;
@@ -139,7 +135,7 @@ void MainFrame::Draw()
 			switch (softwareMode_)
 			{
 			case SoftWareMode::ENGINE:
-				EngineFrame::GetInstance()->Draw(0);
+				EngineFrame::GetInstance()->Draw(LayerIndex);
 				break;
 			case SoftWareMode::ANIMTOR2D:
 				Animator2DFrame::GetInstance()->Draw();
@@ -158,7 +154,6 @@ void MainFrame::Draw()
 		ctx->PSSetShaderResources(0, 1, nullSRV);
 
 		// メイン描画
-
 		DirectX11::GetInstance()->BeginDraw();
 		GUI::GetInstance()->BeginDraw();
 		// ソフトウェアモードごとの描画処理
@@ -249,7 +244,7 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 		}
 	}
 
-	// static リソース（1回生成）
+	// static リソース(1回生成)
 	static ID3D11Buffer* s_vb = nullptr;
 	static ID3D11InputLayout* s_layout = nullptr;
 	static ID3D11Buffer* s_cb = nullptr;
@@ -315,8 +310,28 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 		}
 	}
 
-	// FinalView にバインドして合成（下→上）
-	finalView->Begin(ctx);
+	// ★ FinalView のレンダーターゲットを直接取得して設定
+	ID3D11RenderTargetView* rtv = finalView->GetRenderTargetView();
+	if (!rtv) {
+		OutputDebugStringA("[CompositeLayers] finalView RTV is null\n");
+		return;
+	}
+
+	ctx->OMSetRenderTargets(1, &rtv, nullptr);
+
+	// ビューポート設定
+	D3D11_VIEWPORT vp = {};
+	vp.Width = (FLOAT)finalView->GetWidth();
+	vp.Height = (FLOAT)finalView->GetHeight();
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	ctx->RSSetViewports(1, &vp);
+
+	DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();
+	float clearColor[4] = { Temp.x, Temp.y, Temp.z, 1.0f };
+	ctx->ClearRenderTargetView(rtv, clearColor);
 
 	// IA 設定
 	UINT stride = sizeof(float) * 5;
@@ -329,7 +344,7 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 	ctx->VSSetShader(vs, nullptr, 0);
 	ctx->PSSetShader(ps, nullptr, 0);
 
-	// CB 更新（identity）
+	// CB 更新(identity)
 	{
 		struct CBData { DirectX::XMMATRIX V; DirectX::XMMATRIX P; DirectX::XMFLOAT4 Color; int mode2D; float pad[3]; } cb;
 		cb.V = DirectX::XMMatrixIdentity();
@@ -346,37 +361,61 @@ void MainFrame::CompositeLayers(const std::list<GameRenderTarget*>& renders, Gam
 	ctx->OMSetDepthStencilState(s_dsOff, 0);
 	DirectX11::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
 
+	// ★ レイヤーを順番に合成
 	bool first = true;
+	int layerCount = 0;
 	for (auto rt : renders)
 	{
-		if (!rt) continue;
-		ID3D11ShaderResourceView* srv = rt->GetShaderResourceView();
-		if (!srv) {
-			// 無いレイヤーはスキップ（必要ならデバッグ色を描く処理を追加）
+		if (!rt) {
+			OutputDebugStringA("[CompositeLayers] layer is null\n");
 			continue;
 		}
 
-		// ブレンド設定
+		ID3D11ShaderResourceView* srv = rt->GetShaderResourceView();
+		if (!srv) {
+			char buf[256];
+			sprintf_s(buf, "[CompositeLayers] layer %d SRV is null\n", layerCount);
+			OutputDebugStringA(buf);
+			layerCount++;
+			continue;
+		}
+
+		// ★ ブレンドモードを描画前に必ず設定
 		if (first) {
 			DirectX11::GetInstance()->SetBlendMode(BLEND_NONE);
+			OutputDebugStringA("[CompositeLayers] Drawing first layer (BLEND_NONE)\n");
 			first = false;
 		}
 		else {
 			DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA);
+			char buf[256];
+			sprintf_s(buf, "[CompositeLayers] Drawing layer %d (BLEND_ALPHA)\n", layerCount);
+			OutputDebugStringA(buf);
 		}
 
 		// テクスチャをセットして描画
 		ctx->PSSetShaderResources(0, 1, &srv);
 		ctx->Draw(6, 0);
+
 		// アンバインド
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		ctx->PSSetShaderResources(0, 1, nullSRV);
+
+		layerCount++;
 	}
 
-	// 合成完了
-	finalView->End();
+	char buf[256];
+	sprintf_s(buf, "[CompositeLayers] Composited %d layers\n", layerCount);
+	OutputDebugStringA(buf);
 
-	// 後片付け（念のため）
+	// ★ デフォルトのレンダーターゲットに戻す
+	RenderTarget* defaultRTV = DirectX11::GetInstance()->GetDefaultRTV();
+	DepthStencil* defaultDSV = DirectX11::GetInstance()->GetDefaultDSV();
+	if (defaultRTV) {
+		DirectX11::GetInstance()->SetRenderTargets(1, &defaultRTV, defaultDSV);
+	}
+
+	// 念のためアンバインド
 	ID3D11ShaderResourceView* nullSRV2[1] = { nullptr };
 	ctx->PSSetShaderResources(0, 1, nullSRV2);
 	DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA);
