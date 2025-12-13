@@ -11,5 +11,5 @@
     "ExternelTool": "SceneRoot/Tool/IN/",
     "MouseSensitivity": 0.009999999776482582,
     "SceneFilePath": "SceneRoot/Scene/",
-    "bZBuffer": false
+    "bZBuffer": true
 }

@@ -3,6 +3,7 @@
 
 #define PIXEON_ENGINE_VERSION "1.1.0"
 #define PIXEON_ENGINE_INEDITOR true
+#define MAX_LAYER_COUNT (10)
 
 #include <Windows.h>
 #include <d3d11.h>
@@ -41,7 +42,6 @@ public:
 	void Draw();
 	void UnInit();
 public:
-	// Window Handle ?ï
 	HWND GetWindowHandle() const { return m_hWnd_; }
 	float GetDeltaTime() { return deltaTime_; }
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
@@ -58,10 +58,9 @@ private:
 	std::list<GameRenderTarget*> m_layerRenderTargets_;
 
 	SoftWareMode softwareMode_;
+	EngineConfig engineConfig_;
 private:
-	// CompositePass ‚ğ MainFrame ‚Ìƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾
 	void CompositeLayers(const std::list<GameRenderTarget*>& renders, GameRenderTarget* finalView);
-
 private:
 	MainFrame() = default;
 	~MainFrame() = default;

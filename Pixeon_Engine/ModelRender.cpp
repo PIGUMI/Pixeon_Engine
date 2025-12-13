@@ -405,20 +405,18 @@ void ModelRenderComponent::SaveToFile(std::ostream& out) {
 	out << m_modelPath << "\n";
 	out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << "\n";
 	out << m_vsName << "\n" << m_psName << "\n";
+	out << _LayerNumber << "\n";
 }
 
 void ModelRenderComponent::LoadFromFile(std::istream& in) {
 	std::getline(in, m_modelPath);
-	if (!m_modelPath.empty() && m_modelPath.back() == '\r') m_modelPath.pop_back();
 	in >> m_color.x >> m_color.y >> m_color.z >> m_color.w;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
 	std::getline(in, m_vsName);
-	if (!m_vsName.empty() && m_vsName.back() == '\r') m_vsName.pop_back();
 	std::getline(in, m_psName);
-	if (!m_psName.empty() && m_psName.back() == '\r') m_psName.pop_back();
-
-	if (!m_modelPath.empty()) SetModel(m_modelPath);
+	in >> _LayerNumber;
+	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	SetModel(m_modelPath);
 }
 
 void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices)
@@ -443,7 +441,9 @@ void ModelRenderComponent::DrawInspector() {
 	if (!ImGui::CollapsingHeader(title.c_str())) return;
 	title = "ModelTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) return;
-
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ÉåÉCÉÑÅ[î‘çÜ:").c_str());
+	ImGui::TableSetColumnIndex(1); ImGui::InputInt("Layer", &_LayerNumber);
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ÉÇÉfÉãèÓïÒ").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::Text("%s", m_modelPath.c_str());

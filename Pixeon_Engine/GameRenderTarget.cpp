@@ -164,9 +164,17 @@ void GameRenderTarget::Begin(ID3D11DeviceContext* context, bool clearTarget)
 
 	if (clearTarget)
 	{
-		DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();
-		float clearColor[4] = { Temp.x, Temp.y, Temp.z, 1.0f };
-		context->ClearRenderTargetView(m_pRTV, clearColor);
+		if (m_isBlendEnabled)
+		{
+			float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			context->ClearRenderTargetView(m_pRTV, clearColor);
+		}
+		else
+		{
+			DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();
+			float clearColor[4] = { Temp.x, Temp.y, Temp.z, 1.0f };
+			context->ClearRenderTargetView(m_pRTV, clearColor);
+		}
 	}
 
 	if (m_pDSV)
@@ -189,4 +197,9 @@ void GameRenderTarget::Clear(ID3D11DeviceContext* context, float r, float g, flo
 	if (!context || !m_pRTV) return;
 	float clearColor[4] = { r, g, b, a };
 	context->ClearRenderTargetView(m_pRTV, clearColor);
+}
+
+void GameRenderTarget::SetBlend(bool Enable)
+{
+	m_isBlendEnabled = Enable;
 }

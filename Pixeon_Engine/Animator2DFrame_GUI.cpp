@@ -200,7 +200,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		}
 
 		/* 色の設定GUI */
-		if(!selectedKeyFrame_->editorFlag.bColor)
+		if (!selectedKeyFrame_->editorFlag.bColor)
 			msg = "色 ";
 		else
 			msg = "開始色 ";

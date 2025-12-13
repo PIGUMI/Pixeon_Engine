@@ -15,6 +15,7 @@
 #include "Input.h"
 #include "EngineFrame.h"
 #include "Animator2DFrame.h"
+#include "ImageUtils.h"
 #include <crtdbg.h>
 #include <d3dcompiler.h>
 #pragma comment(lib,"d3dcompiler.lib")
@@ -41,57 +42,49 @@ int MainFrame::Init(const EngineConfig& InPut)
 	lastUpdateTime_ = timeGetTime();
 	m_hWnd_ = InPut.wnd;
 	bUpdateDraw = false;;
+	engineConfig_ = InPut;
 
 	SettingManager::GetInstance()->LoadConfig();
 	/* COM の初期化 */
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr)) return -1;
-
 	/* DirectX11 初期化 */
 	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
 	if (FAILED(hr)) {
 		CoUninitialize();
 		return -1;
 	}
-
-	/* AssetManager 初期化 */
 	// AssetManager のルートパス設定
 	AssetManager::Instance()->SetRoot(SettingManager::GetInstance()->GetAssetsFilePath());
 	// AssetManager のロードモード設定
 	AssetManager::Instance()->SetLoadMode(AssetManager::LoadMode::FromSource);
 	// AssetManager の自動同期開始
 	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
-
 	// レイヤーレンダーテクスチャ初期化
-	for (int layer = 0; layer < 3; layer++)
+	for (int layer = 0; layer < MAX_LAYER_COUNT; layer++)
 	{
 		GameRenderTarget* Layer = new GameRenderTarget();
 		Layer->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
 		Layer->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 		m_layerRenderTargets_.push_back(Layer);
 	}
-
+	// 最終レンダーテクスチャ初期化
 	m_finalRenderTarget_ = new GameRenderTarget();
 	m_finalRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
 	m_finalRenderTarget_->SetRenderZBuffer(false);
-
 	/* GUIの初期化 */
 	GUI::GetInstance()->Init();
 	/* シェーダーマネージャーの初期化 */
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
-
 	/* コンポーネントマネージャーの初期化 */
 	ComponentManager::GetInstance()->Init();
-
 	/* スクリプトマネージャーの初期化 */
 	ScriptManager::Instance().RegisterAllScripts();
-
 	/* 入力初期化 */
 	InitInput();
-
+	/* エンジンフレーム初期化 */
 	EngineFrame::GetInstance()->Init();
 	Animator2DFrame::GetInstance()->Init();
-
 	return 0;
 }
 
@@ -129,8 +122,8 @@ void MainFrame::Draw()
 {
 	if (bUpdateDraw) {
 		int LayerIndex = 0;
-		for(auto layerRT : m_layerRenderTargets_)
-		{
+		for (auto layerRT : m_layerRenderTargets_) {
+			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 			layerRT->Begin(DirectX11::GetInstance()->GetContext());
 			switch (softwareMode_)
@@ -148,7 +141,12 @@ void MainFrame::Draw()
 			LayerIndex++;
 		}
 
-		CompositeLayers(m_layerRenderTargets_, m_finalRenderTarget_);
+		m_finalRenderTarget_->SetRenderZBuffer(false);
+		m_finalRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
+		for (auto layerRT : m_layerRenderTargets_) {
+			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, engineConfig_.screenWidth, engineConfig_.screenHeight);
+		}
+		m_finalRenderTarget_->End();
 
 		// メイン描画
 		DirectX11::GetInstance()->BeginDraw();
@@ -172,30 +170,34 @@ void MainFrame::Draw()
 }
 
 void MainFrame::UnInit() {
+	// レンダーテクスチャ解放
+	for (auto layerRT : m_layerRenderTargets_) {
+		delete layerRT;
+	}
+	m_layerRenderTargets_.clear();
+	if(m_finalRenderTarget_)
+	{
+		delete m_finalRenderTarget_;
+		m_finalRenderTarget_ = nullptr;
+	}
 	Animator2DFrame::GetInstance()->UnInit();
+	Animator2DFrame::DestroyInstance();
 	EngineFrame::GetInstance()->UnInit();
 	EngineFrame::DestroyInstance();
-	Animator2DFrame::DestroyInstance();
 	UninitInput();
-	// AssetManager の自動同期停止
 	AssetManager::Instance()->StopAutoSync();
-	// 保存
 	SettingManager::GetInstance()->SaveConfig();
-	// 破棄処理
-	// マネージャーの破棄
 	GUI::DestroyInstance();
 	ComponentManager::DestroyInstance();
 	SettingManager::DestroyInstance();
 	ScriptManager::Release();
 	ShaderManager::DestroyInstance();
-	Animator2DManager::GetInstance()->ResetAllAnimator2D();
+	Animator2DManager::DestroyInstance();
 	AssetManager::DeleteInstance();
 	ModelManager::DeleteInstance();
 	TextureManager::DeleteInstance();
 	SoundManager::DeleteInstance();
 	ResourceService::DeleteInstance();
-
-	DirectX11::GetInstance()->Uninit();
 	DirectX11::DestroyInstance();
 	CoUninitialize();
 }
