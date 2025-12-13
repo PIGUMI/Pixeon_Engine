@@ -7,7 +7,6 @@
 */
 
 #include "MainFrame.h"
-
 #include "System.h"
 #include "GameRenderTarget.h"
 #include "GUI.h"
