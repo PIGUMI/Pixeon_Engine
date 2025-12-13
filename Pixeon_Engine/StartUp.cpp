@@ -23,8 +23,8 @@
 #include "StartUp.h"
 #include "MainFrame.h"
 
-int g_nScreenWidth = 1920;
-int g_nScreenHeight = 1080;
+int g_iScreenWidth = 1920;
+int g_iScreenHeight = 1080;
 bool g_bInit = false;
 bool g_bRun = false;
 
@@ -37,8 +37,8 @@ extern "C" {
 	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {
 		int nResult = 0;
 		nResult = MainFrame::GetInstance()->Init(config);
-		g_nScreenHeight = config.screenHeight;
-		g_nScreenWidth = config.screenWidth;
+		g_iScreenHeight = config.screenHeight;
+		g_iScreenWidth = config.screenWidth;
 		g_bRun = true;
 		g_bInit = true;
 		return nResult;
@@ -74,8 +74,8 @@ extern "C" {
 			if (g_bInit && wparam != SIZE_MINIMIZED) {
 				UINT width = LOWORD(lparam);
 				UINT height = HIWORD(lparam);
-				g_nScreenHeight = height;
-				g_nScreenWidth = width;
+				g_iScreenHeight = height;
+				g_iScreenWidth = width;
 				DirectX11::GetInstance()->OnResize(width, height);
 			}
 			break;
@@ -85,4 +85,14 @@ extern "C" {
 
 void SetRun(bool run) {
 	g_bRun = run;
+}
+
+int StartUp::GetNowWindowSizeX()
+{
+	return g_iScreenWidth;
+}
+
+int StartUp::GetNowWindowSizeY()
+{
+	return g_iScreenWidth;
 }
