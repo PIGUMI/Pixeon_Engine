@@ -407,4 +407,9 @@
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="今後の実装メモ.txt">
+      <Filter>ソース ファイル\リソース ファイル</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

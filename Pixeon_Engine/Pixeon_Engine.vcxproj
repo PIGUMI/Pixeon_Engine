@@ -250,6 +250,9 @@
     <ClCompile Include="TimelineEditor.cpp" />
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="今後の実装メモ.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
