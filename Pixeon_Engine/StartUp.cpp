@@ -1,6 +1,18 @@
+/* StartUp */
 /*
-* Engine StartUp
-* 制作者: アキノ
+* DLLのエントリーポイント
+*/
+
+/* コーディング基底 */
+/*
+* 2025/12/13 再定義
+* 　変数名定義
+* 　　型名：int i_、float f_、bool b_、std::string str_、クラス：cls_
+* 　　メンバー変数：g_（グローバル）m_（メンバー）
+* 　　ローカル変数：なし
+* 　関数名定義
+* 　　動詞＋名詞、キャメルケース
+* 　ファイル名定義
 */
 
 #include <windowsx.h>
@@ -11,7 +23,6 @@
 #include "StartUp.h"
 #include "MainFrame.h"
 
-// バージョン
 int g_nScreenWidth = 1920;
 int g_nScreenHeight = 1080;
 bool g_bInit = false;
@@ -20,7 +31,7 @@ bool g_bRun = false;
 extern "C" {
 	// versionを取得
 	__declspec(dllexport) float SoftVersion() {
-		return 110.0f;
+		return 230.0f;
 	}
 
 	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {
