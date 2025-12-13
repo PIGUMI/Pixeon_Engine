@@ -21,7 +21,6 @@ public:
 	void SetParent(Object* parent) { _Parent = parent; }
 	void SetLayerNumber(int layer) { _LayerNumber = layer; }
 	int GetLayerNumber() const { return _LayerNumber; }
-
 public:
 	virtual void SaveToFile(std::ostream& out) {}
 	virtual void LoadFromFile(std::istream& in) {}

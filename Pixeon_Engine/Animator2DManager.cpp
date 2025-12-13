@@ -17,6 +17,7 @@ void Animator2DManager::DestroyInstance()
 {
 	if (instance != nullptr)
 	{
+		instance->ResetAllAnimator2D();
 		delete instance;
 		instance = nullptr;
 	}

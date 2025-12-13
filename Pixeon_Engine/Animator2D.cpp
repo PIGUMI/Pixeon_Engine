@@ -36,7 +36,6 @@ Animator2D::~Animator2D()
 
 void Animator2D::Update()
 {
-	// Œ»İæ“¾
 	double nowSec = GetTimeSeconds();
 
 	if (bFirst_)

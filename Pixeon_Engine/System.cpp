@@ -17,6 +17,7 @@ DirectX11* DirectX11::GetInstance()
 void DirectX11::DestroyInstance()
 {
 	if (instance != nullptr) {
+		instance->Uninit();
 		delete instance;
 		instance = nullptr;
 	}
