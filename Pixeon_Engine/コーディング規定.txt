@@ -1,0 +1,30 @@
+プログラミングにあたりのコーディング規定
+
+更新
+	2025/12/13 記述
+
+・変数命名規則
+	グローバル変数	：g_〇〇◯
+	メンバー変数	：m_◯◯◯
+
+	int型		：i_◯◯◯
+	float型		：f_◯◯◯
+	char型		：c_◯◯◯
+	bool型		：b_◯◯◯
+
+	enum型		：e_◯◯◯
+	クラス型	：cls_◯◯◯
+	namespace型	：ns_◯◯◯
+	stryct型	：str_◯◯◯
+	DirectX::XMFlOAT系列
+	XMFLOXA2	: xf2_
+	XMFLOAT3	: xf3_
+
+
+	例）m_cls_Player;	g_f_Position;
+
+・関数
+	一関数40行以内（事情がある場合例外）
+命名規則
+	名詞＋動詞
+	例）void PlayerMove();

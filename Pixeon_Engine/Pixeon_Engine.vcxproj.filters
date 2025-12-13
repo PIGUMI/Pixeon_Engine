@@ -411,5 +411,8 @@
     <Text Include="今後の実装メモ.txt">
       <Filter>ソース ファイル\リソース ファイル</Filter>
     </Text>
+    <Text Include="コーディング規定.txt">
+      <Filter>ソース ファイル\リソース ファイル</Filter>
+    </Text>
   </ItemGroup>
 </Project>
