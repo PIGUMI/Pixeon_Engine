@@ -152,10 +152,9 @@ void MainFrame::Draw()
 		// 最終レンダーテクスチャへの描画処理
 		m_finalRenderTarget_->SetRenderZBuffer(true);
 		m_finalRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-		//for (auto layerRT : m_layerRenderTargets_) {
-		//	ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0,(float)engineConfig_.screenWidth,(float)engineConfig_.screenHeight);
-		//}
-		EngineFrame::GetInstance()->Draw(1);
+		for (auto layerRT : m_layerRenderTargets_) {
+			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0,(float)engineConfig_.screenWidth,(float)engineConfig_.screenHeight);
+		}
 		m_finalRenderTarget_->End();
 
 		// ウインドウへの描画処理
