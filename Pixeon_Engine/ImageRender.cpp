@@ -2,7 +2,6 @@
 #include "ImageRender.h"
 #include "GameRenderTarget.h"
 #include "SettingManager.h"
-
 // static
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
@@ -28,6 +27,8 @@ void ImageRender::UInit() {
 }
 
 void ImageRender::SaveToFile(std::ostream& out) {
+	
+	out << _LayerNumber << std::endl;
 	out << m_textureName << std::endl;
 	out << (int)m_mode << std::endl;
 	out << m_size2D.x << " " << m_size2D.y << std::endl;
@@ -40,6 +41,7 @@ void ImageRender::SaveToFile(std::ostream& out) {
 
 void ImageRender::LoadFromFile(std::istream& in) {
 	int mode = 0;
+	in >> _LayerNumber;
 	in >> m_textureName;
 	in >> mode; m_mode = (PlacementMode)mode;
 	in >> m_size2D.x >> m_size2D.y;
@@ -62,7 +64,7 @@ void ImageRender::Init(Object* owner) {
 	_Parent = owner;
 	_ComponentName = "ImageRender";
 	_Type = ComponentManager::COMPONENT_TYPE::IMAGE;
-
+	m_textureName = "NULL";
 	if (!m_textureName.empty()) {
 		m_texture = ResourceService::Instance().GetTexture(m_textureName);
 	}
@@ -132,14 +134,12 @@ bool ImageRender::EnsureBlendState() {
 	D3D11_BLEND_DESC desc = {};
 	desc.RenderTarget[0].BlendEnable = TRUE;
 
-	// 以下の設定に変更
-	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // SRC_ALPHA → ONE に変更
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 
-	// アルファチャンネルのブレンド設定も変更
 	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;  // ZERO → INV_SRC_ALPHA に変更
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
@@ -625,7 +625,11 @@ void ImageRender::DrawInspector() {
 		ImGui::EndCombo();
 	}
 
-	if (m_mode == PlacementMode::Screen2D || m_mode == PlacementMode::UI) {
+	if(m_mode == PlacementMode::UI) {
+		ImGui::InputFloat2(SJ("2Dオフセット(px)").c_str(), (float*)&m_offset2D);
+		ImGui::InputFloat2(SJ("サイズ(ワールド)").c_str(), (float*)&m_sizeWorld);
+	}
+	else if (m_mode == PlacementMode::Screen2D) {
 		ImGui::InputFloat2(SJ("2Dオフセット(px)").c_str(), (float*)&m_offset2D);
 		ImGui::InputFloat2(SJ("サイズ(px)").c_str(), (float*)&m_size2D);
 	}

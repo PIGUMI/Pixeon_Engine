@@ -3,12 +3,39 @@
         {
             "Components": [
                 {
-                    "Data": "0.02 -0.01 10 0 0 0 0.02 -0.01 0 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "1.12308 11.8095 19.7339 0.0199984 0.12 0 0.924547 10.6124 9.80779 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
             ],
             "Name": "Camera",
+            "Transform": {
+                "Position": [
+                    0.9245474338531494,
+                    10.61240005493164,
+                    9.807793617248535
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1\ntitletxt.png\n3\n11 128\n3 1\n-1.5 0\n0 111 1\n0 0 1 1\n1 1 1 1\n",
+                    "Name": "ImageRender",
+                    "Type": 2
+                }
+            ],
+            "Name": "Title",
             "Transform": {
                 "Position": [
                     0.0,
@@ -30,12 +57,39 @@
         {
             "Components": [
                 {
-                    "Data": "\u0001\u0000\u0000\u0000\u0005\u0000\u0000\u0000title\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-                    "Name": "Animator2DComponent",
-                    "Type": 8
+                    "Data": "0\nSkyBox.jpg\n3\n128 128\n7 4\n0 0\n0 0 0\n0 0 1 1\n1 1 1 1\n",
+                    "Name": "ImageRender",
+                    "Type": 2
                 }
             ],
-            "Name": "UI",
+            "Name": "BackGround",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    -3.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Leader/Qracker/Anim_Boss01_Qracker_Idle.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n1\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "Model",
             "Transform": {
                 "Position": [
                     0.0,

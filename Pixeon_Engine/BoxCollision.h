@@ -120,6 +120,7 @@ private:
 	DirectX::XMFLOAT3 f3Size_ = { 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 f3Center_ = { 0.0f, 0.0f, 0.0f };
 	bool bTrigger_ = false;
+	bool m_b_BoxLine = true;
 
 	btBoxShape* pBoxShape_ = nullptr;
 

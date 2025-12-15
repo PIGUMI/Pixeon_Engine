@@ -60,8 +60,6 @@ private:
 	SoftWareMode softwareMode_;
 	EngineConfig engineConfig_;
 private:
-	void CompositeLayers(const std::list<GameRenderTarget*>& renders, GameRenderTarget* finalView);
-private:
 	MainFrame() = default;
 	~MainFrame() = default;
 private:
