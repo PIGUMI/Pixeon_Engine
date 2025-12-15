@@ -2,7 +2,6 @@
 #include "ImageRender.h"
 #include "GameRenderTarget.h"
 #include "SettingManager.h"
-
 // static
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
@@ -28,6 +27,8 @@ void ImageRender::UInit() {
 }
 
 void ImageRender::SaveToFile(std::ostream& out) {
+	
+	out << _LayerNumber << std::endl;
 	out << m_textureName << std::endl;
 	out << (int)m_mode << std::endl;
 	out << m_size2D.x << " " << m_size2D.y << std::endl;
@@ -40,6 +41,7 @@ void ImageRender::SaveToFile(std::ostream& out) {
 
 void ImageRender::LoadFromFile(std::istream& in) {
 	int mode = 0;
+	in >> _LayerNumber;
 	in >> m_textureName;
 	in >> mode; m_mode = (PlacementMode)mode;
 	in >> m_size2D.x >> m_size2D.y;
@@ -62,7 +64,7 @@ void ImageRender::Init(Object* owner) {
 	_Parent = owner;
 	_ComponentName = "ImageRender";
 	_Type = ComponentManager::COMPONENT_TYPE::IMAGE;
-
+	m_textureName = "NULL";
 	if (!m_textureName.empty()) {
 		m_texture = ResourceService::Instance().GetTexture(m_textureName);
 	}

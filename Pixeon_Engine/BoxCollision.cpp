@@ -89,6 +89,7 @@ void BoxCollision::InGameUpdate()
 void BoxCollision::Draw(int Layer)
 {
 	if (Layer != _LayerNumber) return;
+	if (!m_b_BoxLine)return;
 	if (_Parent)
 	{
 		auto transform = _Parent->GetTransform();
@@ -181,6 +182,10 @@ void BoxCollision::DrawInspector()
 	label = "Size##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("レイヤー").c_str());
+		ImGui::TableSetColumnIndex(1);
+		ImGui::InputInt("##LayerInput", &_LayerNumber);
+		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("サイズ").c_str());
 		ImGui::TableSetColumnIndex(1);
 		DirectX::XMFLOAT3 size = f3Size_;
@@ -207,6 +212,10 @@ void BoxCollision::DrawInspector()
 			SetTrigger(isTrigger);
 		};
 
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ライン描画").c_str());
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::Checkbox("##DrawWireframeInput", &m_b_BoxLine))
 		ImGui::EndTable();
 	}
 }

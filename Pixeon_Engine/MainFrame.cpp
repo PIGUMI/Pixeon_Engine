@@ -184,7 +184,7 @@ void MainFrame::UnInit() {
 		delete layerRT;
 	}
 	m_layerRenderTargets_.clear();
-	if(m_finalRenderTarget_)
+	if (m_finalRenderTarget_)
 	{
 		delete m_finalRenderTarget_;
 		m_finalRenderTarget_ = nullptr;

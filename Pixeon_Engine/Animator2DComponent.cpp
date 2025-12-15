@@ -57,6 +57,11 @@ void Animator2DComponent::DrawInspector()
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("レイヤー").c_str());
+		ImGui::TableSetColumnIndex(1);
+		ImGui::InputInt(("##LayerNumber" + Ptr).c_str(), &_LayerNumber);
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Animator2D追加").c_str()))
 		{
 			ImGui::OpenPopup("AddAnimator2D");
@@ -202,6 +207,8 @@ void Animator2DComponent::SaveToFile(std::ostream& out)
 		int mode = static_cast<int>(viewMode);
 		out.write(reinterpret_cast<const char*>(&mode), sizeof(int));
 	}
+	// レイヤーの保存
+	out.write(reinterpret_cast<const char*>(&_LayerNumber), sizeof(int));
 }
 
 void Animator2DComponent::LoadFromFile(std::istream& in)
@@ -225,4 +232,6 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		in.read(reinterpret_cast<char*>(&mode), sizeof(int));
 		animatorViewModes_.push_back(static_cast<ViewMode>(mode));
 	}
+	// レイヤーの読み込み
+	in.read(reinterpret_cast<char*>(&_LayerNumber), sizeof(int));
 }
