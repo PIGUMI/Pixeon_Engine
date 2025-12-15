@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "4.5231 7.6394 19.3088 -0.11 -0.02 0 5.62066 7.83939 9.37125 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "6.72294 6.84106 19.2617 0.11 -0.1 0 5.63065 7.83939 9.37175 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -11,9 +11,9 @@
             "Name": "Camera",
             "Transform": {
                 "Position": [
-                    5.620661735534668,
-                    7.839385032653809,
-                    9.37125015258789
+                    5.6306471824646,
+                    7.839389801025391,
+                    9.371749877929688
                 ],
                 "Rotation": [
                     0.0,
@@ -84,7 +84,7 @@
         {
             "Components": [
                 {
-                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n",
+                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n1\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }

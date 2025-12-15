@@ -132,7 +132,7 @@ void MainFrame::Draw()
 		// レイヤーごとの描画処理
 		for (auto layerRT : m_layerRenderTargets_) {
 			layerRT->SetBlend(true);
-			layerRT->SetRenderZBuffer(true);
+			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 			layerRT->Begin(DirectX11::GetInstance()->GetContext());
 			switch (softwareMode_)
 			{
@@ -150,11 +150,12 @@ void MainFrame::Draw()
 		}
 
 		// 最終レンダーテクスチャへの描画処理
-		m_finalRenderTarget_->SetRenderZBuffer(false);
+		m_finalRenderTarget_->SetRenderZBuffer(true);
 		m_finalRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-		for (auto layerRT : m_layerRenderTargets_) {
-			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0,(float)engineConfig_.screenWidth,(float)engineConfig_.screenHeight);
-		}
+		//for (auto layerRT : m_layerRenderTargets_) {
+		//	ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0,(float)engineConfig_.screenWidth,(float)engineConfig_.screenHeight);
+		//}
+		EngineFrame::GetInstance()->Draw(1);
 		m_finalRenderTarget_->End();
 
 		// ウインドウへの描画処理
