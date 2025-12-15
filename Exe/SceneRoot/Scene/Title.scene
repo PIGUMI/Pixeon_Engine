@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "2.4264 12.9522 19.4281 0.159999 0.23 0 0.875186 10.6724 9.81576 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "1.12308 11.8095 19.7339 0.0199984 0.12 0 0.924547 10.6124 9.80779 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -11,9 +11,9 @@
             "Name": "Camera",
             "Transform": {
                 "Position": [
-                    0.875186026096344,
-                    10.67240047454834,
-                    9.815759658813477
+                    0.9245474338531494,
+                    10.61240005493164,
+                    9.807793617248535
                 ],
                 "Rotation": [
                     0.0,
@@ -84,7 +84,7 @@
         {
             "Components": [
                 {
-                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n1\n",
+                    "Data": "Leader/Qracker/Anim_Boss01_Qracker_Idle.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n1\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
