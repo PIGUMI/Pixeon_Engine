@@ -132,14 +132,14 @@ bool ImageRender::EnsureBlendState() {
 	D3D11_BLEND_DESC desc = {};
 	desc.RenderTarget[0].BlendEnable = TRUE;
 
-	// 以下の設定に変更
-	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // SRC_ALPHA → ONE に変更
+	// 非プレマルチプライド（standard alpha）用の設定
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 
-	// アルファチャンネルのブレンド設定も変更
+	// アルファ合成（アルファチャネルへの書き込み）
 	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;  // ZERO → INV_SRC_ALPHA に変更
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
