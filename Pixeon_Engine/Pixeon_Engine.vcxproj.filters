@@ -48,9 +48,6 @@
     <Filter Include="ソース ファイル\1_MainFrame\Component\basics">
       <UniqueIdentifier>{ee58dcc4-2263-4b31-b840-34f4461c602c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\1_MainFrame\Component\Renderer">
-      <UniqueIdentifier>{e2bda8b6-348b-4a15-968c-f9e574f95498}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\1_MainFrame\Component\Other">
       <UniqueIdentifier>{04cbe45d-caee-4c72-a898-83214dc97728}</UniqueIdentifier>
     </Filter>
@@ -74,6 +71,9 @@
     </Filter>
     <Filter Include="ソース ファイル\3_Animator2DEditor\Frame">
       <UniqueIdentifier>{37ebd7f7-be21-4dfd-8658-8ef283c670b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\Component\Renderer">
+      <UniqueIdentifier>{e2bda8b6-348b-4a15-968c-f9e574f95498}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

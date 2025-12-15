@@ -57,6 +57,13 @@ void Animator2DComponent::DrawInspector()
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ÉåÉCÉÑÅ[î‘çÜ:").c_str());
+		ImGui::TableSetColumnIndex(1);
+		ImGui::InputInt(("##LayerNumber" + Ptr).c_str(), &_LayerNumber);
+		if (0 < _LayerNumber) _LayerNumber = 0;
+		if (10 <= _LayerNumber) _LayerNumber = 9;
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Animator2Dí«â¡").c_str()))
 		{
 			ImGui::OpenPopup("AddAnimator2D");
