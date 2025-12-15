@@ -132,7 +132,7 @@ void MainFrame::Draw()
 		// ƒŒƒCƒ„[‚²‚Æ‚Ì•`‰æˆ—
 		for (auto layerRT : m_layerRenderTargets_) {
 			layerRT->SetBlend(true);
-			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
+			layerRT->SetRenderZBuffer(true);
 			layerRT->Begin(DirectX11::GetInstance()->GetContext());
 			switch (softwareMode_)
 			{

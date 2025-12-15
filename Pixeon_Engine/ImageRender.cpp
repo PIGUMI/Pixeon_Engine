@@ -625,7 +625,11 @@ void ImageRender::DrawInspector() {
 		ImGui::EndCombo();
 	}
 
-	if (m_mode == PlacementMode::Screen2D || m_mode == PlacementMode::UI) {
+	if(m_mode == PlacementMode::UI) {
+		ImGui::InputFloat2(SJ("2Dオフセット(px)").c_str(), (float*)&m_offset2D);
+		ImGui::InputFloat2(SJ("サイズ(ワールド)").c_str(), (float*)&m_sizeWorld);
+	}
+	else if (m_mode == PlacementMode::Screen2D) {
 		ImGui::InputFloat2(SJ("2Dオフセット(px)").c_str(), (float*)&m_offset2D);
 		ImGui::InputFloat2(SJ("サイズ(px)").c_str(), (float*)&m_size2D);
 	}

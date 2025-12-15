@@ -3,12 +3,39 @@
         {
             "Components": [
                 {
-                    "Data": "0.02 -0.01 10 0 0 0 0.02 -0.01 0 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "4.5231 7.6394 19.3088 -0.11 -0.02 0 5.62066 7.83939 9.37125 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
             ],
             "Name": "Camera",
+            "Transform": {
+                "Position": [
+                    5.620661735534668,
+                    7.839385032653809,
+                    9.37125015258789
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1\ntitletxt.png\n3\n11 128\n3 1\n-1.5 0\n0 111 1\n0 0 1 1\n1 1 1 1\n",
+                    "Name": "ImageRender",
+                    "Type": 2
+                }
+            ],
+            "Name": "Title",
             "Transform": {
                 "Position": [
                     0.0,
@@ -30,12 +57,39 @@
         {
             "Components": [
                 {
-                    "Data": "\u0001\u0000\u0000\u0000\u0005\u0000\u0000\u0000title\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-                    "Name": "Animator2DComponent",
-                    "Type": 8
+                    "Data": "0\nSkyBox.jpg\n3\n128 128\n7 4\n0 0\n0 0 0\n0 0 1 1\n1 1 1 1\n",
+                    "Name": "ImageRender",
+                    "Type": 2
                 }
             ],
-            "Name": "UI",
+            "Name": "BackGround",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    -3.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "Model",
             "Transform": {
                 "Position": [
                     0.0,
