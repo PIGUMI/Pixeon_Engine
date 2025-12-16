@@ -506,6 +506,15 @@ void ImageRender::Draw(int Layer) {
 	if (!EnsureBlendState()) return;
 	if (!EnsureDepthStencilState()) return;
 
+	ID3D11BlendState* prevBlend = nullptr;
+	FLOAT prevBlendFactor[4] = { 0,0,0,0 };
+	UINT prevSampleMask = 0xFFFFFFFF;
+	ctx->OMGetBlendState(&prevBlend, prevBlendFactor, &prevSampleMask);
+
+	ID3D11DepthStencilState* prevDepthStencil = nullptr;
+	UINT prevStencilRef = 0;
+	ctx->OMGetDepthStencilState(&prevDepthStencil, &prevStencilRef);
+
 	float blendFactor[4] = { 0,0,0,0 };
 	UINT sampleMask = 0xFFFFFFFF;
 	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
@@ -574,7 +583,10 @@ void ImageRender::Draw(int Layer) {
 
 	ctx->DrawIndexed(6, 0, 0);
 
-
+	ctx->OMSetBlendState(prevBlend, prevBlendFactor, prevSampleMask);
+	ctx->OMSetDepthStencilState(prevDepthStencil, prevStencilRef);
+	if (prevBlend) prevBlend->Release();
+	if (prevDepthStencil) prevDepthStencil->Release();
 }
 
 void ImageRender::DrawInspector() {
