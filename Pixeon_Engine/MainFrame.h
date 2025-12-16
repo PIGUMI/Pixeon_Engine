@@ -1,14 +1,13 @@
 #ifndef MAIN_FRAME_H
 #define MAIN_FRAME_H
 
-#define PIXEON_ENGINE_VERSION "1.1.0"
+#define PIXEON_ENGINE_VERSION "2.3.0"
 #define PIXEON_ENGINE_INEDITOR true
 #define MAX_LAYER_COUNT (10)
 
 #include <Windows.h>
-#include <d3d11.h>
 #include <string>
-#include <vector>
+#include <d3d11.h>
 #include <chrono>
 #include <list>
 
@@ -59,8 +58,6 @@ private:
 
 	SoftWareMode softwareMode_;
 	EngineConfig engineConfig_;
-private:
-	void CompositeLayers(const std::list<GameRenderTarget*>& renders, GameRenderTarget* finalView);
 private:
 	MainFrame() = default;
 	~MainFrame() = default;

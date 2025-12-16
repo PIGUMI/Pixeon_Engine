@@ -21,13 +21,13 @@
                 ]
             },
             "EditorFlag": {
-                "bPosition": true,
+                "bPosition": false,
                 "bRotation": false,
                 "bScale": false,
                 "bUVPosition": false,
                 "bUVScale": false
             },
-            "EndTime": 0.9000000357627869,
+            "EndTime": 1.0,
             "EndTransform": {
                 "Color": [
                     1.0,
@@ -36,15 +36,15 @@
                     1.0
                 ],
                 "Position": [
-                    4.5,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    -0.20000000298023224,
                     -3.0
                 ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
                 "Scale": [
-                    1.0,
+                    1.2999999523162842,
                     1.0
                 ],
                 "UVPosition": [
@@ -56,7 +56,7 @@
                     1.0
                 ]
             },
-            "Layer": 1,
+            "Layer": 0,
             "StartTime": 0.0,
             "StartTransform": {
                 "Color": [
@@ -66,367 +66,15 @@
                     1.0
                 ],
                 "Position": [
-                    -4.5,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    -0.20000000298023224,
                     -3.0
                 ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
                 "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Texture": ""
-        },
-        {
-            "Active": true,
-            "CurveInfo": {
-                "ControlPoint1": [
-                    1.0,
-                    0.0
-                ],
-                "ControlPoint2": [
-                    1.0,
-                    1.0
-                ],
-                "EndPoint": [
-                    1.0,
-                    1.0
-                ],
-                "StartPoint": [
-                    0.0,
-                    0.0
-                ]
-            },
-            "EditorFlag": {
-                "bPosition": true,
-                "bRotation": false,
-                "bScale": false,
-                "bUVPosition": false,
-                "bUVScale": false
-            },
-            "EndTime": 0.9000000357627869,
-            "EndTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    4.5,
-                    -1.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Layer": 3,
-            "StartTime": 0.0,
-            "StartTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    -4.5,
-                    -1.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Texture": ""
-        },
-        {
-            "Active": true,
-            "CurveInfo": {
-                "ControlPoint1": [
-                    0.0,
-                    0.0
-                ],
-                "ControlPoint2": [
-                    0.0,
-                    1.0
-                ],
-                "EndPoint": [
-                    1.0,
-                    1.0
-                ],
-                "StartPoint": [
-                    0.0,
-                    0.0
-                ]
-            },
-            "EditorFlag": {
-                "bPosition": true,
-                "bRotation": false,
-                "bScale": false,
-                "bUVPosition": false,
-                "bUVScale": false
-            },
-            "EndTime": 0.9000000357627869,
-            "EndTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    4.5,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Layer": 2,
-            "StartTime": 0.0,
-            "StartTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    -4.5,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Texture": ""
-        },
-        {
-            "Active": true,
-            "CurveInfo": {
-                "ControlPoint1": [
-                    1.0,
-                    0.0
-                ],
-                "ControlPoint2": [
-                    0.0,
-                    1.0
-                ],
-                "EndPoint": [
-                    1.0,
-                    1.0
-                ],
-                "StartPoint": [
-                    0.0,
-                    0.0
-                ]
-            },
-            "EditorFlag": {
-                "bPosition": true,
-                "bRotation": false,
-                "bScale": false,
-                "bUVPosition": false,
-                "bUVScale": false
-            },
-            "EndTime": 0.9000000357627869,
-            "EndTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    4.5,
-                    1.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Layer": 4,
-            "StartTime": 0.0,
-            "StartTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    -4.5,
-                    1.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Texture": ""
-        },
-        {
-            "Active": true,
-            "CurveInfo": {
-                "ControlPoint1": [
-                    0.0,
-                    1.0
-                ],
-                "ControlPoint2": [
-                    1.0,
-                    0.0
-                ],
-                "EndPoint": [
-                    1.0,
-                    1.0
-                ],
-                "StartPoint": [
-                    0.0,
-                    0.0
-                ]
-            },
-            "EditorFlag": {
-                "bPosition": true,
-                "bRotation": false,
-                "bScale": false,
-                "bUVPosition": false,
-                "bUVScale": false
-            },
-            "EndTime": 0.9000000357627869,
-            "EndTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    4.5,
-                    3.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0
-                ],
-                "UVPosition": [
-                    0.0,
-                    0.0
-                ],
-                "UVScale": [
-                    1.0,
-                    1.0
-                ]
-            },
-            "Layer": 5,
-            "StartTime": 0.0,
-            "StartTransform": {
-                "Color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "Position": [
-                    -4.5,
-                    3.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
+                    1.2999999523162842,
                     1.0
                 ],
                 "UVPosition": [
@@ -443,6 +91,6 @@
     ],
     "Loop": false,
     "ProjectName": "Animator2D",
-    "TotalDuration": 0.9000000357627869,
+    "TotalDuration": 1.0,
     "ViewMode": 0
 }
