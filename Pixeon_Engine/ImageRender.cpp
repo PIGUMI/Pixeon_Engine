@@ -148,6 +148,7 @@ bool ImageRender::EnsureBlendState() {
 	return SUCCEEDED(hr);
 }
 
+
 bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
 	auto* sm = ShaderManager::GetInstance();
 	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
@@ -505,7 +506,6 @@ void ImageRender::Draw(int Layer) {
 	if (!EnsureBlendState()) return;
 	if (!EnsureDepthStencilState()) return;
 
-	// ブレンドステートとDepthStencilStateを先に設定
 	float blendFactor[4] = { 0,0,0,0 };
 	UINT sampleMask = 0xFFFFFFFF;
 	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
@@ -573,6 +573,8 @@ void ImageRender::Draw(int Layer) {
 	ctx->PSSetSamplers(0, 1, &smp);
 
 	ctx->DrawIndexed(6, 0, 0);
+
+
 }
 
 void ImageRender::DrawInspector() {
