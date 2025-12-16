@@ -11,7 +11,6 @@
 #include "StartUp.h"
 #include "MainFrame.h"
 
-// ƒo[ƒWƒ‡ƒ“
 int g_nScreenWidth = 1920;
 int g_nScreenHeight = 1080;
 bool g_bInit = false;
@@ -20,7 +19,7 @@ bool g_bRun = false;
 extern "C" {
 	// version‚ğæ“¾
 	__declspec(dllexport) float SoftVersion() {
-		return 110.0f;
+		return 0.0f;
 	}
 
 	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {
