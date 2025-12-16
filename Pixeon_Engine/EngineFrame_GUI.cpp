@@ -229,6 +229,7 @@ void EngineFrame::GameViewWindow()
 
 	if (active)
 	{
+		if (!bShowGUI_)return;
 		Scene* Temp = nullptr;
 		Temp = SceneManger::GetInstance()->GetCurrentScene();
 		if (Temp)
