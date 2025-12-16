@@ -444,8 +444,8 @@ void ModelRenderComponent::DrawInspector() {
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒŒƒCƒ„[”Ô†:").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::InputInt("Layer", &_LayerNumber);
-	if (0 < _LayerNumber) _LayerNumber = 0;
-	if (10 >= _LayerNumber) _LayerNumber = 9;
+	if (0 > _LayerNumber) _LayerNumber = 0;
+	if (10 <= _LayerNumber) _LayerNumber = 9;
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ‚ƒfƒ‹î•ñ").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::Text("%s", m_modelPath.c_str());
