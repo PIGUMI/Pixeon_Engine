@@ -60,7 +60,7 @@ void Animator2DComponent::DrawInspector()
 		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒŒƒCƒ„[”Ô†:").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::InputInt(("##LayerNumber" + Ptr).c_str(), &_LayerNumber);
-		if (0 < _LayerNumber) _LayerNumber = 0;
+		if (0 > _LayerNumber) _LayerNumber = 0;
 		if (10 <= _LayerNumber) _LayerNumber = 9;
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
