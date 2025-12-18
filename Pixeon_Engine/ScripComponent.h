@@ -19,7 +19,7 @@
 #include <filesystem>
 #include "IScript.h"
 
-class ScripComponent : public Component
+class ScripComponent : public AbstractComponent
 {
 public:
 	void Init(AbstractObject* owner) override;

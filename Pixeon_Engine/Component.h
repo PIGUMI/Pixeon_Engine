@@ -7,7 +7,7 @@
 #include "ComponentManager.h"
 #include "Object.h"
 
-class Component
+class AbstractComponent
 {
 public:
 	virtual void Init(AbstractObject* Prt) {}

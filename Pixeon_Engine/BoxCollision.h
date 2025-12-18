@@ -15,7 +15,7 @@ using OnCollisionEnterCallback = std::function<void(const CollisionInfo&)>;
 using OnCollisionStayCallback = std::function<void(const CollisionInfo&)>;
 using OnCollisionExitCallback = std::function<void(const CollisionInfo&)>;
 
-class BoxCollision : public Component
+class BoxCollision : public AbstractComponent
 {
 public:
 	void Init(AbstractObject* Prt) override;

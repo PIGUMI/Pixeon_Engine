@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 
-class CameraComponent : public Component
+class CameraComponent : public AbstractComponent
 {
 public:
 	CameraComponent() {}

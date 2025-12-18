@@ -28,7 +28,7 @@ struct AnimationClipRuntime {
 	bool isLoaded = false;
 };
 
-class AnimationComponent : public Component {
+class AnimationComponent : public AbstractComponent {
 public:
 	void Init(AbstractObject* owner) override;
 	void BeginPlay() override;

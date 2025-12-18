@@ -61,7 +61,7 @@ extern "C" {
 		if (gameObject == nullptr || componentName == nullptr || outComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Component* comp = targetObject->GetComponent(componentName);
+		AbstractComponent* comp = targetObject->GetComponent(componentName);
 		if (comp == nullptr)return PN_ERROR_NOT_FOUND;
 		*outComponent = reinterpret_cast<ComponentHandle*>(comp);
 		return PN_SUCCESS;

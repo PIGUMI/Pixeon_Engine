@@ -3,7 +3,7 @@
 #include "Animator2D.h"
 #include <vector>
 
-class Animator2DComponent : public Component{
+class Animator2DComponent : public AbstractComponent {
 public:
 	void Init(AbstractObject* Prt) override;
 	void InGameUpdate() override;

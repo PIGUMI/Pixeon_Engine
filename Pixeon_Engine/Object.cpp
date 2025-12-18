@@ -46,7 +46,7 @@ AbstractObject* AbstractObject::Clone() {
 	newObj->SetParentScene(this->GetParentScene());
 	for (auto comp : _components) {
 		if (comp) {
-			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj, comp->GetComponentType());
+			AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, comp->GetComponentType());
 			if (newComp) {
 				newComp->SetComponentName(comp->GetComponentName());
 				std::stringstream ss;
@@ -58,7 +58,7 @@ AbstractObject* AbstractObject::Clone() {
 	return newObj;
 }
 
-Component* AbstractObject::GetComponent(const std::string& name)
+AbstractComponent* AbstractObject::GetComponent(const std::string& name)
 {
 	for (auto comp : _components) {
 		if (comp->GetComponentName() == name) {
@@ -68,7 +68,7 @@ Component* AbstractObject::GetComponent(const std::string& name)
 	return nullptr;
 }
 
-void AbstractObject::RemoveComponent(Component* comp) {
+void AbstractObject::RemoveComponent(AbstractComponent* comp) {
 	if (comp == nullptr) return;
 	auto it = std::remove(_components.begin(), _components.end(), comp);
 	if (it != _components.end()) {

@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-class ImageRender : public Component {
+class ImageRender : public AbstractComponent {
 public:
 	enum class PlacementMode : int {
 		Screen2D = 0,

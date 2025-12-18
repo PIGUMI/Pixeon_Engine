@@ -11,7 +11,7 @@
 #include <vector>
 #include <functional>
 
-class ModelRenderComponent : public Component
+class ModelRenderComponent : public AbstractComponent
 {
 private:
 	enum class TextureIssue : uint8_t {

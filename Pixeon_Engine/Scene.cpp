@@ -401,7 +401,7 @@ void Scene::LoadToFile() {
 			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
 			auto name = compData["Name"].get<std::string>();
 			auto data = compData["Data"].get<std::string>();
-			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
+			AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
 			if (newComp) {
 				newComp->SetComponentName(name);
 				std::istringstream iss(data);

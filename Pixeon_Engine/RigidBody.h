@@ -9,7 +9,7 @@
 
 class BoxCollider;
 
-class RigidBody : public Component
+class RigidBody : public AbstractComponent
 {
 public:
 	void Init(AbstractObject* Prt) override;

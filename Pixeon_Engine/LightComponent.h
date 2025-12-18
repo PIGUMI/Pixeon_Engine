@@ -2,7 +2,7 @@
 #include "Component.h"
 #include <DirectXMath.h>
 
-class LightComponent : public Component
+class LightComponent : public AbstractComponent
 {
 public:
 	enum class LightType : int {
