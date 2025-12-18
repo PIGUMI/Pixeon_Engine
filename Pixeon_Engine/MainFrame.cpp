@@ -38,11 +38,11 @@ void MainFrame::DeleteInstance() {
 
 int MainFrame::Init(const EngineConfig& InPut)
 {
-	targetFrameTime_ = 1000.0f / 70.0f;
-	lastUpdateTime_ = timeGetTime();
-	m_hWnd_ = InPut.wnd;
-	bUpdateDraw = false;;
-	engineConfig_ = InPut;
+	_targetFrameTime = 1000.0f / 70.0f;
+	_lastUpdateTime = timeGetTime();
+	_wnd = InPut.wnd;
+	_updateDraw = false;;
+	_engineConfig = InPut;
 
 	SettingManager::GetInstance()->LoadConfig();
 	/* COM の初期化 */
@@ -66,12 +66,12 @@ int MainFrame::Init(const EngineConfig& InPut)
 		GameRenderTarget* Layer = new GameRenderTarget();
 		Layer->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
 		Layer->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-		m_layerRenderTargets_.push_back(Layer);
+		_layerRenderTargets.push_back(Layer);
 	}
 	// 最終レンダーテクスチャ初期化
-	m_finalRenderTarget_ = new GameRenderTarget();
-	m_finalRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
-	m_finalRenderTarget_->SetRenderZBuffer(false);
+	_finalRenderTarget = new GameRenderTarget();
+	_finalRenderTarget->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+	_finalRenderTarget->SetRenderZBuffer(false);
 	/* GUIの初期化 */
 	GUI::GetInstance()->Init();
 	/* シェーダーマネージャーの初期化 */
@@ -92,15 +92,15 @@ void MainFrame::Update()
 {
 	// フレーム制御
 	DWORD currentTime = timeGetTime();
-	float deltaTime = static_cast<float>(currentTime - lastUpdateTime_);
+	float deltaTime = static_cast<float>(currentTime - _lastUpdateTime);
 
-	if (deltaTime >= targetFrameTime_) {
+	if (deltaTime >= _targetFrameTime) {
 		// deltaTime を秒単位に変換
-		deltaTime_ = deltaTime * 0.001f; // ms -> s
+		_deltaTime = deltaTime * 0.001f; // ms -> s
 		// 入力更新
 		UpdateInput(GetWindowHandle());
 		// ソフトウェアモードごとの更新処理
-		switch (softwareMode_)
+		switch (_softwareMode)
 		{
 		case SoftWareMode::ENGINE:
 			EngineFrame::GetInstance()->Update();
@@ -113,20 +113,20 @@ void MainFrame::Update()
 		}
 
 		// 更新時間記録
-		lastUpdateTime_ = currentTime;
-		bUpdateDraw = true;
+		_lastUpdateTime = currentTime;
+		_updateDraw = true;
 	}
 }
 
 void MainFrame::Draw()
 {
-	if (bUpdateDraw) {
+	if (_updateDraw) {
 		int LayerIndex = 0;
-		for (auto layerRT : m_layerRenderTargets_) {
+		for (auto layerRT : _layerRenderTargets) {
 			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 			layerRT->Begin(DirectX11::GetInstance()->GetContext());
-			switch (softwareMode_)
+			switch (_softwareMode)
 			{
 			case SoftWareMode::ENGINE:
 				EngineFrame::GetInstance()->Draw(LayerIndex);
@@ -141,17 +141,17 @@ void MainFrame::Draw()
 			LayerIndex++;
 		}
 
-		m_finalRenderTarget_->SetRenderZBuffer(false);
-		m_finalRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-		for (auto layerRT : m_layerRenderTargets_) {
-			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, engineConfig_.screenWidth, engineConfig_.screenHeight);
+		_finalRenderTarget->SetRenderZBuffer(false);
+		_finalRenderTarget->Begin(DirectX11::GetInstance()->GetContext());
+		for (auto layerRT : _layerRenderTargets) {
+			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, _engineConfig.screenWidth, _engineConfig.screenHeight);
 		}
-		m_finalRenderTarget_->End();
+		_finalRenderTarget->End();
 
 		// メイン描画
 		DirectX11::GetInstance()->BeginDraw();
 		GUI::GetInstance()->BeginDraw();
-		switch (softwareMode_)
+		switch (_softwareMode)
 		{
 		case SoftWareMode::ENGINE:
 			EngineFrame::GetInstance()->DrawGUI();
@@ -165,20 +165,20 @@ void MainFrame::Draw()
 		GUI::GetInstance()->EndDraw();
 		DirectX11::GetInstance()->EndDraw();
 
-		bUpdateDraw = false;
+		_updateDraw = false;
 	}
 }
 
 void MainFrame::UnInit() {
 	// レンダーテクスチャ解放
-	for (auto layerRT : m_layerRenderTargets_) {
+	for (auto layerRT : _layerRenderTargets) {
 		delete layerRT;
 	}
-	m_layerRenderTargets_.clear();
-	if(m_finalRenderTarget_)
+	_layerRenderTargets.clear();
+	if(_finalRenderTarget)
 	{
-		delete m_finalRenderTarget_;
-		m_finalRenderTarget_ = nullptr;
+		delete _finalRenderTarget;
+		_finalRenderTarget = nullptr;
 	}
 	Animator2DFrame::GetInstance()->UnInit();
 	Animator2DFrame::DestroyInstance();
@@ -204,8 +204,8 @@ void MainFrame::UnInit() {
 
 ID3D11ShaderResourceView* MainFrame::GetFinalRenderTargetSRV()
 {
-	if (m_finalRenderTarget_) {
-		return m_finalRenderTarget_->GetShaderResourceView();
+	if (_finalRenderTarget) {
+		return _finalRenderTarget->GetShaderResourceView();
 	}
 	return nullptr;
 }

@@ -41,25 +41,25 @@ public:
 	void Draw();
 	void UnInit();
 public:
-	HWND GetWindowHandle() const { return m_hWnd_; }
-	float GetDeltaTime() { return deltaTime_; }
+	HWND GetWindowHandle() const { return _wnd; }
+	float GetDeltaTime() { return _deltaTime; }
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
-	void SetSoftwareMode(SoftWareMode mode) { softwareMode_ = mode; }
-	SoftWareMode GetSoftwareMode() const { return softwareMode_; }
+	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
+	SoftWareMode GetSoftwareMode() const { return _softwareMode; }
 private:
-	DWORD lastUpdateTime_;
-	bool bUpdateDraw;
-	float targetFrameTime_;
-	float deltaTime_;
+	DWORD _lastUpdateTime;
+	bool _updateDraw;
+	float _targetFrameTime;
+	float _deltaTime;
 
-	HWND m_hWnd_;
-	GameRenderTarget* m_finalRenderTarget_ = nullptr;
-	std::list<GameRenderTarget*> m_layerRenderTargets_;
+	HWND _wnd;
+	GameRenderTarget* _finalRenderTarget;
+	std::list<GameRenderTarget*> _layerRenderTargets;
 
-	SoftWareMode softwareMode_;
-	EngineConfig engineConfig_;
+	SoftWareMode _softwareMode;
+	EngineConfig _engineConfig;
 private:
-	MainFrame() = default;
+	MainFrame();
 	~MainFrame() = default;
 private:
 	static MainFrame* instance_;
