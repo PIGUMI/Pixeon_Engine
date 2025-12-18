@@ -1,0 +1,178 @@
+{
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "-7.62587 12.8456 25.9674 -12.5 0.139997 0 -8.2826 11.4502 16.087 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Camera",
+            "Transform": {
+                "Position": [
+                    -8.282600402832031,
+                    11.450200080871582,
+                    16.086999893188477
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "SkyBox.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "SkyBox",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Linie/Anim_Main_Linie_Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n2\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "1\n0\n1\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                },
+                {
+                    "Data": "6 10 6 0 5 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "5 4 5 0 12 0 0\n",
+                    "Name": "BoxCollision1",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n1\n1\n0\n",
+                    "Name": "Animation",
+                    "Type": 5
+                }
+            ],
+            "Name": "Model",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1\nrocky_terrain_02_diff_4k.jpg\n2\n128 128\n1000 1000\n0 0\n0 0 0\n0 0 1 1\n1 1 1 1\n",
+                    "Name": "ImageRender",
+                    "Type": 2
+                },
+                {
+                    "Data": "1\n1\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                },
+                {
+                    "Data": "1000 1000 0 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                }
+            ],
+            "Name": "Field",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    1.5760324001312256,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "\u0001\u0000\u0000\u0000\u0006\u0000\u0000\u0000FadeIn\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\t\u0000\u0000\u0000",
+                    "Name": "Animator2DComponent",
+                    "Type": 8
+                },
+                {
+                    "Data": "\u0001\u0000\u0000\u0000\u0005\u0000\u0000\u0000title\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\b\u0000\u0000\u0000",
+                    "Name": "Animator2DComponent1",
+                    "Type": 8
+                }
+            ],
+            "Name": "UI",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "SampleScene"
+    }
+}
