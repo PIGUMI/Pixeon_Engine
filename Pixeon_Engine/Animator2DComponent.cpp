@@ -90,7 +90,7 @@ void Animator2DComponent::DrawInspector()
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
-			ImGui::TableSetColumnIndex(1);
+			; ImGui::TableSetColumnIndex(1);
 			ImGui::Checkbox(("##LoopSetting" + animator->GetProjectName() + Ptr).c_str(), &animator->bLoop_);
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
