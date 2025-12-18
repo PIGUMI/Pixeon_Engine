@@ -140,6 +140,7 @@ extern"C"
 
 	/* ModelComponent */
 	PIXEON_API APIResult ModelComponent_SetModelName(ComponentHandle modelComponent, const char* modelName);
+	PIXEON_API APIResult ModelComponent_SetMaterialTexture(ComponentHandle modelComponent, int materialIndex, const char* textureName);
 	/*                */
 }
 

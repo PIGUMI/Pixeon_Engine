@@ -400,6 +400,21 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 	}
 }
 
+bool ModelRenderComponent::SetMaterialTexture(int materialIndex, const std::string& texLogicalPath)
+{
+	if (materialIndex < 0 || materialIndex >= static_cast<int>(m_materials.size())) return false;
+	auto& mat = m_materials[materialIndex];
+	mat.texName = texLogicalPath;
+	if (!texLogicalPath.empty()) {
+		mat.tex = TextureManager::Instance()->LoadOrGet(texLogicalPath);
+		return (mat.tex != nullptr);
+	}
+	else {
+		mat.tex.reset();
+		return true;
+	}
+}
+
 void ModelRenderComponent::SaveToFile(std::ostream& out) {
 	out << m_modelPath << "\n";
 	out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << "\n";

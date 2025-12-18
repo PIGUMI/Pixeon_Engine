@@ -506,4 +506,13 @@ extern "C" {
 		targetComp->SetModel(modelName);
 		return PN_SUCCESS;
 	}
+	/* マテリアルのテクスチャ設定 */
+	PIXEON_API APIResult ModelComponent_SetMaterialTexture(ComponentHandle modelComponent, int materialIndex, const char* textureName)
+	{
+	if (modelComponent == nullptr || textureName == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ModelRenderComponent* targetComp = reinterpret_cast<ModelRenderComponent*>(modelComponent);
+		bool result = targetComp->SetMaterialTexture(materialIndex, textureName);
+		if (!result)return PN_ERROR_INVALID_PARAMETER;
+		return PN_SUCCESS;
+	}
 };

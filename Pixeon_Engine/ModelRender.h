@@ -49,6 +49,8 @@ public:
 	bool HasBoneMatrices() const { return !m_boneMatrices.empty(); }
 	void SetupBoneMatricesForShader(ID3D11DeviceContext* ctx);
 
+	bool SetMaterialTexture(int materialIndex, const std::string& texLogicalPath);
+
 private:
 	struct CBData {
 		DirectX::XMMATRIX World;
