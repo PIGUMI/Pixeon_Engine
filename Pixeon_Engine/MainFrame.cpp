@@ -144,7 +144,7 @@ void MainFrame::Draw()
 		_finalRenderTarget->SetRenderZBuffer(false);
 		_finalRenderTarget->Begin(DirectX11::GetInstance()->GetContext());
 		for (auto layerRT : _layerRenderTargets) {
-			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, _engineConfig.screenWidth, _engineConfig.screenHeight);
+			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, (float)_engineConfig.screenWidth, (float)_engineConfig.screenHeight);
 		}
 		_finalRenderTarget->End();
 

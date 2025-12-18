@@ -59,7 +59,7 @@ private:
 	SoftWareMode _softwareMode;
 	EngineConfig _engineConfig;
 private:
-	MainFrame();
+	MainFrame() = default;
 	~MainFrame() = default;
 private:
 	static MainFrame* instance_;
