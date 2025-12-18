@@ -11,7 +11,7 @@ public:
 	void ResetAllAnimator2D();
 	void RemoveAllAnimator2D(std::string DeleteName);
 private:
-	std::vector<Animator2D*> animator2Ds;
+	std::vector<Animator2D*> _animator2Ds;
 private:
 	Animator2DManager() = default;
 	~Animator2DManager() = default;

@@ -2,6 +2,6 @@
 
 void SetRun(bool run);
 namespace StartUp {
-	int GetNowWindowSizeX();
-	int GetNowWindowSizeY();
+	int GetNowWindowSizeWidth();
+	int GetNowWindowSizeHeight();
 }
