@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 void SetRun(bool run);
 namespace StartUp {
