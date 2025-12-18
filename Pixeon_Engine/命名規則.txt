@@ -1,0 +1,25 @@
+/* 命名規則 */
+
+/* 変数 */
+グローバル変数: 小文字のキャメルケース (例: playerScore, enemyCount)
+ローカル変数: 小文字のアンダースコア区切り (例: player_score, enemy_count)
+定数: 全て大文字のアンダースコア区切り (例: MAX_HEALTH, DEFAULT_SPEED)
+配列: 複数形の名前を使用 (例: playerScores, enemyCounts)
+オブジェクト: 大文字のキャメルケース (例: PlayerCharacter, EnemyAI)
+メンバー変数: アンダースコアで始める (例: _health, _speed)
+
+/* 関数 */
+関数名: 動詞から始める小文字のキャメルケース (例: calculateScore(), updatePosition())
+イベントハンドラ: on + イベント名 + 動詞 (例: onPlayerDeath(), onEnemySpawn())
+コールバック関数: 動詞 + Callback (例: loadDataCallback(), saveGameCallback())
+ユーティリティ関数: 動詞 + Utility (例: formatStringUtility(), parseDataUtility())
+コンストラクタ: 大文字のキャメルケース (例: PlayerCharacter(), EnemyAI())
+デストラクタ: 大文字のキャメルケースの前に「~」を付ける (例: ~PlayerCharacter(), ~EnemyAI())
+
+/* クラス */
+クラス名: 大文字のキャメルケース (例: GameManager, AudioController)
+インターフェース名: I + 大文字のキャメルケース (例: ISerializable, IUpdatable)
+抽象クラス名: Abstract + 大文字のキャメルケース (例: AbstractEnemy, AbstractWeapon)
+ネームスペース名: 大文字のキャメルケース (例: GameUtilities, AudioSystems)
+ジェネリック型パラメータ: T + 大文字のキャメルケース (例: TItem, TEntity)
+コンポーネント名: 大文字のキャメルケース (例: HealthComponent, MovementComponent)

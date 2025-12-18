@@ -8,6 +8,7 @@
 #include "CameraComponent.h"
 #include "ImageRender.h"
 #include "LightComponent.h"
+#include "ModelRender.h"
 
 /* 基本API */
 extern "C" {
@@ -491,6 +492,18 @@ extern "C" {
 		if (lightComponent == nullptr || outEnabled == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
 		*outEnabled = targetComp->IsEnabled();
+		return PN_SUCCESS;
+	}
+};
+
+/* モデルレンダラーに関するAPI */
+extern "C" {
+	/* モデル名の設定 */
+	PIXEON_API APIResult ModelComponent_SetModelName(ComponentHandle modelComponent, const char* modelName)
+	{
+		if (modelComponent == nullptr || modelName == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ModelRenderComponent* targetComp = reinterpret_cast<ModelRenderComponent*>(modelComponent);
+		targetComp->SetModel(modelName);
 		return PN_SUCCESS;
 	}
 };

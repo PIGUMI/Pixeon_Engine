@@ -57,9 +57,6 @@
     <Filter Include="ソース ファイル\2_Engine\Manager">
       <UniqueIdentifier>{a767e929-0ea9-4db3-922d-cf813b1b6179}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\2_Engine\Other">
-      <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\2_Engine\Frame">
       <UniqueIdentifier>{fd38ca51-27e2-45b8-82e5-7b9eef7346a6}</UniqueIdentifier>
     </Filter>
@@ -74,6 +71,9 @@
     </Filter>
     <Filter Include="ソース ファイル\1_MainFrame\Component\Renderer">
       <UniqueIdentifier>{e2bda8b6-348b-4a15-968c-f9e574f95498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\Other">
+      <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -144,16 +144,16 @@
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClCompile>
     <ClCompile Include="ScriptManager.cpp">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="IScript.cpp">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClCompile>
     <ClCompile Include="API.cpp">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
@@ -183,7 +183,7 @@
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClCompile>
     <ClCompile Include="_Geometry.cpp">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClCompile>
     <ClCompile Include="Animator2D.cpp">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
@@ -287,7 +287,7 @@
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Struct.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="ArchiveFormat.h">
       <Filter>ソース ファイル\1_MainFrame\Sys\Archive</Filter>
@@ -317,25 +317,25 @@
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="ScriptManager.h">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="IScript.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="API.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="BoneNodeMapping.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="WeightFix.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="MatrixUtil.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="CollisionManager.h">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
@@ -365,7 +365,7 @@
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClInclude>
     <ClInclude Include="_Geometry.h">
-      <Filter>ソース ファイル\2_Engine\Other</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
     <ClInclude Include="Animator2D.h">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
@@ -406,5 +406,13 @@
     <ClInclude Include="ImageUtils.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="今後の修正.txt">
+      <Filter>ソース ファイル\リソース ファイル</Filter>
+    </Text>
+    <Text Include="命名規則.txt">
+      <Filter>ソース ファイル\リソース ファイル</Filter>
+    </Text>
   </ItemGroup>
 </Project>
