@@ -345,7 +345,7 @@ void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 		[ptr](const KeyFrame& kf) { return &kf == ptr; }), KeyFrames_.end());
 }
 
-void Animator2D::SetOwner(Object* owner)
+void Animator2D::SetOwner(AbstractObject* owner)
 {
 	owner_ = owner;
 	PreviewImage->SetParent(owner);

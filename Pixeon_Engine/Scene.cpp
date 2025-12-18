@@ -77,7 +77,7 @@ void Scene::Init() {
 void Scene::BeginPlay() {
 	for (auto& obj : _objects) {
 		if (obj) {
-			Object* cloneObj = obj->Clone();
+			AbstractObject* cloneObj = obj->Clone();
 			_SaveObjects.push_back(cloneObj);
 		}
 	}
@@ -282,9 +282,9 @@ void Scene::PlayUpdate() {
 void Scene::Draw(int Layer) {
 	UploadLightsToGPU();
 	// オブジェクトの描画
-	std::vector<Object*> sortedList = _objects;
+	std::vector<AbstractObject*> sortedList = _objects;
 	if (_MainCamera) {
-		std::sort(sortedList.begin(), sortedList.end(), [this](Object* a, Object* b) {
+		std::sort(sortedList.begin(), sortedList.end(), [this](AbstractObject* a, AbstractObject* b) {
 			if (!a || !b) return false;
 			DirectX::XMFLOAT3 camPos = _MainCamera->GetPosition();
 			DirectX::XMFLOAT3 posA = a->GetTransform().position;
@@ -309,7 +309,7 @@ void Scene::DrawUI()
 }
 
 void Scene::SaveToFile() {
-	std::vector<Object*> SaveObjects;
+	std::vector<AbstractObject*> SaveObjects;
 	if (InGame) {
 		SaveObjects = _SaveObjects;
 	}
@@ -384,7 +384,7 @@ void Scene::LoadToFile() {
 
 	// Objectsの読み込み
 	for (const auto& objData : sceneData["Objects"]) {
-		Object* newObj = new Object();
+		AbstractObject* newObj = new AbstractObject();
 		newObj->SetParentScene(this);
 		newObj->SetObjectName(objData["Name"].get<std::string>());
 		// Transformの読み込み
@@ -431,7 +431,7 @@ void Scene::LoadToFile() {
 	}
 }
 
-Object* Scene::FindObjectByName(const char* name)
+AbstractObject* Scene::FindObjectByName(const char* name)
 {
 	std::string strName(name);
 	if (_objects.empty())return nullptr;
@@ -599,22 +599,22 @@ void Scene::CleanupAndReinitializePhysics()
 	}
 }
 
-void Scene::AddObjectLocal(Object* obj) {
+void Scene::AddObjectLocal(AbstractObject* obj) {
 	if (obj) {
 		_ToBeAdded.push_back(obj);
 	}
 }
 
-void Scene::RemoveObject(Object* obj) {
+void Scene::RemoveObject(AbstractObject* obj) {
 	if (!obj) return;
 	_ToBeRemoved.push_back(obj);
 }
 
-bool Scene::AddObject(Object* obj)
+bool Scene::AddObject(AbstractObject* obj)
 {
 	if (!obj) return false;
 	std::thread([this, obj]() {
-		Object* newObj = obj->Clone();
+		AbstractObject* newObj = obj->Clone();
 		if (newObj) {
 			std::lock_guard<std::mutex>lock(_mtx);
 			_ToBeAddedBuffer.push_back(newObj);

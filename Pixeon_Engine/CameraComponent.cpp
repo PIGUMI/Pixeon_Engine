@@ -6,7 +6,7 @@
 #include "Scene.h"
 #include "GUI.h"
 
-void CameraComponent::Init(Object* Prt) {
+void CameraComponent::Init(AbstractObject* Prt) {
 	_Parent = Prt;
 	_ComponentName = "CameraComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::CAMERA;

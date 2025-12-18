@@ -6,7 +6,7 @@
 class Animator2DComponent : public Component
 {
 public:
-	void Init(Object* Prt) override;
+	void Init(AbstractObject* Prt) override;
 	void InGameUpdate() override;
 	void EditUpdate() override;
 	void Draw(int Layer) override;

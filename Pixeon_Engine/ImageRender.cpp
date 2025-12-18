@@ -60,7 +60,7 @@ void ImageRender::SetCamera(CameraComponent* ptr)
 	cam = ptr;
 }
 
-void ImageRender::Init(Object* owner) {
+void ImageRender::Init(AbstractObject* owner) {
 	_Parent = owner;
 	_ComponentName = "ImageRender";
 	_Type = ComponentManager::COMPONENT_TYPE::IMAGE;

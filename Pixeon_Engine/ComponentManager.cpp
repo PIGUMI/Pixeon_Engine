@@ -39,7 +39,7 @@ void ComponentManager::Init() {
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATOR2D] = "Animator2D";
 }
 
-Component* ComponentManager::AddComponent(Object* owner, COMPONENT_TYPE type) {
+Component* ComponentManager::AddComponent(AbstractObject* owner, COMPONENT_TYPE type) {
 	if (!owner) return nullptr;
 
 	Component* component = nullptr;

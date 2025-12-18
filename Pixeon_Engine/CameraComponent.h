@@ -7,7 +7,7 @@ public:
 	CameraComponent() {}
 	~CameraComponent() {}
 
-	void Init(Object* Prt)	override;
+	void Init(AbstractObject* Prt)	override;
 	void EditUpdate()		override;
 	void InGameUpdate()		override;
 
@@ -45,7 +45,7 @@ public:
 	void SetCameraNumber(int num) { _CameraNumber = num; }
 	DirectX::XMFLOAT3 GetUpVector() const { return _Up; }
 private:
-	Object* _Parent;
+	AbstractObject* _Parent;
 	DirectX::XMFLOAT3 _Position;
 	DirectX::XMFLOAT3 _Rotation;
 	DirectX::XMFLOAT3 _Fixation;

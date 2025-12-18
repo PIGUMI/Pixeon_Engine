@@ -31,7 +31,7 @@ public:
 	ImageRender();
 	~ImageRender();
 
-	void Init(Object* owner) override;
+	void Init(AbstractObject* owner) override;
 	void InGameUpdate() override;
 	void EditUpdate() override;
 	void Update();

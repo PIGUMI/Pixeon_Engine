@@ -10,7 +10,7 @@
 class Component
 {
 public:
-	virtual void Init(Object* Prt) {}
+	virtual void Init(AbstractObject* Prt) {}
 	virtual void BeginPlay() {}
 	virtual void EditUpdate() {}
 	virtual void InGameUpdate() {}
@@ -18,14 +18,14 @@ public:
 	virtual void UInit() {}
 	virtual void DrawInspector() {}
 
-	void SetParent(Object* parent) { _Parent = parent; }
+	void SetParent(AbstractObject* parent) { _Parent = parent; }
 	void SetLayerNumber(int layer) { _LayerNumber = layer; }
 	int GetLayerNumber() const { return _LayerNumber; }
 public:
 	virtual void SaveToFile(std::ostream& out) {}
 	virtual void LoadFromFile(std::istream& in) {}
 
-	Object* GetParent() const { return _Parent; }
+	AbstractObject* GetParent() const { return _Parent; }
 
 	std::string GetComponentName() const { return _ComponentName; }
 	void SetComponentName(std::string name) { _ComponentName = name; }
@@ -35,7 +35,7 @@ public:
 
 protected:
 	std::string _ComponentName;
-	Object* _Parent;
+	AbstractObject* _Parent;
 	int _LayerNumber = 0;
 	ComponentManager::COMPONENT_TYPE _Type = ComponentManager::COMPONENT_TYPE::NONE;
 };

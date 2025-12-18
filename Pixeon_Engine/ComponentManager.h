@@ -30,7 +30,7 @@ public:
 	static void DestroyInstance();
 	void Init();
 public:
-	Component* AddComponent(Object* owner, COMPONENT_TYPE type);
+	Component* AddComponent(AbstractObject* owner, COMPONENT_TYPE type);
 	std::string GetComponentName(COMPONENT_TYPE type) { return _ComponentName[(int)type]; }
 private:
 	std::string _ComponentName[(int)COMPONENT_TYPE::MAX];

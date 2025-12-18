@@ -31,7 +31,7 @@ public:
 	ModelRenderComponent() = default;
 	~ModelRenderComponent() = default;
 
-	void Init(Object* owner) override;
+	void Init(AbstractObject* owner) override;
 	void Draw(int Layer) override;
 	void DrawInspector() override;
 

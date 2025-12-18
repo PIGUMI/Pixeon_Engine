@@ -6,7 +6,7 @@
 #include "GUI.h"
 #include <string>
 
-void Animator2DComponent::Init(Object* Prt)
+void Animator2DComponent::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
 	_ComponentName = "Animator2DComponent";

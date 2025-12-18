@@ -315,7 +315,7 @@ void  EngineFrame::HierarchyWindow()
 	if (ImGui::BeginPopupContextWindow("HierarchyContextMenu", ImGuiPopupFlags_MouseButtonRight))
 	{
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("オブジェクトの追加").c_str())) {
-			Object* newObj = new Object();
+			AbstractObject* newObj = new AbstractObject();
 			// 名前を比較、同じ名前付けられないようにする
 			int suffix = 1;
 			std::string baseName = "NewObject";
@@ -341,9 +341,9 @@ void  EngineFrame::HierarchyWindow()
 	}
 
 	if (currentScene) {
-		std::vector<Object*> objects = currentScene->GetObjects();
+		std::vector<AbstractObject*> objects = currentScene->GetObjects();
 		for (size_t i = 0; i < objects.size(); ++i) {
-			Object* obj = objects[i];
+			AbstractObject* obj = objects[i];
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 			if (obj == SelectedObject) {
 				flags |= ImGuiTreeNodeFlags_Selected;

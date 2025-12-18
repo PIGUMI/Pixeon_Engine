@@ -6,7 +6,7 @@
 #include "CollisionManager.h"
 #include "_Geometry.h"
 
-void BoxCollision::Init(Object* Prt)
+void BoxCollision::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
 	_ComponentName = "BoxCollision";

@@ -9,7 +9,7 @@
 class Component;
 class Scene;
 
-class Object
+class AbstractObject
 {
 public:
 	virtual void Init();
@@ -19,7 +19,7 @@ public:
 	virtual void Draw(int Layer);
 	virtual void UInit();
 
-	Object* Clone();
+	AbstractObject* Clone();
 public:
 	// Setter And Getter
 	Transform GetTransform() { return _transform; }

@@ -14,7 +14,7 @@ Microsoft::WRL::ComPtr<ID3D11SamplerState>       ModelRenderComponent::s_linearS
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_magentaTexSRV;
 
-void ModelRenderComponent::Init(Object* owner) {
+void ModelRenderComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
 	_ComponentName = "ModelRender";
 	_Type = ComponentManager::COMPONENT_TYPE::MODEL;

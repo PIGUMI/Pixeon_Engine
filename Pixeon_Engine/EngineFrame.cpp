@@ -147,12 +147,12 @@ void EngineFrame::UnInit()
 	prefabs_.clear();
 }
 
-bool EngineFrame::AddPrefab(Object* prefab)
+bool EngineFrame::AddPrefab(AbstractObject* prefab)
 {
 	try
 	{
 		if (prefab == nullptr) return false;
-		Object* Copy = prefab->Clone();
+		AbstractObject* Copy = prefab->Clone();
 		Copy->SetParentScene(nullptr);
 		// 同じ名前のPrefabが存在する場合、名前に番号を付与
 		std::string baseName = Copy->GetObjectName();
@@ -171,7 +171,7 @@ bool EngineFrame::AddPrefab(Object* prefab)
 	}
 }
 
-Object* EngineFrame::GetPrefabByName(const std::string& name)
+AbstractObject* EngineFrame::GetPrefabByName(const std::string& name)
 {
 	try
 	{
@@ -189,7 +189,7 @@ Object* EngineFrame::GetPrefabByName(const std::string& name)
 	}
 }
 
-void EngineFrame::RemovePrefab(Object* ptr)
+void EngineFrame::RemovePrefab(AbstractObject* ptr)
 {
 	try
 	{
@@ -205,7 +205,7 @@ void EngineFrame::RemovePrefab(Object* ptr)
 
 void EngineFrame::SavePrefabs()
 {
-	std::vector<Object*> SaveObjects;
+	std::vector<AbstractObject*> SaveObjects;
 	SaveObjects = prefabs_;
 	// 現在時刻の取得
 	auto Now = std::chrono::system_clock::now();
@@ -271,7 +271,7 @@ void EngineFrame::LoadPrefabs()
 
 	// Objectsの読み込み
 	for (const auto& objData : sceneData["Objects"]) {
-		Object* newObj = new Object();
+		AbstractObject* newObj = new AbstractObject();
 		newObj->SetParentScene(nullptr);
 		newObj->SetObjectName(objData["Name"].get<std::string>());
 		// Transformの読み込み

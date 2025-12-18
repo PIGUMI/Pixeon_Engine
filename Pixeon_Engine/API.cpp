@@ -37,7 +37,7 @@ extern "C" {
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
 
-		Object* obj = targetScene->FindObjectByName(objectname);
+		AbstractObject* obj = targetScene->FindObjectByName(objectname);
 		if (obj == nullptr)return PN_ERROR_NOT_FOUND;
 		*outObject = reinterpret_cast<GameObjectHandle*>(obj);
 		return PN_SUCCESS;
@@ -46,7 +46,7 @@ extern "C" {
 	PIXEON_API APIResult SetGameObjectTransform(GameObjectHandle gameObject, const TransformData* inTransform)
 	{
 		if (gameObject == nullptr || inTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* targetObject = reinterpret_cast<Object*>(gameObject);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		Transform t;
 		t.position = { inTransform->position.x, inTransform->position.y, inTransform->position.z };
@@ -59,7 +59,7 @@ extern "C" {
 	PIXEON_API APIResult GetComponent(GameObjectHandle gameObject, const char* componentName, ComponentHandle* outComponent)
 	{
 		if (gameObject == nullptr || componentName == nullptr || outComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* targetObject = reinterpret_cast<Object*>(gameObject);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		Component* comp = targetObject->GetComponent(componentName);
 		if (comp == nullptr)return PN_ERROR_NOT_FOUND;
@@ -72,7 +72,7 @@ extern "C" {
 		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Object* targetObject = reinterpret_cast<Object*>(object);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(object);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		bool result = targetScene->AddObject(targetObject);
 		if (!result)return PN_ERROR_INVALID_PARAMETER;
@@ -82,7 +82,7 @@ extern "C" {
 	PIXEON_API APIResult GetPrefabObject(const char* prefabName, GameObjectHandle* outObject)
 	{
 		if (prefabName == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* prefabObject = EngineFrame::GetInstance()->GetPrefabByName(prefabName);
+		AbstractObject* prefabObject = EngineFrame::GetInstance()->GetPrefabByName(prefabName);
 		if (prefabObject == nullptr)return PN_ERROR_NOT_FOUND;
 		*outObject = reinterpret_cast<GameObjectHandle*>(prefabObject);
 		return PN_SUCCESS;
@@ -93,7 +93,7 @@ extern "C" {
 		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Object* targetObject = reinterpret_cast<Object*>(object);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(object);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		targetScene->RemoveObject(targetObject);
 		return PN_SUCCESS;
@@ -102,7 +102,7 @@ extern "C" {
 	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform)
 	{
 		if (gameObject == nullptr || outTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* targetObject = reinterpret_cast<Object*>(gameObject);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		Transform t = targetObject->GetTransform();
 		outTransform->position.x = t.position.x;

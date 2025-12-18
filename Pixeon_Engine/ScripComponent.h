@@ -22,7 +22,7 @@
 class ScripComponent : public Component
 {
 public:
-	void Init(Object* owner) override;
+	void Init(AbstractObject* owner) override;
 	void BeginPlay() override;
 	void InGameUpdate() override;
 	void UInit() override;

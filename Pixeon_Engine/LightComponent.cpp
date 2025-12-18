@@ -4,7 +4,7 @@
 #include "GUI.h"
 #include "IMGUI/imgui.h"
 
-void LightComponent::Init(Object* owner) {
+void LightComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
 	_ComponentName = "Light";
 	_Type = ComponentManager::COMPONENT_TYPE::LIGHT;

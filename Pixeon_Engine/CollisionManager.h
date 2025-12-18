@@ -10,7 +10,7 @@
 
 class BoxCollision;
 class RigidBody;
-class Object;
+class AbstractObject;
 struct CollisionInfo;
 
 // Bulletの衝突コールバック処理用
