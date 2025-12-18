@@ -3,18 +3,6 @@
 * DLLのエントリーポイント
 */
 
-/* コーディング基底 */
-/*
-* 2025/12/13 再定義
-* 　変数名定義
-* 　　型名：int i_、float f_、bool b_、std::string str_、クラス：cls_
-* 　　メンバー変数：g_（グローバル）m_（メンバー）
-* 　　ローカル変数：なし
-* 　関数名定義
-* 　　動詞＋名詞、キャメルケース
-* 　ファイル名定義
-*/
-
 #include <windowsx.h>
 #include "System.h"
 #include "Input.h"
@@ -37,8 +25,8 @@ extern "C" {
 	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {
 		int nResult = 0;
 		nResult = MainFrame::GetInstance()->Init(config);
-		g_iScreenHeight = config.screenHeight;
-		g_iScreenWidth = config.screenWidth;
+		g_nScreenHeight = config.screenHeight;
+		g_nScreenWidth = config.screenWidth;
 		g_bRun = true;
 		g_bInit = true;
 		return nResult;
@@ -74,8 +62,8 @@ extern "C" {
 			if (g_bInit && wparam != SIZE_MINIMIZED) {
 				UINT width = LOWORD(lparam);
 				UINT height = HIWORD(lparam);
-				g_iScreenHeight = height;
-				g_iScreenWidth = width;
+				g_nScreenHeight = height;
+				g_nScreenWidth = width;
 				DirectX11::GetInstance()->OnResize(width, height);
 			}
 			break;
@@ -89,10 +77,10 @@ void SetRun(bool run) {
 
 int StartUp::GetNowWindowSizeX()
 {
-	return g_iScreenWidth;
+	return g_nScreenWidth;
 }
 
 int StartUp::GetNowWindowSizeY()
 {
-	return g_iScreenWidth;
+	return g_nScreenWidth;
 }
