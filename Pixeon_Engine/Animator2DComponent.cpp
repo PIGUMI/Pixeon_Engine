@@ -209,7 +209,6 @@ void Animator2DComponent::SaveToFile(std::ostream& out)
 		int mode = static_cast<int>(viewMode);
 		out.write(reinterpret_cast<const char*>(&mode), sizeof(int));
 	}
-	// レイヤーの保存
 	out.write(reinterpret_cast<const char*>(&_LayerNumber), sizeof(int));
 }
 
@@ -234,6 +233,5 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		in.read(reinterpret_cast<char*>(&mode), sizeof(int));
 		animatorViewModes_.push_back(static_cast<ViewMode>(mode));
 	}
-	// レイヤーの読み込み
 	in.read(reinterpret_cast<char*>(&_LayerNumber), sizeof(int));
 }

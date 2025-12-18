@@ -412,13 +412,11 @@ void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 void ImageRender::UpdateVerticesUI(Vertex outV[4])
 {
 	if (!cam) {
-		// カメラが無い場合はとりあえず 2D と同じ扱いにフォールバック
 		float dummyZ = 0.0f;
 		UpdateVertices2D(outV, dummyZ);
 		return;
 	}
 
-	// カメラの View 行列 → 逆行列から right/up/forward を取得
 	DirectX::XMMATRIX V = cam->GetView();
 	DirectX::XMMATRIX invV = DirectX::XMMatrixInverse(nullptr, V);
 
@@ -448,15 +446,12 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	DirectX::XMVECTOR up = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&upF));
 	DirectX::XMVECTOR fwd = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&fwdF));
 
-	// UI の基準距離（カメラの前 d メートル）
-	float uiDistance = 3.0f; // 必要に応じて Inspector から弄れるようにしてもよい
+	float uiDistance = 3.0f;
 	DirectX::XMVECTOR baseCenter = DirectX::XMVectorAdd(
 		camPos,
 		DirectX::XMVectorScale(fwd, uiDistance)
 	);
 
-	// m_offset2D を「画面右・上方向オフセット」として解釈
-	// → X: 画面右方向（right）, Y: 画面上方向（up）
 	DirectX::XMVECTOR offsetWorld =
 		DirectX::XMVectorAdd(
 			DirectX::XMVectorScale(right, m_offset2D.x),
@@ -468,7 +463,6 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	float hw = m_sizeWorld.x * 0.5f;
 	float hh = m_sizeWorld.y * 0.5f;
 
-	// クワッド頂点をカメラの right/up ベクトル基準で生成
 	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
 		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
 		DirectX::XMVectorScale(up, hh)
