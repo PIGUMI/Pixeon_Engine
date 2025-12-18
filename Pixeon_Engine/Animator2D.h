@@ -114,6 +114,9 @@ public:
 
 	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
 	void PreviewUpdate();
+
+	void SetLayer(int layer) { layer_ = layer; }
+
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
@@ -134,4 +137,5 @@ public:
 	int DrawCount = 0;
 	AbstractObject* owner_ = nullptr;
 	bool bEditorMode_ = false; // エディターモード
+	int layer_ = 0; // レイヤー
 };

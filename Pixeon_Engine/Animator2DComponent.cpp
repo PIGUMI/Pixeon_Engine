@@ -33,6 +33,7 @@ void Animator2DComponent::Draw(int Layer)
 {
 	int count = 0;
 	for (auto& animator : _animators) {
+		animator->SetLayer(_LayerNumber);
 		animator->SetEditorMode(false);
 		animator->SetViewMode(animatorViewModes_[count]);
 		animator->Draw(Layer);
