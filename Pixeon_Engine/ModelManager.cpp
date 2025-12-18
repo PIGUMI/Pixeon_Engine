@@ -1,4 +1,4 @@
-#define NOMINMAX
+﻿#define NOMINMAX
 #include "AnimationDebug.h"
 #include "ModelManager.h"
 #include "AssetManager.h"

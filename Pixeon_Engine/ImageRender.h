@@ -1,6 +1,6 @@
-#ifndef IMAGE_RENDER_H
+ï»¿#ifndef IMAGE_RENDER_H
 #define IMAGE_RENDER_H
-// ‰æ‘œƒŒƒ“ƒ_ƒŠƒ“ƒOƒRƒ“ƒ|[ƒlƒ“ƒg
+// ç”»åƒãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
 // 2025/10/13
 
 #include "Component.h"
@@ -69,12 +69,12 @@ private:
 	struct CBVS {
 		DirectX::XMMATRIX View;
 		DirectX::XMMATRIX Proj;
-		DirectX::XMFLOAT4 Color; // F
+		DirectX::XMFLOAT4 Color; // è‰²
 		int mode2D;
-		float pad[3];            // 16BƒAƒ‰ƒCƒ“ƒƒ“ƒg
+		float pad[3];            // 16Bã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆ
 	};
 
-	// “à•”ˆ—
+	// å†…éƒ¨å‡¦ç†
 	bool EnsureShaders(bool forceRecreateLayout = false);
 	void RecreateInputLayout();
 	bool EnsureInputLayout(const void* vsBytecode, size_t size);
@@ -96,27 +96,27 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11BlendState> s_alphaBlendState;
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> s_depthStencilState;
 private:
-	// ƒŠƒ\[ƒX
+	// ãƒªã‚½ãƒ¼ã‚¹
 	std::string m_textureName;
 	std::shared_ptr<TextureResource> m_texture;
 
-	// •\¦İ’è
+	// è¡¨ç¤ºè¨­å®š
 	PlacementMode m_mode = PlacementMode::Screen2D;
 	CameraComponent* cam = nullptr;
-	// 2D: ƒsƒNƒZƒ‹’PˆÊ, 3D/Billboard: ƒ[ƒ‹ƒh’PˆÊ
+	// 2D: ãƒ”ã‚¯ã‚»ãƒ«å˜ä½, 3D/Billboard: ãƒ¯ãƒ¼ãƒ«ãƒ‰å˜ä½
 	DirectX::XMFLOAT2 m_size2D = { 128.0f, 128.0f };
 	DirectX::XMFLOAT2 m_sizeWorld = { 1.0f, 1.0f };
 
-	// ƒIƒtƒZƒbƒg
-	DirectX::XMFLOAT2 m_offset2D = { 0.0f, 0.0f };       // 2D—p (px)
-	DirectX::XMFLOAT3 m_offset3D = { 0.0f, 0.0f, 0.0f }; // 3D/Billboard—p (world)
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+	DirectX::XMFLOAT2 m_offset2D = { 0.0f, 0.0f };       // 2Dç”¨ (px)
+	DirectX::XMFLOAT3 m_offset3D = { 0.0f, 0.0f, 0.0f }; // 3D/Billboardç”¨ (world)
 
-	// UV‹éŒ` [0..1]
+	// UVçŸ©å½¢ [0..1]
 	DirectX::XMFLOAT4 m_uvRect = { 0.0f, 0.0f, 1.0f, 1.0f }; // u0,v0,u1,v1
 
 	DirectX::XMFLOAT4 m_color = { 1,1,1,1 };
 
-	// ƒVƒF[ƒ_–¼
+	// ã‚·ã‚§ãƒ¼ãƒ€å
 	std::string m_vsName = "VS_ImgQuad";
 	std::string m_psName = "PS_ImgQuad";
 

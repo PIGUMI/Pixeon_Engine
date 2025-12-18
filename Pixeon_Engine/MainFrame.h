@@ -1,4 +1,4 @@
-#ifndef MAIN_FRAME_H
+﻿#ifndef MAIN_FRAME_H
 #define MAIN_FRAME_H
 
 #define PIXEON_ENGINE_VERSION "2.3.0"

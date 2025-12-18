@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "AssetTypes.h"
 #include <unordered_map>
 #include <memory>

@@ -1,4 +1,4 @@
-#define NOMINMAX
+﻿#define NOMINMAX
 #include "ImageRender.h"
 #include "GameRenderTarget.h"
 #include "SettingManager.h"

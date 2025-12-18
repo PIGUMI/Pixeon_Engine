@@ -1,4 +1,4 @@
-#include "Animator2DComponent.h"
+﻿#include "Animator2DComponent.h"
 #include "Animator2D.h"
 #include "SettingManager.h"
 #include "Animator2DManager.h"

@@ -1,10 +1,9 @@
-#pragma once
+﻿#pragma once
 #include "Component.h"
 #include "Animator2D.h"
 #include <vector>
 
-class Animator2DComponent : public Component
-{
+class Animator2DComponent : public Component{
 public:
 	void Init(AbstractObject* Prt) override;
 	void InGameUpdate() override;
@@ -16,10 +15,8 @@ public:
 
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
-
 private:
 	void DrawAnimator2DPopup();
-
 private:
 	std::vector<std::string> projectFiles_;
 	int selectedProjectIndex_ = -1;
