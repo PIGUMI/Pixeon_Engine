@@ -2,7 +2,7 @@
 #include "ImageRender.h"
 #include "GameRenderTarget.h"
 #include "SettingManager.h"
-// static
+
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
 Microsoft::WRL::ComPtr<ID3D11BlendState> ImageRender::s_alphaBlendState;
@@ -27,7 +27,6 @@ void ImageRender::UInit() {
 }
 
 void ImageRender::SaveToFile(std::ostream& out) {
-	
 	out << _LayerNumber << std::endl;
 	out << m_textureName << std::endl;
 	out << (int)m_mode << std::endl;
@@ -149,7 +148,6 @@ bool ImageRender::EnsureBlendState() {
 	HRESULT hr = dev->CreateBlendState(&desc, s_alphaBlendState.GetAddressOf());
 	return SUCCEEDED(hr);
 }
-
 
 bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
 	auto* sm = ShaderManager::GetInstance();

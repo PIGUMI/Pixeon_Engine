@@ -14,7 +14,7 @@ public:
 	LightComponent() {}
 	~LightComponent() {}
 
-	void Init(AbstractObject* owner) override;
+	void Init(AbstractObject* Prt) override;
 	void UInit() override;
 	void EditUpdate() override;      // 必要であれば回転から方向を更新
 	void DrawInspector() override;
