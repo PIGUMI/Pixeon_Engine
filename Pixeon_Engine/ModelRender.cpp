@@ -317,7 +317,6 @@ void ModelRenderComponent::Draw(int Layer) {
 	ID3D11SamplerState* smp = s_linearSmp.Get();
 	ctx->PSSetSamplers(0, 1, &smp);
 
-	// スキンメッシュの場合は骨行列を送る（AnimationComponent から SetBoneMatrices 済の前提）
 	if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty()) {
 		SetupBoneMatricesForShader(ctx);
 	}
