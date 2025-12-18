@@ -6,6 +6,8 @@ public:
     void BeginPlay() override;
     void Update() override;
     void EndPlay() override;
+private:
+    GameObjectHandle _target;
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
