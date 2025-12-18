@@ -1,7 +1,7 @@
 #pragma once
 #include "Include/IScript.h"
 
-class Script_PlayerMove : public IScript {
+class Script_CameraController : public IScript {
 public:
     void BeginPlay() override;
     void Update() override;
@@ -9,7 +9,7 @@ public:
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
-    return new Script_PlayerMove();
+    return new Script_CameraController();
 }
 
 extern "C" __declspec(dllexport) void DestroyScriptInstance(IScript* script) {
