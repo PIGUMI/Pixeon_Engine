@@ -1,14 +1,13 @@
 #ifndef MAIN_FRAME_H
 #define MAIN_FRAME_H
 
-#define PIXEON_ENGINE_VERSION "1.1.0"
+#define PIXEON_ENGINE_VERSION "2.3.0"
 #define PIXEON_ENGINE_INEDITOR true
 #define MAX_LAYER_COUNT (10)
 
 #include <Windows.h>
-#include <d3d11.h>
 #include <string>
-#include <vector>
+#include <d3d11.h>
 #include <chrono>
 #include <list>
 
@@ -42,23 +41,23 @@ public:
 	void Draw();
 	void UnInit();
 public:
-	HWND GetWindowHandle() const { return m_hWnd_; }
-	float GetDeltaTime() { return deltaTime_; }
+	HWND GetWindowHandle() const { return _wnd; }
+	float GetDeltaTime() { return _deltaTime; }
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
-	void SetSoftwareMode(SoftWareMode mode) { softwareMode_ = mode; }
-	SoftWareMode GetSoftwareMode() const { return softwareMode_; }
+	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
+	SoftWareMode GetSoftwareMode() const { return _softwareMode; }
 private:
-	DWORD lastUpdateTime_;
-	bool bUpdateDraw;
-	float targetFrameTime_;
-	float deltaTime_;
+	DWORD _lastUpdateTime;
+	bool _updateDraw;
+	float _targetFrameTime;
+	float _deltaTime;
 
-	HWND m_hWnd_;
-	GameRenderTarget* m_finalRenderTarget_ = nullptr;
-	std::list<GameRenderTarget*> m_layerRenderTargets_;
+	HWND _wnd;
+	GameRenderTarget* _finalRenderTarget;
+	std::list<GameRenderTarget*> _layerRenderTargets;
 
-	SoftWareMode softwareMode_;
-	EngineConfig engineConfig_;
+	SoftWareMode _softwareMode;
+	EngineConfig _engineConfig;
 private:
 	MainFrame() = default;
 	~MainFrame() = default;

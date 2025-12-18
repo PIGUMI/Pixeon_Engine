@@ -6,8 +6,8 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <unordered_map>
 
-// 単純なキー補間用構造体
 struct BoneTransform {
 	DirectX::XMFLOAT3 position{ 0,0,0 };
 	DirectX::XMFLOAT4 rotation{ 0,0,0,1 };
@@ -15,13 +15,11 @@ struct BoneTransform {
 	bool isValid = true;
 };
 
-// チャンネル（nodeIndex と 時刻→Transform のマップ）
 struct AnimationChannelRuntime {
 	int nodeIndex = -1;
 	std::map<float, BoneTransform> timeline;
 };
 
-// クリップランタイム
 struct AnimationClipRuntime {
 	std::string name;
 	double duration = 0.0;
@@ -38,7 +36,6 @@ public:
 	void InGameUpdate() override;
 	void DrawInspector() override;
 
-	// 再生制御
 	void Play();
 	void Pause();
 	void Resume();
@@ -57,6 +54,13 @@ public:
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
+	void AddAnimationFile(const std::string& path);
+	void ClearAnimationFiles();
+
+	bool SetAnimationByExternalIndex(int externalFileIndex, int clipIndexInFile);
+	int  GetExternalFileCount() const { return (int)m_externalAnimationFiles.size(); }
+	int  GetClipCountInExternalFile(int externalFileIndex) const;
+
 private:
 	void UpdateAnimation(float dt);
 	void RebuildBoneMatrices();
@@ -65,10 +69,13 @@ private:
 	BoneTransform InterpChannel(const AnimationChannelRuntime& ch, float t) const;
 	DirectX::XMMATRIX BuildMatrix(const BoneTransform& bt) const;
 
-	// 最終ポーズ構築（公式式: final = InverseBindPose * CurrentGlobal）
-	void BuildClipPose(int clipIndex, float time, std::vector<DirectX::XMFLOAT4X4>& outFinal);
+	void BuildClipPose(const AnimationClipRuntime& rtClip, float time, std::vector<DirectX::XMFLOAT4X4>& outFinal);
 
 	bool IsValidMatrix(const DirectX::XMMATRIX& m) const;
+
+	void RebuildAnimationClips();
+
+	void EnsureLinked();
 
 	ModelRenderComponent* GetRenderer();
 	std::shared_ptr<ModelSharedResource> GetResource();
@@ -78,6 +85,14 @@ private:
 	std::shared_ptr<ModelSharedResource> m_resource;
 
 	std::vector<AnimationClipRuntime> m_clips;
+
+	struct ClipOrigin {
+		enum class Source { Model, External } source = Source::Model;
+		int externalFileIndex = -1;
+		int clipIndexInSource = -1;
+	};
+	std::vector<ClipOrigin> m_clipOrigins;
+
 	int   m_currentClip = -1;
 	bool  m_playing = false;
 	bool  m_paused = false;
@@ -88,4 +103,10 @@ private:
 	std::vector<DirectX::XMFLOAT4X4> m_boneMatrices;
 
 	std::unordered_map<std::string, int> m_nodeToBone;
+
+	std::vector<std::string> m_externalAnimationFiles;
+
+	int m_skeletonClipIndex = 0;
+
+	std::string m_linkedModelPath;
 };

@@ -7,7 +7,6 @@
 * Copyright (c) AC30W
 */
 
-// Define PIXEON_API for DLL export/import
 #ifdef PixeonEngine_EXPORTS
 #define PIXEON_API __declspec(dllexport)
 #else
@@ -29,7 +28,7 @@ typedef void* SceneHandle;
 typedef void* GameObjectHandle;
 typedef void* ComponentHandle;
 
-#pragma pack(push, 1)  // 1バイトアライメントで構造体パディングを制御
+#pragma pack(push, 1)
 
 typedef struct {
 	float x;
@@ -51,7 +50,7 @@ typedef struct {
 
 typedef struct {
 	Float3 position;
-	Float3 rotation;  // Radians
+	Float3 rotation;
 	Float3 scale;
 } TransformData;
 
@@ -137,6 +136,10 @@ extern"C"
 	PIXEON_API APIResult LightComponent_GetSpotOuter(ComponentHandle lightComponent, float* outOuterDeg);
 	PIXEON_API APIResult LightComponent_SetEnabled(ComponentHandle lightComponent, bool enabled);
 	PIXEON_API APIResult LightComponent_IsEnabled(ComponentHandle lightComponent, bool* outEnabled);
+	/*                */
+
+	/* ModelComponent */
+	PIXEON_API APIResult ModelComponent_SetModelName(ComponentHandle modelComponent, const char* modelName);
 	/*                */
 }
 

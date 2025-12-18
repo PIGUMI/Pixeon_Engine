@@ -57,12 +57,14 @@ void Animator2DComponent::DrawInspector()
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒŒƒCƒ„[").c_str());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·:").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::InputInt(("##LayerNumber" + Ptr).c_str(), &_LayerNumber);
+		if (0 > _LayerNumber) _LayerNumber = 0;
+		if (10 <= _LayerNumber) _LayerNumber = 9;
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Animator2D’Ç‰Á").c_str()))
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Animator2Dè¿½åŠ ").c_str()))
 		{
 			ImGui::OpenPopup("AddAnimator2D");
 		}
@@ -74,12 +76,12 @@ void Animator2DComponent::DrawInspector()
 		for (auto& animator : _animators) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒvƒƒWƒFƒNƒg–¼").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆå").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text(animator->GetProjectName().c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Ä¶ŠÔ").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("å†ç”Ÿæ™‚é–“").c_str());
 			ImGui::TableSetColumnIndex(1);
 			msg = std::to_string(animator->fNowTime_);
 			msg += " / ";
@@ -87,21 +89,21 @@ void Animator2DComponent::DrawInspector()
 			ImGui::Text(msg.c_str());
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒ‹[ƒvİ’è").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãƒ«ãƒ¼ãƒ—è¨­å®š").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Checkbox(("##LoopSetting" + animator->GetProjectName() + Ptr).c_str(), &animator->bLoop_);
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			if (animator->GetViewMode() == ViewMode::Billboard)
 			{
-				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒrƒ…[İ’è:ƒrƒ‹ƒ{[ƒh").c_str());
+				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãƒ“ãƒ¥ãƒ¼è¨­å®š:ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰").c_str());
 			}
 			else
 			{
-				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒrƒ…[İ’è:UI").c_str());
+				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãƒ“ãƒ¥ãƒ¼è¨­å®š:UI").c_str());
 			}
 			ImGui::TableSetColumnIndex(1);
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ƒrƒ…[Ø‘Ö##" + animator->GetProjectName() + Ptr).c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ãƒ“ãƒ¥ãƒ¼åˆ‡æ›¿##" + animator->GetProjectName() + Ptr).c_str()))
 			{
 				if (animator->GetViewMode() == ViewMode::Billboard)
 				{
@@ -116,9 +118,9 @@ void Animator2DComponent::DrawInspector()
 			}
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("íœ").c_str());
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("å‰Šé™¤").c_str());
 			ImGui::TableSetColumnIndex(1);
-			std::string msg = "íœ##" + animator->GetProjectName() + Ptr;
+			std::string msg = "å‰Šé™¤##" + animator->GetProjectName() + Ptr;
 			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str())) {
 				_animators.erase(std::remove(_animators.begin(), _animators.end(), animator), _animators.end());
 				animatorNames_.erase(animatorNames_.begin() + count);
@@ -156,7 +158,7 @@ void Animator2DComponent::DrawAnimator2DPopup()
 	if (ImGui::BeginPopupModal("AddAnimator2D", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
-		ImGui::Text(SJ("Animator2D’Ç‰Á‚µ‚Ü‚·").c_str());
+		ImGui::Text(SJ("Animator2Dè¿½åŠ ã—ã¾ã™").c_str());
 
 		if (projectFiles_.empty()) {
 			const std::string projectDir = SettingManager::GetInstance()->GetAnimator2DProjectFilePath();
@@ -184,7 +186,7 @@ void Animator2DComponent::DrawAnimator2DPopup()
 			}
 		}
 		ImGui::Separator();
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ƒLƒƒƒ“ƒZƒ‹").c_str())) {
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) {
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -207,7 +209,7 @@ void Animator2DComponent::SaveToFile(std::ostream& out)
 		int mode = static_cast<int>(viewMode);
 		out.write(reinterpret_cast<const char*>(&mode), sizeof(int));
 	}
-	// ƒŒƒCƒ„[‚Ì•Û‘¶
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä¿å­˜
 	out.write(reinterpret_cast<const char*>(&_LayerNumber), sizeof(int));
 }
 
@@ -232,6 +234,6 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		in.read(reinterpret_cast<char*>(&mode), sizeof(int));
 		animatorViewModes_.push_back(static_cast<ViewMode>(mode));
 	}
-	// ƒŒƒCƒ„[‚Ì“Ç‚İ‚İ
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®èª­ã¿è¾¼ã¿
 	in.read(reinterpret_cast<char*>(&_LayerNumber), sizeof(int));
 }

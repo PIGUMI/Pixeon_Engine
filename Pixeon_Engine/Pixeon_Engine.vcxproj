@@ -251,8 +251,8 @@
     <ClCompile Include="_Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="コーディング規定.txt" />
-    <Text Include="今後の実装メモ.txt" />
+    <Text Include="今後の修正.txt" />
+    <Text Include="命名規則.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

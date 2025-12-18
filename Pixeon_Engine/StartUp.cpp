@@ -1,18 +1,18 @@
 /* StartUp */
 /*
-* DLL‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg
+* DLLã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ
 */
 
-/* ƒR[ƒfƒBƒ“ƒOŠî’ê */
+/* ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°åŸºåº• */
 /*
-* 2025/12/13 Ä’è‹`
-* @•Ï”–¼’è‹`
-* @@Œ^–¼Fint i_Afloat f_Abool b_Astd::string str_AƒNƒ‰ƒXFcls_
-* @@ƒƒ“ƒo[•Ï”Fg_iƒOƒ[ƒoƒ‹jm_iƒƒ“ƒo[j
-* @@ƒ[ƒJƒ‹•Ï”F‚È‚µ
-* @ŠÖ”–¼’è‹`
-* @@“®Œ{–¼ŒAƒLƒƒƒƒ‹ƒP[ƒX
-* @ƒtƒ@ƒCƒ‹–¼’è‹`
+* 2025/12/13 å†å®šç¾©
+* ã€€å¤‰æ•°åå®šç¾©
+* ã€€ã€€å‹åï¼šint i_ã€float f_ã€bool b_ã€std::string str_ã€ã‚¯ãƒ©ã‚¹ï¼šcls_
+* ã€€ã€€ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•°ï¼šg_ï¼ˆã‚°ãƒ­ãƒ¼ãƒãƒ«ï¼‰m_ï¼ˆãƒ¡ãƒ³ãƒãƒ¼ï¼‰
+* ã€€ã€€ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ï¼šãªã—
+* ã€€é–¢æ•°åå®šç¾©
+* ã€€ã€€å‹•è©ï¼‹åè©ã€ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹
+* ã€€ãƒ•ã‚¡ã‚¤ãƒ«åå®šç¾©
 */
 
 #include <windowsx.h>
@@ -23,15 +23,15 @@
 #include "StartUp.h"
 #include "MainFrame.h"
 
-int g_iScreenWidth = 1920;
-int g_iScreenHeight = 1080;
+int g_nScreenWidth = 1920;
+int g_nScreenHeight = 1080;
 bool g_bInit = false;
 bool g_bRun = false;
 
 extern "C" {
-	// version‚ğæ“¾
+	// versionã‚’å–å¾—
 	__declspec(dllexport) float SoftVersion() {
-		return 230.0f;
+		return 0.0f;
 	}
 
 	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {

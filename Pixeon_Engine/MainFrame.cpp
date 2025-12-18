@@ -1,9 +1,9 @@
 /* MainFrame */
 /*
-* ƒ\ƒtƒgƒEƒFƒA‚ÌƒƒCƒ“ƒtƒŒ[ƒ€ƒNƒ‰ƒX
-* ƒGƒ“ƒWƒ“‘S‘Ì‚Ì‰Šú‰»AXVA•`‰æAI—¹ˆ—
-* RenderŠÇ—AGUIŠÇ—AŠeíƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰»‚È‚Ç‚ğ’S“–
-* ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“‚ÅÀ‘•
+* ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ã®ãƒ¡ã‚¤ãƒ³ãƒ•ãƒ¬ãƒ¼ãƒ ã‚¯ãƒ©ã‚¹
+* ã‚¨ãƒ³ã‚¸ãƒ³å…¨ä½“ã®åˆæœŸåŒ–ã€æ›´æ–°ã€æç”»ã€çµ‚äº†å‡¦ç†
+* Renderç®¡ç†ã€GUIç®¡ç†ã€å„ç¨®ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®åˆæœŸåŒ–ãªã©ã‚’æ‹…å½“
+* ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³ã§å®Ÿè£…
 */
 
 #include "MainFrame.h"
@@ -45,51 +45,51 @@ void MainFrame::DeleteInstance() {
 
 int MainFrame::Init(const EngineConfig& InPut)
 {
-	targetFrameTime_ = 1000.0f / 70.0f;
-	lastUpdateTime_ = timeGetTime();
-	m_hWnd_ = InPut.wnd;
-	bUpdateDraw = false;;
-	engineConfig_ = InPut;
+	_targetFrameTime = 1000.0f / 70.0f;
+	_lastUpdateTime = timeGetTime();
+	_wnd = InPut.wnd;
+	_updateDraw = false;;
+	_engineConfig = InPut;
 
 	SettingManager::GetInstance()->LoadConfig();
-	/* COM ‚Ì‰Šú‰» */
+	/* COM ã®åˆæœŸåŒ– */
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr)) return -1;
-	/* DirectX11 ‰Šú‰» */
+	/* DirectX11 åˆæœŸåŒ– */
 	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
 	if (FAILED(hr)) {
 		CoUninitialize();
 		return -1;
 	}
-	// AssetManager ‚Ìƒ‹[ƒgƒpƒXİ’è
+	// AssetManager ã®ãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹è¨­å®š
 	AssetManager::Instance()->SetRoot(SettingManager::GetInstance()->GetAssetsFilePath());
-	// AssetManager ‚Ìƒ[ƒhƒ‚[ƒhİ’è
+	// AssetManager ã®ãƒ­ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰è¨­å®š
 	AssetManager::Instance()->SetLoadMode(AssetManager::LoadMode::FromSource);
-	// AssetManager ‚Ì©“®“¯ŠúŠJn
+	// AssetManager ã®è‡ªå‹•åŒæœŸé–‹å§‹
 	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
-	// ƒŒƒCƒ„[ƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‰Šú‰»
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£åˆæœŸåŒ–
 	for (int layer = 0; layer < MAX_LAYER_COUNT; layer++)
 	{
 		GameRenderTarget* Layer = new GameRenderTarget();
 		Layer->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
 		Layer->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-		m_layerRenderTargets_.push_back(Layer);
+		_layerRenderTargets.push_back(Layer);
 	}
-	// ÅIƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‰Šú‰»
-	m_finalRenderTarget_ = new GameRenderTarget();
-	m_finalRenderTarget_->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
-	m_finalRenderTarget_->SetRenderZBuffer(false);
-	/* GUI‚Ì‰Šú‰» */
+	// æœ€çµ‚ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£åˆæœŸåŒ–
+	_finalRenderTarget = new GameRenderTarget();
+	_finalRenderTarget->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+	_finalRenderTarget->SetRenderZBuffer(false);
+	/* GUIã®åˆæœŸåŒ– */
 	GUI::GetInstance()->Init();
-	/* ƒVƒF[ƒ_[ƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰» */
+	/* ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®åˆæœŸåŒ– */
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
-	/* ƒRƒ“ƒ|[ƒlƒ“ƒgƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰» */
+	/* ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®åˆæœŸåŒ– */
 	ComponentManager::GetInstance()->Init();
-	/* ƒXƒNƒŠƒvƒgƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰» */
+	/* ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®åˆæœŸåŒ– */
 	ScriptManager::Instance().RegisterAllScripts();
-	/* “ü—Í‰Šú‰» */
+	/* å…¥åŠ›åˆæœŸåŒ– */
 	InitInput();
-	/* ŠeƒtƒŒ[ƒ€‰Šú‰» */
+	/* å„ãƒ•ãƒ¬ãƒ¼ãƒ åˆæœŸåŒ– */
 	EngineFrame::GetInstance()->Init();
 	Animator2DFrame::GetInstance()->Init();
 	return 0;
@@ -97,17 +97,17 @@ int MainFrame::Init(const EngineConfig& InPut)
 
 void MainFrame::Update()
 {
-	// ƒtƒŒ[ƒ€§Œä
+	// ãƒ•ãƒ¬ãƒ¼ãƒ åˆ¶å¾¡
 	DWORD currentTime = timeGetTime();
-	float deltaTime = static_cast<float>(currentTime - lastUpdateTime_);
+	float deltaTime = static_cast<float>(currentTime - _lastUpdateTime);
 
-	if (deltaTime >= targetFrameTime_) {
-		// deltaTime ‚ğ•b’PˆÊ‚É•ÏŠ·
-		deltaTime_ = deltaTime * 0.001f; // ms -> s
-		// “ü—ÍXV
+	if (deltaTime >= _targetFrameTime) {
+		// deltaTime ã‚’ç§’å˜ä½ã«å¤‰æ›
+		_deltaTime = deltaTime * 0.001f; // ms -> s
+		// å…¥åŠ›æ›´æ–°
 		UpdateInput(GetWindowHandle());
-		// ƒ\ƒtƒgƒEƒFƒAƒ‚[ƒh‚²‚Æ‚ÌXVˆ—
-		switch (softwareMode_)
+		// ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ãƒ¢ãƒ¼ãƒ‰ã”ã¨ã®æ›´æ–°å‡¦ç†
+		switch (_softwareMode)
 		{
 		case SoftWareMode::ENGINE:
 			EngineFrame::GetInstance()->Update();
@@ -119,21 +119,21 @@ void MainFrame::Update()
 			break;
 		}
 
-		// XVŠÔ‹L˜^
-		lastUpdateTime_ = currentTime;
-		bUpdateDraw = true;
+		// æ›´æ–°æ™‚é–“è¨˜éŒ²
+		_lastUpdateTime = currentTime;
+		_updateDraw = true;
 	}
 }
 
 void MainFrame::Draw()
 {
-	if (bUpdateDraw) {
+	if (_updateDraw) {
 		int LayerIndex = 0;
-		for (auto layerRT : m_layerRenderTargets_) {
+		for (auto layerRT : _layerRenderTargets) {
 			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 			layerRT->Begin(DirectX11::GetInstance()->GetContext());
-			switch (softwareMode_)
+			switch (_softwareMode)
 			{
 			case SoftWareMode::ENGINE:
 				EngineFrame::GetInstance()->Draw(LayerIndex);
@@ -148,17 +148,17 @@ void MainFrame::Draw()
 			LayerIndex++;
 		}
 
-		m_finalRenderTarget_->SetRenderZBuffer(false);
-		m_finalRenderTarget_->Begin(DirectX11::GetInstance()->GetContext());
-		for (auto layerRT : m_layerRenderTargets_) {
-			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, engineConfig_.screenWidth, engineConfig_.screenHeight);
+		_finalRenderTarget->SetRenderZBuffer(false);
+		_finalRenderTarget->Begin(DirectX11::GetInstance()->GetContext());
+		for (auto layerRT : _layerRenderTargets) {
+			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, (float)_engineConfig.screenWidth, (float)_engineConfig.screenHeight);
 		}
-		m_finalRenderTarget_->End();
+		_finalRenderTarget->End();
 
-		// ƒƒCƒ“•`‰æ
+		// ãƒ¡ã‚¤ãƒ³æç”»
 		DirectX11::GetInstance()->BeginDraw();
 		GUI::GetInstance()->BeginDraw();
-		switch (softwareMode_)
+		switch (_softwareMode)
 		{
 		case SoftWareMode::ENGINE:
 			EngineFrame::GetInstance()->DrawGUI();
@@ -172,20 +172,20 @@ void MainFrame::Draw()
 		GUI::GetInstance()->EndDraw();
 		DirectX11::GetInstance()->EndDraw();
 
-		bUpdateDraw = false;
+		_updateDraw = false;
 	}
 }
 
 void MainFrame::UnInit() {
-	// ƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‰ğ•ú
-	for (auto layerRT : m_layerRenderTargets_) {
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£è§£æ”¾
+	for (auto layerRT : _layerRenderTargets) {
 		delete layerRT;
 	}
-	m_layerRenderTargets_.clear();
-	if (m_finalRenderTarget_)
+	_layerRenderTargets.clear();
+	if(_finalRenderTarget)
 	{
-		delete m_finalRenderTarget_;
-		m_finalRenderTarget_ = nullptr;
+		delete _finalRenderTarget;
+		_finalRenderTarget = nullptr;
 	}
 	Animator2DFrame::GetInstance()->UnInit();
 	Animator2DFrame::DestroyInstance();
@@ -211,8 +211,8 @@ void MainFrame::UnInit() {
 
 ID3D11ShaderResourceView* MainFrame::GetFinalRenderTargetSRV()
 {
-	if (m_finalRenderTarget_) {
-		return m_finalRenderTarget_->GetShaderResourceView();
+	if (_finalRenderTarget) {
+		return _finalRenderTarget->GetShaderResourceView();
 	}
 	return nullptr;
 }

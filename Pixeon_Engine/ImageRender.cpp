@@ -134,10 +134,12 @@ bool ImageRender::EnsureBlendState() {
 	D3D11_BLEND_DESC desc = {};
 	desc.RenderTarget[0].BlendEnable = TRUE;
 
+	// éãƒ—ãƒ¬ãƒãƒ«ãƒãƒ—ãƒ©ã‚¤ãƒ‰ï¼ˆstandard alphaï¼‰ç”¨ã®è¨­å®š
 	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 
+	// ã‚¢ãƒ«ãƒ•ã‚¡åˆæˆï¼ˆã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒãƒ«ã¸ã®æ›¸ãè¾¼ã¿ï¼‰
 	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
@@ -147,6 +149,7 @@ bool ImageRender::EnsureBlendState() {
 	HRESULT hr = dev->CreateBlendState(&desc, s_alphaBlendState.GetAddressOf());
 	return SUCCEEDED(hr);
 }
+
 
 bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
 	auto* sm = ShaderManager::GetInstance();
@@ -238,7 +241,7 @@ bool ImageRender::EnsureBuffers() {
 bool ImageRender::EnsureDepthStencilState() {
 	if (s_depthStencilState) return true;
 	D3D11_DEPTH_STENCIL_DESC desc = {};
-	desc.DepthEnable = FALSE; // 2D‚Å‚Í‚±‚ê‚ÅOK
+	desc.DepthEnable = FALSE; // 2Dã§ã¯ã“ã‚Œã§OK
 	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	desc.StencilEnable = FALSE;
 	auto dev = DirectX11::GetInstance()->GetDevice();
@@ -347,7 +350,7 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 	float hw = m_sizeWorld.x * 0.5f;
 	float hh = m_sizeWorld.y * 0.5f;
 
-	// ƒIƒyƒŒ[ƒ^[®‚Ì‚ ‚¢‚Ü‚¢‚³‰ñ”ğ‚Ì‚½‚ß‰‰Z‚ğ–¾¦“I‚ÉŠÖ”‰»
+	// ã‚ªãƒšãƒ¬ãƒ¼ã‚¿ãƒ¼å¼ã®ã‚ã„ã¾ã„ã•å›é¿ã®ãŸã‚æ¼”ç®—ã‚’æ˜ç¤ºçš„ã«é–¢æ•°åŒ–
 	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
 		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
 		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
@@ -411,13 +414,13 @@ void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 void ImageRender::UpdateVerticesUI(Vertex outV[4])
 {
 	if (!cam) {
-		// ƒJƒƒ‰‚ª–³‚¢ê‡‚Í‚Æ‚è‚ ‚¦‚¸ 2D ‚Æ“¯‚¶ˆµ‚¢‚ÉƒtƒH[ƒ‹ƒoƒbƒN
+		// ã‚«ãƒ¡ãƒ©ãŒç„¡ã„å ´åˆã¯ã¨ã‚Šã‚ãˆãš 2D ã¨åŒã˜æ‰±ã„ã«ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯
 		float dummyZ = 0.0f;
 		UpdateVertices2D(outV, dummyZ);
 		return;
 	}
 
-	// ƒJƒƒ‰‚Ì View s—ñ ¨ ‹ts—ñ‚©‚ç right/up/forward ‚ğæ“¾
+	// ã‚«ãƒ¡ãƒ©ã® View è¡Œåˆ— â†’ é€†è¡Œåˆ—ã‹ã‚‰ right/up/forward ã‚’å–å¾—
 	DirectX::XMMATRIX V = cam->GetView();
 	DirectX::XMMATRIX invV = DirectX::XMMatrixInverse(nullptr, V);
 
@@ -447,15 +450,15 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	DirectX::XMVECTOR up = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&upF));
 	DirectX::XMVECTOR fwd = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&fwdF));
 
-	// UI ‚ÌŠî€‹——£iƒJƒƒ‰‚Ì‘O d ƒ[ƒgƒ‹j
-	float uiDistance = 3.0f; // •K—v‚É‰‚¶‚Ä Inspector ‚©‚ç˜M‚ê‚é‚æ‚¤‚É‚µ‚Ä‚à‚æ‚¢
+	// UI ã®åŸºæº–è·é›¢ï¼ˆã‚«ãƒ¡ãƒ©ã®å‰ d ãƒ¡ãƒ¼ãƒˆãƒ«ï¼‰
+	float uiDistance = 3.0f; // å¿…è¦ã«å¿œã˜ã¦ Inspector ã‹ã‚‰å¼„ã‚Œã‚‹ã‚ˆã†ã«ã—ã¦ã‚‚ã‚ˆã„
 	DirectX::XMVECTOR baseCenter = DirectX::XMVectorAdd(
 		camPos,
 		DirectX::XMVectorScale(fwd, uiDistance)
 	);
 
-	// m_offset2D ‚ğu‰æ–Ê‰EEã•ûŒüƒIƒtƒZƒbƒgv‚Æ‚µ‚Ä‰ğß
-	// ¨ X: ‰æ–Ê‰E•ûŒüirightj, Y: ‰æ–Êã•ûŒüiupj
+	// m_offset2D ã‚’ã€Œç”»é¢å³ãƒ»ä¸Šæ–¹å‘ã‚ªãƒ•ã‚»ãƒƒãƒˆã€ã¨ã—ã¦è§£é‡ˆ
+	// â†’ X: ç”»é¢å³æ–¹å‘ï¼ˆrightï¼‰, Y: ç”»é¢ä¸Šæ–¹å‘ï¼ˆupï¼‰
 	DirectX::XMVECTOR offsetWorld =
 		DirectX::XMVectorAdd(
 			DirectX::XMVectorScale(right, m_offset2D.x),
@@ -467,7 +470,7 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 	float hw = m_sizeWorld.x * 0.5f;
 	float hh = m_sizeWorld.y * 0.5f;
 
-	// ƒNƒƒbƒh’¸“_‚ğƒJƒƒ‰‚Ì right/up ƒxƒNƒgƒ‹Šî€‚Å¶¬
+	// ã‚¯ãƒ¯ãƒƒãƒ‰é ‚ç‚¹ã‚’ã‚«ãƒ¡ãƒ©ã® right/up ãƒ™ã‚¯ãƒˆãƒ«åŸºæº–ã§ç”Ÿæˆ
 	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
 		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
 		DirectX::XMVectorScale(up, hh)
@@ -505,7 +508,15 @@ void ImageRender::Draw(int Layer) {
 	if (!EnsureBlendState()) return;
 	if (!EnsureDepthStencilState()) return;
 
-	// ƒuƒŒƒ“ƒhƒXƒe[ƒg‚ÆDepthStencilState‚ğæ‚Éİ’è
+	ID3D11BlendState* prevBlend = nullptr;
+	FLOAT prevBlendFactor[4] = { 0,0,0,0 };
+	UINT prevSampleMask = 0xFFFFFFFF;
+	ctx->OMGetBlendState(&prevBlend, prevBlendFactor, &prevSampleMask);
+
+	ID3D11DepthStencilState* prevDepthStencil = nullptr;
+	UINT prevStencilRef = 0;
+	ctx->OMGetDepthStencilState(&prevDepthStencil, &prevStencilRef);
+
 	float blendFactor[4] = { 0,0,0,0 };
 	UINT sampleMask = 0xFFFFFFFF;
 	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
@@ -573,6 +584,11 @@ void ImageRender::Draw(int Layer) {
 	ctx->PSSetSamplers(0, 1, &smp);
 
 	ctx->DrawIndexed(6, 0, 0);
+
+	ctx->OMSetBlendState(prevBlend, prevBlendFactor, prevSampleMask);
+	ctx->OMSetDepthStencilState(prevDepthStencil, prevStencilRef);
+	if (prevBlend) prevBlend->Release();
+	if (prevDepthStencil) prevDepthStencil->Release();
 }
 
 void ImageRender::DrawInspector() {
@@ -580,19 +596,19 @@ void ImageRender::DrawInspector() {
 	std::string title = _ComponentName + "##" + std::to_string((uintptr_t)this);
 	if (!ImGui::CollapsingHeader(SJ(title.c_str()).c_str()))
 		return;
-	ImGui::Text("%s", SJ("ƒŒƒCƒ„[").c_str());
+	ImGui::Text("%s", SJ("ãƒ¬ã‚¤ãƒ¤ãƒ¼").c_str());
 	ImGui::SameLine();
 	ImGui::InputInt("##layer", &_LayerNumber);
-	ImGui::Text("%s", SJ("ƒeƒNƒXƒ`ƒƒ–¼:").c_str());
+	ImGui::Text("%s", SJ("ãƒ†ã‚¯ã‚¹ãƒãƒ£å:").c_str());
 	ImGui::SameLine();
 	ImGui::Text("%s", m_textureName.empty() ? "(none)" : m_textureName.c_str());
 	ImGui::SameLine();
-	if (ImGui::Button(SJ("‘I‘ğ...").c_str())) {
+	if (ImGui::Button(SJ("é¸æŠ...").c_str())) {
 		ImGui::OpenPopup("ImgTexSelectPopup");
 	}
 	if (ImGui::BeginPopupModal("ImgTexSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), filter, sizeof(filter));
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), filter, sizeof(filter));
 		auto texList = AssetManager::Instance()->GetCachedTextureNames();
 		ImGui::BeginChild("ImgTexList", ImVec2(420, 260), true);
 		for (int i = 0; i < (int)texList.size(); ++i) {
@@ -604,7 +620,7 @@ void ImageRender::DrawInspector() {
 			}
 		}
 		ImGui::EndChild();
-		if (ImGui::Button(SJ("•Â‚¶‚é").c_str())) ImGui::CloseCurrentPopup();
+		if (ImGui::Button(SJ("é–‰ã˜ã‚‹").c_str())) ImGui::CloseCurrentPopup();
 		ImGui::EndPopup();
 	}
 
@@ -612,9 +628,9 @@ void ImageRender::DrawInspector() {
 		ImGui::Text("(%d x %d)", (int)m_texture->width, (int)m_texture->height);
 	}
 
-	std::string modeLabels[4] = { SJ("2D”z’u"), SJ("ƒrƒ‹ƒ{[ƒh"), SJ("3D”z’u"),SJ("UI") };
+	std::string modeLabels[4] = { SJ("2Dé…ç½®"), SJ("ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰"), SJ("3Dé…ç½®"),SJ("UI") };
 	int modeIdx = (int)m_mode;
-	if (ImGui::BeginCombo(SJ("”z’uƒ‚[ƒh").c_str(), modeLabels[modeIdx].c_str())) {
+	if (ImGui::BeginCombo(SJ("é…ç½®ãƒ¢ãƒ¼ãƒ‰").c_str(), modeLabels[modeIdx].c_str())) {
 		for (int i = 0; i < 4; ++i) {
 			bool sel = (i == modeIdx);
 			if (ImGui::Selectable(modeLabels[i].c_str(), sel)) {
@@ -625,17 +641,17 @@ void ImageRender::DrawInspector() {
 		ImGui::EndCombo();
 	}
 
-	if(m_mode == PlacementMode::UI) {
-		ImGui::InputFloat2(SJ("2DƒIƒtƒZƒbƒg(px)").c_str(), (float*)&m_offset2D);
-		ImGui::InputFloat2(SJ("ƒTƒCƒY(ƒ[ƒ‹ƒh)").c_str(), (float*)&m_sizeWorld);
+	if (m_mode == PlacementMode::UI) {
+		ImGui::InputFloat2(SJ("2Dã‚ªãƒ•ã‚»ãƒƒãƒˆ(px)").c_str(), (float*)&m_offset2D);
+		ImGui::InputFloat2(SJ("ã‚µã‚¤ã‚º(ãƒ¯ãƒ¼ãƒ«ãƒ‰)").c_str(), (float*)&m_sizeWorld);
 	}
 	else if (m_mode == PlacementMode::Screen2D) {
-		ImGui::InputFloat2(SJ("2DƒIƒtƒZƒbƒg(px)").c_str(), (float*)&m_offset2D);
-		ImGui::InputFloat2(SJ("ƒTƒCƒY(px)").c_str(), (float*)&m_size2D);
+		ImGui::InputFloat2(SJ("2Dã‚ªãƒ•ã‚»ãƒƒãƒˆ(px)").c_str(), (float*)&m_offset2D);
+		ImGui::InputFloat2(SJ("ã‚µã‚¤ã‚º(px)").c_str(), (float*)&m_size2D);
 	}
 	else {
-		ImGui::InputFloat3(SJ("3DƒIƒtƒZƒbƒg").c_str(), (float*)&m_offset3D);
-		ImGui::InputFloat2(SJ("ƒTƒCƒY(ƒ[ƒ‹ƒh)").c_str(), (float*)&m_sizeWorld);
+		ImGui::InputFloat3(SJ("3Dã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str(), (float*)&m_offset3D);
+		ImGui::InputFloat2(SJ("ã‚µã‚¤ã‚º(ãƒ¯ãƒ¼ãƒ«ãƒ‰)").c_str(), (float*)&m_sizeWorld);
 	}
 
 	ImGui::InputFloat4("UV(u0,v0,u1,v1)", (float*)&m_uvRect);
@@ -644,13 +660,13 @@ void ImageRender::DrawInspector() {
 	m_uvRect.z = Clamp(m_uvRect.z, 0.0f, 1.0f);
 	m_uvRect.w = Clamp(m_uvRect.w, 0.0f, 1.0f);
 
-	ImGui::ColorEdit4(SJ("ƒJƒ‰[").c_str(), (float*)&m_color);
+	ImGui::ColorEdit4(SJ("ã‚«ãƒ©ãƒ¼").c_str(), (float*)&m_color);
 
-	if (ImGui::TreeNode(SJ("ƒVƒF[ƒ_İ’è").c_str())) {
+	if (ImGui::TreeNode(SJ("ã‚·ã‚§ãƒ¼ãƒ€è¨­å®š").c_str())) {
 		auto* sm = ShaderManager::GetInstance();
 		static std::vector<std::string> vsList;
 		static std::vector<std::string> psList;
-		if (ImGui::Button(SJ("ƒŠƒXƒgXV").c_str())) {
+		if (ImGui::Button(SJ("ãƒªã‚¹ãƒˆæ›´æ–°").c_str())) {
 			vsList = sm->GetShaderList("VS");
 			psList = sm->GetShaderList("PS");
 		}
