@@ -61,6 +61,7 @@ int MainFrame::Init(const EngineConfig& InPut)
 		CoUninitialize();
 		return -1;
 	}
+	DirectX11::GetInstance()->InitializeHDRPipeline(InPut.screenWidth, InPut.screenHeight);
 	// AssetManager のルートパス設定
 	AssetManager::Instance()->SetRoot(SettingManager::GetInstance()->GetAssetsFilePath());
 	// AssetManager のロードモード設定
@@ -128,6 +129,16 @@ void MainFrame::Update()
 void MainFrame::Draw()
 {
 	if (_updateDraw) {
+		auto* dx11 = DirectX11::GetInstance();
+		ID3D11RenderTargetView* hdrRTV = dx11->GetHDRRTV();
+		ID3D11DepthStencilView* dsv = dx11->GetDefaultDSV()->GetView();
+
+		float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
+		dx11->GetContext()->ClearRenderTargetView(hdrRTV, clearColor);
+		dx11->GetContext()->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		dx11->GetContext()->OMSetRenderTargets(1, &hdrRTV, dsv);
+
 		int LayerIndex = 0;
 		for (auto layerRT : _layerRenderTargets) {
 			layerRT->SetBlend(true);
@@ -149,7 +160,8 @@ void MainFrame::Draw()
 		}
 
 		_finalRenderTarget->SetRenderZBuffer(false);
-		_finalRenderTarget->Begin(DirectX11::GetInstance()->GetContext());
+		_finalRenderTarget->Begin(dx11->GetContext());
+		dx11->ApplyToneMappingPass();
 		for (auto layerRT : _layerRenderTargets) {
 			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, (float)_engineConfig.screenWidth, (float)_engineConfig.screenHeight);
 		}
