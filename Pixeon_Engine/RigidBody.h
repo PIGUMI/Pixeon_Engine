@@ -9,10 +9,10 @@
 
 class BoxCollider;
 
-class RigidBody : public Component
+class RigidBody : public AbstractComponent
 {
 public:
-	void Init(Object* Prt) override;
+	void Init(AbstractObject* Prt) override;
 	void BeginPlay() override;
 	void EditUpdate() override;
 	void InGameUpdate() override;

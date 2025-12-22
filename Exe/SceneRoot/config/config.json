@@ -3,9 +3,9 @@
     "AssetsFilePath": "SceneRoot/Assets/",
     "AutoSaveInterval": 5,
     "BackgroundColor": [
-        0.10000000149011612,
-        0.10000000149011612,
-        0.10000000149011612,
+        0.1865454614162445,
+        0.9217081665992737,
+        0.0426412969827652,
         1.0
     ],
     "ExternelTool": "SceneRoot/Tool/IN/",

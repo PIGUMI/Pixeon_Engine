@@ -1,4 +1,4 @@
-/* StartUp */
+﻿/* StartUp */
 /*
 * DLLのエントリーポイント
 */
@@ -11,10 +11,10 @@
 #include "StartUp.h"
 #include "MainFrame.h"
 
-int g_nScreenWidth = 1920;
-int g_nScreenHeight = 1080;
-bool g_bInit = false;
-bool g_bRun = false;
+int screenWidth = 1920;
+int screenHeight = 1080;
+bool isInit = false;
+bool isRun = false;
 
 extern "C" {
 	// versionを取得
@@ -25,10 +25,10 @@ extern "C" {
 	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {
 		int nResult = 0;
 		nResult = MainFrame::GetInstance()->Init(config);
-		g_nScreenHeight = config.screenHeight;
-		g_nScreenWidth = config.screenWidth;
-		g_bRun = true;
-		g_bInit = true;
+		screenHeight = config.screenHeight;
+		screenWidth = config.screenWidth;
+		isRun = true;
+		isInit = true;
 		return nResult;
 	}
 
@@ -46,7 +46,7 @@ extern "C" {
 	}
 
 	__declspec(dllexport) bool IsEngineRunning() {
-		return g_bRun;
+		return isRun;
 	}
 
 	__declspec(dllexport) void EngineProc(HWND wnd, UINT uint, WPARAM wparam, LPARAM lparam) {
@@ -59,11 +59,11 @@ extern "C" {
 			OnMouseHWheel(GET_WHEEL_DELTA_WPARAM(wparam));
 			break;
 		case WM_SIZE:
-			if (g_bInit && wparam != SIZE_MINIMIZED) {
+			if (isInit && wparam != SIZE_MINIMIZED) {
 				UINT width = LOWORD(lparam);
 				UINT height = HIWORD(lparam);
-				g_nScreenHeight = height;
-				g_nScreenWidth = width;
+				screenHeight = height;
+				screenWidth = width;
 				DirectX11::GetInstance()->OnResize(width, height);
 			}
 			break;
@@ -72,15 +72,15 @@ extern "C" {
 }
 
 void SetRun(bool run) {
-	g_bRun = run;
+	isRun = run;
 }
 
-int StartUp::GetNowWindowSizeX()
+int StartUp::GetNowWindowSizeWidth()
 {
-	return g_nScreenWidth;
+	return screenWidth;
 }
 
-int StartUp::GetNowWindowSizeY()
+int StartUp::GetNowWindowSizeHeight()
 {
-	return g_nScreenWidth;
+	return screenHeight;
 }

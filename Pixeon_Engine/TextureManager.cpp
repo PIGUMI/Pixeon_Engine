@@ -1,4 +1,4 @@
-#include "TextureManager.h"
+﻿#include "TextureManager.h"
 #include "AssetManager.h"
 #include "System.h"
 #include "DirectXTex/DirectXTex.h"
@@ -115,14 +115,14 @@ bool TextureManager::IsPinned(const std::string& name) {
 }
 
 std::shared_ptr<TextureResource> TextureManager::LoadInternal(const std::string& logicalName) {
-	// (1) Raw �ǂݍ���
+	// (1) Raw  ǂݍ   
 	std::vector<uint8_t> data;
 	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
 		SetFail(logicalName, "RawLoadFailed(size=0 or not found)");
 		return nullptr;
 	}
 
-	// (2) �g���q����
+	// (2)  g   q    
 	std::string ext;
 	if (auto p = logicalName.find_last_of('.'); p != std::string::npos) {
 		ext = logicalName.substr(p + 1);
@@ -158,7 +158,7 @@ std::shared_ptr<TextureResource> TextureManager::LoadInternal(const std::string&
 		return nullptr;
 	}
 
-	// (3) Mip ���� (���s�͌x���̂�)
+	// (3) Mip      (   s ͌x   ̂ )
 	if (img.GetMetadata().mipLevels <= 1) {
 		DirectX::ScratchImage mip;
 		HRESULT hrMip = DirectX::GenerateMipMaps(img.GetImages(), img.GetImageCount(), img.GetMetadata(),
@@ -168,14 +168,14 @@ std::shared_ptr<TextureResource> TextureManager::LoadInternal(const std::string&
 		}
 	}
 
-	// (4) �f�o�C�X�m�F
+	// (4)  f o C X m F
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	if (!dev) {
 		SetFail(logicalName, "DeviceNull");
 		return nullptr;
 	}
 
-	// (5) SRV �쐬
+	// (5) SRV  쐬
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
 	hr = DirectX::CreateShaderResourceView(dev, img.GetImages(), img.GetImageCount(),
 		img.GetMetadata(), srv.GetAddressOf());

@@ -3,35 +3,35 @@
 #include "ImageRender.h"
 #include "Animator2DComponent.h"
 
-void Object::Init() {
+void AbstractObject::Init() {
 }
 
-void Object::BeginPlay() {
+void AbstractObject::BeginPlay() {
 	for (auto comp : _components)if (comp)comp->BeginPlay();
 }
 
-void Object::EditUpdate() {
+void AbstractObject::EditUpdate() {
 	for (auto comp : _components) {
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
 		if (comp)comp->EditUpdate();
 	}
 }
 
-void Object::InGameUpdate() {
+void AbstractObject::InGameUpdate() {
 	for (auto comp : _components) {
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
 		if (comp)comp->InGameUpdate();
 	}
 }
 
-void Object::Draw(int Layer) {
+void AbstractObject::Draw(int Layer) {
 	for (auto comp : _components)
 	{
 		comp->Draw(Layer);
 	}
 }
 
-void Object::UInit() {
+void AbstractObject::UInit() {
 	for (auto comp : _components) {
 		comp->UInit();
 		delete comp;
@@ -39,14 +39,14 @@ void Object::UInit() {
 	_components.clear();
 }
 
-Object* Object::Clone() {
-	Object* newObj = new Object();
+AbstractObject* AbstractObject::Clone() {
+	AbstractObject* newObj = new AbstractObject();
 	newObj->_transform = this->_transform;
 	newObj->_ObjectName = this->_ObjectName;
 	newObj->SetParentScene(this->GetParentScene());
 	for (auto comp : _components) {
 		if (comp) {
-			Component* newComp = ComponentManager::GetInstance()->AddComponent(newObj, comp->GetComponentType());
+			AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, comp->GetComponentType());
 			if (newComp) {
 				newComp->SetComponentName(comp->GetComponentName());
 				std::stringstream ss;
@@ -58,7 +58,7 @@ Object* Object::Clone() {
 	return newObj;
 }
 
-Component* Object::GetComponent(const std::string& name)
+AbstractComponent* AbstractObject::GetComponent(const std::string& name)
 {
 	for (auto comp : _components) {
 		if (comp->GetComponentName() == name) {
@@ -68,7 +68,7 @@ Component* Object::GetComponent(const std::string& name)
 	return nullptr;
 }
 
-void Object::RemoveComponent(Component* comp) {
+void AbstractObject::RemoveComponent(AbstractComponent* comp) {
 	if (comp == nullptr) return;
 	auto it = std::remove(_components.begin(), _components.end(), comp);
 	if (it != _components.end()) {

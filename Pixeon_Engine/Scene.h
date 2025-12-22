@@ -9,7 +9,7 @@
 #include <vector>
 #include <mutex>
 
-class Object;
+class AbstractObject;
 class LightComponent;
 
 class Scene
@@ -25,24 +25,24 @@ public:
 	virtual void DrawUI();
 
 public: // オブジェクトの追加と削除
-	bool AddObject(Object* obj);
+	bool AddObject(AbstractObject* obj);
 public: // セーブとロード
 	void SaveToFile();
 	void LoadToFile();
-	void AddObjectLocal(Object* obj);
-	void RemoveObject(Object* obj);
+	void AddObjectLocal(AbstractObject* obj);
+	void RemoveObject(AbstractObject* obj);
 public: // Setter And Getter
 	void SetName(std::string name) { _name = name; }
 	std::string GetName() { return _name; }
 	// すべてのオブジェクトを取得
-	std::vector<Object*> GetObjects() { return _objects; }
+	std::vector<AbstractObject*> GetObjects() { return _objects; }
 
 	CameraComponent* GetMainCamera() { return _MainCamera; }
 	void SetMainCamera(CameraComponent* camera) { _MainCamera = camera; }
 	int GetMainCameraNumber() { return _MainCameraNumber; }
 	void SetMainCameraNumber(int num) { _MainCameraNumber = num; }
 
-	Object* FindObjectByName(const char* name);
+	AbstractObject* FindObjectByName(const char* name);
 
 	std::vector<LightComponent*>* GetLights() { return &_lights; }
 
@@ -62,11 +62,11 @@ private://内部処理
 private:
 	std::string _name = "DefaultScene";
 
-	std::vector<Object*> _objects;
-	std::vector<Object*> _SaveObjects;
-	std::vector<Object*> _ToBeRemoved;
-	std::vector<Object*> _ToBeAdded;
-	std::vector<Object*> _ToBeAddedBuffer;
+	std::vector<AbstractObject*> _objects;
+	std::vector<AbstractObject*> _SaveObjects;
+	std::vector<AbstractObject*> _ToBeRemoved;
+	std::vector<AbstractObject*> _ToBeAdded;
+	std::vector<AbstractObject*> _ToBeAddedBuffer;
 	std::vector<LightComponent*> _lights;
 	std::mutex _mtx;
 	CameraComponent* _MainCamera = nullptr;

@@ -110,10 +110,13 @@ public:
 	void SetFirstFlag(bool first) { bFirst_ = first; }
 	bool GetEndedFlag() const { return bEnded_; }
 
-	void SetOwner(Object* owner);
+	void SetOwner(AbstractObject* owner);
 
 	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
 	void PreviewUpdate();
+
+	void SetLayer(int layer) { layer_ = layer; }
+
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
@@ -132,6 +135,7 @@ public:
 	ViewMode viewMode_ = ViewMode::UI;
 	ImageRender* PreviewImage = nullptr; // プレビュー用イメージ
 	int DrawCount = 0;
-	Object* owner_ = nullptr;
+	AbstractObject* owner_ = nullptr;
 	bool bEditorMode_ = false; // エディターモード
+	int layer_ = 0; // レイヤー
 };

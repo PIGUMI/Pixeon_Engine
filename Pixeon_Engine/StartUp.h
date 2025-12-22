@@ -1,7 +1,7 @@
-#pragma once
+﻿#pragma once
 
 void SetRun(bool run);
-namespace StartUp{
-	int GetNowWindowSizeX();
-	int GetNowWindowSizeY();
+namespace StartUp {
+	int GetNowWindowSizeWidth();
+	int GetNowWindowSizeHeight();
 }

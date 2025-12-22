@@ -6,10 +6,10 @@
 #include <vector>
 #include <map>
 
-class Component;
+class AbstractComponent;
 class Scene;
 
-class Object
+class AbstractObject
 {
 public:
 	virtual void Init();
@@ -19,7 +19,7 @@ public:
 	virtual void Draw(int Layer);
 	virtual void UInit();
 
-	Object* Clone();
+	AbstractObject* Clone();
 public:
 	// Setter And Getter
 	Transform GetTransform() { return _transform; }
@@ -43,9 +43,9 @@ public:
 public:
 
 	// 名前からコンポーネントを取得
-	Component* GetComponent(const std::string& name);
+	AbstractComponent* GetComponent(const std::string& name);
 	// 型からコンポーネントを取得
-	template<typename T = Component>
+	template<typename T = AbstractComponent>
 	T* GetComponent() {
 		for (auto comp : _components) {
 			T* castedComp = dynamic_cast<T*>(comp);
@@ -56,11 +56,11 @@ public:
 		return nullptr;
 	}
 	// 全コンポーネントの取得
-	std::vector<Component*> GetComponents() { return _components; }
+	std::vector<AbstractComponent*> GetComponents() { return _components; }
 	// コンポーネントの削除
-	void RemoveComponent(Component* comp);
+	void RemoveComponent(AbstractComponent* comp);
 	// コンポーネントの追加
-	template<typename T = Component>
+	template<typename T = AbstractComponent>
 	T* AddComponent() {
 		T* newComp = new T();
 		newComp->Init(this);
@@ -89,7 +89,7 @@ public:
 protected:
 	std::string _ObjectName;
 	Transform _transform;
-	std::vector<Component*> _components;
+	std::vector<AbstractComponent*> _components;
 	Scene* _ParentScene = nullptr;
 	std::map<std::string, int>		_intValues;
 	std::map<std::string, float>	_floatValues;

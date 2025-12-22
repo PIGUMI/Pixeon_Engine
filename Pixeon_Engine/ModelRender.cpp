@@ -14,7 +14,7 @@ Microsoft::WRL::ComPtr<ID3D11SamplerState>       ModelRenderComponent::s_linearS
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_magentaTexSRV;
 
-void ModelRenderComponent::Init(Object* owner) {
+void ModelRenderComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
 	_ComponentName = "ModelRender";
 	_Type = ComponentManager::COMPONENT_TYPE::MODEL;
@@ -317,7 +317,6 @@ void ModelRenderComponent::Draw(int Layer) {
 	ID3D11SamplerState* smp = s_linearSmp.Get();
 	ctx->PSSetSamplers(0, 1, &smp);
 
-	// スキンメッシュの場合は骨行列を送る（AnimationComponent から SetBoneMatrices 済の前提）
 	if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty()) {
 		SetupBoneMatricesForShader(ctx);
 	}
@@ -398,6 +397,21 @@ void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
 			auto& m = m_boneMatrices[i];
 			log += " b" + std::to_string(i) + "T(" + std::to_string(m._41) + "," + std::to_string(m._42) + "," + std::to_string(m._43) + ")";
 		}
+	}
+}
+
+bool ModelRenderComponent::SetMaterialTexture(int materialIndex, const std::string& texLogicalPath)
+{
+	if (materialIndex < 0 || materialIndex >= static_cast<int>(m_materials.size())) return false;
+	auto& mat = m_materials[materialIndex];
+	mat.texName = texLogicalPath;
+	if (!texLogicalPath.empty()) {
+		mat.tex = TextureManager::Instance()->LoadOrGet(texLogicalPath);
+		return (mat.tex != nullptr);
+	}
+	else {
+		mat.tex.reset();
+		return true;
 	}
 }
 

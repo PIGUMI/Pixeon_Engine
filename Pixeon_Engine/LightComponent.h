@@ -2,7 +2,7 @@
 #include "Component.h"
 #include <DirectXMath.h>
 
-class LightComponent : public Component
+class LightComponent : public AbstractComponent
 {
 public:
 	enum class LightType : int {
@@ -14,7 +14,7 @@ public:
 	LightComponent() {}
 	~LightComponent() {}
 
-	void Init(Object* owner) override;
+	void Init(AbstractObject* Prt) override;
 	void UInit() override;
 	void EditUpdate() override;      // 必要であれば回転から方向を更新
 	void DrawInspector() override;

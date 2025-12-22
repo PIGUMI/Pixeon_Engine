@@ -1,4 +1,4 @@
-#ifndef TEXTURE_MANAGER_H
+ï»¿#ifndef TEXTURE_MANAGER_H
 #define TEXTURE_MANAGER_H
 
 #include "AssetTypes.h"
@@ -21,7 +21,7 @@ public:
 	void GarbageCollect();
 	void DrawDebugGUI();
 
-	// GUI —p API
+	// GUI ç”¨ API
 	bool LoadTexture(const std::string& name);
 	bool Reload(const std::string& name);
 	bool RemoveFromCache(const std::string& name);
@@ -30,7 +30,7 @@ public:
 	bool Unpin(const std::string& name);
 	bool IsPinned(const std::string& name);
 
-	// ’Ç‰Á: ¸”s——Ræ“¾
+	// è¿½åŠ : å¤±æ•—ç†ç”±å–å¾—
 	std::string GetLastFailReason(const std::string& name) const;
 
 private:
@@ -46,7 +46,7 @@ private:
 	std::unordered_map<std::string, Entry> m_cache;
 	std::unordered_map<std::string, std::shared_ptr<TextureResource>> m_pinned;
 
-	// ’Ç‰Á: –¼‘O -> ¸”s——R
+	// è¿½åŠ : åå‰ -> å¤±æ•—ç†ç”±
 	std::unordered_map<std::string, std::string> m_failReasons;
 
 	size_t    m_budget = 512ull * 1024 * 1024;

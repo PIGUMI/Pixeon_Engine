@@ -19,10 +19,10 @@
 #include <filesystem>
 #include "IScript.h"
 
-class ScripComponent : public Component
+class ScripComponent : public AbstractComponent
 {
 public:
-	void Init(Object* owner) override;
+	void Init(AbstractObject* owner) override;
 	void BeginPlay() override;
 	void InGameUpdate() override;
 	void UInit() override;

@@ -11,7 +11,7 @@
 #include <vector>
 #include <functional>
 
-class ModelRenderComponent : public Component
+class ModelRenderComponent : public AbstractComponent
 {
 private:
 	enum class TextureIssue : uint8_t {
@@ -31,7 +31,7 @@ public:
 	ModelRenderComponent() = default;
 	~ModelRenderComponent() = default;
 
-	void Init(Object* owner) override;
+	void Init(AbstractObject* owner) override;
 	void Draw(int Layer) override;
 	void DrawInspector() override;
 
@@ -48,6 +48,8 @@ public:
 	const std::vector<DirectX::XMFLOAT4X4>& GetBoneMatrices() const { return m_boneMatrices; }
 	bool HasBoneMatrices() const { return !m_boneMatrices.empty(); }
 	void SetupBoneMatricesForShader(ID3D11DeviceContext* ctx);
+
+	bool SetMaterialTexture(int materialIndex, const std::string& texLogicalPath);
 
 private:
 	struct CBData {

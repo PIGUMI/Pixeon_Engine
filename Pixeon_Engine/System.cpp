@@ -1,4 +1,5 @@
 #include "System.h"
+#include "ShaderManager.h"
 #include "DirectXTex/TextureLoad.h"
 #include "IMGUI/imgui.h"
 #include "IMGUI/imgui_impl_dx11.h"
@@ -157,6 +158,88 @@ HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
 	return S_OK;
 }
 
+void DirectX11::InitializeHDRPipeline(UINT width, UINT height)
+{
+	HRESULT hr;
+
+	// HDRテクスチャ作成
+	D3D11_TEXTURE2D_DESC hdrTexDesc = {};
+	hdrTexDesc.Width = width;
+	hdrTexDesc.Height = height;
+	hdrTexDesc.MipLevels = 1;
+	hdrTexDesc.ArraySize = 1;
+	hdrTexDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	hdrTexDesc.SampleDesc.Count = 1;
+	hdrTexDesc.SampleDesc.Quality = 0;
+	hdrTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	hdrTexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	hdrTexDesc.CPUAccessFlags = 0;
+	hdrTexDesc.MiscFlags = 0;
+
+	hr = g_pDevice->CreateTexture2D(&hdrTexDesc, nullptr, _hdrTexture.GetAddressOf());
+	if (FAILED(hr)) {
+		OutputDebugStringA("[HDR] Failed to create HDR texture\n");
+		return;
+	}
+
+	hr = g_pDevice->CreateRenderTargetView(_hdrTexture.Get(), nullptr, _hdrRTV.GetAddressOf());
+	if (FAILED(hr)) {
+		OutputDebugStringA("[HDR] Failed to create HDR RTV\n");
+		return;
+	}
+
+	hr = g_pDevice->CreateShaderResourceView(_hdrTexture.Get(), nullptr, _hdrSRV.GetAddressOf());
+	if (FAILED(hr)) {
+		OutputDebugStringA("[HDR] Failed to create HDR SRV\n");
+		return;
+	}
+
+	// トーンマッピング用定数バッファ作成
+	D3D11_BUFFER_DESC cbDesc = {};
+	cbDesc.Usage = D3D11_USAGE_DEFAULT;
+	cbDesc.ByteWidth = sizeof(TonemapParams);
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	hr = g_pDevice->CreateBuffer(&cbDesc, nullptr, _tonemapCB.GetAddressOf());
+	if (FAILED(hr)) {
+		OutputDebugStringA("[HDR] Failed to create tonemap CB\n");
+		return;
+	}
+
+	OutputDebugStringA("[HDR] HDR Pipeline initialized successfully\n");
+}
+
+void DirectX11::RenderHDRScene()
+{
+}
+
+void DirectX11::ApplyToneMappingPass()
+{
+	TonemapParams params;
+	params.exposure = 1.0f;
+	params.gamma = 2.2f;
+	params.pad1 = 0.0f;
+	params.pad2 = 0.0f;
+
+	g_pContext->UpdateSubresource(_tonemapCB.Get(), 0, nullptr, &params, 0, 0);
+	g_pContext->PSSetConstantBuffers(0, 1, _tonemapCB.GetAddressOf());
+
+	// トーンマッピングシェーダー設定
+	// ※シェーダーはShaderManagerから取得する想定
+	ShaderManager* sm = ShaderManager::GetInstance();
+	ID3D11VertexShader* vs = sm->GetVertexShader("VS_Fullscreen");
+	ID3D11PixelShader* ps = sm->GetPixelShader("PS_Tonemap");
+
+	if (vs && ps) {
+		g_pContext->VSSetShader(vs, nullptr, 0);
+		g_pContext->PSSetShader(ps, nullptr, 0);
+		// HDRテクスチャをシェーダーにバインド
+		g_pContext->PSSetShaderResources(0, 1, _hdrSRV.GetAddressOf());
+
+		// フルスクリーンクアッド描画（ImageUtilsを使用）
+		// この部分は既存のImageUtils::DrawSRVを活用
+	}
+}
+
 void DirectX11::Uninit()
 {
 	SAFE_DELETE(g_pDSV);
@@ -192,10 +275,15 @@ void DirectX11::EndDraw()
 void DirectX11::OnResize(UINT width, UINT height) {
 	if (width == 0 || height == 0) return;
 
-	// ImGui: デバイスオブジェクト無効化
+	// ImGui:  デバイスオブジェクト無効化
 	ImGui_ImplDX11_InvalidateDeviceObjects();
 
-	// 既存リソース削除
+	// HDRリソース解放
+	_hdrSRV.Reset();
+	_hdrRTV.Reset();
+	_hdrTexture.Reset();
+
+	// 既存のリソース削除
 	SAFE_DELETE(g_pRTV);
 	SAFE_DELETE(g_pDSV);
 
@@ -214,6 +302,9 @@ void DirectX11::OnResize(UINT width, UINT height) {
 
 	// ビューポート再設定
 	SetRenderTargets(1, &g_pRTV, g_pDSV);
+
+	// HDRパイプライン再作成
+	InitializeHDRPipeline(width, height);
 
 	// ImGui: デバイスオブジェクト再生成
 	ImGui_ImplDX11_CreateDeviceObjects();

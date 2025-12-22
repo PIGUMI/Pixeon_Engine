@@ -1,4 +1,4 @@
-#include "Animator2DComponent.h"
+﻿#include "Animator2DComponent.h"
 #include "Animator2D.h"
 #include "SettingManager.h"
 #include "Animator2DManager.h"
@@ -6,7 +6,7 @@
 #include "GUI.h"
 #include <string>
 
-void Animator2DComponent::Init(Object* Prt)
+void Animator2DComponent::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
 	_ComponentName = "Animator2DComponent";
@@ -33,6 +33,7 @@ void Animator2DComponent::Draw(int Layer)
 {
 	int count = 0;
 	for (auto& animator : _animators) {
+		animator->SetLayer(_LayerNumber);
 		animator->SetEditorMode(false);
 		animator->SetViewMode(animatorViewModes_[count]);
 		animator->Draw(Layer);
@@ -90,7 +91,7 @@ void Animator2DComponent::DrawInspector()
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ループ設定").c_str());
-			ImGui::TableSetColumnIndex(1);
+			; ImGui::TableSetColumnIndex(1);
 			ImGui::Checkbox(("##LoopSetting" + animator->GetProjectName() + Ptr).c_str(), &animator->bLoop_);
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
@@ -209,7 +210,6 @@ void Animator2DComponent::SaveToFile(std::ostream& out)
 		int mode = static_cast<int>(viewMode);
 		out.write(reinterpret_cast<const char*>(&mode), sizeof(int));
 	}
-	// レイヤーの保存
 	out.write(reinterpret_cast<const char*>(&_LayerNumber), sizeof(int));
 }
 
@@ -234,6 +234,5 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		in.read(reinterpret_cast<char*>(&mode), sizeof(int));
 		animatorViewModes_.push_back(static_cast<ViewMode>(mode));
 	}
-	// レイヤーの読み込み
 	in.read(reinterpret_cast<char*>(&_LayerNumber), sizeof(int));
 }

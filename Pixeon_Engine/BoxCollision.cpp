@@ -6,7 +6,7 @@
 #include "CollisionManager.h"
 #include "_Geometry.h"
 
-void BoxCollision::Init(Object* Prt)
+void BoxCollision::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
 	_ComponentName = "BoxCollision";
@@ -215,7 +215,7 @@ void BoxCollision::DrawInspector()
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒ‰ƒCƒ“•`‰æ").c_str());
 		ImGui::TableSetColumnIndex(1);
-		if (ImGui::Checkbox("##DrawWireframeInput", &m_b_BoxLine))
+		ImGui::Checkbox("##DrawWireframeInput", &m_b_BoxLine);
 		ImGui::EndTable();
 	}
 }

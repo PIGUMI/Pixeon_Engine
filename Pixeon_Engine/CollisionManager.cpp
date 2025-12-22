@@ -18,7 +18,7 @@ btScalar CollisionContactCallback::addSingleResult(btManifoldPoint& cp,
 {
 	// 相手のオブジェクトを特定
 	const btCollisionObject* otherObj = nullptr;
-	Object* hitObject = nullptr;
+	AbstractObject* hitObject = nullptr;
 
 	// m_Ownerが所属するRigidBodyを取得
 	RigidBody* ownerRigidBody = m_Owner->GetParent()->GetComponent<RigidBody>();

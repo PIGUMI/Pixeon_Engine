@@ -46,7 +46,7 @@ void Animator2D::Update()
 
 	fNowTime_ = static_cast<float>(nowSec - static_cast<double>(fStartTime_));
 	bEnded_ = false;
-	// ループ処理
+
 	if (fTotalDuration_ > 0.0f && fNowTime_ >= fTotalDuration_)
 	{
 		if (bLoop_)
@@ -71,7 +71,7 @@ void Animator2D::EditorUpdate()
 void Animator2D::Draw(int Layer)
 {
 	std::vector<KeyFrame> SortedKeyFrames = KeyFrames_;
-	// レイヤー順にソート
+
 	std::sort(SortedKeyFrames.begin(), SortedKeyFrames.end(),
 		[](const KeyFrame& a, const KeyFrame& b)
 		{
@@ -81,11 +81,11 @@ void Animator2D::Draw(int Layer)
 	DrawCount = 0;
 	for (auto& kf : SortedKeyFrames)
 	{
-		if (!kf.Active) continue;// 非アクティブスキップ
+		if (!kf.Active) continue;
 		DrawCount++;
 		if (PreviewImage)
 		{
-			switch (viewMode_)// 表示モード設定
+			switch (viewMode_)
 			{
 			case ViewMode::UI:
 				PreviewImage->SetPlacementMode(ImageRender::PlacementMode::UI);
@@ -121,6 +121,7 @@ void Animator2D::Draw(int Layer)
 					kf.NowTransform.UVScale.x,
 					kf.NowTransform.UVScale.y));
 			}
+			PreviewImage->SetLayerNumber(layer_);
 			PreviewImage->SetColor(kf.NowTransform.Color);
 			PreviewImage->SetTextureName(kf.Texture);
 			PreviewImage->Draw(Layer);
@@ -345,7 +346,7 @@ void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 		[ptr](const KeyFrame& kf) { return &kf == ptr; }), KeyFrames_.end());
 }
 
-void Animator2D::SetOwner(Object* owner)
+void Animator2D::SetOwner(AbstractObject* owner)
 {
 	owner_ = owner;
 	PreviewImage->SetParent(owner);

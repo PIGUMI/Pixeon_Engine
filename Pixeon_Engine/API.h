@@ -60,7 +60,19 @@ typedef struct {
 	Float3 fixation;
 } CameraTransform;
 
+typedef struct {
+	GameObjectHandle HitObject;
+	Float3 HitPoint;
+	Float3 HitNormal;
+	char HitObjectName[64];
+	float Distance;
+} APICollisionInfo;
+
 #pragma pack(pop)
+
+typedef void (*BoxCollisionEnterCallback)(ComponentHandle box, const APICollisionInfo* info);
+typedef void (*BoxCollisionStayCallback)(ComponentHandle box, const APICollisionInfo* info);
+typedef void (*BoxCollisionExitCallback)(ComponentHandle box, const APICollisionInfo* info);
 
 /* ÉVÅ[ÉìÇ…ä÷Ç∑ÇÈAPI */
 extern "C" {
@@ -140,7 +152,37 @@ extern"C"
 
 	/* ModelComponent */
 	PIXEON_API APIResult ModelComponent_SetModelName(ComponentHandle modelComponent, const char* modelName);
+	PIXEON_API APIResult ModelComponent_SetMaterialTexture(ComponentHandle modelComponent, int materialIndex, const char* textureName);
 	/*                */
+
+	/* AnimationComponent */
+	PIXEON_API APIResult AnimationComponent_Play(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Pause(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Stop(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Resume(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Restart(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_SetAnimationClip(ComponentHandle animationComponent, int clipIndex);
+
+	/* RigidBody */
+	PIXEON_API APIResult RigidBody_AddForce(ComponentHandle rigidBody, Float3 force);
+	PIXEON_API APIResult RigidBody_AddImpulse(ComponentHandle rigidBody, Float3 impulse);
+	PIXEON_API APIResult RigidBody_SetVelocity(ComponentHandle rigidBody, Float3 velocity);
+
+	PIXEON_API APIResult RigidBody_GetVelocity(ComponentHandle rigidBody, Float3* outVelocity);
+	PIXEON_API APIResult RigidBody_SetMass(ComponentHandle rigidBody, float mass);
+	PIXEON_API APIResult RigidBody_GetMass(ComponentHandle rigidBody, float* outMass);
+
+	PIXEON_API APIResult RigidBody_SetIsKinematic(ComponentHandle rigidBody, bool isKinematic);
+	PIXEON_API APIResult RigidBody_GetIsKinematic(ComponentHandle rigidBody, bool* outIsKinematic);
+	PIXEON_API APIResult RigidBody_SetGravityEnabled(ComponentHandle rigidBody, bool enabled);
+	PIXEON_API APIResult RigidBody_GetGravityEnabled(ComponentHandle rigidBody, bool* outEnabled);
+
+
+	/* ìñÇΩÇËîªíË */
+	PIXEON_API APIResult BoxCollision_SetOnCollisionEnterCallback(ComponentHandle boxCollision, BoxCollisionEnterCallback callback);
+	PIXEON_API APIResult BoxCollision_SetOnCollisionStayCallback(ComponentHandle boxCollision, BoxCollisionStayCallback callback);
+	PIXEON_API APIResult BoxCollision_SetOnCollisionExitCallback(ComponentHandle boxCollision, BoxCollisionExitCallback callback);
+
 }
 
 #endif// API.h

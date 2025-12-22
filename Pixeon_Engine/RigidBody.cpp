@@ -6,7 +6,7 @@
 #include <sstream>
 #include <algorithm>
 
-void RigidBody::Init(Object* Prt)
+void RigidBody::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
 	_ComponentName = "RigidBody";

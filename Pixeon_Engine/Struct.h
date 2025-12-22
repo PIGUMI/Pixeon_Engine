@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include <string>
 
-class Object;
+class AbstractObject;
 
 struct Transform
 {
@@ -19,7 +19,7 @@ struct UIInfo
 
 struct CollisionInfo
 {
-	Object* HitObject = nullptr;
+	AbstractObject* HitObject = nullptr;
 	DirectX::XMFLOAT3 HitPoint = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 HitNormal = { 0.0f, 0.0f, 0.0f };
 	std::string HitObjectName = "";

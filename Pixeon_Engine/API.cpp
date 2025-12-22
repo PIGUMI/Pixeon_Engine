@@ -9,6 +9,9 @@
 #include "ImageRender.h"
 #include "LightComponent.h"
 #include "ModelRender.h"
+#include "AnimationComponent.h"
+#include "RigidBody.h"
+#include "BoxCollision.h"
 
 /* 基本API */
 extern "C" {
@@ -37,7 +40,7 @@ extern "C" {
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
 
-		Object* obj = targetScene->FindObjectByName(objectname);
+		AbstractObject* obj = targetScene->FindObjectByName(objectname);
 		if (obj == nullptr)return PN_ERROR_NOT_FOUND;
 		*outObject = reinterpret_cast<GameObjectHandle*>(obj);
 		return PN_SUCCESS;
@@ -46,7 +49,7 @@ extern "C" {
 	PIXEON_API APIResult SetGameObjectTransform(GameObjectHandle gameObject, const TransformData* inTransform)
 	{
 		if (gameObject == nullptr || inTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* targetObject = reinterpret_cast<Object*>(gameObject);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		Transform t;
 		t.position = { inTransform->position.x, inTransform->position.y, inTransform->position.z };
@@ -59,9 +62,9 @@ extern "C" {
 	PIXEON_API APIResult GetComponent(GameObjectHandle gameObject, const char* componentName, ComponentHandle* outComponent)
 	{
 		if (gameObject == nullptr || componentName == nullptr || outComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* targetObject = reinterpret_cast<Object*>(gameObject);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Component* comp = targetObject->GetComponent(componentName);
+		AbstractComponent* comp = targetObject->GetComponent(componentName);
 		if (comp == nullptr)return PN_ERROR_NOT_FOUND;
 		*outComponent = reinterpret_cast<ComponentHandle*>(comp);
 		return PN_SUCCESS;
@@ -72,7 +75,7 @@ extern "C" {
 		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Object* targetObject = reinterpret_cast<Object*>(object);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(object);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		bool result = targetScene->AddObject(targetObject);
 		if (!result)return PN_ERROR_INVALID_PARAMETER;
@@ -82,7 +85,7 @@ extern "C" {
 	PIXEON_API APIResult GetPrefabObject(const char* prefabName, GameObjectHandle* outObject)
 	{
 		if (prefabName == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* prefabObject = EngineFrame::GetInstance()->GetPrefabByName(prefabName);
+		AbstractObject* prefabObject = EngineFrame::GetInstance()->GetPrefabByName(prefabName);
 		if (prefabObject == nullptr)return PN_ERROR_NOT_FOUND;
 		*outObject = reinterpret_cast<GameObjectHandle*>(prefabObject);
 		return PN_SUCCESS;
@@ -93,7 +96,7 @@ extern "C" {
 		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		Scene* targetScene = reinterpret_cast<Scene*>(scene);
 		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Object* targetObject = reinterpret_cast<Object*>(object);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(object);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		targetScene->RemoveObject(targetObject);
 		return PN_SUCCESS;
@@ -102,7 +105,7 @@ extern "C" {
 	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform)
 	{
 		if (gameObject == nullptr || outTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Object* targetObject = reinterpret_cast<Object*>(gameObject);
+		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
 		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
 		Transform t = targetObject->GetTransform();
 		outTransform->position.x = t.position.x;
@@ -506,4 +509,146 @@ extern "C" {
 		targetComp->SetModel(modelName);
 		return PN_SUCCESS;
 	}
+	/* マテリアルのテクスチャ設定 */
+	PIXEON_API APIResult ModelComponent_SetMaterialTexture(ComponentHandle modelComponent, int materialIndex, const char* textureName)
+	{
+	if (modelComponent == nullptr || textureName == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		ModelRenderComponent* targetComp = reinterpret_cast<ModelRenderComponent*>(modelComponent);
+		bool result = targetComp->SetMaterialTexture(materialIndex, textureName);
+		if (!result)return PN_ERROR_INVALID_PARAMETER;
+		return PN_SUCCESS;
+	}
 };
+
+/* アニメーションコンポーネントに関するAPI */
+extern "C" {
+	PIXEON_API APIResult AnimationComponent_Play(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Play();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Pause(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Pause();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Stop(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Stop();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Resume(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Resume();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Restart(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Restart();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_SetAnimationClip(ComponentHandle animationComponent, int clipIndex)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		bool result = targetComp->SetAnimationClip(clipIndex);
+		if (!result)return PN_ERROR_INVALID_PARAMETER;
+		return PN_SUCCESS;
+	}
+};
+
+/* RigidBodyに関するAPI */
+extern"C"{
+	PIXEON_API APIResult RigidBody_AddForce(ComponentHandle rigidBody, Float3 force){
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 f = { force.x, force.y, force.z };
+		targetComp->AddForce(f);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_AddImpulse(ComponentHandle rigidBody, Float3 impulse)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 imp = { impulse.x, impulse.y, impulse.z };
+		targetComp->AddImpulse(imp);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_SetVelocity(ComponentHandle rigidBody, Float3 velocity)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 vel = { velocity.x, velocity.y, velocity.z };
+		targetComp->SetVelocity(vel);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetVelocity(ComponentHandle rigidBody, Float3* outVelocity)
+	{
+		if (rigidBody == nullptr || outVelocity == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 vel = targetComp->GetVelocity();
+		outVelocity->x = vel.x;
+		outVelocity->y = vel.y;
+		outVelocity->z = vel.z;
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_SetMass(ComponentHandle rigidBody, float mass)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		targetComp->SetMass(mass);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetMass(ComponentHandle rigidBody, float* outMass)
+	{
+		if (rigidBody == nullptr || outMass == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		*outMass = targetComp->GetMass();
+		return
+	}
+	PIXEON_API APIResult RigidBody_SetIsKinematic(ComponentHandle rigidBody, bool isKinematic)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		targetComp->SetKinematic(isKinematic);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetIsKinematic(ComponentHandle rigidBody, bool* outIsKinematic)
+	{
+		if (rigidBody == nullptr || outIsKinematic == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		*outIsKinematic = targetComp->IsKinematic();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_SetGravityEnabled(ComponentHandle rigidBody, bool enabled)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		targetComp->SetGravityEnabled(enabled);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetGravityEnabled(ComponentHandle rigidBody, bool* outEnabled)
+	{
+		if (rigidBody == nullptr || outEnabled == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		*outEnabled = targetComp->IsGravityEnabled();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult BoxCollision_SetOnCollisionEnterCallback(ComponentHandle boxCollision, BoxCollisionEnterCallback callback)
+	{
+		if (boxCollision == nullptr || callback == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		BoxCollision* targetComp = reinterpret_cast<BoxCollision*>(boxCollision);
+		targetComp->SetOnCollisionEnter(callback);
+		return PN_SUCCESS;
+	}
+}

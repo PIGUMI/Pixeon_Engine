@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 typedef IScript* (*CreateScriptInstanceFunc)();
 typedef void (*DestroyScriptInstanceFunc)(IScript*);
 
-void ScripComponent::Init(Object* owner) {
+void ScripComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
 	_ComponentName = "ScripComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::SCRIPT;

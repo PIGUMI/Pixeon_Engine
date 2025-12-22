@@ -12,7 +12,7 @@
 #include <comdef.h>
 #include <oleauto.h>
 
-class Object;
+class AbstractObject;
 
 class EngineFrame
 {
@@ -27,10 +27,10 @@ public: // 4ëÂèàóù
 public: // GUI
 	void DrawGUI();
 public: // Prefabä«óù
-	bool AddPrefab(Object* prefab);
-	std::vector<Object*> GetPrefabs() { return prefabs_; }
-	Object* GetPrefabByName(const std::string& name);
-	void RemovePrefab(Object* ptr);
+	bool AddPrefab(AbstractObject* prefab);
+	std::vector<AbstractObject*> GetPrefabs() { return prefabs_; }
+	AbstractObject* GetPrefabByName(const std::string& name);
+	void RemovePrefab(AbstractObject* ptr);
 
 	void LoadPrefabs();
 	void SavePrefabs();
@@ -53,11 +53,11 @@ private:
 	bool bShowGUI_ = true;
 	bool bBeginPlayCalled_ = false;
 	std::string SceneRenameNewName_ = "";
-	std::vector<Object*> prefabs_;
+	std::vector<AbstractObject*> prefabs_;
 	bool ShowSceneRename = false;
 
 private:
-	Object* SelectedObject = nullptr;
+	AbstractObject* SelectedObject = nullptr;
 	std::string selectedExt = "";
 	std::filesystem::path currentDir;
 	ID3D11ShaderResourceView* ImgIcon_;

@@ -15,10 +15,10 @@ using OnCollisionEnterCallback = std::function<void(const CollisionInfo&)>;
 using OnCollisionStayCallback = std::function<void(const CollisionInfo&)>;
 using OnCollisionExitCallback = std::function<void(const CollisionInfo&)>;
 
-class BoxCollision : public Component
+class BoxCollision : public AbstractComponent
 {
 public:
-	void Init(Object* Prt) override;
+	void Init(AbstractObject* Prt) override;
 	void BeginPlay() override;
 	void EditUpdate() override;
 	void InGameUpdate() override;
@@ -124,7 +124,7 @@ private:
 
 	btBoxShape* pBoxShape_ = nullptr;
 
-	std::vector<Object*> CollidingObjects_;
+	std::vector<AbstractObject*> CollidingObjects_;
 	std::vector<CollisionInfo> CurrentCollisions_;
 
 	RigidBody* pAttachedRigidBody_ = nullptr;

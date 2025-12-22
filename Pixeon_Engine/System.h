@@ -17,7 +17,7 @@
 #include <map>
 #include <string>
 #include <xaudio2.h>
-
+#include <wrl/client.h>
 #pragma comment(lib,"Winmm.lib")
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -131,7 +131,14 @@ public:
 	void SetBlendMode(BlendMode blend);
 	void SetSamplerState(SamplerState state);
 	ID3D11Buffer* CreateVertexBuffer(void* vtxData, UINT vtxNum);
-	//void OnResize(UINT width, UINT height);
+
+public:
+	void InitializeHDRPipeline(UINT width, UINT height);
+	void RenderHDRScene();
+	void ApplyToneMappingPass();
+
+	ID3D11ShaderResourceView* GetHDRSRV() const { return _hdrSRV.Get(); }
+	ID3D11RenderTargetView* GetHDRRTV() const { return _hdrRTV.Get(); }
 private:
 	static DirectX11* instance;
 
@@ -144,6 +151,21 @@ private:
 	ID3D11BlendState* g_pBlendState[BLEND_MAX];
 	ID3D11SamplerState* g_pSamplerState[SAMPLER_MAX];
 	ID3D11Debug* g_Debug;
+private:
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> _hdrTexture;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _hdrRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _hdrSRV;
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> _tonemapCB;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> _tonemapVS;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> _tonemapPS;
+
+
+	struct TonemapParams {
+		float exposure;
+		float gamma;
+		float pad1, pad2;
+	};
 private:
 	DirectX11() {};
 	~DirectX11() {};

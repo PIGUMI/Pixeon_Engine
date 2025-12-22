@@ -20,13 +20,11 @@ static std::string GetFileStem(const std::string& path) {
 	return name;
 }
 
-// ModelManagerからFBX一覧を取得するヘルパー（なければAssetManagerにフォールバック）
 static std::vector<std::string> GetFBXListFromModelManager() {
-	// 必要に応じて ModelManager の一覧取得APIに差し替えてください
 	return AssetManager::Instance()->GetCachedAssetNames(true);
 }
 
-void AnimationComponent::Init(Object* owner) {
+void AnimationComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
 	_ComponentName = "Animation";
 	_Type = ComponentManager::COMPONENT_TYPE::ANIMATION;
