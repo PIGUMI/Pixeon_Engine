@@ -35,6 +35,8 @@ public:
 	void SetAspect(float aspect) { _AspectRatio = aspect; }
 	void SetNear(float nearPlane) { _NearPlane = nearPlane; }
 	void SetFar(float farPlane) { _FarPlane = farPlane; }
+	float GetFov() const { return _FOV; }
+	float GetAspect() const { return _AspectRatio; }
 	float GetNear() const { return _NearPlane; }
 	float GetFar() const { return _FarPlane; }
 	bool IsMove() const { return _IsKeyMove; }

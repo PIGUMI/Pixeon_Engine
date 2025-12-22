@@ -1,654 +1,466 @@
 #include "API.h"
-#include "Object.h"
-#include "Scene.h"
 #include "SceneManger.h"
-#include "EngineFrame.h"
-#include "Input.h"
+#include "ComponentManager.h"
 #include "Component.h"
+#include "Scene.h"
+#include "Object.h"
+
 #include "CameraComponent.h"
-#include "ImageRender.h"
-#include "LightComponent.h"
-#include "ModelRender.h"
-#include "AnimationComponent.h"
-#include "RigidBody.h"
 #include "BoxCollision.h"
+#include <string>
+#include <cstring>
+#include <DirectXMath.h>
 
-/* 基本API */
+// Utility Functions
 extern "C" {
-	/* 現在のシーンの取得 */
-	PIXEON_API APIResult GetCurrentScene(SceneHandle* outHandle)
-	{
-		if (outHandle == nullptr) return PN_ERROR_INVALID_PARAMETER;
-		Scene* currentScene = nullptr;
-		currentScene = SceneManger::GetInstance()->GetCurrentScene();
-		if (currentScene == nullptr) return PN_ERROR_NULL_POINTER;
-		*outHandle = reinterpret_cast<SceneHandle*>(currentScene);
-		return PN_SUCCESS;
-	}
-	/* シーン切り替え */
-	PIXEON_API APIResult ChangeScene(const char* sceneName)
-	{
-		if (sceneName == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		SceneManger::GetInstance()->ChangeScene(sceneName);
-		return PN_SUCCESS;
-	}
-	/* ゲームオブジェクトの取得 */
-	PIXEON_API APIResult GetGameObject(SceneHandle scene, const char* objectname, GameObjectHandle* outObject)
-	{
-		if (scene == nullptr || objectname == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
+    PIXEON_API Float2 CreateFloat2(float x, float y) {
+        Float2 result = { x, y };
+        return result;
+    }
 
-		Scene* targetScene = reinterpret_cast<Scene*>(scene);
-		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
+    PIXEON_API Float3 CreateFloat3(float x, float y, float z) {
+        Float3 result = { x, y, z };
+        return result;
+    }
 
-		AbstractObject* obj = targetScene->FindObjectByName(objectname);
-		if (obj == nullptr)return PN_ERROR_NOT_FOUND;
-		*outObject = reinterpret_cast<GameObjectHandle*>(obj);
-		return PN_SUCCESS;
-	}
-	/* トランスフォームの設定 */
-	PIXEON_API APIResult SetGameObjectTransform(GameObjectHandle gameObject, const TransformData* inTransform)
-	{
-		if (gameObject == nullptr || inTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
-		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Transform t;
-		t.position = { inTransform->position.x, inTransform->position.y, inTransform->position.z };
-		t.rotation = { inTransform->rotation.x, inTransform->rotation.y, inTransform->rotation.z };
-		t.scale = { inTransform->scale.x, inTransform->scale.y, inTransform->scale.z };
-		targetObject->SetTransform(t);
-		return PN_SUCCESS;
-	}
-	/* コンポーネントの取得 */
-	PIXEON_API APIResult GetComponent(GameObjectHandle gameObject, const char* componentName, ComponentHandle* outComponent)
-	{
-		if (gameObject == nullptr || componentName == nullptr || outComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
-		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
-		AbstractComponent* comp = targetObject->GetComponent(componentName);
-		if (comp == nullptr)return PN_ERROR_NOT_FOUND;
-		*outComponent = reinterpret_cast<ComponentHandle*>(comp);
-		return PN_SUCCESS;
-	}
-	/* ゲームオブジェクトのシーンへの追加 */
-	PIXEON_API APIResult AddGameObject(SceneHandle scene, GameObjectHandle object)
-	{
-		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Scene* targetScene = reinterpret_cast<Scene*>(scene);
-		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
-		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(object);
-		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
-		bool result = targetScene->AddObject(targetObject);
-		if (!result)return PN_ERROR_INVALID_PARAMETER;
-		return PN_SUCCESS;
-	}
-	/* Prefabからオブジェクトの取得 */
-	PIXEON_API APIResult GetPrefabObject(const char* prefabName, GameObjectHandle* outObject)
-	{
-		if (prefabName == nullptr || outObject == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AbstractObject* prefabObject = EngineFrame::GetInstance()->GetPrefabByName(prefabName);
-		if (prefabObject == nullptr)return PN_ERROR_NOT_FOUND;
-		*outObject = reinterpret_cast<GameObjectHandle*>(prefabObject);
-		return PN_SUCCESS;
-	}
-	/* ゲームオブジェクトのシーンからの削除 */
-	PIXEON_API APIResult RemoveGameObject(SceneHandle scene, GameObjectHandle object)
-	{
-		if (scene == nullptr || object == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		Scene* targetScene = reinterpret_cast<Scene*>(scene);
-		if (targetScene == nullptr)return PN_ERROR_INVALID_HANDLE;
-		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(object);
-		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
-		targetScene->RemoveObject(targetObject);
-		return PN_SUCCESS;
-	}
-	/* トランスフォームの取得 */
-	PIXEON_API APIResult GetGameObjectTransform(GameObjectHandle gameObject, TransformData* outTransform)
-	{
-		if (gameObject == nullptr || outTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AbstractObject* targetObject = reinterpret_cast<AbstractObject*>(gameObject);
-		if (targetObject == nullptr)return PN_ERROR_INVALID_HANDLE;
-		Transform t = targetObject->GetTransform();
-		outTransform->position.x = t.position.x;
-		outTransform->position.y = t.position.y;
-		outTransform->position.z = t.position.z;
-		outTransform->rotation.x = t.rotation.x;
-		outTransform->rotation.y = t.rotation.y;
-		outTransform->rotation.z = t.rotation.z;
-		outTransform->scale.x = t.scale.x;
-		outTransform->scale.y = t.scale.y;
-		outTransform->scale.z = t.scale.z;
-		return PN_SUCCESS;
-	}
-}
+    PIXEON_API Float4 CreateFloat4(float x, float y, float z, float w) {
+        Float4 result = { x, y, z, w };
+        return result;
+    }
 
-/* 入力処理 */
-extern "C" {
-	/* キーが押されているか */
-	PIXEON_API APIResult IsKeyPressed(char Key, bool* outPressed)
-	{
-		if (outPressed == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		*outPressed = IsKeyPress(Key);
-		return PN_SUCCESS;
-	}
-	/* キーがトリガーされたか */
-	PIXEON_API APIResult IsKeyTrigger(char Key, bool* outTriggered)
-	{
-		if (outTriggered == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		*outTriggered = IsKeyTrigger(Key);
-		return PN_SUCCESS;
-	}
-	/* キーがリリースされたか */
-	PIXEON_API APIResult IsKeyRelease(char Key, bool* outReleased)
-	{
-		if (outReleased == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		*outReleased = IsKeyRelease(Key);
-		return PN_SUCCESS;
-	}
-	/* キーがリピートされたか */
-	PIXEON_API APIResult IsKeyRepeat(char Key, bool* outRepeated)
-	{
-		if (outRepeated == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		*outRepeated = IsKeyRepeat(Key);
-		return PN_SUCCESS;
-	}
-	/* マウスの移動量取得 */
-	PIXEON_API APIResult GetMouseMove(int* outX, int* outY)
-	{
-		if (outX == nullptr || outY == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		*outX = MouseMoveX();
-		*outY = MouseMoveY();
-		return PN_SUCCESS;
-	}
-}
+    PIXEON_API transform CreateTransform(Float3 pos, Float3 rot, Float3 scale) {
+        transform result = { pos, rot, scale };
+        return result;
+    }
 
-/* カメラコンポーネントに関するAPI */
-extern "C"
-{
-	/* カメラのトランスフォーム取得 */
-	PIXEON_API APIResult CameraComponent_GetTransform(ComponentHandle cameraComponent, CameraTransform* outTransform)
-	{
-		if (cameraComponent == nullptr || outTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
-		outTransform->position = { targetComp->GetPosition().x, targetComp->GetPosition().y, targetComp->GetPosition().z };
-		outTransform->rotation = { targetComp->GetRotation().x, targetComp->GetRotation().y,  targetComp->GetRotation().z };
-		outTransform->fixation = { targetComp->GetFixation().x, targetComp->GetFixation().y, targetComp->GetFixation().z };
-		return PN_SUCCESS;
-	}
-	/* カメラのトランスフォーム設定 */
-	PIXEON_API APIResult CameraComponent_SetTransform(ComponentHandle cameraComponent, const CameraTransform* inTransform)
-	{
-		if (cameraComponent == nullptr || inTransform == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
-		targetComp->SetPosition({ inTransform->position.x, inTransform->position.y, inTransform->position.z });
-		targetComp->SetRotation({ inTransform->rotation.x, inTransform->rotation.y, inTransform->rotation.z });
-		targetComp->SetFixation({ inTransform->fixation.x, inTransform->fixation.y, inTransform->fixation.z });
-		return PN_SUCCESS;
-	}
-	/* カメラのFOV設定 */
-	PIXEON_API APIResult CameraComponent_SetFov(ComponentHandle cameraComponent, float outFov)
-	{
-		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
-		targetComp->SetFov(outFov);
-		return PN_SUCCESS;
-	}
-	/* カメラのアスペクト比設定 */
-	PIXEON_API APIResult CameraComponent_SetAspect(ComponentHandle cameraComponent, float InAspect)
-	{
-		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
-		targetComp->SetAspect(InAspect);
-		return PN_SUCCESS;
-	}
-	/* カメラのニアクリップ設定 */
-	PIXEON_API APIResult CameraComponent_SetNear(ComponentHandle cameraComponent, float InNear)
-	{
-		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
-		targetComp->SetNear(InNear);
-		return PN_SUCCESS;
-	}
-	/* カメラのファークリップ設定 */
-	PIXEON_API APIResult CameraComponent_SetFar(ComponentHandle cameraComponent, float InFar)
-	{
-		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
-		targetComp->SetFar(InFar);
-		return PN_SUCCESS;
-	}
-	/* カメラの計算方法変更設定 */
-	PIXEON_API APIResult CameraComponent_ChangeCalculationMode(ComponentHandle cameraComponent, bool isChange)
-	{
-		if (cameraComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		CameraComponent* targetComp = reinterpret_cast<CameraComponent*>(cameraComponent);
-		targetComp->SetIsChangeCalculation(isChange);
-		return PN_SUCCESS;
-	}
-}
-
-/* イメージレンダーコンポーネントに関するAPI */
-extern "C" {
-	/* テクスチャ名の設定 */
-	PIXEON_API APIResult ImageRender_SetTextureName(ComponentHandle imageRender, const char* textureName)
-	{
-		if (imageRender == nullptr || textureName == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		targetComp->SetTextureName(textureName);
-		return PN_SUCCESS;
-	}
-	/* テクスチャ名の取得 */
-	PIXEON_API APIResult ImageRender_GetTextureName(ComponentHandle imageRender, char* outTextureName, int bufferSize)
-	{
-		if (imageRender == nullptr || outTextureName == nullptr || bufferSize <= 0)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		std::string texName = targetComp->GetTextureName();
-		if (texName.size() + 1 > static_cast<size_t>(bufferSize))return PN_ERROR_BUFFER_TOO_SMALL;
-		strcpy_s(outTextureName, bufferSize, texName.c_str());
-		return PN_SUCCESS;
-	}
-	/* 描画モードの変更 */
-	/* 0:2D描画 1:ビルボード 2:3D描画 3:UI */
-	PIXEON_API APIResult ImageRender_SetPlacementMode(ComponentHandle imageRender, int mode)
-	{
-		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		if (mode < 0 || mode > 2)return PN_ERROR_INVALID_PARAMETER;
-		targetComp->SetPlacementMode(static_cast<ImageRender::PlacementMode>(mode));
-		return PN_SUCCESS;
-	}
-	/* 描画モードの取得 */
-	/* 0:2D描画 1:ビルボード 2:3D描画 3:UI */
-	PIXEON_API APIResult ImageRender_GetPlacementMode(ComponentHandle imageRender, int* outMode)
-	{
-		if (imageRender == nullptr || outMode == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		*outMode = static_cast<int>(targetComp->GetPlacementMode());
-		return PN_SUCCESS;
-	}
-	/* オフセット設定 */
-	/* ※2D描画時 */
-	PIXEON_API APIResult ImageRender_SetOffset2D(ComponentHandle imageRender, Float2 offset)
-	{
-		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT2 oFfset = { offset.x, offset.y };
-		targetComp->SetOffset2D(oFfset);
-		return PN_SUCCESS;
-	}
-	/* オフセット取得 */
-	/* ※2D描画時 */
-	PIXEON_API APIResult ImageRender_GetOffset2D(ComponentHandle imageRender, Float2* offset)
-	{
-		if (imageRender == nullptr || offset == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT2 oFfset = targetComp->GetOffset2D();
-		offset->x = oFfset.x;
-		offset->y = oFfset.y;
-		return PN_SUCCESS;
-	}
-	/* サイズ取得 */
-	/* ※2D描画時 */
-	PIXEON_API APIResult ImageRender_SetSize2D(ComponentHandle imageRender, Float2 size)
-	{
-		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT2 sz = { size.x, size.y };
-		targetComp->SetSize2D(sz);
-		return PN_SUCCESS;
-	}
-	/* サイズ設定 */
-	/* ※2D描画時 */
-	PIXEON_API APIResult ImageRender_GetSize2D(ComponentHandle imageRender, Float2* size)
-	{
-		if (imageRender == nullptr || size == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT2 sz = targetComp->GetSize2D();
-		size->x = sz.x;
-		size->y = sz.y;
-		return PN_SUCCESS;
-	}
-	/* オフセット設定 */
-	/* ※ビルボード・3D描画時 */
-	PIXEON_API APIResult ImageRender_SetOffset3D(ComponentHandle imageRender, Float3 offset)
-	{
-		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT3 oFfset = { offset.x, offset.y, offset.z };
-		targetComp->SetOffset3D(oFfset);
-		return PN_SUCCESS;
-	}
-	/* オフセット取得 */
-	/* ※ビルボード・3D描画時 */
-	PIXEON_API APIResult ImageRender_GetOffset3D(ComponentHandle imageRender, Float3* offset)
-	{
-		if (imageRender == nullptr || offset == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT3 oFfset = targetComp->GetOffset3D();
-		offset->x = oFfset.x;
-		offset->y = oFfset.y;
-		offset->z = oFfset.z;
-		return PN_SUCCESS;
-	}
-	/* サイズの設定 */
-	/* ※ビルボード・3D描画時 */
-	PIXEON_API APIResult ImageRender_SetSize3D(ComponentHandle imageRender, Float2 size)
-	{
-		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT2 sz = { size.x, size.y };
-		targetComp->SetSizeWorld(sz);
-		return PN_SUCCESS;
-	}
-	/* サイズの設定 */
-	/* ※ビルボード・3D描画時 */
-	PIXEON_API APIResult ImageRender_GetSize3D(ComponentHandle imageRender, Float2* size)
-	{
-		if (imageRender == nullptr || size == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT2 sz = targetComp->GetSizeWorld();
-		size->x = sz.x;
-		size->y = sz.y;
-		return PN_SUCCESS;
-	}
-	/* UV設定 */
-	/* 0～1 */
-	/* X:Y = 0:0 Z:W = 1:1 */
-	PIXEON_API APIResult ImageRender_SetUVRect(ComponentHandle imageRender, Float4 uvRect)
-	{
-		if (imageRender == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT4 uvR = { uvRect.x, uvRect.y, uvRect.z, uvRect.w };
-		targetComp->SetUVRect(uvR);
-		return PN_SUCCESS;
-	}
-	/* UV取得 */
-	/* 0 ～ 1 */
-	PIXEON_API APIResult ImageRender_GetUVRect(ComponentHandle imageRender, Float4* outUVRect)
-	{
-		if (imageRender == nullptr || outUVRect == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ImageRender* targetComp = reinterpret_cast<ImageRender*>(imageRender);
-		DirectX::XMFLOAT4 uvR = targetComp->GetUVRect();
-		outUVRect->x = uvR.x;
-		outUVRect->y = uvR.y;
-		outUVRect->z = uvR.z;
-		outUVRect->w = uvR.w;
-		return PN_SUCCESS;
-	}
-}
-
-/* ライトコンポーネントに関するAPI */
-extern "C" {
-	/* ライトコンポーネントのモード設定 */
-	/* 0:Directional 1:Point 2:Spot */
-	PIXEON_API APIResult LightComponent_SetType(ComponentHandle lightComponent, int type)
-	{
-		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		if (type < 0 || type > 2)return PN_ERROR_INVALID_PARAMETER;
-		targetComp->SetType(static_cast<LightComponent::LightType>(type));
-		return PN_SUCCESS;
-	}
-	/* ライトコンポーネントのモード取得 */
-	/* 0:Directional 1:Point 2:Spot */
-	PIXEON_API APIResult LightComponent_GetType(ComponentHandle lightComponent, int* outType)
-	{
-		if (lightComponent == nullptr || outType == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		*outType = static_cast<int>(targetComp->GetType());
-		return PN_SUCCESS;
-	}
-	/* ライト色設定 */
-	PIXEON_API APIResult LightComponent_SetColor(ComponentHandle lightComponent, Float3 color)
-	{
-		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		DirectX::XMFLOAT3 c = { color.x, color.y, color.z };
-		targetComp->SetColor(c);
-		return PN_SUCCESS;
-	}
-	/* ライト色取得 */
-	PIXEON_API APIResult LightComponent_GetColor(ComponentHandle lightComponent, Float3* outColor)
-	{
-		if (lightComponent == nullptr || outColor == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		DirectX::XMFLOAT3 color = targetComp->GetColor();
-		outColor->x = color.x;
-		outColor->y = color.y;
-		outColor->z = color.z;
-		return PN_SUCCESS;
-	}
-	/* ライト強度取得 */
-	PIXEON_API APIResult LightComponent_SetIntensity(ComponentHandle lightComponent, float intensity)
-	{
-		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		targetComp->SetIntensity(intensity);
-		return PN_SUCCESS;
-	}
-	/* ライト強度取得 */
-	PIXEON_API APIResult LightComponent_GetIntensity(ComponentHandle lightComponent, float* outIntensity)
-	{
-		if (lightComponent == nullptr || outIntensity == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		*outIntensity = targetComp->GetIntensity();
-		return PN_SUCCESS;
-	}
-	/* ライト距離設定 */
-	PIXEON_API APIResult LightComponent_SetRange(ComponentHandle lightComponent, float range)
-	{
-		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		targetComp->SetRange(range);
-		return PN_SUCCESS;
-	}
-	/* ライト距離取得 */
-	PIXEON_API APIResult LightComponent_GetRange(ComponentHandle lightComponent, float* outRange)
-	{
-		if (lightComponent == nullptr || outRange == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		*outRange = targetComp->GetRange();
-		return PN_SUCCESS;
-	}
-	/* スポットライト外側角度設定 */
-	PIXEON_API APIResult LightComponent_SetSpotInner(ComponentHandle lightComponent, float innerDeg)
-	{
-		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		targetComp->SetSpotInner(innerDeg);
-		return PN_SUCCESS;
-	}
-	/* スポットライト外側角度取得 */
-	PIXEON_API APIResult LightComponent_GetSpotInner(ComponentHandle lightComponent, float* outInnerDeg)
-	{
-		if (lightComponent == nullptr || outInnerDeg == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		*outInnerDeg = targetComp->GetSpotInner();
-		return PN_SUCCESS;
-	}
-	/* スポットライト外側角度設定 */
-	PIXEON_API APIResult LightComponent_SetSpotOuter(ComponentHandle lightComponent, float outerDeg)
-	{
-		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		targetComp->SetSpotOuter(outerDeg);
-		return PN_SUCCESS;
-	}
-	/* スポットライト外側角度取得 */
-	PIXEON_API APIResult LightComponent_GetSpotOuter(ComponentHandle lightComponent, float* outOuterDeg)
-	{
-		if (lightComponent == nullptr || outOuterDeg == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		*outOuterDeg = targetComp->GetSpotOuter();
-		return PN_SUCCESS;
-	}
-	/* スポットライト外側角度設定 */
-	PIXEON_API APIResult LightComponent_SetEnabled(ComponentHandle lightComponent, bool enabled)
-	{
-		if (lightComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		targetComp->SetEnabled(enabled);
-		return PN_SUCCESS;
-	}
-	/* スポットライト外側角度取得 */
-	PIXEON_API APIResult LightComponent_IsEnabled(ComponentHandle lightComponent, bool* outEnabled)
-	{
-		if (lightComponent == nullptr || outEnabled == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		LightComponent* targetComp = reinterpret_cast<LightComponent*>(lightComponent);
-		*outEnabled = targetComp->IsEnabled();
-		return PN_SUCCESS;
-	}
+    PIXEON_API transform IdentityTransform() {
+        transform result = {
+            { 0.0f, 0.0f, 0.0f },  // position
+            { 0.0f, 0.0f, 0.0f },  // rotation
+            { 1.0f, 1.0f, 1.0f }   // scale
+        };
+        return result;
+    }
 };
 
-/* モデルレンダラーに関するAPI */
-extern "C" {
-	/* モデル名の設定 */
-	PIXEON_API APIResult ModelComponent_SetModelName(ComponentHandle modelComponent, const char* modelName)
-	{
-		if (modelComponent == nullptr || modelName == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ModelRenderComponent* targetComp = reinterpret_cast<ModelRenderComponent*>(modelComponent);
-		targetComp->SetModel(modelName);
-		return PN_SUCCESS;
-	}
-	/* マテリアルのテクスチャ設定 */
-	PIXEON_API APIResult ModelComponent_SetMaterialTexture(ComponentHandle modelComponent, int materialIndex, const char* textureName)
-	{
-	if (modelComponent == nullptr || textureName == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		ModelRenderComponent* targetComp = reinterpret_cast<ModelRenderComponent*>(modelComponent);
-		bool result = targetComp->SetMaterialTexture(materialIndex, textureName);
-		if (!result)return PN_ERROR_INVALID_PARAMETER;
-		return PN_SUCCESS;
-	}
-};
+// Helpers
+namespace {
+    // Safe string copy with length return
+    APIResult SafeStringCopy(const std::string& source, char* buffer, int bufferSize, int* outLength) {
+        if (!buffer || bufferSize <= 0) {
+            if (outLength) *outLength = 0;
+            return PN_ERROR_INVALID_PARAMETER;
+        }
 
-/* アニメーションコンポーネントに関するAPI */
-extern "C" {
-	PIXEON_API APIResult AnimationComponent_Play(ComponentHandle animationComponent)
-	{
-		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
-		targetComp->Play();
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult AnimationComponent_Pause(ComponentHandle animationComponent)
-	{
-		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
-		targetComp->Pause();
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult AnimationComponent_Stop(ComponentHandle animationComponent)
-	{
-		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
-		targetComp->Stop();
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult AnimationComponent_Resume(ComponentHandle animationComponent)
-	{
-		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
-		targetComp->Resume();
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult AnimationComponent_Restart(ComponentHandle animationComponent)
-	{
-		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
-		targetComp->Restart();
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult AnimationComponent_SetAnimationClip(ComponentHandle animationComponent, int clipIndex)
-	{
-		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
-		bool result = targetComp->SetAnimationClip(clipIndex);
-		if (!result)return PN_ERROR_INVALID_PARAMETER;
-		return PN_SUCCESS;
-	}
-};
+        int sourceLength = static_cast<int>(source.length());
+        if (outLength) *outLength = sourceLength;
 
-/* RigidBodyに関するAPI */
-extern"C"{
-	PIXEON_API APIResult RigidBody_AddForce(ComponentHandle rigidBody, Float3 force){
-		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		DirectX::XMFLOAT3 f = { force.x, force.y, force.z };
-		targetComp->AddForce(f);
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_AddImpulse(ComponentHandle rigidBody, Float3 impulse)
-	{
-		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		DirectX::XMFLOAT3 imp = { impulse.x, impulse.y, impulse.z };
-		targetComp->AddImpulse(imp);
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_SetVelocity(ComponentHandle rigidBody, Float3 velocity)
-	{
-		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		DirectX::XMFLOAT3 vel = { velocity.x, velocity.y, velocity.z };
-		targetComp->SetVelocity(vel);
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_GetVelocity(ComponentHandle rigidBody, Float3* outVelocity)
-	{
-		if (rigidBody == nullptr || outVelocity == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		DirectX::XMFLOAT3 vel = targetComp->GetVelocity();
-		outVelocity->x = vel.x;
-		outVelocity->y = vel.y;
-		outVelocity->z = vel.z;
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_SetMass(ComponentHandle rigidBody, float mass)
-	{
-		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		targetComp->SetMass(mass);
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_GetMass(ComponentHandle rigidBody, float* outMass)
-	{
-		if (rigidBody == nullptr || outMass == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		*outMass = targetComp->GetMass();
-		return
-	}
-	PIXEON_API APIResult RigidBody_SetIsKinematic(ComponentHandle rigidBody, bool isKinematic)
-	{
-		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		targetComp->SetKinematic(isKinematic);
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_GetIsKinematic(ComponentHandle rigidBody, bool* outIsKinematic)
-	{
-		if (rigidBody == nullptr || outIsKinematic == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		*outIsKinematic = targetComp->IsKinematic();
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_SetGravityEnabled(ComponentHandle rigidBody, bool enabled)
-	{
-		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		targetComp->SetGravityEnabled(enabled);
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult RigidBody_GetGravityEnabled(ComponentHandle rigidBody, bool* outEnabled)
-	{
-		if (rigidBody == nullptr || outEnabled == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
-		*outEnabled = targetComp->IsGravityEnabled();
-		return PN_SUCCESS;
-	}
-	PIXEON_API APIResult BoxCollision_SetOnCollisionEnterCallback(ComponentHandle boxCollision, BoxCollisionEnterCallback callback)
-	{
-		if (boxCollision == nullptr || callback == nullptr)return PN_ERROR_INVALID_PARAMETER;
-		BoxCollision* targetComp = reinterpret_cast<BoxCollision*>(boxCollision);
-		targetComp->SetOnCollisionEnter(callback);
-		return PN_SUCCESS;
-	}
+        if (bufferSize <= sourceLength) {
+            return PN_ERROR_BUFFER_TOO_SMALL;
+        }
+
+        std::strncpy(buffer, source.c_str(), bufferSize - 1);
+        buffer[bufferSize - 1] = '\0';
+        return PN_SUCCESS;
+    }
+
+    // Convert DirectX::XMFLOAT3 to Float3
+    Float3 ToFloat3(const DirectX::XMFLOAT3& xmfloat) {
+        return CreateFloat3(xmfloat.x, xmfloat.y, xmfloat.z);
+    }
+
+    // Convert Float3 to DirectX::XMFLOAT3
+    DirectX::XMFLOAT3 ToXMFloat3(const Float3& float3) {
+        return DirectX::XMFLOAT3(float3.x, float3.y, float3.z);
+    }
+
+    // Convert DirectX::XMFLOAT2 to Float2
+    Float2 ToFloat2(const DirectX::XMFLOAT2& xmfloat) {
+        return CreateFloat2(xmfloat.x, xmfloat.y);
+    }
+
+    // Convert Float2 to DirectX::XMFLOAT2
+    DirectX::XMFLOAT2 ToXMFloat2(const Float2& float2) {
+        return DirectX::XMFLOAT2(float2.x, float2.y);
+    }
+
+    BoxCollisionEnterCallback g_BoxCollisionEnterCallback = nullptr;
+    BoxCollisionStayCallback  g_BoxCollisionStayCallback = nullptr;
+    BoxCollisionExitCallback  g_BoxCollisionExitCallback = nullptr;
+
+    // CollisionInfoからAPICollisionInfoへ変換
+    APICollisionInfo ToAPICollisionInfo(const CollisionInfo& info) {
+        APICollisionInfo apiInfo;
+        apiInfo.HitObject = reinterpret_cast<Object>(info.HitObject);
+        apiInfo.HitPoint = CreateFloat3(info.HitPoint.x, info.HitPoint.y, info.HitPoint.z);
+        apiInfo.HitNormal = CreateFloat3(info.HitNormal.x, info.HitNormal.y, info.HitNormal.z);
+        strncpy(apiInfo.HitObjectName, info.HitObjectName.c_str(), sizeof(apiInfo.HitObjectName));
+        apiInfo.HitObjectName[sizeof(apiInfo.HitObjectName) - 1] = '\0';
+        apiInfo.Distance = info.Distance;
+        return apiInfo;
+    }
+
+    // Validate handle
+    template<typename T>
+    bool ValidateHandle(void* handle, T** outPtr) {
+        if (!handle) return false;
+        *outPtr = reinterpret_cast<T*>(handle);
+        return true;
+    }
 }
+
+// Scene Functions
+extern "C" {
+    PIXEON_API APIResult GetCurrentScene(SceneHandle* outScene)
+    {
+        if (!outScene) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+        if (!currentScene) {
+            *outScene = nullptr;
+            return PN_ERROR_NOT_FOUND;
+        }
+        *outScene = reinterpret_cast<SceneHandle>(currentScene);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult ChangeScene(const char* sceneName)
+    {
+        if (!sceneName) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        SceneManger::GetInstance()->ChangeScene(std::string(sceneName));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SceneGetObjectCount(SceneHandle scene, int* outCount)
+    {
+        if (!outCount) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        Scene* scenePtr = nullptr;
+        if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outCount = static_cast<int>(scenePtr->GetObjects().size());
+    }
+    PIXEON_API APIResult FindObjectByName(SceneHandle scene, const char* name, Object* outObject)
+    {
+        if (!name || !outObject) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        Scene* scenePtr = nullptr;
+        if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AbstractObject* obj = scenePtr->FindObjectByName(name);
+        if (!obj) {
+            *outObject = nullptr;
+            return PN_ERROR_NOT_FOUND;
+        }
+		*outObject = reinterpret_cast<Object>(obj);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object)
+    {
+        if (!object) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        Scene* scenePtr = nullptr;
+        if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		scenePtr->AddObject(objPtr);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RemoveObjectFromScene(SceneHandle scene, Object object)
+    {
+        if (!object) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        Scene* scenePtr = nullptr;
+        if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		scenePtr->RemoveObject(objPtr);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetMainCamera(int inCameraNumber)
+    {
+        Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+        if (!currentScene) {
+            return PN_ERROR_NOT_FOUND;
+		}
+		currentScene->SetMainCameraNumber(inCameraNumber);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetMainCamera(int* outCameraNumber)
+    {
+        if (!outCameraNumber) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+        if (!currentScene) {
+            return PN_ERROR_NOT_FOUND;
+        }
+		*outCameraNumber = currentScene->GetMainCameraNumber();
+    }
+};
+
+// Object Functions
+extern "C" {
+    PIXEON_API APIResult GetObjectName(Object object, char* outName, int bufferSize)
+    {
+        if (!outName || bufferSize <= 0) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        std::string name = objPtr->GetObjectName();
+        int outLength = 0;
+		return SafeStringCopy(name, outName, bufferSize, &outLength);
+    }
+    PIXEON_API APIResult SetObjectName(Object object, const char* name)
+    {
+        if (!name) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		objPtr->SetObjectName(std::string(name));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetObjectTransform(Object object, transform* outTransform)
+    {
+        if (!outTransform) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		Transform transform = objPtr->GetTransform();
+		outTransform->position = ToFloat3(transform.position);
+		outTransform->rotation = ToFloat3(transform.rotation);
+		outTransform->scale = ToFloat3(transform.scale);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform)
+    {
+        if (!inTransform) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		Transform transform;
+		transform.position = ToXMFloat3(inTransform->position);
+		objPtr->SetTransform(transform);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent)
+    {
+        if (!componentName || !outComponent) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AbstractComponent* comp = objPtr->GetComponent(std::string(componentName));
+        if (!comp) {
+            *outComponent = nullptr;
+            return PN_ERROR_NOT_FOUND;
+		}
+		*outComponent = reinterpret_cast<Component>(comp);
+		return PN_SUCCESS;
+    }
+};
+
+// Component Functions
+extern "C"{
+    // Camera Component
+    PIXEON_API APIResult GetCameraTransform(Component camera, CameraTransform* outTransform)
+    {
+        if (!outTransform) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        outTransform->position = ToFloat3(cameraComp->GetPosition());
+		outTransform->rotation = ToFloat3(cameraComp->GetRotation());
+		outTransform->fixation = ToFloat3(cameraComp->GetFixation());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetCameraTransform(Component camera, const CameraTransform* inTransform)
+    {
+        if (!inTransform) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        cameraComp->SetPosition(ToXMFloat3(inTransform->position));
+        cameraComp->SetRotation(ToXMFloat3(inTransform->rotation));
+		cameraComp->SetFixation(ToXMFloat3(inTransform->fixation));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetCameraFov(Component camera, float* outFov)
+    {
+        if (!outFov) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outFov = cameraComp->GetFov();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetCameraFov(Component camera, float inFov)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		cameraComp->SetFov(inFov);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetCameraAspect(Component camera, float* outAspect)
+    {
+        if (!outAspect) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outAspect = cameraComp->GetAspect();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetCameraAspect(Component camera, float inAspect)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		cameraComp->SetAspect(inAspect);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetCameraNearFar(Component camera, float* outNear, float* outFar)
+    {
+        if (!outNear || !outFar) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outNear = cameraComp->GetNear();
+		*outFar = cameraComp->GetFar();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetCameraNearFar(Component camera, float inNear, float inFar)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		cameraComp->SetNear(inNear);
+		cameraComp->SetFar(inFar);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetChangeCameraCalculation(Component camera, bool isChange)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		cameraComp->SetIsChangeCalculation(isChange);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetCameraNumber(Component camera, int* outCameraNumber)
+    {
+        if (!outCameraNumber) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outCameraNumber = cameraComp->GetCameraNumber();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetCmaeraUpVector(Component camera, Float3* outUp)
+    {
+        if (!outUp) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+        if (!cameraComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outUp = ToFloat3(cameraComp->GetUpVector());
+		return PN_SUCCESS;
+    }
+}
+

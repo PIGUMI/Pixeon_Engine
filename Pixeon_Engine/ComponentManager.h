@@ -6,8 +6,6 @@
 #include <vector>
 #include "Object.h"
 
-class Component;
-
 class ComponentManager
 {
 public:
