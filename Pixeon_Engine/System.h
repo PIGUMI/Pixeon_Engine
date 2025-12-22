@@ -160,7 +160,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> _tonemapVS;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> _tonemapPS;
 
-
 	struct TonemapParams {
 		float exposure;
 		float gamma;
