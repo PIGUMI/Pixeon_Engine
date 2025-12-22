@@ -93,6 +93,12 @@ extern "C" {
 extern "C" {
 	PIXEON_API APIResult GetObjectName(Object object, char* outName, int bufferSize);
 	PIXEON_API APIResult SetObjectName(Object object, const char* name);
+	PIXEON_API APIResult SetObjectPosition(Object object, Float3 position);
+	PIXEON_API APIResult GetObjectPosition(Object object, Float3* outPosition);
+	PIXEON_API APIResult SetObjectRotation(Object object, Float3 rotation);
+	PIXEON_API APIResult GetObjectRotation(Object object, Float3* outRotation);
+	PIXEON_API APIResult SetObjectScale(Object object, Float3 scale);
+	PIXEON_API APIResult GetObjectScale(Object object, Float3* outScale);
 	PIXEON_API APIResult GetObjectTransform(Object object, transform* outTransform);
 	PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform);
 	PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent);

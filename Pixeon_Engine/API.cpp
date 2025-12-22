@@ -255,6 +255,94 @@ extern "C" {
 		objPtr->SetObjectName(std::string(name));
 		return PN_SUCCESS;
     }
+    PIXEON_API APIResult SetObjectPosition(Object object, Float3 position)
+    {
+		AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		objPtr->SetPosition(position.x, position.y, position.z);
+
+		std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
+
+        for (RigidBody* rb : components) {
+            if (rb)
+            {
+                rb->SyncPositionToBullet(ToXMFloat3(position));
+            }
+        }
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetObjectPosition(Object object, Float3* outPosition)
+    {
+        if (!outPosition) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		Transform transform = objPtr->GetTransform();
+		*outPosition = ToFloat3(transform.position);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetObjectRotation(Object object, Float3 rotation)
+    {
+		AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		objPtr->SetRotation(rotation.x, rotation.y, rotation.z);
+		
+		std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
+        for (RigidBody* rb : components) {
+            if (rb)
+            {
+                rb->SyncRotationToBullet(ToXMFloat3(rotation));
+            }
+		}
+    }
+    PIXEON_API APIResult GetObjectRotation(Object object, Float3* outRotation)
+    {
+        if (!outRotation) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		Transform transform = objPtr->GetTransform();
+		*outRotation = ToFloat3(transform.rotation);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetObjectScale(Object object, Float3 scale)
+    {
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		objPtr->SetScale(scale.x, scale.y, scale.z);
+
+		std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
+        for (RigidBody* rb : components) {
+            rb->SetTransformDirty(true);
+		}
+		return PN_SUCCESS;
+
+    }
+    PIXEON_API APIResult GetObjectScale(Object object, Float3* outScale)
+    {
+        if (!outScale) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractObject* objPtr = nullptr;
+        if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		Transform transform = objPtr->GetTransform();
+		*outScale = ToFloat3(transform.scale);
+		return PN_SUCCESS;
+    }
     PIXEON_API APIResult GetObjectTransform(Object object, transform* outTransform)
     {
         if (!outTransform) {
