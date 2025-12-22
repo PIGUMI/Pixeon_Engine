@@ -10,6 +10,7 @@
 #include "ImageRender.h"
 #include "ModelRender.h"
 #include "AnimationComponent.h"
+#include "RigidBody.h"
 
 #include "BoxCollision.h"
 #include <string>
@@ -267,6 +268,7 @@ extern "C" {
 		outTransform->position = ToFloat3(transform.position);
 		outTransform->rotation = ToFloat3(transform.rotation);
 		outTransform->scale = ToFloat3(transform.scale);
+
 		return PN_SUCCESS;
     }
     PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform)
@@ -281,6 +283,12 @@ extern "C" {
 		Transform transform;
 		transform.position = ToXMFloat3(inTransform->position);
 		objPtr->SetTransform(transform);
+
+        std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
+        for (RigidBody* rb : components) {
+            rb->SetTransformDirty(true);
+        }
+
 		return PN_SUCCESS;
     }
     PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent)
@@ -987,6 +995,158 @@ extern "C"{
 		animComp->SetLoop(loop);
 		return PN_SUCCESS;
     }
+
+	// RigidBody Component
+    PIXEON_API APIResult RigidBodyAddForce(Component rigidBodyComp, const Float3* inForce)
+    {
+        if (!inForce) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		rbComp->AddForce(ToXMFloat3(*inForce));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RigidBodyAddImpulse(Component rigidBodyComp, const Float3* inImpulse)
+    {
+        if (!inImpulse) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->AddImpulse(ToXMFloat3(*inImpulse));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RigidBodyGetVelocity(Component rigidBodyComp, Float3* outVelocity)
+    {
+        if (!outVelocity) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outVelocity = ToFloat3(rbComp->GetVelocity());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RigidBodySetVelocity(Component rigidBodyComp, const Float3* inVelocity)
+    {
+        if (!inVelocity) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		rbComp->SetVelocity(ToXMFloat3(*inVelocity));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RigidBodySetKinematic(Component rigidBodyComp, bool isKinematic)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		rbComp->SetKinematic(isKinematic);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RigidBodyGetKinematic(Component rigidBodyComp, bool* outIsKinematic)
+    {
+        if (!outIsKinematic) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outIsKinematic = rbComp->IsKinematic();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RigidBodySetMass(Component rigidBodyComp, float mass)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		rbComp->SetMass(mass);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RigidBodyGetMass(Component rigidBodyComp, float* outMass)
+    {
+        if (!outMass) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outMass = rbComp->GetMass();
+    }
+    PIXEON_API APIResult RigidBodySetUseGravity(Component rigidBodyComp, bool useGravity)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetGravityEnabled(useGravity);
+    }
+    PIXEON_API APIResult RigidBodyGetUseGravity(Component rigidBodyComp, bool* outUseGravity)
+    {
+        if (!outUseGravity) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+        if (!rbComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outUseGravity = rbComp->IsGravityEnabled();
+		return PN_SUCCESS;
+    }
+
 
 }
 

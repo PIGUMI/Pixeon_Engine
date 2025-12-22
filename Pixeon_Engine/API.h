@@ -151,6 +151,18 @@ extern "C" {
 	PIXEON_API APIResult SetAnimationClip(Component animationComp, int clipIndex);
 	PIXEON_API APIResult SetAnimationPlaybackSpeed(Component animationComp, float speed);
 	PIXEON_API APIResult SetAnimationLoop(Component animationComp, bool loop);
+
+	// RigidBody Component
+	PIXEON_API APIResult RigidBodyAddForce(Component rigidBodyComp, const Float3* inForce);
+	PIXEON_API APIResult RigidBodyAddImpulse(Component rigidBodyComp, const Float3* inImpulse);
+	PIXEON_API APIResult RigidBodyGetVelocity(Component rigidBodyComp, Float3* outVelocity);
+	PIXEON_API APIResult RigidBodySetVelocity(Component rigidBodyComp, const Float3* inVelocity);
+	PIXEON_API APIResult RigidBodySetKinematic(Component rigidBodyComp, bool isKinematic);
+	PIXEON_API APIResult RigidBodyGetKinematic(Component rigidBodyComp, bool* outIsKinematic);
+	PIXEON_API APIResult RigidBodySetMass(Component rigidBodyComp, float mass);
+	PIXEON_API APIResult RigidBodyGetMass(Component rigidBodyComp, float* outMass);
+	PIXEON_API APIResult RigidBodySetUseGravity(Component rigidBodyComp, bool useGravity);
+	PIXEON_API APIResult RigidBodyGetUseGravity(Component rigidBodyComp, bool* outUseGravity);
 };
 
 #endif// API.h
