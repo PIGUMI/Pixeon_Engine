@@ -137,6 +137,20 @@ extern "C" {
 	PIXEON_API APIResult GetImageRenderUVRect(Component imageRender, Float4* outUVRect);
 	PIXEON_API APIResult SetImageRenderUVRect(Component imageRender, const Float4* inUVRect);
 
+	// ModelRender Component
+	PIXEON_API APIResult GetModelColor(Component modelRender, Float4* outColor);
+	PIXEON_API APIResult SetModelColor(Component modelRender, const Float4* inColor);
+	PIXEON_API APIResult SetMaterialTexture(Component modelRender, int materialIndex, const char* texLogicalPath);
+
+	// Animation Component
+	PIXEON_API APIResult PlayAnimation(Component animationComp);
+	PIXEON_API APIResult PauseAnimation(Component animationComp);
+	PIXEON_API APIResult ResumeAnimation(Component animationComp);
+	PIXEON_API APIResult StopAnimation(Component animationComp);
+	PIXEON_API APIResult RestartAnimation(Component animationComp);
+	PIXEON_API APIResult SetAnimationClip(Component animationComp, int clipIndex);
+	PIXEON_API APIResult SetAnimationPlaybackSpeed(Component animationComp, float speed);
+	PIXEON_API APIResult SetAnimationLoop(Component animationComp, bool loop);
 };
 
 #endif// API.h

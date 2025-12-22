@@ -8,6 +8,9 @@
 #include "CameraComponent.h"
 #include "LightComponent.h"
 #include "ImageRender.h"
+#include "ModelRender.h"
+#include "AnimationComponent.h"
+
 #include "BoxCollision.h"
 #include <string>
 #include <cstring>
@@ -828,5 +831,162 @@ extern "C"{
 		imgRenderComp->SetUVRect(ToXMFloat4(*inUVRect));
 		return PN_SUCCESS;
     }
+
+	// Model Component
+    PIXEON_API APIResult GetModelColor(Component modelRender, Float4* outColor)
+    {
+        if (!outColor) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+        if (!modelRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outColor = ToFloat4(modelRenderComp->GetColor());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetModelColor(Component modelRender, const Float4* inColor)
+    {
+        if (!inColor) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+        if (!modelRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		modelRenderComp->SetColor(ToXMFloat4(*inColor));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetMaterialTexture(Component modelRender, int materialIndex, const char* texLogicalPath)
+    {
+        if (!texLogicalPath) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+        if (!modelRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		modelRenderComp->SetMaterialTexture(materialIndex, std::string(texLogicalPath));
+		return PN_SUCCESS;
+    }
+
+    // Animation Component
+    PIXEON_API APIResult PlayAnimation(Component animationComp)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		animComp->Play();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult PauseAnimation(Component animationComp)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		animComp->Pause();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult ResumeAnimation(Component animationComp)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		animComp->Resume();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult StopAnimation(Component animationComp)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		animComp->Stop();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult RestartAnimation(Component animationComp)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		animComp->Restart();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetAnimationClip(Component animationComp, int clipIndex)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		animComp->SetAnimationClip(clipIndex);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetAnimationPlaybackSpeed(Component animationComp, float speed)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		animComp->SetPlaybackSpeed(speed);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetAnimationLoop(Component animationComp, bool loop)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+        if (!animComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		animComp->SetLoop(loop);
+		return PN_SUCCESS;
+    }
+
 }
 
