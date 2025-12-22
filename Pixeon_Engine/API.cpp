@@ -9,6 +9,7 @@
 #include "ImageRender.h"
 #include "LightComponent.h"
 #include "ModelRender.h"
+#include "AnimationComponent.h"
 
 /* 基本API */
 extern "C" {
@@ -512,6 +513,53 @@ extern "C" {
 	if (modelComponent == nullptr || textureName == nullptr)return PN_ERROR_INVALID_PARAMETER;
 		ModelRenderComponent* targetComp = reinterpret_cast<ModelRenderComponent*>(modelComponent);
 		bool result = targetComp->SetMaterialTexture(materialIndex, textureName);
+		if (!result)return PN_ERROR_INVALID_PARAMETER;
+		return PN_SUCCESS;
+	}
+};
+
+/* アニメーションコンポーネントに関するAPI */
+extern "C" {
+	PIXEON_API APIResult AnimationComponent_Play(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Play();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Pause(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Pause();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Stop(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Stop();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Resume(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Resume();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_Restart(ComponentHandle animationComponent)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		targetComp->Restart();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult AnimationComponent_SetAnimationClip(ComponentHandle animationComponent, int clipIndex)
+	{
+		if (animationComponent == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		AnimationComponent* targetComp = reinterpret_cast<AnimationComponent*>(animationComponent);
+		bool result = targetComp->SetAnimationClip(clipIndex);
 		if (!result)return PN_ERROR_INVALID_PARAMETER;
 		return PN_SUCCESS;
 	}

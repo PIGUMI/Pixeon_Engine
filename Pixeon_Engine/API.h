@@ -142,6 +142,14 @@ extern"C"
 	PIXEON_API APIResult ModelComponent_SetModelName(ComponentHandle modelComponent, const char* modelName);
 	PIXEON_API APIResult ModelComponent_SetMaterialTexture(ComponentHandle modelComponent, int materialIndex, const char* textureName);
 	/*                */
+
+	/* AnimationComponent */
+	PIXEON_API APIResult AnimationComponent_Play(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Pause(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Stop(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Resume(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_Restart(ComponentHandle animationComponent);
+	PIXEON_API APIResult AnimationComponent_SetAnimationClip(ComponentHandle animationComponent, int clipIndex);
 }
 
 #endif// API.h

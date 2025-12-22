@@ -130,6 +130,7 @@ void MainFrame::Draw()
 {
 	if (_updateDraw) {
 		auto* dx11 = DirectX11::GetInstance();
+
 		ID3D11RenderTargetView* hdrRTV = dx11->GetHDRRTV();
 		ID3D11DepthStencilView* dsv = dx11->GetDefaultDSV()->GetView();
 
@@ -143,7 +144,7 @@ void MainFrame::Draw()
 		for (auto layerRT : _layerRenderTargets) {
 			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-			layerRT->Begin(DirectX11::GetInstance()->GetContext());
+			layerRT->Begin(dx11->GetContext());
 			switch (_softwareMode)
 			{
 			case SoftWareMode::ENGINE:
@@ -156,6 +157,14 @@ void MainFrame::Draw()
 				break;
 			}
 			layerRT->End();
+
+			dx11->GetContext()->OMSetRenderTargets(1, &hdrRTV, dsv);
+			ImageUtils::DrawSRV(
+				layerRT->GetShaderResourceView(),
+				0.0f, 0.0f,
+				(float)_engineConfig.screenWidth,
+				(float)_engineConfig.screenHeight
+			);
 			LayerIndex++;
 		}
 
