@@ -10,6 +10,8 @@
 #include "LightComponent.h"
 #include "ModelRender.h"
 #include "AnimationComponent.h"
+#include "RigidBody.h"
+#include "BoxCollision.h"
 
 /* Šî–{API */
 extern "C" {
@@ -564,3 +566,89 @@ extern "C" {
 		return PN_SUCCESS;
 	}
 };
+
+/* RigidBody‚ÉŠÖ‚·‚éAPI */
+extern"C"{
+	PIXEON_API APIResult RigidBody_AddForce(ComponentHandle rigidBody, Float3 force){
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 f = { force.x, force.y, force.z };
+		targetComp->AddForce(f);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_AddImpulse(ComponentHandle rigidBody, Float3 impulse)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 imp = { impulse.x, impulse.y, impulse.z };
+		targetComp->AddImpulse(imp);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_SetVelocity(ComponentHandle rigidBody, Float3 velocity)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 vel = { velocity.x, velocity.y, velocity.z };
+		targetComp->SetVelocity(vel);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetVelocity(ComponentHandle rigidBody, Float3* outVelocity)
+	{
+		if (rigidBody == nullptr || outVelocity == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		DirectX::XMFLOAT3 vel = targetComp->GetVelocity();
+		outVelocity->x = vel.x;
+		outVelocity->y = vel.y;
+		outVelocity->z = vel.z;
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_SetMass(ComponentHandle rigidBody, float mass)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		targetComp->SetMass(mass);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetMass(ComponentHandle rigidBody, float* outMass)
+	{
+		if (rigidBody == nullptr || outMass == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		*outMass = targetComp->GetMass();
+		return
+	}
+	PIXEON_API APIResult RigidBody_SetIsKinematic(ComponentHandle rigidBody, bool isKinematic)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		targetComp->SetKinematic(isKinematic);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetIsKinematic(ComponentHandle rigidBody, bool* outIsKinematic)
+	{
+		if (rigidBody == nullptr || outIsKinematic == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		*outIsKinematic = targetComp->IsKinematic();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_SetGravityEnabled(ComponentHandle rigidBody, bool enabled)
+	{
+		if (rigidBody == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		targetComp->SetGravityEnabled(enabled);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult RigidBody_GetGravityEnabled(ComponentHandle rigidBody, bool* outEnabled)
+	{
+		if (rigidBody == nullptr || outEnabled == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		RigidBody* targetComp = reinterpret_cast<RigidBody*>(rigidBody);
+		*outEnabled = targetComp->IsGravityEnabled();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult BoxCollision_SetOnCollisionEnterCallback(ComponentHandle boxCollision, BoxCollisionEnterCallback callback)
+	{
+		if (boxCollision == nullptr || callback == nullptr)return PN_ERROR_INVALID_PARAMETER;
+		BoxCollision* targetComp = reinterpret_cast<BoxCollision*>(boxCollision);
+		targetComp->SetOnCollisionEnter(callback);
+		return PN_SUCCESS;
+	}
+}
