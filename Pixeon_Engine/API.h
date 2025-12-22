@@ -112,6 +112,31 @@ extern "C" {
 	PIXEON_API APIResult SetChangeCameraCalculation(Component camera, bool isChange);
 	PIXEON_API APIResult GetCameraNumber(Component camera, int* outCameraNumber);
 	PIXEON_API APIResult GetCmaeraUpVector(Component camera, Float3* outUp);
+
+	// light Component
+	PIXEON_API APIResult GetLightType(Component light, int* outType);
+	PIXEON_API APIResult SetLightType(Component light, int inType);
+	PIXEON_API APIResult GetLightColor(Component light, Float3* outColor);
+	PIXEON_API APIResult SetLightColor(Component light, const Float3* inColor);
+	PIXEON_API APIResult GetLightIntensity(Component light, float* outIntensity);
+	PIXEON_API APIResult SetLightIntensity(Component light, float inIntensity);
+	PIXEON_API APIResult GetLightRange(Component light, float* outRange);
+	PIXEON_API APIResult SetLightRange(Component light, float inRange);
+	PIXEON_API APIResult GetLightSpotInnerOuter(Component light, float* outInnerDeg, float* outOuterDeg);
+	PIXEON_API APIResult SetLightSpotInnerOuter(Component light, float inInnerDeg, float inOuterDeg);
+	PIXEON_API APIResult GetLightEnabled(Component light, bool* outEnabled);
+	PIXEON_API APIResult SetLightEnabled(Component light, bool inEnabled);
+
+	// ImageRender Component
+	PIXEON_API APIResult GetImageRenderTextureName(Component imageRender, char* outName, int bufferSize);
+	PIXEON_API APIResult SetImageRenderTextureName(Component imageRender, const char* name);
+	PIXEON_API APIResult GetImageTransform(Component imageRender, transform* outTransform);
+	PIXEON_API APIResult SetImageTransform(Component imageRender, const transform* inTransform);
+	PIXEON_API APIResult GetImageRenderColor(Component imageRender, Float4* outColor);
+	PIXEON_API APIResult SetImageRenderColor(Component imageRender, const Float4* inColor);
+	PIXEON_API APIResult GetImageRenderUVRect(Component imageRender, Float4* outUVRect);
+	PIXEON_API APIResult SetImageRenderUVRect(Component imageRender, const Float4* inUVRect);
+
 };
 
 #endif// API.h

@@ -6,6 +6,8 @@
 #include "Object.h"
 
 #include "CameraComponent.h"
+#include "LightComponent.h"
+#include "ImageRender.h"
 #include "BoxCollision.h"
 #include <string>
 #include <cstring>
@@ -63,6 +65,14 @@ namespace {
         buffer[bufferSize - 1] = '\0';
         return PN_SUCCESS;
     }
+
+    Float4 ToFloat4(const DirectX::XMFLOAT4& xmfloat) {
+        return CreateFloat4(xmfloat.x, xmfloat.y, xmfloat.z, xmfloat.w);
+	}
+
+    DirectX::XMFLOAT4 ToXMFloat4(const Float4& float4) {
+        return DirectX::XMFLOAT4(float4.x, float4.y, float4.z, float4.w);
+	}
 
     // Convert DirectX::XMFLOAT3 to Float3
     Float3 ToFloat3(const DirectX::XMFLOAT3& xmfloat) {
@@ -460,6 +470,362 @@ extern "C"{
             return PN_ERROR_INVALID_HANDLE;
         }
 		*outUp = ToFloat3(cameraComp->GetUpVector());
+		return PN_SUCCESS;
+    }
+
+
+	// Light Component
+    PIXEON_API APIResult GetLightType(Component light, int* outType)
+    {
+        if (!outType) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outType = static_cast<int>(lightComp->GetType());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetLightType(Component light, int inType)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		lightComp->SetType(static_cast<LightComponent::LightType>(inType));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetLightColor(Component light, Float3* outColor)
+    {
+        if (!outColor) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outColor = ToFloat3(lightComp->GetColor());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetLightColor(Component light, const Float3* inColor)
+    {
+        if (!inColor) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		lightComp->SetColor(ToXMFloat3(*inColor));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetLightIntensity(Component light, float* outIntensity)
+    {
+        if (!outIntensity) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outIntensity = lightComp->GetIntensity();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetLightIntensity(Component light, float inIntensity)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		lightComp->SetIntensity(inIntensity);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetLightRange(Component light, float* outRange)
+    {
+        if (!outRange) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outRange = lightComp->GetRange();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetLightRange(Component light, float inRange)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		lightComp->SetRange(inRange);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetLightSpotInnerOuter(Component light, float* outInnerDeg, float* outOuterDeg)
+    {
+        if (!outInnerDeg || !outOuterDeg) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outInnerDeg = lightComp->GetSpotInner();
+		*outOuterDeg = lightComp->GetSpotOuter();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetLightSpotInnerOuter(Component light, float inInnerDeg, float inOuterDeg)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		lightComp->SetSpotInner(inInnerDeg);
+		lightComp->SetSpotOuter(inOuterDeg);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetLightEnabled(Component light, bool* outEnabled)
+    {
+        if (!outEnabled) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outEnabled = lightComp->IsEnabled();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetLightEnabled(Component light, bool inEnabled)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(light, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        LightComponent* lightComp = dynamic_cast<LightComponent*>(compPtr);
+        if (!lightComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		lightComp->SetEnabled(inEnabled);
+		return PN_SUCCESS;
+    }
+
+	// ImageRender Component
+    PIXEON_API APIResult GetImageRenderTextureName(Component imageRender, char* outName, int bufferSize)
+    {
+        if (!outName || bufferSize <= 0) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        std::string textureName = imgRenderComp->GetTextureName();
+		int outLength = 0;
+		return SafeStringCopy(textureName, outName, bufferSize, &outLength);
+    }
+    PIXEON_API APIResult SetImageRenderTextureName(Component imageRender, const char* name)
+    {
+        if (!name) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		imgRenderComp->SetTextureName(std::string(name));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetImageTransform(Component imageRender, transform* outTransform)
+    {
+        if (!outTransform) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+        switch (imgRenderComp->GetMode())
+        {
+		case ImageRender::PlacementMode::Screen2D:
+            outTransform->position = ToFloat3({ imgRenderComp->GetOffset2D().x,imgRenderComp->GetOffset2D().y,0.0f });
+			outTransform->rotation = CreateFloat3(0.0f, 0.0f, 0.0f);
+			outTransform->scale = ToFloat3({ imgRenderComp->GetSize2D().x,imgRenderComp->GetSize2D().y,1.0f });
+            break;
+		case ImageRender::PlacementMode::Billboard:
+			outTransform->position = ToFloat3(imgRenderComp->GetOffset3D());
+			outTransform->rotation = CreateFloat3(0.0f, 0.0f, 0.0f);
+			outTransform->scale = ToFloat3({ imgRenderComp->GetSizeWorld().x,imgRenderComp->GetSizeWorld().y,1.0f});
+			break;
+		case ImageRender::PlacementMode::World3D:
+			outTransform->position = ToFloat3(imgRenderComp->GetOffset3D());
+			outTransform->rotation = CreateFloat3(0.0f, 0.0f, 0.0f);
+			outTransform->scale = ToFloat3({ imgRenderComp->GetSizeWorld().x,imgRenderComp->GetSizeWorld().y,1.0f });
+            break;
+		case ImageRender::PlacementMode::UI:
+			outTransform->position = ToFloat3({ imgRenderComp->GetOffset2D().x,imgRenderComp->GetOffset2D().y,0.0f });
+			outTransform->rotation = CreateFloat3(0.0f, 0.0f, 0.0f);
+            outTransform->scale = ToFloat3({ imgRenderComp->GetSizeWorld().x,imgRenderComp->GetSizeWorld().y,1.0f });
+			break;
+        default:
+            break;
+        }
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetImageTransform(Component imageRender, const transform* inTransform)
+    {
+        if (!inTransform) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        switch (imgRenderComp->GetMode())
+        {
+        case ImageRender::PlacementMode::Screen2D:
+            imgRenderComp->SetOffset2D({ inTransform->position.x, inTransform->position.y });
+            imgRenderComp->SetSize2D({ inTransform->scale.x, inTransform->scale.y });
+            break;
+        case ImageRender::PlacementMode::Billboard:
+            imgRenderComp->SetOffset3D({ inTransform->position.x, inTransform->position.y, inTransform->position.z });
+            imgRenderComp->SetSizeWorld({ inTransform->scale.x, inTransform->scale.y });
+            break;
+        case ImageRender::PlacementMode::World3D:
+            imgRenderComp->SetOffset3D({ inTransform->position.x, inTransform->position.y, inTransform->position.z });
+            imgRenderComp->SetSizeWorld({ inTransform->scale.x, inTransform->scale.y });
+            break;
+        case ImageRender::PlacementMode::UI:
+            imgRenderComp->SetOffset2D({ inTransform->position.x, inTransform->position.y });
+            imgRenderComp->SetSizeWorld({ inTransform->scale.x, inTransform->scale.y });
+            break;
+        default:
+            break;
+        }
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult GetImageRenderColor(Component imageRender, Float4* outColor)
+    {
+        if (!outColor) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outColor = ToFloat4(imgRenderComp->GetColor());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetImageRenderColor(Component imageRender, const Float4* inColor)
+    {
+        if (!inColor) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		imgRenderComp->SetColor(ToXMFloat4(*inColor));
+    }
+    PIXEON_API APIResult GetImageRenderUVRect(Component imageRender, Float4* outUVRect)
+    {
+        if (!outUVRect) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outUVRect = ToFloat4(imgRenderComp->GetUVRect());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult SetImageRenderUVRect(Component imageRender, const Float4* inUVRect)
+    {
+        if (!inUVRect) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(imageRender, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        ImageRender* imgRenderComp = dynamic_cast<ImageRender*>(compPtr);
+        if (!imgRenderComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		imgRenderComp->SetUVRect(ToXMFloat4(*inUVRect));
 		return PN_SUCCESS;
     }
 }
