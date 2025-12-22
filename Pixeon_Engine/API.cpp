@@ -11,8 +11,8 @@
 #include "ModelRender.h"
 #include "AnimationComponent.h"
 #include "RigidBody.h"
-
 #include "BoxCollision.h"
+
 #include <string>
 #include <cstring>
 #include <DirectXMath.h>
@@ -571,7 +571,6 @@ extern "C"{
 		*outUp = ToFloat3(cameraComp->GetUpVector());
 		return PN_SUCCESS;
     }
-
 
 	// Light Component
     PIXEON_API APIResult GetLightType(Component light, int* outType)
@@ -1235,6 +1234,135 @@ extern "C"{
 		return PN_SUCCESS;
     }
 
+    // BoxCollision Component
+    PIXEON_API APIResult BoxCollisionSetSize(Component component, Float3 size)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+        if (!boxComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		boxComp->SetSize(ToXMFloat3(size));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionGetSize(Component component, Float3* outSize)
+    {
+        if (!outSize) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+        if (!boxComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outSize = ToFloat3(boxComp->GetSize());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionSetCenter(Component component, Float3 center)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+        if (!boxComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		boxComp->SetCenter(ToXMFloat3(center));
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionGetCenter(Component component, Float3* outCenter)
+    {
+        if (!outCenter) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+        if (!boxComp) {
+            return PN_ERROR_INVALID_HANDLE;
+		}
+		*outCenter = ToFloat3(boxComp->GetCenter());
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionSetIsTrigger(Component component, bool isTrigger)
+    {
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+        if (!boxComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		boxComp->SetTrigger(isTrigger);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionGetIsTrigger(Component component, bool* outIsTrigger)
+    {
+        if (!outIsTrigger) {
+            return PN_ERROR_INVALID_PARAMETER;
+        }
+        AbstractComponent* compPtr = nullptr;
+        if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+        BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+        if (!boxComp) {
+            return PN_ERROR_INVALID_HANDLE;
+        }
+		*outIsTrigger = boxComp->IsTrigger();
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback)
+    {
+        BoxCollision* box;
+        if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
+        box->SetOnCollisionEnter([component, callback](const CollisionInfo& info)
+            {
+                if (callback) {
+                    APICollisionInfo apiInfo = ToAPICollisionInfo(info);
+                    callback(component, &apiInfo);
+                }
+            }
+        );
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback)
+    {
+        BoxCollision* box;
+        if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
+        box->SetOnCollisionStay([component, callback](const CollisionInfo& info)
+            {
+                if (callback) {
+                    APICollisionInfo apiInfo = ToAPICollisionInfo(info);
+                    callback(component, &apiInfo);
+                }
+            }
+		);
+		return PN_SUCCESS;
+    }
+    PIXEON_API APIResult BoxCollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback)
+    {
+        BoxCollision* box;
+        if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
+        box->SetOnCollisionExit([component, callback](const CollisionInfo& info)
+            {
+                if (callback) {
+                    APICollisionInfo apiInfo = ToAPICollisionInfo(info);
+                    callback(component, &apiInfo);
+                }
+            }
+		);
+		return PN_SUCCESS;
+    }
 
-}
-
+};

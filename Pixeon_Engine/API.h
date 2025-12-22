@@ -169,6 +169,18 @@ extern "C" {
 	PIXEON_API APIResult RigidBodyGetMass(Component rigidBodyComp, float* outMass);
 	PIXEON_API APIResult RigidBodySetUseGravity(Component rigidBodyComp, bool useGravity);
 	PIXEON_API APIResult RigidBodyGetUseGravity(Component rigidBodyComp, bool* outUseGravity);
+
+	// BoxCollision Component
+	PIXEON_API APIResult BoxCollisionSetSize(Component component, Float3 size);
+	PIXEON_API APIResult BoxCollisionGetSize(Component component, Float3* outSize);
+	PIXEON_API APIResult BoxCollisionSetCenter(Component component, Float3 center);
+	PIXEON_API APIResult BoxCollisionGetCenter(Component component, Float3* outCenter);
+	PIXEON_API APIResult BoxCollisionSetIsTrigger(Component component, bool isTrigger);
+	PIXEON_API APIResult BoxCollisionGetIsTrigger(Component component, bool* outIsTrigger);
+
+	PIXEON_API APIResult BoxCollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback);
+	PIXEON_API APIResult BoxCollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback);
+	PIXEON_API APIResult BoxCollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback);
 };
 
 #endif// API.h
