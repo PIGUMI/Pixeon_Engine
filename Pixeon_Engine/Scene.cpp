@@ -198,7 +198,7 @@ void Scene::PlayUpdate() {
 				CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
 				cam->SetCameraNumber(i);
 				i++;
-				comp->EditUpdate();
+				comp->InGameUpdate();
 			}
 		}
 	}
@@ -428,6 +428,24 @@ void Scene::LoadToFile() {
 			}
 		}
 		if (_MainCamera) break;
+	}
+}
+
+void Scene::SetMainCameraNumber(int num)
+{
+	_MainCameraNumber = num;
+	for (auto& obj : _objects) {
+		if (!obj) continue;
+		for (auto& comp : obj->GetComponents()) {
+			if (!comp) continue;
+			if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
+				CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
+				if (cam->GetCameraNumber() == _MainCameraNumber) {
+					_MainCamera = cam;
+					return;
+				}
+			}
+		}
 	}
 }
 

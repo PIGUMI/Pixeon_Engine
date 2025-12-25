@@ -57,6 +57,18 @@ public:
 	}
 	// 全コンポーネントの取得
 	std::vector<AbstractComponent*> GetComponents() { return _components; }
+
+	template<typename T = AbstractComponent>
+	std::vector<T*> GetComponentsByType() {
+		std::vector<T*> result;
+		for (auto comp : _components) {
+			T* castedComp = dynamic_cast<T*>(comp);
+			if (castedComp) {
+				result.push_back(castedComp);
+			}
+		}
+		return result;
+	}
 	// コンポーネントの削除
 	void RemoveComponent(AbstractComponent* comp);
 	// コンポーネントの追加

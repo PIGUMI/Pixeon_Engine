@@ -60,6 +60,7 @@ public:
 	void SetOffset2D(const DirectX::XMFLOAT2& offset) { m_offset2D = offset; }
 	DirectX::XMFLOAT3 GetOffset3D() const { return m_offset3D; }
 	void SetOffset3D(const DirectX::XMFLOAT3& offset) { m_offset3D = offset; }
+	PlacementMode GetMode() const { return m_mode; }
 
 private:
 	struct Vertex {

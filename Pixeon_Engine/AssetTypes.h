@@ -15,20 +15,21 @@ struct TextureResource {
 	size_t   gpuBytes = 0;
 };
 
+struct MaterialShared {
+	DirectX::XMFLOAT4 baseColor{ 1,1,1,1 };
+	std::string baseColorTex;
+	bool isEmbedded = false;  // 追加: 埋め込みテクスチャかどうか
+};
+
+// SubMesh構造体に頂点カラーフラグを追加
 struct SubMesh {
 	uint32_t indexOffset = 0;
 	uint32_t indexCount = 0;
-	uint32_t materialIndex = 0;
-	bool     skinned = false;
-	bool     hasUV = false;
-	bool     uvAllZero = false;
-};
-
-struct MaterialShared {
-	std::string       baseColorTex;
-	DirectX::XMFLOAT4 baseColor{ 1,1,1,1 };
-	float metallic = 0.0f;
-	float roughness = 0.8f;
+	size_t materialIndex = 0;
+	bool skinned = false;
+	bool hasUV = true;
+	bool uvAllZero = false;
+	bool hasVertexColors = false;  // 追加
 };
 
 // ------------------------------------------------------------
@@ -93,6 +94,7 @@ struct ModelVertex {
 	float normal[3];
 	float tangent[4];
 	float uv[2];
+	float color[4];  // 追加:  頂点カラー
 	uint32_t boneIndices[4];
 	float boneWeights[4];
 };

@@ -31,10 +31,10 @@ public:
 	void LoadFromFile(std::istream& in) override;
 
 	void SetSize(const DirectX::XMFLOAT3& size);
-	DirectX::XMFLOAT3 GetSize() const;
+	DirectX::XMFLOAT3 GetSize() { return f3Size_; }
 
 	void SetCenter(const DirectX::XMFLOAT3& center);
-	DirectX::XMFLOAT3 GetCenter() const;
+	DirectX::XMFLOAT3 GetCenter() { return f3Center_; }
 
 	void SetTrigger(bool isTrigger);
 	bool IsTrigger() const { return bTrigger_; }

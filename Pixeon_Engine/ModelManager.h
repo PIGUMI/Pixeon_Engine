@@ -7,6 +7,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <wrl/client.h>
+#include <d3d11.h>
 
 class ModelManager {
 public:
@@ -16,6 +18,10 @@ public:
 	void UnInit();
 	void GarbageCollect();
 	void DrawDebugGUI();
+
+	// 埋め込みテクスチャ取得
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetEmbeddedTexture(
+		const std::string& modelName, const std::string& texturePath);
 
 private:
 	ModelManager() = default;
@@ -45,6 +51,10 @@ private:
 		std::map<std::string, int>& nodeNameToIndex,
 		int parentIndex);
 
+	void ProcessEmbeddedTextures(const aiScene* scene,
+		std::shared_ptr<ModelSharedResource> shared,
+		const std::string& modelName);
+
 	std::string ResolveTexturePath(const std::string& modelLogical,
 		const std::string& rawPath);
 
@@ -54,6 +64,7 @@ private:
 		size_t gpuBytes = 0;
 	};
 	std::unordered_map<std::string, Entry> m_cache;
+	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_embeddedTextures;
 	uint64_t m_frame = 0;
 	std::mutex m_mtx;
 	static ModelManager* s_instance;

@@ -115,14 +115,14 @@ bool TextureManager::IsPinned(const std::string& name) {
 }
 
 std::shared_ptr<TextureResource> TextureManager::LoadInternal(const std::string& logicalName) {
-	// (1) Raw  ǂݍ   
+	// (1) Raw  ǂݍ
 	std::vector<uint8_t> data;
 	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
 		SetFail(logicalName, "RawLoadFailed(size=0 or not found)");
 		return nullptr;
 	}
 
-	// (2)  g   q    
+	// (2)  g   q
 	std::string ext;
 	if (auto p = logicalName.find_last_of('.'); p != std::string::npos) {
 		ext = logicalName.substr(p + 1);

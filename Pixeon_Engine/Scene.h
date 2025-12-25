@@ -40,7 +40,7 @@ public: // Setter And Getter
 	CameraComponent* GetMainCamera() { return _MainCamera; }
 	void SetMainCamera(CameraComponent* camera) { _MainCamera = camera; }
 	int GetMainCameraNumber() { return _MainCameraNumber; }
-	void SetMainCameraNumber(int num) { _MainCameraNumber = num; }
+	void SetMainCameraNumber(int num);
 
 	AbstractObject* FindObjectByName(const char* name);
 

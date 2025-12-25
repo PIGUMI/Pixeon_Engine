@@ -42,10 +42,26 @@ void ModelRenderComponent::RefreshMaterialCache() {
 	for (auto& m : m_model->materials) {
 		MaterialRuntime rt;
 		rt.texName = m.baseColorTex;
+		rt.color = m.baseColor; // マテリアルカラーを保存
+
 		if (!m.baseColorTex.empty()) {
-			rt.tex = TextureManager::Instance()->LoadOrGet(m.baseColorTex);
+			// 埋め込みテクスチャかチェック
+			if (m.isEmbedded && m.baseColorTex[0] == '*') {
+				auto srv = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, m.baseColorTex);
+				if (srv) {
+					// 埋め込みテクスチャ用の一時的なTextureResourceを作成
+					auto texRes = std::make_shared<TextureResource>();
+					texRes->srv = srv;
+					texRes->width = 0; // 埋め込みの場合サイズ不明
+					texRes->height = 0;
+					rt.tex = texRes;
+				}
+			}
+			else {
+				// 外部ファイルとして読み込み
+				rt.tex = TextureManager::Instance()->LoadOrGet(m.baseColorTex);
+			}
 		}
-		rt.color = m.baseColor;
 		m_materials.push_back(rt);
 	}
 }
@@ -291,14 +307,7 @@ void ModelRenderComponent::Draw(int Layer) {
 	XMMATRIX proj = cam->GetProjection();
 	XMMATRIX world = BuildWorldMatrix();
 
-	CBData cbd;
-	cbd.World = XMMatrixTranspose(world);
-	cbd.View = XMMatrixTranspose(view);
-	cbd.Proj = XMMatrixTranspose(proj);
-	cbd.BaseColor = m_color;
-
 	auto ctx = DirectX11::GetInstance()->GetContext();
-	ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
 
 	UINT stride = sizeof(ModelVertex);
 	UINT offset = 0;
@@ -311,9 +320,7 @@ void ModelRenderComponent::Draw(int Layer) {
 
 	ctx->VSSetShader(m_vs.Get(), nullptr, 0);
 	ctx->PSSetShader(m_ps.Get(), nullptr, 0);
-	ID3D11Buffer* cbs[] = { m_cb.Get() };
-	ctx->VSSetConstantBuffers(0, 1, cbs);
-	ctx->PSSetConstantBuffers(0, 1, cbs);
+
 	ID3D11SamplerState* smp = s_linearSmp.Get();
 	ctx->PSSetSamplers(0, 1, &smp);
 
@@ -328,6 +335,7 @@ void ModelRenderComponent::Draw(int Layer) {
 		size_t matIndex = sm.materialIndex;
 
 		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
+		DirectX::XMFLOAT4 materialColor = m_color;
 		bool usedWhite = true;
 		bool usedMagenta = false;
 		MaterialRuntime* matPtr = nullptr;
@@ -335,14 +343,22 @@ void ModelRenderComponent::Draw(int Layer) {
 		if (matIndex < m_materials.size()) {
 			matPtr = &m_materials[matIndex];
 			auto& mat = *matPtr;
-			if (!mat.tex && !mat.texName.empty()) {
-				mat.tex = TextureManager::Instance()->LoadOrGet(mat.texName);
-			}
+
+			materialColor.x *= mat.color.x;
+			materialColor.y *= mat.color.y;
+			materialColor.z *= mat.color.z;
+			materialColor.w *= mat.color.w;
+
 			if (mat.tex && mat.tex->srv) {
 				srv = mat.tex->srv.Get();
-				usedWhite = (srv == s_whiteTexSRV.Get());
+				usedWhite = false;
 			}
-			else {
+			else if (mat.color.x != 1.0f || mat.color.y != 1.0f ||
+				mat.color.z != 1.0f || mat.color.w != 1.0f) {
+				srv = s_whiteTexSRV.Get();
+				usedWhite = false;
+			}
+			else if (!mat.texName.empty()) {
 				srv = s_magentaTexSRV.Get();
 				usedMagenta = true;
 				usedWhite = false;
@@ -353,6 +369,17 @@ void ModelRenderComponent::Draw(int Layer) {
 			usedMagenta = true;
 			usedWhite = false;
 		}
+
+		CBData cbd;
+		cbd.World = XMMatrixTranspose(world);
+		cbd.View = XMMatrixTranspose(view);
+		cbd.Proj = XMMatrixTranspose(proj);
+		cbd.BaseColor = materialColor;
+
+		ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
+		ID3D11Buffer* cbs[] = { m_cb.Get() };
+		ctx->VSSetConstantBuffers(0, 1, cbs);
+		ctx->PSSetConstantBuffers(0, 1, cbs);
 
 		ctx->PSSetShaderResources(0, 1, &srv);
 		ctx->DrawIndexed(sm.indexCount, sm.indexOffset, 0);

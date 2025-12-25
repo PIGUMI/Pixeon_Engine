@@ -75,6 +75,9 @@
     <Filter Include="ソース ファイル\1_MainFrame\Other">
       <UniqueIdentifier>{b2571b3c-9044-479a-a41e-ab69bf033c32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\API">
+      <UniqueIdentifier>{fcd8345f-cb8a-4536-bc09-eaa90da3203b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -152,9 +155,6 @@
     <ClCompile Include="IScript.cpp">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClCompile>
-    <ClCompile Include="API.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClCompile>
@@ -229,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="ImageUtils.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+    </ClCompile>
+    <ClCompile Include="API.cpp">
+      <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -325,9 +328,6 @@
     <ClInclude Include="IScript.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
-    <ClInclude Include="API.h">
-      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClInclude>
     <ClInclude Include="BoneNodeMapping.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
@@ -406,6 +406,9 @@
     <ClInclude Include="ImageUtils.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
+    <ClInclude Include="API.h">
+      <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="今後の修正.txt">
@@ -414,5 +417,8 @@
     <Text Include="命名規則.txt">
       <Filter>ソース ファイル\リソース ファイル</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

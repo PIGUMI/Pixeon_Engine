@@ -5,7 +5,7 @@
 #include "System.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "assimp/postprocess.h"
 #include <Windows.h>
 #include "IMGUI/imgui.h"
 #include <filesystem>
@@ -61,6 +61,7 @@ void ModelManager::DeleteInstance() {
 void ModelManager::UnInit() {
 	std::lock_guard<std::mutex> lk(m_mtx);
 	m_cache.clear();
+	m_embeddedTextures.clear();
 	m_frame = 0;
 }
 
@@ -105,6 +106,9 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 
 	auto shared = std::make_shared<ModelSharedResource>();
 	shared->source = logicalName;
+
+	// 埋め込みテクスチャの処理
+	ProcessEmbeddedTextures(scene, shared, logicalName);
 
 	std::vector<ModelVertex> vertices;
 	std::vector<uint32_t> indices;
@@ -155,6 +159,97 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 	return shared;
 }
 
+void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
+	std::shared_ptr<ModelSharedResource> shared,
+	const std::string& modelName)
+{
+	if (!scene->HasTextures()) return;
+
+	auto device = DirectX11::GetInstance()->GetDevice();
+	if (!device) return;
+
+	for (unsigned int i = 0; i < scene->mNumTextures; ++i) {
+		aiTexture* tex = scene->mTextures[i];
+		std::string texKey = modelName + ":: *" + std::to_string(i);
+
+		// 既に処理済みならスキップ
+		if (m_embeddedTextures.find(texKey) != m_embeddedTextures.end()) {
+			continue;
+		}
+
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+		if (tex->mHeight == 0) {
+			// 圧縮フォーマット (PNG, JPGなど)
+			D3D11_SUBRESOURCE_DATA initData{};
+			initData.pSysMem = tex->pcData;
+			initData.SysMemPitch = tex->mWidth;
+
+			// DirectXTexやWICを使って読み込むのが理想だが、
+			// ここでは簡易的にRAWデータとして扱う
+			// 実際のプロジェクトではDirectXTex:: CreateTextureFromMemoryなどを使用推奨
+
+#ifdef _DEBUG
+			OutputDebugStringA(("[ModelManager] Embedded compressed texture detected:  " + texKey +
+				" format=" + std::string(tex->achFormatHint) + "\n").c_str());
+#endif
+			// TODO: DirectXTexを使った実装
+			// 現状はスキップ
+			continue;
+		}
+		else {
+			// 非圧縮RGBA
+			D3D11_TEXTURE2D_DESC desc{};
+			desc.Width = tex->mWidth;
+			desc.Height = tex->mHeight;
+			desc.MipLevels = 1;
+			desc.ArraySize = 1;
+			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			desc.SampleDesc.Count = 1;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+			std::vector<uint8_t> rgba(tex->mWidth * tex->mHeight * 4);
+			for (unsigned int p = 0; p < tex->mWidth * tex->mHeight; ++p) {
+				rgba[p * 4 + 0] = tex->pcData[p].r;
+				rgba[p * 4 + 1] = tex->pcData[p].g;
+				rgba[p * 4 + 2] = tex->pcData[p].b;
+				rgba[p * 4 + 3] = tex->pcData[p].a;
+			}
+
+			D3D11_SUBRESOURCE_DATA initData{};
+			initData.pSysMem = rgba.data();
+			initData.SysMemPitch = tex->mWidth * 4;
+
+			Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+			if (SUCCEEDED(device->CreateTexture2D(&desc, &initData, texture.GetAddressOf()))) {
+				if (SUCCEEDED(device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf()))) {
+					m_embeddedTextures[texKey] = srv;
+#ifdef _DEBUG
+					OutputDebugStringA(("[ModelManager] Embedded texture loaded: " + texKey + "\n").c_str());
+#endif
+				}
+			}
+		}
+	}
+}
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelManager::GetEmbeddedTexture(
+	const std::string& modelName, const std::string& texturePath)
+{
+	// テクスチャパスが "*数字" 形式なら埋め込みテクスチャ
+	if (texturePath.empty() || texturePath[0] != '*') {
+		return nullptr;
+	}
+
+	std::string key = modelName + "::" + texturePath;
+	auto it = m_embeddedTextures.find(key);
+	if (it != m_embeddedTextures.end()) {
+		return it->second;
+	}
+	return nullptr;
+}
+
 void ModelManager::ProcessNode(aiNode* node, const aiScene* scene,
 	std::vector<ModelVertex>& vertices,
 	std::vector<uint32_t>& indices,
@@ -176,6 +271,8 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 	sm.indexOffset = (uint32_t)indices.size();
 	sm.materialIndex = mesh->mMaterialIndex;
 	sm.skinned = mesh->HasBones();
+	sm.hasVertexColors = mesh->HasVertexColors(0); // 頂点カラーの有無
+
 	if (sm.skinned) {
 		shared->hasSkin = true;
 	}
@@ -199,9 +296,7 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 				boneMap[bname] = boneIndex;
 				Bone newBone;
 				newBone.name = bname;
-				// InverseBindPose 正しい行(row)順変換
 				newBone.offset = AssimpToXM_RowMajor(ab->mOffsetMatrix);
-				// 必要なら座標スケール / 反転処理ここで (現状不要)
 				newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
 				newBone.parentIndex = -1;
 				newBone.nodeIndex = -1;
@@ -224,21 +319,36 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 		mv.position[0] = mesh->mVertices[v].x;
 		mv.position[1] = mesh->mVertices[v].y;
 		mv.position[2] = mesh->mVertices[v].z;
+
 		if (mesh->HasNormals()) {
 			mv.normal[0] = mesh->mNormals[v].x;
 			mv.normal[1] = mesh->mNormals[v].y;
 			mv.normal[2] = mesh->mNormals[v].z;
 		}
+
 		if (mesh->mTangents) {
 			mv.tangent[0] = mesh->mTangents[v].x;
 			mv.tangent[1] = mesh->mTangents[v].y;
 			mv.tangent[2] = mesh->mTangents[v].z;
 			mv.tangent[3] = 1.0f;
 		}
+
 		if (mesh->mTextureCoords[0]) {
 			mv.uv[0] = mesh->mTextureCoords[0][v].x;
 			mv.uv[1] = mesh->mTextureCoords[0][v].y;
 		}
+
+		// 頂点カラーの取得
+		if (mesh->HasVertexColors(0)) {
+			mv.color[0] = mesh->mColors[0][v].r;
+			mv.color[1] = mesh->mColors[0][v].g;
+			mv.color[2] = mesh->mColors[0][v].b;
+			mv.color[3] = mesh->mColors[0][v].a;
+		}
+		else {
+			mv.color[0] = mv.color[1] = mv.color[2] = mv.color[3] = 1.0f;
+		}
+
 		for (int k = 0; k < 4; ++k) {
 			mv.boneIndices[k] = 0;
 			mv.boneWeights[k] = 0.0f;
@@ -289,21 +399,60 @@ void ModelManager::ProcessMaterials(const aiScene* scene,
 	for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
 		aiMaterial* mat = scene->mMaterials[i];
 		MaterialShared ms;
-		aiColor4D col;
-		if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, col))
-			ms.baseColor = { col.r,col.g,col.b,col.a };
+
+		// ディフューズカラー
+		aiColor4D col(1.0f, 1.0f, 1.0f, 1.0f);
+		if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, col)) {
+			ms.baseColor = { col.r, col.g, col.b, col.a };
+		}
+
+		// アンビエントカラー (フォールバック)
+		aiColor4D ambient;
+		if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_AMBIENT, ambient)) {
+			// ディフューズが白の場合はアンビエントを使用
+			if (ms.baseColor.x == 1.0f && ms.baseColor.y == 1.0f &&
+				ms.baseColor.z == 1.0f && ms.baseColor.w == 1.0f) {
+				if (ambient.r != 1.0f || ambient.g != 1.0f || ambient.b != 1.0f) {
+					ms.baseColor = { ambient.r, ambient.g, ambient.b, ambient.a };
+				}
+			}
+		}
+
+		// テクスチャ
 		aiString texPath;
 		if (AI_SUCCESS == mat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath)) {
-			ms.baseColorTex = ResolveTexturePath(shared->source, texPath.C_Str());
+			std::string path = texPath.C_Str();
+
+			// 埋め込みテクスチャかチェック
+			if (!path.empty() && path[0] == '*') {
+				ms.baseColorTex = path; // "*0", "*1" などをそのまま保存
+				ms.isEmbedded = true;
+			}
+			else {
+				ms.baseColorTex = ResolveTexturePath(shared->source, path);
+				ms.isEmbedded = false;
+			}
 		}
+
 		shared->materials.push_back(ms);
+
+#ifdef _DEBUG
+		std::string log = "[Material " + std::to_string(i) + "] Color=(" +
+			std::to_string(ms.baseColor.x) + "," +
+			std::to_string(ms.baseColor.y) + "," +
+			std::to_string(ms.baseColor.z) + "," +
+			std::to_string(ms.baseColor.w) + ") Tex=" +
+			ms.baseColorTex + (ms.isEmbedded ? " (embedded)" : "") + "\n";
+		OutputDebugStringA(log.c_str());
+#endif
 	}
 }
 
 std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath) {
 	if (rawPath.empty()) return {};
 	if (rawPath[0] == '*') {
-		return {};
+		// 埋め込みテクスチャはそのまま返す
+		return rawPath;
 	}
 	std::string norm = MM_NormalizePath(rawPath);
 
@@ -480,7 +629,8 @@ void ModelManager::DrawDebugGUI() {
 		}
 	}
 	ImGui::Text("Cached: %zu (alive=%zu)", m_cache.size(), alive);
-	ImGui::Text("GPU Approx Total: %.2f MB", totalGPU / (1024.0 * 1024.0));
+	ImGui::Text("GPU Approx Total: %. 2f MB", totalGPU / (1024.0 * 1024.0));
+	ImGui::Text("Embedded Textures: %zu", m_embeddedTextures.size());
 	static char filter[128] = "";
 	ImGui::InputText("Filter##Model", filter, sizeof(filter));
 	if (ImGui::Button("GC Dead")) {
@@ -494,7 +644,7 @@ void ModelManager::DrawDebugGUI() {
 	for (auto& kv : m_cache) {
 		if (filter[0] && kv.first.find(filter) == std::string::npos) continue;
 		bool aliveRes = !kv.second.weak.expired();
-		ImGui::Text("%s | %s | %.2f KB | lastUse=%llu",
+		ImGui::Text("%s | %s | %. 2f KB | lastUse=%llu",
 			kv.first.c_str(),
 			aliveRes ? "alive" : "dead",
 			kv.second.gpuBytes / 1024.0,
