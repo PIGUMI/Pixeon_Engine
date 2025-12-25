@@ -335,7 +335,7 @@ void ModelRenderComponent::Draw(int Layer) {
 		size_t matIndex = sm.materialIndex;
 
 		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
-		DirectX::XMFLOAT4 materialColor = m_color; // デフォルトはコンポーネントの色
+		DirectX::XMFLOAT4 materialColor = m_color;
 		bool usedWhite = true;
 		bool usedMagenta = false;
 		MaterialRuntime* matPtr = nullptr;
@@ -344,26 +344,21 @@ void ModelRenderComponent::Draw(int Layer) {
 			matPtr = &m_materials[matIndex];
 			auto& mat = *matPtr;
 
-			// マテリアルカラーを使用
 			materialColor.x *= mat.color.x;
 			materialColor.y *= mat.color.y;
 			materialColor.z *= mat.color.z;
 			materialColor.w *= mat.color.w;
 
-			// テクスチャがある場合
 			if (mat.tex && mat.tex->srv) {
 				srv = mat.tex->srv.Get();
 				usedWhite = false;
 			}
-			// テクスチャがないがマテリアルカラーがある場合
 			else if (mat.color.x != 1.0f || mat.color.y != 1.0f ||
 				mat.color.z != 1.0f || mat.color.w != 1.0f) {
-				// 白テクスチャを使用してカラーのみ適用
 				srv = s_whiteTexSRV.Get();
-				usedWhite = false; // カラー情報があるのでエラーではない
+				usedWhite = false;
 			}
 			else if (!mat.texName.empty()) {
-				// テクスチャパスはあるが読み込めなかった
 				srv = s_magentaTexSRV.Get();
 				usedMagenta = true;
 				usedWhite = false;
@@ -375,7 +370,6 @@ void ModelRenderComponent::Draw(int Layer) {
 			usedWhite = false;
 		}
 
-		// 定数バッファ更新 (サブメッシュごとに色が変わる可能性があるため)
 		CBData cbd;
 		cbd.World = XMMatrixTranspose(world);
 		cbd.View = XMMatrixTranspose(view);
