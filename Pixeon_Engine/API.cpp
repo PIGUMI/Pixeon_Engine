@@ -13,6 +13,8 @@
 #include "RigidBody.h"
 #include "BoxCollision.h"
 
+#include "Input.h"
+
 #include <string>
 #include <cstring>
 #include <DirectXMath.h>
@@ -370,6 +372,9 @@ extern "C" {
 		}
 		Transform transform;
 		transform.position = ToXMFloat3(inTransform->position);
+		transform.rotation = ToXMFloat3(inTransform->rotation);
+		transform.scale = ToXMFloat3(inTransform->scale);
+
 		objPtr->SetTransform(transform);
 
         std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
@@ -395,6 +400,26 @@ extern "C" {
 		}
 		*outComponent = reinterpret_cast<Component>(comp);
 		return PN_SUCCESS;
+    }
+};
+
+// Input Functions
+extern "C" {
+    PIXEON_API bool KeyPressed(char keyCode)
+    {
+		return IsKeyPress(keyCode);
+    }
+    PIXEON_API bool KeyTriggered(char keyCode)
+    {
+		return IsKeyTrigger(keyCode);
+    }
+    PIXEON_API bool KeyReleased(char keyCode)
+    {
+        return IsKeyRelease(keyCode);
+    }
+    PIXEON_API bool KeyRepeated(char keyCode)
+    {
+        return IsKeyRepeat(keyCode);
     }
 };
 
@@ -1364,5 +1389,4 @@ extern "C"{
 		);
 		return PN_SUCCESS;
     }
-
 };

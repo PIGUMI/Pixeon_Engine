@@ -23,12 +23,17 @@ public:
 	DirectX::XMFLOAT3 GetForwardVector();
 	DirectX::XMFLOAT3 GetRightVector();
 
-	DirectX::XMFLOAT3 GetPosition() const { return _Position; }
+	// ワールド座標を取得
+	DirectX::XMFLOAT3 GetWorldPosition() const;
+	DirectX::XMFLOAT3 GetWorldFixation() const;
+
+	// オフセット値の取得・設定
+	DirectX::XMFLOAT3 GetPosition() const { return _PositionOffset; }
 	DirectX::XMFLOAT3 GetRotation() const { return _Rotation; }
-	void SetPosition(DirectX::XMFLOAT3 pos) { _Position = pos; }
+	void SetPosition(DirectX::XMFLOAT3 pos) { _PositionOffset = pos; }
 	void SetRotation(DirectX::XMFLOAT3 rot) { _Rotation = rot; }
-	DirectX::XMFLOAT3 GetFixation() const { return _Fixation; }
-	void SetFixation(DirectX::XMFLOAT3 fixation) { _Fixation = fixation; }
+	DirectX::XMFLOAT3 GetFixation() const { return _FixationOffset; }
+	void SetFixation(DirectX::XMFLOAT3 fixation) { _FixationOffset = fixation; }
 
 	// Setter
 	void SetFov(float fov) { _FOV = fov; }
@@ -46,11 +51,12 @@ public:
 	int GetCameraNumber() const { return _CameraNumber; }
 	void SetCameraNumber(int num) { _CameraNumber = num; }
 	DirectX::XMFLOAT3 GetUpVector() const { return _Up; }
+
 private:
 	AbstractObject* _Parent;
-	DirectX::XMFLOAT3 _Position;
+	DirectX::XMFLOAT3 _PositionOffset;      // カメラ位置のオフセット
 	DirectX::XMFLOAT3 _Rotation;
-	DirectX::XMFLOAT3 _Fixation;
+	DirectX::XMFLOAT3 _FixationOffset;      // 注視点のオフセット
 	DirectX::XMFLOAT3 _Up;
 	float _FOV;
 	float _AspectRatio;

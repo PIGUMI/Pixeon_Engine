@@ -279,14 +279,6 @@ void AnimationComponent::DrawInspector() {
 	ImGui::Checkbox("Loop", &m_loop);
 	ImGui::SliderFloat("Speed", &m_speed, 0.05f, 3.0f, "%.2f");
 
-	if (m_currentClip >= 0 && m_currentClip < (int)m_clips.size()) {
-		float dur = (float)m_clips[m_currentClip].duration;
-		ImGui::Text("Time %.3f / %.3f", m_time, dur);
-		float scrub = m_time;
-		if (ImGui::SliderFloat("Scrub", &scrub, 0.0f, dur)) m_time = scrub;
-		ImGui::ProgressBar(GetAnimationProgress(), ImVec2(-1, 0));
-	}
-
 	// 外部アニメFBX管理UI
 	ImGui::Separator();
 	ImGui::Text("External FBX Animation Files:");

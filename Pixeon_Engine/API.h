@@ -104,6 +104,14 @@ extern "C" {
 	PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent);
 };
 
+// InputKey
+extern "C" {
+	PIXEON_API bool KeyPressed(char keyCode);
+	PIXEON_API bool KeyTriggered(char keyCode);
+	PIXEON_API bool KeyReleased(char keyCode);
+	PIXEON_API bool KeyRepeated(char keyCode);
+};
+
 // Component
 extern "C" {
 	// Camera
