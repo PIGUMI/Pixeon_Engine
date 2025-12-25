@@ -117,6 +117,18 @@ void CameraComponent::DrawInspector() {
 			ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##IsChangeCalculation", &_IsChangeCalculation);
 
 			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text("CameraNumber");
+			ImGui::TableSetColumnIndex(1);
+			std::stringstream ss;
+			ss << _CameraNumber;
+			std::string camNumStr = ss.str();
+			char buf[256];
+			strcpy_s(buf, camNumStr.c_str());
+			if (ImGui::InputText("##CameraNumber", buf, sizeof(buf))) {
+				_CameraNumber = std::stoi(std::string(buf));
+			}
+
+			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Œ»İ‚ÌƒJƒƒ‰‚ÉØ‚è‘Ö‚¦‚é").c_str());
 			ImGui::TableSetColumnIndex(1);
 			if (ImGui::Button("Set Main Camera")) {
