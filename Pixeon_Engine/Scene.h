@@ -23,18 +23,16 @@ public:
 	virtual void PlayUpdate();
 	virtual void Draw(int Layer);
 	virtual void DrawUI();
-
-public: // オブジェクトの追加と削除
+public:
 	bool AddObject(AbstractObject* obj);
-public: // セーブとロード
+public:
 	void SaveToFile();
 	void LoadToFile();
 	void AddObjectLocal(AbstractObject* obj);
 	void RemoveObject(AbstractObject* obj);
-public: // Setter And Getter
+public:
 	void SetName(std::string name) { _name = name; }
 	std::string GetName() { return _name; }
-	// すべてのオブジェクトを取得
 	std::vector<AbstractObject*> GetObjects() { return _objects; }
 
 	CameraComponent* GetMainCamera() { return _MainCamera; }
@@ -51,8 +49,7 @@ public: // Setter And Getter
 
 	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }
 	CollisionManager* GetCollisionManager() { return _collisionManager; }
-
-private://内部処理
+private:
 	void ProcessThreadSafeAdditions();
 	void UploadLightsToGPU();
 
@@ -76,7 +73,6 @@ private:
 	bool EndPlayCalled = false;
 	bool InGame = false;
 
-	// 物理演算に関する変数
 	btDiscreteDynamicsWorld* pPhysicsWorld = nullptr;
 	btDefaultCollisionConfiguration* pCollisionConfig = nullptr;
 	btCollisionDispatcher* pDispatcher = nullptr;

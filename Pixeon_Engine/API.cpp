@@ -1306,7 +1306,6 @@ extern "C" {
 		rbComp->SetFriction(friction);
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodyGetFriction(Component rigidBodyComp, float* outFriction)
 	{
 		if (!outFriction) {
@@ -1323,7 +1322,6 @@ extern "C" {
 		*outFriction = rbComp->GetFriction();
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodySetRestitution(Component rigidBodyComp, float restitution)
 	{
 		AbstractComponent* compPtr = nullptr;
@@ -1337,7 +1335,6 @@ extern "C" {
 		rbComp->SetRestitution(restitution);
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodyGetRestitution(Component rigidBodyComp, float* outRestitution)
 	{
 		if (!outRestitution) {
@@ -1354,7 +1351,6 @@ extern "C" {
 		*outRestitution = rbComp->GetRestitution();
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodySetLinearDamping(Component rigidBodyComp, float damping)
 	{
 		AbstractComponent* compPtr = nullptr;
@@ -1368,7 +1364,6 @@ extern "C" {
 		rbComp->SetLinearDamping(damping);
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodyGetLinearDamping(Component rigidBodyComp, float* outDamping)
 	{
 		if (!outDamping) {
@@ -1385,7 +1380,6 @@ extern "C" {
 		*outDamping = rbComp->GetLinearDamping();
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodySetAngularDamping(Component rigidBodyComp, float damping)
 	{
 		AbstractComponent* compPtr = nullptr;
@@ -1399,7 +1393,6 @@ extern "C" {
 		rbComp->SetAngularDamping(damping);
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodyGetAngularDamping(Component rigidBodyComp, float* outDamping)
 	{
 		if (!outDamping) {
@@ -1416,7 +1409,6 @@ extern "C" {
 		*outDamping = rbComp->GetAngularDamping();
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodySetDamping(Component rigidBodyComp, float linearDamping, float angularDamping)
 	{
 		AbstractComponent* compPtr = nullptr;
@@ -1430,7 +1422,6 @@ extern "C" {
 		rbComp->SetDamping(linearDamping, angularDamping);
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodySetRollingFriction(Component rigidBodyComp, float rollingFriction)
 	{
 		AbstractComponent* compPtr = nullptr;
@@ -1444,7 +1435,6 @@ extern "C" {
 		rbComp->SetRollingFriction(rollingFriction);
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodyGetRollingFriction(Component rigidBodyComp, float* outRollingFriction)
 	{
 		if (!outRollingFriction) {
@@ -1461,7 +1451,6 @@ extern "C" {
 		*outRollingFriction = rbComp->GetRollingFriction();
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodySetSpinningFriction(Component rigidBodyComp, float spinningFriction)
 	{
 		AbstractComponent* compPtr = nullptr;
@@ -1475,7 +1464,6 @@ extern "C" {
 		rbComp->SetSpinningFriction(spinningFriction);
 		return PN_SUCCESS;
 	}
-
 	PIXEON_API APIResult RigidBodyGetSpinningFriction(Component rigidBodyComp, float* outSpinningFriction)
 	{
 		if (!outSpinningFriction) {
