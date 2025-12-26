@@ -1293,7 +1293,205 @@ extern "C" {
 		*outUseGravity = rbComp->IsGravityEnabled();
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult RigidBodySetFriction(Component rigidBodyComp, float friction)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetFriction(friction);
+		return PN_SUCCESS;
+	}
 
+	PIXEON_API APIResult RigidBodyGetFriction(Component rigidBodyComp, float* outFriction)
+	{
+		if (!outFriction) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outFriction = rbComp->GetFriction();
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodySetRestitution(Component rigidBodyComp, float restitution)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetRestitution(restitution);
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodyGetRestitution(Component rigidBodyComp, float* outRestitution)
+	{
+		if (!outRestitution) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outRestitution = rbComp->GetRestitution();
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodySetLinearDamping(Component rigidBodyComp, float damping)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetLinearDamping(damping);
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodyGetLinearDamping(Component rigidBodyComp, float* outDamping)
+	{
+		if (!outDamping) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outDamping = rbComp->GetLinearDamping();
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodySetAngularDamping(Component rigidBodyComp, float damping)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetAngularDamping(damping);
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodyGetAngularDamping(Component rigidBodyComp, float* outDamping)
+	{
+		if (!outDamping) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outDamping = rbComp->GetAngularDamping();
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodySetDamping(Component rigidBodyComp, float linearDamping, float angularDamping)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetDamping(linearDamping, angularDamping);
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodySetRollingFriction(Component rigidBodyComp, float rollingFriction)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetRollingFriction(rollingFriction);
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodyGetRollingFriction(Component rigidBodyComp, float* outRollingFriction)
+	{
+		if (!outRollingFriction) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outRollingFriction = rbComp->GetRollingFriction();
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodySetSpinningFriction(Component rigidBodyComp, float spinningFriction)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		rbComp->SetSpinningFriction(spinningFriction);
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RigidBodyGetSpinningFriction(Component rigidBodyComp, float* outSpinningFriction)
+	{
+		if (!outSpinningFriction) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		if (!rbComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outSpinningFriction = rbComp->GetSpinningFriction();
+		return PN_SUCCESS;
+	}
 	// BoxCollision Component
 	PIXEON_API APIResult BoxCollisionSetSize(Component component, Float3 size)
 	{

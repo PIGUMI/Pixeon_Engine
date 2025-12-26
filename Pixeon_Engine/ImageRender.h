@@ -111,7 +111,7 @@ private:
 	// オフセット
 	DirectX::XMFLOAT2 m_offset2D = { 0.0f, 0.0f };       // 2D用 (px)
 	DirectX::XMFLOAT3 m_offset3D = { 0.0f, 0.0f, 0.0f }; // 3D/Billboard用 (world)
-
+	DirectX::XMFLOAT3 offset3DRot = { 0.0f, 0.0f, 0.0f };
 	// UV矩形 [0..1]
 	DirectX::XMFLOAT4 m_uvRect = { 0.0f, 0.0f, 1.0f, 1.0f }; // u0,v0,u1,v1
 

@@ -181,6 +181,19 @@ extern "C" {
 	PIXEON_API APIResult RigidBodyGetMass(Component rigidBodyComp, float* outMass);
 	PIXEON_API APIResult RigidBodySetUseGravity(Component rigidBodyComp, bool useGravity);
 	PIXEON_API APIResult RigidBodyGetUseGravity(Component rigidBodyComp, bool* outUseGravity);
+	PIXEON_API APIResult RigidBodySetFriction(Component rigidBodyComp, float friction);
+	PIXEON_API APIResult RigidBodyGetFriction(Component rigidBodyComp, float* outFriction);
+	PIXEON_API APIResult RigidBodySetRestitution(Component rigidBodyComp, float restitution);
+	PIXEON_API APIResult RigidBodyGetRestitution(Component rigidBodyComp, float* outRestitution);
+	PIXEON_API APIResult RigidBodySetLinearDamping(Component rigidBodyComp, float damping);
+	PIXEON_API APIResult RigidBodyGetLinearDamping(Component rigidBodyComp, float* outDamping);
+	PIXEON_API APIResult RigidBodySetAngularDamping(Component rigidBodyComp, float damping);
+	PIXEON_API APIResult RigidBodyGetAngularDamping(Component rigidBodyComp, float* outDamping);
+	PIXEON_API APIResult RigidBodySetDamping(Component rigidBodyComp, float linearDamping, float angularDamping);
+	PIXEON_API APIResult RigidBodySetRollingFriction(Component rigidBodyComp, float rollingFriction);
+	PIXEON_API APIResult RigidBodyGetRollingFriction(Component rigidBodyComp, float* outRollingFriction);
+	PIXEON_API APIResult RigidBodySetSpinningFriction(Component rigidBodyComp, float spinningFriction);
+	PIXEON_API APIResult RigidBodyGetSpinningFriction(Component rigidBodyComp, float* outSpinningFriction);
 
 	// BoxCollision Component
 	PIXEON_API APIResult BoxCollisionSetSize(Component component, Float3 size);

@@ -36,6 +36,7 @@ void ImageRender::SaveToFile(std::ostream& out) {
 	out << m_offset3D.x << " " << m_offset3D.y << " " << m_offset3D.z << std::endl;
 	out << m_uvRect.x << " " << m_uvRect.y << " " << m_uvRect.z << " " << m_uvRect.w << std::endl;
 	out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << std::endl;
+	out << offset3DRot.x << " " << offset3DRot.y << " " << offset3DRot.z << std::endl;
 }
 
 void ImageRender::LoadFromFile(std::istream& in) {
@@ -49,6 +50,7 @@ void ImageRender::LoadFromFile(std::istream& in) {
 	in >> m_offset3D.x >> m_offset3D.y >> m_offset3D.z;
 	in >> m_uvRect.x >> m_uvRect.y >> m_uvRect.z >> m_uvRect.w;
 	in >> m_color.x >> m_color.y >> m_color.z >> m_color.w;
+	in >> offset3DRot.x >> offset3DRot.y >> offset3DRot.z;
 	if (!m_textureName.empty()) {
 		m_texture = ResourceService::Instance().GetTexture(m_textureName);
 	}
@@ -375,7 +377,7 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 
 void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 	Transform t = _Parent->GetTransform();
-	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
+	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x + offset3DRot.x, t.rotation.y + offset3DRot.y, t.rotation.z + offset3DRot.z);
 	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(R.r[0]);
 	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(R.r[1]);
 
@@ -644,6 +646,17 @@ void ImageRender::DrawInspector() {
 	else {
 		ImGui::InputFloat3(SJ("3Dオフセット").c_str(), (float*)&m_offset3D);
 		ImGui::InputFloat2(SJ("サイズ(ワールド)").c_str(), (float*)&m_sizeWorld);
+		if(m_mode == PlacementMode::World3D)
+		{
+			DirectX::XMFLOAT3 TempRot;
+			TempRot.x = DirectX::XMConvertToDegrees(offset3DRot.x);
+			TempRot.y = DirectX::XMConvertToDegrees(offset3DRot.y);
+			TempRot.z = DirectX::XMConvertToDegrees(offset3DRot.z);
+			ImGui::InputFloat3(SJ("3D回転オフセット").c_str(), (float*)&TempRot);
+			offset3DRot.x = DirectX::XMConvertToRadians(TempRot.x);
+			offset3DRot.y = DirectX::XMConvertToRadians(TempRot.y);
+			offset3DRot.z = DirectX::XMConvertToRadians(TempRot.z);
+		}
 	}
 
 	ImGui::InputFloat4("UV(u0,v0,u1,v1)", (float*)&m_uvRect);
