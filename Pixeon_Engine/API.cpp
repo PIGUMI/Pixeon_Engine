@@ -1,4 +1,5 @@
 #include "API.h"
+#include "MainFrame.h"
 #include "SceneManger.h"
 #include "ComponentManager.h"
 #include "Component.h"
@@ -420,6 +421,23 @@ extern "C" {
     PIXEON_API bool KeyRepeated(char keyCode)
     {
         return IsKeyRepeat(keyCode);
+    }
+    PIXEON_API int GetMouseMoveX()
+    {
+        int Move;
+		Move = MouseMoveX();
+		return Move;
+    }
+    PIXEON_API int GetMouseMoveY()
+    {
+        int Move;
+		Move = MouseMoveY();
+		return Move;
+    }
+    APIResult FixedMouseCursor(bool enbled)
+    {
+		MainFrame::GetInstance()->fixedMouseCursor(enbled);
+        return PN_SUCCESS;
     }
 };
 

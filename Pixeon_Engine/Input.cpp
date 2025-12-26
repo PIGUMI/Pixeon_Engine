@@ -66,12 +66,7 @@ void UpdateInput(HWND hWnd)
 	g_hwheelPosAccum = 0;
 	g_hwheelNegAccum = 0;
 
-	if (IsKeyTrigger(VK_ESCAPE) && IsKeyPress('P'))
-	{
-		bMouseFreeze = !bMouseFreeze;
-	}
-
-	if (!bMouseFreeze) {
+	if (bMouseFreeze) {
 		while (ShowCursor(FALSE) >= 0);
 		POINT centerScreen = { 1920 / 2, 1080 / 2 };
 		ClientToScreen(MainFrame::GetInstance()->GetWindowHandle(), &centerScreen);

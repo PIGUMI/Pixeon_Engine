@@ -7,7 +7,6 @@ void Script_PlayerMove::BeginPlay() {
 	GetCurrentScene(&Temp);
 	FindObjectByName(Temp, "Player", &player);
 	FindComponent(player, "Animation", &Animation);
-	Component Camera;
 	FindComponent(player, "CameraComponent", &Camera);
 	int camNum;
 	APIResult rs;
@@ -20,6 +19,7 @@ void Script_PlayerMove::BeginPlay() {
 		MessageBoxA(NULL, ("Camera number: " + std::to_string(camNum)).c_str(), "Info", MB_OK);
 	}
 	SetMainCamera(camNum);
+	FixedMouseCursor(true);
 }
 
 void Script_PlayerMove::Update() {
@@ -32,10 +32,22 @@ void Script_PlayerMove::Update() {
 		trans.position.z += 0.1f;
 	}
 
+	float MouseX = 0;
+	float MouseY = 0;
+	MouseX = (float)GetMouseMoveX();
+	MouseY = (float)GetMouseMoveY();
+	MouseX = MouseX * 0.001f;
+	MouseY = MouseY * 0.001f;
+	
 
-
+	CameraTransform camTrans;
+	GetCameraTransform(Camera,&camTrans);
+	camTrans.rotation.x += MouseX;
+	camTrans.rotation.y -= MouseY;
+	SetCameraTransform(Camera,&camTrans);
 
 	SetObjectTransform(player, &trans);
+
 	if(previousState != currentState) {
 
 		switch (currentState)

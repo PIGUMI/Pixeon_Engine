@@ -1,5 +1,5 @@
 #include "EngineFrame.h"
-
+#include "MainFrame.h"
 #include "SettingManager.h"
 
 #include "SceneManger.h"
@@ -67,8 +67,9 @@ void EngineFrame::Update()
 		SceneManger::GetInstance()->EditUpdate();
 	}
 	if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))
-	{
+	{	
 		bShowGUI_ = !bShowGUI_;
+		if (bShowGUI_)MainFrame::GetInstance()->fixedMouseCursor(false);
 	}
 }
 

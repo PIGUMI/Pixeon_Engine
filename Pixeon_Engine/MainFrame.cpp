@@ -107,6 +107,7 @@ void MainFrame::Update()
 		_deltaTime = deltaTime * 0.001f; // ms -> s
 		// 入力更新
 		UpdateInput(GetWindowHandle());
+
 		// ソフトウェアモードごとの更新処理
 		switch (_softwareMode)
 		{
@@ -119,6 +120,8 @@ void MainFrame::Update()
 		default:
 			break;
 		}
+
+		SetMouseFreeze(fixedMouseCursorFlag);
 
 		// 更新時間記録
 		_lastUpdateTime = currentTime;

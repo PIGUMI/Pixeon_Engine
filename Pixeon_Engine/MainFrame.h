@@ -12,7 +12,6 @@
 #include <list>
 
 class GameRenderTarget;
-class Object;
 
 enum class SoftWareMode {
 	ENGINE,
@@ -46,6 +45,7 @@ public:
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
 	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
 	SoftWareMode GetSoftwareMode() const { return _softwareMode; }
+	void fixedMouseCursor(bool fixedCursor) { fixedMouseCursorFlag = fixedCursor; }
 private:
 	DWORD _lastUpdateTime;
 	bool _updateDraw;
@@ -58,6 +58,8 @@ private:
 
 	SoftWareMode _softwareMode;
 	EngineConfig _engineConfig;
+
+	bool fixedMouseCursorFlag = false;
 private:
 	MainFrame() = default;
 	~MainFrame() = default;

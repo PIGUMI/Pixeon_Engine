@@ -110,6 +110,9 @@ extern "C" {
 	PIXEON_API bool KeyTriggered(char keyCode);
 	PIXEON_API bool KeyReleased(char keyCode);
 	PIXEON_API bool KeyRepeated(char keyCode);
+	PIXEON_API int GetMouseMoveX();
+	PIXEON_API int GetMouseMoveY();
+	PIXEON_API APIResult FixedMouseCursor(bool enbled);
 };
 
 // Component

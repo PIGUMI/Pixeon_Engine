@@ -15,7 +15,7 @@ public:
 private:
     Object player;
     Component Animation;
-
+    Component Camera;
 	PlayerState currentState = Idle;
 	PlayerState previousState = Idle;
 };
