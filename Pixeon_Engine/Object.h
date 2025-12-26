@@ -4,6 +4,7 @@
 #include "Struct.h"
 #include <string>
 #include <vector>
+#include <type_traits>
 #include <map>
 
 class AbstractComponent;
@@ -69,6 +70,8 @@ public:
 		}
 		return result;
 	}
+
+	std::vector<AbstractComponent*> GetComponentsByTypeID(int typeID);
 	// コンポーネントの削除
 	void RemoveComponent(AbstractComponent* comp);
 	// コンポーネントの追加

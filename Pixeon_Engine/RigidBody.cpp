@@ -396,7 +396,7 @@ void RigidBody::SyncPositionToBullet(const DirectX::XMFLOAT3& position)
 
 void RigidBody::SyncRotationToBullet(const DirectX::XMFLOAT3& rotation)
 {
-	if (pRigidBody_) return;
+	if (!pRigidBody_) return;
 
 	btVector3 linearVel = pRigidBody_->getLinearVelocity();
 	btVector3 angularVel = pRigidBody_->getAngularVelocity();
@@ -416,7 +416,7 @@ void RigidBody::SyncRotationToBullet(const DirectX::XMFLOAT3& rotation)
 
 void RigidBody::WarpTo(const DirectX::XMFLOAT3& position)
 {
-	if (pRigidBody_)return;
+	if (!pRigidBody_)return;
 
 	btTransform transform = pRigidBody_->getWorldTransform();
 	transform.setOrigin(btVector3(position.x, position.y, position.z));

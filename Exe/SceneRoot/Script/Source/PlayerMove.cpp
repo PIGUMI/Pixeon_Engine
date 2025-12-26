@@ -1,13 +1,18 @@
 #include "PlayerMove.h"
 #include <Windows.h>
+#include <DirectXMath.h>
 
 
 void Script_PlayerMove::BeginPlay() {
 	SceneHandle Temp;
 	GetCurrentScene(&Temp);
+	// オブジェクトの取得
 	FindObjectByName(Temp, "Player", &player);
+	// コンポーネントの取得
 	FindComponent(player, "Animation", &Animation);
 	FindComponent(player, "CameraComponent", &Camera);
+	FindComponent(player, "RigidBody", &rigidBody);
+	// カメラの設定
 	int camNum;
 	APIResult rs;
 	rs = GetCameraNumber(Camera, &camNum);
@@ -19,6 +24,7 @@ void Script_PlayerMove::BeginPlay() {
 		MessageBoxA(NULL, ("Camera number: " + std::to_string(camNum)).c_str(), "Info", MB_OK);
 	}
 	SetMainCamera(camNum);
+	// マウスカーソルを固定
 	FixedMouseCursor(true);
 }
 
@@ -26,10 +32,23 @@ void Script_PlayerMove::Update() {
 	currentState = Idle;
 	transform trans;
 	GetObjectTransform(player, &trans);
+	// カメラの前方ベクトル取得
+	Float3 vec;
+	GetCameraForwardVector(Camera, &vec);
 
+	// 入力処理
 	if (KeyPressed('W')) {
-		currentState = Walking;
-		trans.position.z += 0.1f;
+		if (KeyPressed(VK_SHIFT)) {
+			currentState = Running;
+			Float3 Force = { -vec.x * 100.0f, 0.0f, -vec.z * 100.0f };
+			RigidBodyAddForce(rigidBody,&Force);
+		}
+		else
+		{
+			currentState = Walking;
+			Float3 Force = { -vec.x * 50.0f, 0.0f, -vec.z * 50.0f };
+			RigidBodyAddForce(rigidBody,&Force);
+		}
 	}
 
 	float MouseX = 0;
@@ -39,15 +58,22 @@ void Script_PlayerMove::Update() {
 	MouseX = MouseX * 0.001f;
 	MouseY = MouseY * 0.001f;
 	
-
+	// カメラの処理
 	CameraTransform camTrans;
 	GetCameraTransform(Camera,&camTrans);
 	camTrans.rotation.x += MouseX;
 	camTrans.rotation.y -= MouseY;
 	SetCameraTransform(Camera,&camTrans);
 
-	SetObjectTransform(player, &trans);
+	// プレイヤーの回転処理
+	Float3 PlayerRot;
+	PlayerRot = trans.rotation;
+	PlayerRot.y = camTrans.rotation.x - DirectX::XMConvertToRadians(180.0f);
 
+	SetObjectRotation(player, PlayerRot);
+	
+
+	// アニメーション
 	if(previousState != currentState) {
 
 		switch (currentState)
@@ -59,6 +85,7 @@ void Script_PlayerMove::Update() {
 			SetAnimationClip(Animation, 2);
 			break;
 		case Running:
+			SetAnimationClip(Animation, 3);
 			break;
 		default:
 			break;

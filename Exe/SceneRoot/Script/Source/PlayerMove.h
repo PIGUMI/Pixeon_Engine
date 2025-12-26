@@ -16,6 +16,7 @@ private:
     Object player;
     Component Animation;
     Component Camera;
+    Component rigidBody;
 	PlayerState currentState = Idle;
 	PlayerState previousState = Idle;
 };

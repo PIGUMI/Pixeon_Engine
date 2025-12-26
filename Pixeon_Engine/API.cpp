@@ -258,20 +258,19 @@ extern "C" {
 		objPtr->SetObjectName(std::string(name));
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult SetObjectPosition(Object object, Float3 position)
-	{
+	PIXEON_API APIResult SetObjectPosition(Object object, Float3 position){
+
 		AbstractObject* objPtr = nullptr;
 		if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		objPtr->SetPosition(position.x, position.y, position.z);
 
-		std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
-
-		for (RigidBody* rb : components) {
-			if (rb)
+		for (auto rb : objPtr->GetComponents())
+		{
+			if(rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
 			{
-				rb->SyncPositionToBullet(ToXMFloat3(position));
+				static_cast<RigidBody*>(rb)->SyncPositionToBullet(ToXMFloat3(position));
 			}
 		}
 		return PN_SUCCESS;
@@ -297,13 +296,14 @@ extern "C" {
 		}
 		objPtr->SetRotation(rotation.x, rotation.y, rotation.z);
 
-		std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
-		for (RigidBody* rb : components) {
-			if (rb)
+		for(auto rb : objPtr->GetComponents())
+		{
+			if(rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
 			{
-				rb->SyncRotationToBullet(ToXMFloat3(rotation));
+				static_cast<RigidBody*>(rb)->SyncRotationToBullet(ToXMFloat3(rotation));
 			}
 		}
+		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult GetObjectRotation(Object object, Float3* outRotation)
 	{
@@ -377,11 +377,13 @@ extern "C" {
 
 		objPtr->SetTransform(transform);
 
-		std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
-		for (RigidBody* rb : components) {
-			rb->SetTransformDirty(true);
+		for(auto rb : objPtr->GetComponents())
+		{
+			if(rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
+			{
+				static_cast<RigidBody*>(rb)->SyncTransformToBullet();
+			}
 		}
-
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent)
@@ -597,7 +599,7 @@ extern "C" {
 		*outCameraNumber = cameraComp->GetCameraNumber();
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult GetCmaeraUpVector(Component camera, Float3* outUp)
+	PIXEON_API APIResult GetCamaeraUpVector(Component camera, Float3* outUp)
 	{
 		if (!outUp) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -611,6 +613,22 @@ extern "C" {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		*outUp = ToFloat3(cameraComp->GetUpVector());
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetCameraForwardVector(Component camera, Float3* outForward)
+	{
+		if (!outForward) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+		if (!cameraComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outForward = ToFloat3(cameraComp->GetForwardVector());
 		return PN_SUCCESS;
 	}
 

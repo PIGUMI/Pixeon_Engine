@@ -68,6 +68,17 @@ AbstractComponent* AbstractObject::GetComponent(const std::string& name)
 	return nullptr;
 }
 
+std::vector<AbstractComponent*> AbstractObject::GetComponentsByTypeID(int typeID)
+{
+	std::vector<AbstractComponent*> result;
+	for (auto comp : _components) {
+		if (static_cast<int>(comp->GetComponentType()) == typeID) {
+			result.push_back(comp);
+		}
+	}
+	return result;
+}
+
 void AbstractObject::RemoveComponent(AbstractComponent* comp) {
 	if (comp == nullptr) return;
 	auto it = std::remove(_components.begin(), _components.end(), comp);

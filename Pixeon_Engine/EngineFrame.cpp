@@ -56,6 +56,7 @@ void EngineFrame::Update()
 	{
 		if (bBeginPlayCalled_ == false)
 		{
+			MainFrame::GetInstance()->fixedMouseCursor(false);
 			SceneManger::GetInstance()->BeginPlay();
 			bBeginPlayCalled_ = true;
 		}
