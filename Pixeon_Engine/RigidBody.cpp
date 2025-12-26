@@ -198,6 +198,54 @@ void RigidBody::DrawInspector()
 		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##UseGravityCheckbox").c_str(), &UseGravity);
 		SetGravityEnabled(UseGravity);
 
+		// –€CŒW”
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("–€CŒW”").c_str());
+		float Friction = fFriction_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::SliderFloat(SJ("##FrictionSlider").c_str(), &Friction, 0.0f, 1.0f, "%.3f"))
+			SetFriction(Friction);
+
+		// ”½”­ŒW”
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("”½”­ŒW”").c_str());
+		float Restitution = fRestitution_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::SliderFloat(SJ("##RestitutionSlider").c_str(), &Restitution, 0.0f, 1.0f, "%.3f"))
+			SetRestitution(Restitution);
+
+		// üŒ`Œ¸Š
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("üŒ`Œ¸Š").c_str());
+		float LinearDamping = fLinearDamping_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::SliderFloat(SJ("##LinearDampingSlider").c_str(), &LinearDamping, 0.0f, 1.0f, "%.3f"))
+			SetLinearDamping(LinearDamping);
+
+		// Šp“xŒ¸Š
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("Šp“xŒ¸Š").c_str());
+		float AngularDamping = fAngularDamping_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::SliderFloat(SJ("##AngularDampingSlider").c_str(), &AngularDamping, 0.0f, 1.0f, "%.3f"))
+			SetAngularDamping(AngularDamping);
+
+		// “]‚ª‚è–€C
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("“]‚ª‚è–€C").c_str());
+		float RollingFriction = fRollingFriction_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::SliderFloat(SJ("##RollingFrictionSlider").c_str(), &RollingFriction, 0.0f, 1.0f, "%.3f"))
+			SetRollingFriction(RollingFriction);
+
+		// ‰ñ“]–€C
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‰ñ“]–€C").c_str());
+		float SpinningFriction = fSpinningFriction_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::SliderFloat(SJ("##SpinningFrictionSlider").c_str(), &SpinningFriction, 0.0f, 1.0f, "%.3f"))
+			SetSpinningFriction(SpinningFriction);
+
 		ImGui::EndTable();
 	}
 }
@@ -207,6 +255,12 @@ void RigidBody::SaveToFile(std::ostream& out)
 	out << fMass_ << std::endl;
 	out << bKinematic_ << std::endl;
 	out << bUseGravity_ << std::endl;
+	out << fFriction_ << std::endl;
+	out << fRestitution_ << std::endl;
+	out << fLinearDamping_ << std::endl;
+	out << fAngularDamping_ << std::endl;
+	out << fRollingFriction_ << std::endl;
+	out << fSpinningFriction_ << std::endl;
 }
 
 void RigidBody::LoadFromFile(std::istream& in)
@@ -214,11 +268,23 @@ void RigidBody::LoadFromFile(std::istream& in)
 	in >> fMass_;
 	in >> bKinematic_;
 	in >> bUseGravity_;
+	in >> fFriction_;
+	in >> fRestitution_;
+	in >> fLinearDamping_;
+	in >> fAngularDamping_;
+	in >> fRollingFriction_;
+	in >> fSpinningFriction_;
+
 	if (pRigidBody_)
 	{
 		UpdateMassProperties();
 		SetKinematic(bKinematic_);
 		SetGravityEnabled(bUseGravity_);
+		SetFriction(fFriction_);
+		SetRestitution(fRestitution_);
+		SetDamping(fLinearDamping_, fAngularDamping_);
+		SetRollingFriction(fRollingFriction_);
+		SetSpinningFriction(fSpinningFriction_);
 	}
 }
 
@@ -474,6 +540,13 @@ void RigidBody::CreateRigidBody()
 
 	pRigidBody_->setUserPointer(this);
 
+	// •¨—ƒpƒ‰ƒ[ƒ^‚ğİ’è
+	SetFriction(fFriction_);
+	SetRestitution(fRestitution_);
+	SetDamping(fLinearDamping_, fAngularDamping_);
+	SetRollingFriction(fRollingFriction_);
+	SetSpinningFriction(fSpinningFriction_);
+
 	SetKinematic(bKinematic_);
 	SetGravityEnabled(bUseGravity_);
 
@@ -524,4 +597,68 @@ DirectX::XMFLOAT3 RigidBody::QuaternionToEuler(const btQuaternion& quat)
 	euler.z = atan2f(rotMatrix.r[0].m128_f32[1], rotMatrix.r[1].m128_f32[1]); // Roll
 
 	return euler;
+}
+
+void RigidBody::SetFriction(float friction)
+{
+	fFriction_ = friction;
+	if (pRigidBody_)
+	{
+		pRigidBody_->setFriction(friction);
+	}
+}
+
+void RigidBody::SetRestitution(float restitution)
+{
+	fRestitution_ = restitution;
+	if (pRigidBody_)
+	{
+		pRigidBody_->setRestitution(restitution);
+	}
+}
+
+void RigidBody::SetLinearDamping(float damping)
+{
+	fLinearDamping_ = damping;
+	if (pRigidBody_)
+	{
+		pRigidBody_->setDamping(fLinearDamping_, fAngularDamping_);
+	}
+}
+
+void RigidBody::SetAngularDamping(float damping)
+{
+	fAngularDamping_ = damping;
+	if (pRigidBody_)
+	{
+		pRigidBody_->setDamping(fLinearDamping_, fAngularDamping_);
+	}
+}
+
+void RigidBody::SetDamping(float linearDamping, float angularDamping)
+{
+	fLinearDamping_ = linearDamping;
+	fAngularDamping_ = angularDamping;
+	if (pRigidBody_)
+	{
+		pRigidBody_->setDamping(linearDamping, angularDamping);
+	}
+}
+
+void RigidBody::SetRollingFriction(float rollingFriction)
+{
+	fRollingFriction_ = rollingFriction;
+	if (pRigidBody_)
+	{
+		pRigidBody_->setRollingFriction(rollingFriction);
+	}
+}
+
+void RigidBody::SetSpinningFriction(float spinningFriction)
+{
+	fSpinningFriction_ = spinningFriction;
+	if (pRigidBody_)
+	{
+		pRigidBody_->setSpinningFriction(spinningFriction);
+	}
 }

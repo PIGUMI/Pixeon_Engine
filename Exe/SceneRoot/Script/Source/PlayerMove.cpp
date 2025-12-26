@@ -40,13 +40,13 @@ void Script_PlayerMove::Update() {
 	if (KeyPressed('W')) {
 		if (KeyPressed(VK_SHIFT)) {
 			currentState = Running;
-			Float3 Force = { -vec.x * 100.0f, 0.0f, -vec.z * 100.0f };
+			Float3 Force = { -vec.x * 400.0f, 0.0f, -vec.z * 400.0f };
 			RigidBodyAddForce(rigidBody,&Force);
 		}
 		else
 		{
 			currentState = Walking;
-			Float3 Force = { -vec.x * 50.0f, 0.0f, -vec.z * 50.0f };
+			Float3 Force = { -vec.x * 200.0f, 0.0f, -vec.z * 200.0f };
 			RigidBodyAddForce(rigidBody,&Force);
 		}
 	}

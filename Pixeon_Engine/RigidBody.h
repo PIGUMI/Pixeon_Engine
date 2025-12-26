@@ -53,7 +53,25 @@ public:
 	void WarpTo(const DirectX::XMFLOAT3& position);
 	void SetTransformDirty(bool dirty) { bTransformDirty_ = dirty; }
 	bool IsTransformDirty() const { return bTransformDirty_; }
+	void SetFriction(float friction);
+	float GetFriction() const { return fFriction_; }
 
+	void SetRestitution(float restitution);
+	float GetRestitution() const { return fRestitution_; }
+
+	void SetLinearDamping(float damping);
+	float GetLinearDamping() const { return fLinearDamping_; }
+
+	void SetAngularDamping(float damping);
+	float GetAngularDamping() const { return fAngularDamping_; }
+
+	void SetDamping(float linearDamping, float angularDamping);
+
+	void SetRollingFriction(float rollingFriction);
+	float GetRollingFriction() const { return fRollingFriction_; }
+
+	void SetSpinningFriction(float spinningFriction);
+	float GetSpinningFriction() const { return fSpinningFriction_; }
 private:
 	void CreateRigidBody();
 	void UpdateMassProperties();
@@ -64,6 +82,12 @@ private:
 	float fMass_ = 1.0f;
 	bool bKinematic_ = false;
 	bool bUseGravity_ = true;
+	float fFriction_ = 0.5f;
+	float fRestitution_ = 0.0f;
+	float fLinearDamping_ = 0.0f;
+	float fAngularDamping_ = 0.05f;
+	float fRollingFriction_ = 0.0f;
+	float fSpinningFriction_ = 0.0f;
 
 	btRigidBody* pRigidBody_ = nullptr;
 	btCompoundShape* pCompoundShape_ = nullptr;
