@@ -72,6 +72,7 @@ private:
 	CameraComponent* _MainCamera = nullptr;
 	CollisionManager* _collisionManager = nullptr;
 	int _MainCameraNumber = -1;
+	int editorCameraNumber = -1;
 	bool EndPlayCalled = false;
 	bool InGame = false;
 

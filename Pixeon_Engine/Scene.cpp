@@ -17,20 +17,19 @@ struct LightGPU {
 	DirectX::XMFLOAT3 position;
 	float intensity;
 	DirectX::XMFLOAT3 direction;
-	float type;      // type: 0=Dir,1=Point,2=Spot
+	float type;
 	DirectX::XMFLOAT3 color;
 	float range;
 	float innerCos;
 	float outerCos;
 	float enabled;
-	float pad; // 16B アライメント
+	float pad;
 };
 
 // ライト用定数バッファ構造体
 static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 
-// 開放処理
 Scene::~Scene()
 {
 	SaveToFile();
@@ -63,7 +62,6 @@ Scene::~Scene()
 }
 
 void Scene::Init() {
-	// 動的配列の初期化
 	_objects.clear();
 	_ToBeAdded.clear();
 	_ToBeRemoved.clear();
@@ -94,12 +92,10 @@ void Scene::BeginPlay() {
 		pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
 		pPhysicsWorld->getConstraintSolver()->reset();
 	}
-	//
-
-	// BeginPlayを呼び出す
 	for (auto& obj : _objects) {
 		if (obj)obj->BeginPlay();
 	}
+	editorCameraNumber = _MainCameraNumber;
 	EndPlayCalled = false;
 }
 
@@ -116,6 +112,7 @@ void Scene::EditUpdate() {
 		_objects.clear();
 		_objects = _SaveObjects;
 		_SaveObjects.clear();
+		_MainCameraNumber = editorCameraNumber;
 		for (auto& obj : _objects) {
 			if (!obj) continue;
 			for (auto& comp : obj->GetComponents()) {
