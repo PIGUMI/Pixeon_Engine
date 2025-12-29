@@ -1,6 +1,7 @@
 #include "API.h"
 #include "MainFrame.h"
 #include "SceneManger.h"
+#include "EngineFrame.h"
 #include "ComponentManager.h"
 #include "Component.h"
 #include "Scene.h"
@@ -170,6 +171,19 @@ extern "C" {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		AbstractObject* obj = scenePtr->FindObjectByName(name);
+		if (!obj) {
+			*outObject = nullptr;
+			return PN_ERROR_NOT_FOUND;
+		}
+		*outObject = reinterpret_cast<Object>(obj);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject)
+	{
+		if (!name || !outObject) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* obj = EngineFrame::GetInstance()->GetPrefabByName(std::string(name));
 		if (!obj) {
 			*outObject = nullptr;
 			return PN_ERROR_NOT_FOUND;

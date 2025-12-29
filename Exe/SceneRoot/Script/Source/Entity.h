@@ -1,0 +1,19 @@
+#pragma once
+#include "Include/IScript.h"
+
+class Script_Entity : public IScript {
+public:
+    void BeginPlay() override;
+    void Update() override;
+    void EndPlay() override;
+private:
+    Object obj;
+};
+
+extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
+    return new Script_Entity();
+}
+
+extern "C" __declspec(dllexport) void DestroyScriptInstance(IScript* script) {
+    delete script;
+}
