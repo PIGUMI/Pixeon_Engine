@@ -71,12 +71,14 @@ void Scene::Init() {
 }
 
 void Scene::BeginPlay() {
+	// Objects Clone
 	for (auto& obj : _objects) {
 		if (obj) {
 			AbstractObject* cloneObj = obj->Clone();
 			_SaveObjects.push_back(cloneObj);
 		}
 	}
+	// Physics Cleanup
 	if (pPhysicsWorld)
 	{
 		while (pPhysicsWorld->getNumCollisionObjects() > 0)
@@ -89,7 +91,9 @@ void Scene::BeginPlay() {
 		pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
 		pPhysicsWorld->getConstraintSolver()->reset();
 	}
+	// CameraNumber Save
 	editorCameraNumber = _MainCameraNumber;
+	// BeginPlay Call
 	for (auto& obj : _objects) {
 		if (obj)obj->BeginPlay();
 	}
@@ -265,6 +269,7 @@ void Scene::DrawUI()
 {
 }
 
+
 void Scene::SaveToFile() {
 	std::vector<AbstractObject*> SaveObjects;
 	if (InGame) {
@@ -388,6 +393,7 @@ void Scene::LoadToFile() {
 	}
 }
 
+
 void Scene::SetMainCamera(CameraComponent* camera){
 	_MainCamera = camera;
 	if (_MainCamera)
@@ -413,6 +419,7 @@ void Scene::SetMainCameraNumber(int num)
 		}
 	}
 }
+
 
 AbstractObject* Scene::FindObjectByName(const char* name)
 {
@@ -482,9 +489,6 @@ void Scene::UploadLightsToGPU() {
 		lights[count].enabled = 1.0f;
 		++count;
 	}
-
-	// 末尾に LightCount を埋める別 cbuffer に分けてもよいが今回は同バッファ末尾に書かず別 CB 用意
-	// 簡素化のため LightCount 用追加 cbuffer
 	struct LightCountCB { int count; float pad[3]; };
 	static ID3D11Buffer* gLightCountCB = nullptr;
 	if (!gLightCountCB) {
@@ -495,8 +499,6 @@ void Scene::UploadLightsToGPU() {
 		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		dev->CreateBuffer(&bd, nullptr, &gLightCountCB);
 	}
-
-	// 更新
 	{
 		D3D11_MAPPED_SUBRESOURCE mp{};
 		if (SUCCEEDED(ctx->Map(gLightCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mp))) {
@@ -509,8 +511,6 @@ void Scene::UploadLightsToGPU() {
 			ctx->Unmap(gLightCountCB, 0);
 		}
 	}
-
-	// PS ステージへバインド (b1=LightArray, b2=LightCount 例)
 	ID3D11Buffer* cbs1[] = { gLightCB };
 	ctx->PSSetConstantBuffers(1, 1, cbs1);
 	ID3D11Buffer* cbs2[] = { gLightCountCB };
