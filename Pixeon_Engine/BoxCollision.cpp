@@ -224,14 +224,14 @@ void BoxCollision::SaveToFile(std::ostream& out)
 {
 	out << f3Size_.x << " " << f3Size_.y << " " << f3Size_.z << " "
 		<< f3Center_.x << " " << f3Center_.y << " " << f3Center_.z << " "
-		<< bTrigger_ <<" " << _LayerNumber << "\n";
+		<< bTrigger_ <<" " << _LayerNumber << " " << m_b_BoxLine <<"\n";
 }
 
 void BoxCollision::LoadFromFile(std::istream& in)
 {
 	in >> f3Size_.x >> f3Size_.y >> f3Size_.z
 		>> f3Center_.x >> f3Center_.y >> f3Center_.z
-		>> bTrigger_ >> _LayerNumber;
+		>> bTrigger_ >> _LayerNumber >> m_b_BoxLine;
 
 	SetSize(f3Size_);
 	SetCenter(f3Center_);
