@@ -28,20 +28,15 @@ void EngineFrame::HandleAssetContextMenu(const std::filesystem::path& path)
 }
 
 void OpenWithVisualStudio(const std::string& filepath) {
-	// 1) ファイルの存在チェック（相対→絶対に変換）
 	char fullPathBuf[MAX_PATH];
 	if (GetFullPathNameA(filepath.c_str(), MAX_PATH, fullPathBuf, nullptr) == 0) {
-		// 失敗時はそのまま渡すが、ログ等を出すことを推奨
 		strncpy_s(fullPathBuf, filepath.c_str(), MAX_PATH - 1);
 	}
-	// 存在しない場合はメッセージ表示（任意）
 	if (GetFileAttributesA(fullPathBuf) == INVALID_FILE_ATTRIBUTES) {
 		MessageBoxA(NULL, "指定されたファイルが存在しません。", "Visual Studio", MB_OK | MB_ICONERROR);
 		return;
 	}
 
-	// 2) /Edit で既存インスタンスにエディタとして開かせる
-	//    パスは必ず二重引用符で囲む
 	std::string args = "/Edit \"" + std::string(fullPathBuf) + "\"";
 
 	ShellExecuteA(
@@ -72,29 +67,24 @@ ImTextureID EngineFrame::GetAssetIcon(const std::string& name)
 
 std::string AbbreviateName(const std::string& name, size_t maxBaseLen)
 {
-	// 拡張子とベース名を分離
 	size_t dot = name.find_last_of('.');
 	std::string ext = (dot != std::string::npos) ? name.substr(dot) : "";
 	std::string base = (dot != std::string::npos) ? name.substr(0, dot) : name;
 
-	// ベース名が十分短ければそのまま
 	if (base.size() <= maxBaseLen) {
-		return base + ext; // 元の名前と同じ
+		return base + ext;
 	}
 
-	// 長い場合はベース名だけを "xxx..." にする
-	//   maxBaseLen 文字以内に収める前提で「...」分を確保
 	const size_t dotsLen = 3;
 	if (maxBaseLen <= dotsLen) {
-		// かなり小さい指定のときは保険で全部 "..." にする
 		return std::string("...") + ext;
 	}
 
-	size_t remain = maxBaseLen - dotsLen;              // 先頭から残す文字数
+	size_t remain = maxBaseLen - dotsLen;
 	if (remain > base.size()) remain = base.size();
 
 	std::string shortBase = base.substr(0, remain) + "...";
-	return shortBase + ext;                            // ★ 最後に拡張子をそのまま付ける
+	return shortBase + ext;
 }
 
 std::wstring ToWideACP(const std::string& s) {
@@ -178,11 +168,10 @@ void EngineFrame::DrawGUI()
 void EngineFrame::GameViewWindow()
 {
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ゲームビュー").c_str());
-	// --- 上部にコントロールバー ---
+
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
 
-	// 再生・停止ボタン
 	if (!EngineFrame::GetInstance()->IsInGame()) {
 		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("再生").c_str(), ImVec2(70, 0)))
 		{
@@ -199,14 +188,16 @@ void EngineFrame::GameViewWindow()
 		}
 	}
 
+	ImGui::SameLine();
+	std::string msg = "NowCameraNumber" + std::to_string(SceneManger::GetInstance()->GetCurrentScene()->GetMainCameraNumber());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str());
+
 	ImGui::PopStyleVar(2);
 
 	ImGui::Separator();
 
-	// --- ゲーム画面（プレビュー） ---
 	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
 	ImVec2 size = ImGui::GetContentRegionAvail();
-	// アスペクト比16:9に合わせる
 	float aspect = 16.0f / 9.0f;
 	if (size.x / size.y > aspect) {
 		size.x = size.y * aspect;

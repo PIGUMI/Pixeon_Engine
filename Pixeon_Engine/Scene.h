@@ -36,7 +36,7 @@ public:
 	std::vector<AbstractObject*> GetObjects() { return _objects; }
 
 	CameraComponent* GetMainCamera() { return _MainCamera; }
-	void SetMainCamera(CameraComponent* camera) { _MainCamera = camera; }
+	void SetMainCamera(CameraComponent* camera);
 	int GetMainCameraNumber() { return _MainCameraNumber; }
 	void SetMainCameraNumber(int num);
 

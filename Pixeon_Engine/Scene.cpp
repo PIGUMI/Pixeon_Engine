@@ -77,7 +77,6 @@ void Scene::BeginPlay() {
 			_SaveObjects.push_back(cloneObj);
 		}
 	}
-	// 物理演算に関するコード
 	if (pPhysicsWorld)
 	{
 		while (pPhysicsWorld->getNumCollisionObjects() > 0)
@@ -99,8 +98,7 @@ void Scene::BeginPlay() {
 
 void Scene::EditUpdate() {
 	InGame = false;
-	if (!EndPlayCalled)
-	{
+	if (!EndPlayCalled){
 		EndPlayCalled = true;
 		for (auto& obj : _objects)
 		{
@@ -119,15 +117,15 @@ void Scene::EditUpdate() {
 					CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
 					if (cam->GetCameraNumber() == _MainCameraNumber)
 					{
+						std::string msg = "Restored MainCamera: " + std::to_string(editorCameraNumber);
+						MessageBox(nullptr, msg.c_str(), "Info", MB_OK);
 						_MainCamera = cam;
 					}
 				}
 			}
 		}
 	}
-	// 非同期追加の処理
 	ProcessThreadSafeAdditions();
-	// オブジェクトの追加処理
 	for (auto& obj : _ToBeAdded) {
 		if (obj) {
 			obj->SetParentScene(this);
@@ -135,8 +133,6 @@ void Scene::EditUpdate() {
 		}
 	}
 	_ToBeAdded.clear();
-
-	// カメラコンポーネントの更新
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -150,14 +146,7 @@ void Scene::EditUpdate() {
 			}
 		}
 	}
-
-	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
-	else _MainCameraNumber = -1;
-
-	// オブジェクトの更新
 	for (auto& obj : _objects) if (obj)obj->EditUpdate();
-
-	// オブジェクトの削除処理
 	for (auto& obj : _ToBeRemoved) {
 		if (!obj) continue;
 		auto it = std::find(_objects.begin(), _objects.end(), obj);
@@ -171,9 +160,7 @@ void Scene::EditUpdate() {
 
 void Scene::PlayUpdate() {
 	InGame = true;
-	// 非同期追加の処理
 	ProcessThreadSafeAdditions();
-	// オブジェクトの追加処理
 	for (auto& obj : _ToBeAdded) {
 		if (obj) {
 			obj->SetParentScene(this);
@@ -182,8 +169,6 @@ void Scene::PlayUpdate() {
 		}
 	}
 	_ToBeAdded.clear();
-
-	// カメラコンポーネントの更新
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -197,11 +182,6 @@ void Scene::PlayUpdate() {
 			}
 		}
 	}
-
-	if (_MainCamera)_MainCameraNumber = _MainCamera->GetCameraNumber();
-	else _MainCameraNumber = -1;
-
-	/* 物理シュミレーションのステップ */
 	if (pPhysicsWorld)
 	{
 		try
@@ -220,34 +200,27 @@ void Scene::PlayUpdate() {
 					}
 				}
 
-				// 無効なオブジェクトがない場合のみステップを進める
-				if (!hasInvakudObjects)
-				{
+				if (!hasInvakudObjects){
 					float timeStep = 1.0f / 60.0f;
 					int maxSubSteps = 10;
 					bool valid = true;
-					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i)
-					{
+					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i){
 						btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
 						btRigidBody* body = btRigidBody::upcast(obj);
-						if (!body || !body->getCollisionShape() || !body->getMotionState())
-						{
+						if (!body || !body->getCollisionShape() || !body->getMotionState()){
 							valid = false;
 							break;
 						}
 					}
-					if (valid)
-					{
+					if (valid){
 						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps);
 					}
 				}
-				else
-				{
+				else{
 					CleanupAndReinitializePhysics();
 				}
 			}
-			else
-			{
+			else{
 				CleanupAndReinitializePhysics();
 			}
 		}
@@ -256,13 +229,8 @@ void Scene::PlayUpdate() {
 			CleanupAndReinitializePhysics();
 		}
 	}
-
-	// オブジェクトの更新
 	for (auto& obj : _objects) if (obj)obj->InGameUpdate();
-
 	if (_collisionManager)_collisionManager->Update();
-
-	// オブジェクトの削除処理
 	for (auto& obj : _ToBeRemoved) {
 		if (!obj) continue;
 		auto it = std::find(_objects.begin(), _objects.end(), obj);
@@ -424,6 +392,14 @@ void Scene::LoadToFile() {
 		}
 		if (_MainCamera) break;
 	}
+}
+
+void Scene::SetMainCamera(CameraComponent* camera){
+	_MainCamera = camera;
+	if (_MainCamera)
+		_MainCameraNumber = _MainCamera->GetCameraNumber();
+	else
+		_MainCameraNumber = -1;
 }
 
 void Scene::SetMainCameraNumber(int num)
