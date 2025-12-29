@@ -89,10 +89,10 @@ void Scene::BeginPlay() {
 		pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
 		pPhysicsWorld->getConstraintSolver()->reset();
 	}
+	editorCameraNumber = _MainCameraNumber;
 	for (auto& obj : _objects) {
 		if (obj)obj->BeginPlay();
 	}
-	editorCameraNumber = _MainCameraNumber;
 	EndPlayCalled = false;
 }
 
@@ -100,8 +100,7 @@ void Scene::EditUpdate() {
 	InGame = false;
 	if (!EndPlayCalled){
 		EndPlayCalled = true;
-		for (auto& obj : _objects)
-		{
+		for (auto& obj : _objects){
 			if (obj) obj->UInit();
 			delete obj;
 		}
@@ -115,12 +114,7 @@ void Scene::EditUpdate() {
 				if (!comp) continue;
 				if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
 					CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
-					if (cam->GetCameraNumber() == _MainCameraNumber)
-					{
-						std::string msg = "Restored MainCamera: " + std::to_string(editorCameraNumber);
-						MessageBox(nullptr, msg.c_str(), "Info", MB_OK);
-						_MainCamera = cam;
-					}
+					if (cam->GetCameraNumber() == _MainCameraNumber)_MainCamera = cam;
 				}
 			}
 		}
