@@ -44,6 +44,7 @@ private:
 	void HierarchyWindow();
 	void InspectorWindow();
 	void ContentWindow();
+	void PrefabWindow();
 	void HandleAssetClick(const std::filesystem::path& path);
 	void SceneRenameWindow();
 	void HandleAssetContextMenu(const std::filesystem::path& path);

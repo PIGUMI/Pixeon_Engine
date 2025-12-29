@@ -149,6 +149,7 @@ void EngineFrame::DrawGUI()
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("コンソール").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Prefab").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("コンテンツドロワー").c_str(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("コンテンツドロワー").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ヒエラルキー").c_str(), dock_id_left);
 
 		ImGui::DockBuilderFinish(DockSpace);
@@ -162,6 +163,7 @@ void EngineFrame::DrawGUI()
 	HierarchyWindow();
 	InspectorWindow();
 	ContentWindow();
+	PrefabWindow();
 	SceneRenameWindow();
 }
 
@@ -604,6 +606,189 @@ void  EngineFrame::ContentWindow()
 			else
 			{
 				HandleAssetClick(entry.path());
+			}
+		}
+
+		ImGui::EndGroup();
+		ImGui::NextColumn();
+	}
+
+	ImGui::Columns(1);
+	ImGui::EndChild();
+	ImGui::End();
+}
+
+void EngineFrame::PrefabWindow(){
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Prefab").c_str());
+
+	// Prefabリストの取得
+	std::vector<AbstractObject*> prefabs = EngineFrame::GetInstance()->GetPrefabs();
+
+	if (prefabs.empty()) {
+		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+			GUI::GetInstance()->ShiftJISToUTF8("Prefabがありません").c_str());
+		ImGui::TextWrapped(
+			GUI::GetInstance()->ShiftJISToUTF8(
+				"ヒエラルキーでオブジェクトを右クリックして「Prefabとして保存」を選択してください。"
+			).c_str());
+		ImGui::End();
+		return;
+	}
+
+	// 右クリックメニュー（空白部分）
+	if (ImGui::BeginPopupContextWindow("prefab_context", ImGuiMouseButton_Right)) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("すべてクリア").c_str())) {
+			for (auto prefab : prefabs) {
+				EngineFrame::GetInstance()->RemovePrefab(prefab);
+			}
+		}
+		ImGui::EndPopup();
+	}
+
+	ImGui::BeginChild("prefab_grid", ImVec2(0, 0), true);
+
+	float iconSize = 48.0f;
+	float itemWidth = 96.0f;
+	float itemHeight = 80.0f;
+	float availWidth = ImGui::GetContentRegionAvail().x;
+	int columns = static_cast<int>(availWidth / itemWidth);
+	if (columns < 1) columns = 1;
+	ImGui::Columns(columns, nullptr, false);
+
+	static AbstractObject* selectedPrefab = nullptr;
+	int index = 0;
+
+	for (auto prefab : prefabs) {
+		if (!prefab) continue;
+
+		ImGui::BeginGroup();
+
+		std::string prefabName = prefab->GetObjectName();
+		std::string displayName = AbbreviateName(prefabName, 12);
+		std::string idName = prefabName + "##prefab_" + std::to_string(index++);
+
+		float groupX = ImGui::GetCursorPosX();
+
+		// アイコンを中央揃え
+		float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
+		ImGui::SetCursorPosX(cursorX);
+
+		bool isSelected = (prefab == selectedPrefab);
+
+		// ボタン色
+		if (!isSelected) {
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+		}
+		else {
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.6f, 1.0f, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 1.0f, 0.7f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.5f, 1.0f, 1.0f));
+		}
+
+		bool iconClicked = false;
+		ImTextureID icon = (ImTextureID)ObjectIcon_;
+		if (icon) {
+			iconClicked = ImGui::ImageButton(
+				(std::string("prefab_icon_") + idName).c_str(),
+				icon,
+				ImVec2(iconSize, iconSize)
+			);
+		}
+		else {
+			iconClicked = ImGui::Button(
+				(std::string("prefab_btn_") + idName).c_str(),
+				ImVec2(iconSize, iconSize)
+			);
+		}
+
+		ImGui::PopStyleColor(3);
+
+		// テキストを中央揃え
+		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
+		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
+		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
+
+		ImGui::PushID(idName.c_str());
+		bool nameClicked = ImGui::Selectable(
+			textUTF8.c_str(),
+			isSelected, 0, ImVec2(itemWidth, 0)
+		);
+
+		// 右クリックメニュー
+		if (ImGui::BeginPopupContextItem("prefab_item_context")) {
+			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Prefab:  %s").c_str(), prefabName.c_str());
+			ImGui::Separator();
+
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("シーンに追加").c_str())) {
+				Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+				if (currentScene) {
+					AbstractObject* newObj = prefab->Clone();
+					// 名前の重複を避ける
+					std::string baseName = newObj->GetObjectName();
+					int count = 1;
+					std::string newName = baseName;
+					bool nameExists = true;
+					while (nameExists) {
+						nameExists = false;
+						for (const auto& obj : currentScene->GetObjects()) {
+							if (obj->GetObjectName() == newName) {
+								nameExists = true;
+								break;
+							}
+						}
+						if (nameExists) {
+							newName = baseName + std::to_string(count);
+							count++;
+						}
+					}
+					newObj->SetObjectName(newName);
+					currentScene->AddObjectLocal(newObj);
+				}
+			}
+
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str())) {
+				EngineFrame::GetInstance()->RemovePrefab(prefab);
+				if (selectedPrefab == prefab) {
+					selectedPrefab = nullptr;
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+		ImGui::PopID();
+
+		// クリック処理
+		if (iconClicked || nameClicked) {
+			selectedPrefab = prefab;
+
+			// ダブルクリックでシーンに追加
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+				Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+				if (currentScene) {
+					AbstractObject* newObj = prefab->Clone();
+					// 名前の重複を避ける
+					std::string baseName = newObj->GetObjectName();
+					int count = 1;
+					std::string newName = baseName;
+					bool nameExists = true;
+					while (nameExists) {
+						nameExists = false;
+						for (const auto& obj : currentScene->GetObjects()) {
+							if (obj->GetObjectName() == newName) {
+								nameExists = true;
+								break;
+							}
+						}
+						if (nameExists) {
+							newName = baseName + std::to_string(count);
+							count++;
+						}
+					}
+					newObj->SetObjectName(newName);
+					currentScene->AddObjectLocal(newObj);
+				}
 			}
 		}
 
