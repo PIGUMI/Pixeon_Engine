@@ -35,7 +35,6 @@ private:
 	TimelineEditor* timelineEditor_ = nullptr;
 	bool isPlaying_ = false;
 	bool wantOpenTexturePopup_ = false;
-	CameraComponent* tempCamera_ = nullptr;
 private:
 	static Animator2DFrame* instance;
 };

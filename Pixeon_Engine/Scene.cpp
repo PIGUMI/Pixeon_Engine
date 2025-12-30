@@ -108,6 +108,8 @@ void Scene::EditUpdate() {
 			if (obj) obj->UInit();
 			delete obj;
 		}
+		_ToBeAdded.clear();
+		_ToBeAddedBuffer.clear();
 		_objects.clear();
 		_objects = _SaveObjects;
 		_SaveObjects.clear();

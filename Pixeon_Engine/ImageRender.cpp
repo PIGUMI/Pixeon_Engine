@@ -376,7 +376,14 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 }
 
 void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
-	Transform t = _Parent->GetTransform();
+	Transform t;
+	t.position = { 0.0f,0.0f,0.0f };
+	t.rotation = { 0.0f,0.0f,0.0f };
+	t.scale = { 1.0f,1.0f,1.0f };
+	if (_Parent)
+	{
+		t = _Parent->GetTransform();
+	}
 	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x + offset3DRot.x, t.rotation.y + offset3DRot.y, t.rotation.z + offset3DRot.z);
 	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(R.r[0]);
 	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(R.r[1]);

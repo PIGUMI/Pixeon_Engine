@@ -152,9 +152,6 @@
     <ClCompile Include="ScriptManager.cpp">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="IScript.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClCompile>
@@ -231,6 +228,9 @@
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="API.cpp">
+      <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClCompile>
+    <ClCompile Include="IScript.cpp">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClCompile>
   </ItemGroup>
@@ -325,9 +325,6 @@
     <ClInclude Include="ScriptManager.h">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="IScript.h">
-      <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClInclude>
     <ClInclude Include="BoneNodeMapping.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
@@ -407,6 +404,9 @@
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="API.h">
+      <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClInclude>
+    <ClInclude Include="IScript.h">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClInclude>
   </ItemGroup>
