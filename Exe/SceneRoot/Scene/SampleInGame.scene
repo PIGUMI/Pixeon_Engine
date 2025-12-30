@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-7.57582 10.8714 2.90959 -0.63 0.109999 7.62248e-39 -1.71998 9.77365 -5.12185 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "-27.0887 2.36683 -3.65575 -1.5 -0.200001 7.62248e-39 -17.3126 4.35354 -4.34902 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -67,7 +67,7 @@
         {
             "Components": [
                 {
-                    "Data": "MB_Munkki_v1.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n2\n",
+                    "Data": "untitled.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n2\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },

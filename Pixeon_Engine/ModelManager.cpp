@@ -189,12 +189,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 	DumpBoneChannelMapping(shared.get());
 	RebindBoneNodeIndices(shared.get());
 	QuickIntegrityReport(shared.get());
-#ifdef _DEBUG
-	int missing = 0;
-	for (auto& b : shared->bones) if (b.nodeIndex < 0) ++missing;
-	EditrGUI::GetInstance()->WriteLog("[ModelManager] LoadInternal bone missing nodeIndex=" + std::to_string(missing));
-#endif
-
 	return shared;
 }
 
