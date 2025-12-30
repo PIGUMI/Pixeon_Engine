@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-27.0887 2.36683 -3.65575 -1.5 -0.200001 7.62248e-39 -17.3126 4.35354 -4.34902 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "-8.58862 11.9939 4.00723 -1.18 0.189999 7.62248e-39 0.49105 10.1053 0.266533 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -67,17 +67,12 @@
         {
             "Components": [
                 {
-                    "Data": "untitled.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n2\n",
+                    "Data": "MB_Munkki_v1_Test.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n6\nPNG/TX_Munkki_Costume1.png\n0 0 0\nPNG/TX_Munkki_Cosutme2.png\n0 0 0\nPNG/TX_Munkki_Hair.png\n0 0 0\nPNG/TX_Munkki_Face.png\n0 0 0\n\n0 0 0\nPNG/TX_Munkki_Skin.png\n0 0 0\n",
                     "Name": "ModelRender",
                     "Type": 4
-                },
-                {
-                    "Data": "-1\n1\n1\n0\n",
-                    "Name": "Animation",
-                    "Type": 5
                 }
             ],
-            "Name": "Model",
+            "Name": "NewObject",
             "Transform": {
                 "Position": [
                     0.0,

@@ -59,23 +59,22 @@ void ModelRenderComponent::RefreshMaterialCache() {
 	for (auto& m : m_model->materials) {
 		MaterialRuntime rt;
 		rt.texName = m.baseColorTex;
-		rt.color = m.baseColor; // マテリアルカラーを保存
+		rt.color = m.baseColor;
+		rt.meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // 初期オフセットは0
 
 		if (!m.baseColorTex.empty()) {
-			// 埋め込みテクスチャかチェック
+			// 埋め込みテクスチャチェック
 			if (m.isEmbedded && m.baseColorTex[0] == '*') {
 				auto srv = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, m.baseColorTex);
 				if (srv) {
-					// 埋め込みテクスチャ用の一時的なTextureResourceを作成
 					auto texRes = std::make_shared<TextureResource>();
 					texRes->srv = srv;
-					texRes->width = 0; // 埋め込みの場合サイズ不明
+					texRes->width = 0;
 					texRes->height = 0;
 					rt.tex = texRes;
 				}
 			}
 			else {
-				// 外部ファイルとして読み込み
 				rt.tex = TextureManager::Instance()->LoadOrGet(m.baseColorTex);
 			}
 		}
@@ -290,6 +289,30 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 	}
 }
 
+DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(const DirectX::XMFLOAT3& offset) const {
+	Transform t = _Parent->GetTransform();
+	XMMATRIX S = XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
+	XMMATRIX R = XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
+
+	// オフセットを適用した位置行列
+	XMMATRIX T = XMMatrixTranslation(
+		t.position.x + offset.x,
+		t.position.y + offset.y,
+		t.position.z + offset.z
+	);
+	return S * R * T;
+}
+
+void ModelRenderComponent::SetMeshOffset(size_t meshIndex, const DirectX::XMFLOAT3& offset) {
+	if (meshIndex >= m_materials.size()) return;
+	m_materials[meshIndex].meshOffset = offset;
+}
+
+DirectX::XMFLOAT3 ModelRenderComponent::GetMeshOffset(size_t meshIndex) const {
+	if (meshIndex >= m_materials.size()) return DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	return m_materials[meshIndex].meshOffset;
+}
+
 void ModelRenderComponent::EnsureDefaultBoneMatrices()
 {
 	if (!m_model) return;
@@ -323,7 +346,6 @@ void ModelRenderComponent::Draw(int Layer) {
 
 	XMMATRIX view = cam->GetView();
 	XMMATRIX proj = cam->GetProjection();
-	XMMATRIX world = BuildWorldMatrix();
 
 	auto ctx = DirectX11::GetInstance()->GetContext();
 
@@ -354,6 +376,7 @@ void ModelRenderComponent::Draw(int Layer) {
 
 		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
 		DirectX::XMFLOAT4 materialColor = m_color;
+		DirectX::XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		bool usedWhite = true;
 		bool usedMagenta = false;
 		MaterialRuntime* matPtr = nullptr;
@@ -366,6 +389,8 @@ void ModelRenderComponent::Draw(int Layer) {
 			materialColor.y *= mat.color.y;
 			materialColor.z *= mat.color.z;
 			materialColor.w *= mat.color.w;
+
+			meshOffset = mat.meshOffset; // メッシュオフセットを取得
 
 			if (mat.tex && mat.tex->srv) {
 				srv = mat.tex->srv.Get();
@@ -387,6 +412,9 @@ void ModelRenderComponent::Draw(int Layer) {
 			usedMagenta = true;
 			usedWhite = false;
 		}
+
+		// メッシュごとのオフセットを適用したワールド行列
+		XMMATRIX world = BuildMeshWorldMatrix(meshOffset);
 
 		CBData cbd;
 		cbd.World = XMMatrixTranspose(world);
@@ -465,6 +493,15 @@ void ModelRenderComponent::SaveToFile(std::ostream& out) {
 	out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << "\n";
 	out << m_vsName << "\n" << m_psName << "\n";
 	out << _LayerNumber << "\n";
+
+	// マテリアル数を保存
+	out << m_materials.size() << "\n";
+	for (const auto& mat : m_materials) {
+		// テクスチャ名を保存
+		out << mat.texName << "\n";
+		// メッシュオフセットを保存
+		out << mat.meshOffset.x << " " << mat.meshOffset.y << " " << mat.meshOffset.z << "\n";
+	}
 }
 
 void ModelRenderComponent::LoadFromFile(std::istream& in) {
@@ -475,7 +512,31 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 	std::getline(in, m_psName);
 	in >> _LayerNumber;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 	SetModel(m_modelPath);
+
+	// マテリアル数を読み込み
+	size_t matCount = 0;
+	in >> matCount;
+	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+	// 各マテリアルのデータを読み込み
+	for (size_t i = 0; i < matCount && i < m_materials.size(); ++i) {
+		std::string texName;
+		std::getline(in, texName);
+
+		DirectX::XMFLOAT3 offset;
+		in >> offset.x >> offset.y >> offset.z;
+		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+		// テクスチャを設定
+		if (!texName.empty() && texName != m_materials[i].texName) {
+			SetMaterialTexture(i, texName);
+		}
+
+		// オフセットを設定
+		m_materials[i].meshOffset = offset;
+	}
 }
 
 void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices)
@@ -493,7 +554,6 @@ void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4
 }
 
 void ModelRenderComponent::DrawInspector() {
-	// ImGui 表示用
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string title;
 	title = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
@@ -501,12 +561,12 @@ void ModelRenderComponent::DrawInspector() {
 	title = "ModelTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) return;
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("レイヤー番号:").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("レイヤー番号: ").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::InputInt("Layer", &_LayerNumber);
 	if (0 > _LayerNumber) _LayerNumber = 0;
 	if (10 <= _LayerNumber) _LayerNumber = 9;
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("モデル情報").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("モデル名").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::Text("%s", m_modelPath.c_str());
 
 	ImGui::TableNextRow();
@@ -577,36 +637,56 @@ void ModelRenderComponent::DrawInspector() {
 		ImGui::Text("%s %zu", SJ("マテリアル数:").c_str(), m_materials.size());
 		for (size_t i = 0; i < m_materials.size(); ++i) {
 			ImGui::PushID((int)i);
-			ImGui::Text("Mat %zu", i);
-			ImGui::SameLine();
-			std::string shown = m_materials[i].texName.empty() ? SJ("(なし)") : m_materials[i].texName;
-			ImGui::Text("tex=%s", shown.c_str());
-			ImGui::SameLine();
-			if (ImGui::Button(SJ("テクスチャ変更").c_str())) {
-				m_openTexPopup = true;
-				m_texPopupMatIndex = (int)i;
-				// 1フレームだけで消費されるため、このフラグがtrueの間は毎フレームOpenPopupを呼ぶ
-				ImGui::OpenPopup("TextureSelectPopup");
+
+			std::string nodeLabel = "Mat " + std::to_string(i);
+			if (ImGui::TreeNode(nodeLabel.c_str())) {
+				// テクスチャ設定
+				std::string shown = m_materials[i].texName.empty() ? SJ("(なし)") : m_materials[i].texName;
+				ImGui::Text("tex=%s", shown.c_str());
+				ImGui::SameLine();
+				if (ImGui::Button(SJ("テクスチャ変更").c_str())) {
+					m_openTexPopup = true;
+					m_texPopupMatIndex = (int)i;
+					ImGui::OpenPopup("TextureSelectPopup");
+				}
+
+				// メッシュオフセット設定
+				ImGui::Separator();
+				ImGui::Text("%s", SJ("メッシュオフセット").c_str());
+				float offset[3] = {
+					m_materials[i].meshOffset.x,
+					m_materials[i].meshOffset.y,
+					m_materials[i].meshOffset.z
+				};
+				if (ImGui::DragFloat3("Offset", offset, 0.01f, -100.0f, 100.0f)) {
+					m_materials[i].meshOffset.x = offset[0];
+					m_materials[i].meshOffset.y = offset[1];
+					m_materials[i].meshOffset.z = offset[2];
+				}
+
+				// リセットボタン
+				if (ImGui::Button(SJ("オフセットリセット").c_str())) {
+					m_materials[i].meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+				}
+
+				ImGui::TreePop();
 			}
 			ImGui::PopID();
 		}
 		ImGui::TreePop();
 	}
 
-	// m_openTexPopupがtrueなら毎フレームOpenPopup（TreeNodeの開閉に影響されない位置で）
+	// テクスチャ選択ポップアップ
 	if (m_openTexPopup) {
 		ImGui::OpenPopup("TextureSelectPopup");
 	}
 
-	// モーダル本体（BeginPopupModalに入れない問題の対策：OpenPopup直後の同フレームで必ず呼ぶ）
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		// ShowTextureSelectPopup内ではEndPopupを呼ばない
-		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
 
 		auto list = AssetManager::Instance()->GetCachedTextureNames();
-		ImGui::Text("%s: %zu", SJ("候補数").c_str(), list.size());
+		ImGui::Text("%s:  %zu", SJ("総数").c_str(), list.size());
 		ImGui::Separator();
 
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);

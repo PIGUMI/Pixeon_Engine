@@ -123,7 +123,6 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 	auto shared = std::make_shared<ModelSharedResource>();
 	shared->source = logicalName;
 
-	// 埋め込みテクスチャの処理
 	ProcessEmbeddedTextures(scene, shared, logicalName);
 
 	std::vector<ModelVertex> vertices;
@@ -161,8 +160,10 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 	ProcessMaterials(scene, shared);
 	ProcessAnimations(scene, shared);
 	ProcessBonesFinalizeHierarchy(scene, shared);
+
 	if (!shared->bones.empty()) {
 		using namespace DirectX;
+
 		std::unordered_map<std::string, XMMATRIX> nodeWorld;
 		BuildNodeWorldMatrices(scene->mRootNode, XMMatrixIdentity(), nodeWorld);
 
@@ -171,19 +172,12 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 		for (size_t i = 0; i < shared->bones.size(); ++i) {
 			Bone& b = shared->bones[i];
 
-			// ボーン名に対応するノードの World 行列
-			auto it = nodeWorld.find(b.name);
-			XMMATRIX nodeW = XMMatrixIdentity();
-			if (it != nodeWorld.end()) {
-				nodeW = it->second;
-			}
-
-			// ★修正ポイント：掛け順を nodeW * offset にする
-			XMMATRIX finalM = b.offset * nodeW;
+			XMMATRIX finalM = XMMatrixIdentity();
 
 			XMStoreFloat4x4(&shared->restPoseBones[i], finalM);
 		}
 	}
+
 	MapBonesToNodes(*shared);
 	QuickIntegrityReport(shared.get());
 	DumpBoneChannelMapping(shared.get());
@@ -304,7 +298,7 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 	sm.indexOffset = (uint32_t)indices.size();
 	sm.materialIndex = mesh->mMaterialIndex;
 	sm.skinned = mesh->HasBones();
-	sm.hasVertexColors = mesh->HasVertexColors(0); // 頂点カラーの有無
+	sm.hasVertexColors = mesh->HasVertexColors(0);
 
 	if (sm.skinned) {
 		shared->hasSkin = true;
@@ -375,7 +369,6 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 			mv.uv[1] = mesh->mTextureCoords[0][v].y;
 		}
 
-		// 頂点カラーの取得
 		if (mesh->HasVertexColors(0)) {
 			mv.color[0] = mesh->mColors[0][v].r;
 			mv.color[1] = mesh->mColors[0][v].g;
