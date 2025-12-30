@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "11.4975 8.72052 2.02746 1.18 -0.140001 7.62248e-39 2.34188 10.116 -1.74452 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "-7.57582 10.8714 2.90959 -0.63 0.109999 7.62248e-39 -1.71998 9.77365 -5.12185 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -67,9 +67,14 @@
         {
             "Components": [
                 {
-                    "Data": "Marubody_ver2.0_Blender.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n",
+                    "Data": "MB_Munkki_v1.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n2\n",
                     "Name": "ModelRender",
                     "Type": 4
+                },
+                {
+                    "Data": "-1\n1\n1\n0\n",
+                    "Name": "Animation",
+                    "Type": 5
                 }
             ],
             "Name": "Model",
@@ -80,7 +85,7 @@
                     0.0
                 ],
                 "Rotation": [
-                    1.5707963705062866,
+                    0.0,
                     0.0,
                     0.0
                 ],
@@ -88,33 +93,6 @@
                     0.10000000149011612,
                     0.10000000149011612,
                     0.10000000149011612
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0 1 1 1 1 10 20 35 1 ",
-                    "Name": "Light",
-                    "Type": 1
-                }
-            ],
-            "Name": "NewObject",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    2.087413787841797,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    7.5,
-                    1.0
                 ]
             }
         }

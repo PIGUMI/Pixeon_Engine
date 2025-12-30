@@ -79,6 +79,7 @@ struct ModelSharedResource {
 	std::vector<AnimationClip> clips;
 	bool hasSkin = false;
 	size_t gpuBytes = 0;
+	std::vector<DirectX::XMFLOAT4X4> restPoseBones;
 };
 
 struct SoundResource {

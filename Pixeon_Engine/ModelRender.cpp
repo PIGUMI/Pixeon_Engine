@@ -27,6 +27,23 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 		m_ready = false;
 		return false;
 	}
+
+	if (m_model->hasSkin) {
+		if (!m_model->restPoseBones.empty()) {
+			m_boneMatrices = m_model->restPoseBones;
+			m_useBoneMatrices = true;
+		}
+		else {
+			m_boneMatrices.clear();
+			m_useBoneMatrices = false;
+		}
+	}
+	else {
+		m_boneMatrices.clear();
+		m_useBoneMatrices = false;
+	}
+	// š‚±‚±‚Ü‚Å’Ç‰Á
+
 	RefreshMaterialCache();
 	if (!EnsureShaders(true)) return false;
 	if (!EnsureConstantBuffer()) return false;
@@ -300,8 +317,9 @@ void ModelRenderComponent::Draw(int Layer) {
 	if (!m_vs || !m_ps) {
 		if (!EnsureShaders(false)) return;
 	}
-
-	EnsureDefaultBoneMatrices();
+	if (m_model->hasSkin && m_boneMatrices.empty()) {
+		EnsureDefaultBoneMatrices();
+	}
 
 	XMMATRIX view = cam->GetView();
 	XMMATRIX proj = cam->GetProjection();

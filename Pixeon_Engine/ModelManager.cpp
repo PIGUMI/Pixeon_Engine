@@ -46,6 +46,22 @@ static std::string MM_NormalizePath(std::string s) {
 	}
 	return s;
 }
+static void BuildNodeWorldMatrices(aiNode* node,
+	const DirectX::XMMATRIX& parentWorld,
+	std::unordered_map<std::string, DirectX::XMMATRIX>& out)
+{
+	using namespace DirectX;
+	if (!node) return;
+
+	XMMATRIX local = AssimpToXM_RowMajor(node->mTransformation);
+	XMMATRIX world = local * parentWorld;
+
+	out[node->mName.C_Str()] = world;
+
+	for (uint32_t i = 0; i < node->mNumChildren; ++i) {
+		BuildNodeWorldMatrices(node->mChildren[i], world, out);
+	}
+}
 
 ModelManager* ModelManager::Instance() {
 	if (!s_instance) s_instance = new ModelManager();
@@ -145,6 +161,29 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 	ProcessMaterials(scene, shared);
 	ProcessAnimations(scene, shared);
 	ProcessBonesFinalizeHierarchy(scene, shared);
+	if (!shared->bones.empty()) {
+		using namespace DirectX;
+		std::unordered_map<std::string, XMMATRIX> nodeWorld;
+		BuildNodeWorldMatrices(scene->mRootNode, XMMatrixIdentity(), nodeWorld);
+
+		shared->restPoseBones.resize(shared->bones.size());
+
+		for (size_t i = 0; i < shared->bones.size(); ++i) {
+			Bone& b = shared->bones[i];
+
+			// ボーン名に対応するノードの World 行列
+			auto it = nodeWorld.find(b.name);
+			XMMATRIX nodeW = XMMatrixIdentity();
+			if (it != nodeWorld.end()) {
+				nodeW = it->second;
+			}
+
+			// ★修正ポイント：掛け順を nodeW * offset にする
+			XMMATRIX finalM = b.offset * nodeW;
+
+			XMStoreFloat4x4(&shared->restPoseBones[i], finalM);
+		}
+	}
 	MapBonesToNodes(*shared);
 	QuickIntegrityReport(shared.get());
 	DumpBoneChannelMapping(shared.get());
