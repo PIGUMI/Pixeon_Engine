@@ -236,3 +236,13 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 	}
 	in.read(reinterpret_cast<char*>(&_LayerNumber), sizeof(int));
 }
+
+Animator2D* Animator2DComponent::GetAnimator2D(const std::string& name)
+{
+	for (auto& animator : _animators) {
+		if (animator->GetProjectName() == name) {
+			return animator;
+		}
+	}
+	return nullptr;
+}

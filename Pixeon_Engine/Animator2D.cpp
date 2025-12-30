@@ -414,6 +414,22 @@ void Animator2D::KeyFrameUpdate()
 	}
 }
 
+void Animator2D::Stop()
+{
+	bFirst_ = true;
+	fNowTime_ = 0.0f;
+	for (auto& kf : KeyFrames_)
+	{
+		kf.Active = false;
+	}
+}
+
+void Animator2D::Start()
+{
+	bFirst_ = true;
+	fNowTime_ = 0.0f;
+}
+
 DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const DirectX::XMFLOAT2& startvalue, const DirectX::XMFLOAT2& endvalue, float elapsed, float duration)
 {
 	float t;

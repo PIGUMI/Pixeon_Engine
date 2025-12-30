@@ -15,6 +15,7 @@ public:
 
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
+	Animator2D* GetAnimator2D(const std::string& name);
 private:
 	void DrawAnimator2DPopup();
 private:

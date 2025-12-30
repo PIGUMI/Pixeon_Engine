@@ -7,7 +7,6 @@
 #include "Struct.h"
 #include "ImageRender.h"
 
-/* ベジェ曲線情報 */
 struct CurveData
 {
 	DirectX::XMFLOAT2 StartPoint = { 0.0f,0.0f };
@@ -16,7 +15,6 @@ struct CurveData
 	DirectX::XMFLOAT2 EndPoint = { 1.0f,1.0f };
 };
 
-// 2Dベクトル
 struct UITransform
 {
 	DirectX::XMFLOAT2 Position = { 0.0f,0.0f };
@@ -43,20 +41,19 @@ enum ViewMode
 	Billboard,
 };
 
-// キーフレーム情報
 struct KeyFrame
 {
-	std::string KeyFrameName = "KeyFrame"; // キーフレーム名
-	bool Active = false;				// アクティブ状態
-	int Layer = 0;						// レイヤー
-	float StartTime = 0.0f;				// 開始秒
-	float EndTime = 1.0f;				// 終了秒
-	CurveData CurveInfo;				// ベジェ情報
-	UITransform StartTransform;			// 開始トランスフォーム
-	UITransform EndTransform;			// 終了トランスフォーム
-	UITransform NowTransform;			// 現在トランスフォーム（編集用）
-	std::string Texture;				// テクスチャ名（保存用）
-	EditorFlag editorFlag;				// エディターフラグ
+	std::string KeyFrameName = "KeyFrame";
+	bool Active = false;
+	int Layer = 0;
+	float StartTime = 0.0f;
+	float EndTime = 1.0f;
+	CurveData CurveInfo;
+	UITransform StartTransform;
+	UITransform EndTransform;
+	UITransform NowTransform;
+	std::string Texture;
+	EditorFlag editorFlag;
 };
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
@@ -74,7 +71,7 @@ inline DirectX::XMFLOAT2 EvalCubicBezier(const DirectX::XMFLOAT2& p0, const Dire
 	p.y = uuu * p0.y + 3.0f * uu * t * p1.y + 3.0f * u * tt * p2.y + ttt * p3.y;
 	return p;
 }
-// Animator2D ProjectData
+
 class Animator2D
 {
 public:
@@ -117,25 +114,28 @@ public:
 
 	void SetLayer(int layer) { layer_ = layer; }
 
+	void Stop();
+	void Start();
+
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
-	// ベジェによるイージング
+
 	DirectX::XMFLOAT2 EaseByBezierCurve(const CurveData& curve, const DirectX::XMFLOAT2& startvalue, const DirectX::XMFLOAT2& endvalue, float elapsed, float duration = 1.0f);
 
 public:
-	std::string Name_ = "Animator2D"; // アニメーション名
-	bool bLoop_ = false;// ループ
-	bool bFirst_ = true; // 初回フラグ
-	bool bEnded_ = false; // 再生終了フラグ
-	float fStartTime_ = 0.0f; // 再生開始時刻（秒）
-	float fNowTime_ = 0.0f;   // 現在の再生時刻（秒）
-	float fTotalDuration_ = 0.0f; // 総再生時間（秒）
-	std::vector<KeyFrame> KeyFrames_; // キーフレーム群
+	std::string Name_ = "Animator2D";
+	bool bLoop_ = false;
+	bool bFirst_ = true; 
+	bool bEnded_ = false;
+	float fStartTime_ = 0.0f;
+	float fNowTime_ = 0.0f;
+	float fTotalDuration_ = 0.0f;
+	std::vector<KeyFrame> KeyFrames_;
 	ViewMode viewMode_ = ViewMode::UI;
-	ImageRender* PreviewImage = nullptr; // プレビュー用イメージ
+	ImageRender* PreviewImage = nullptr;
 	int DrawCount = 0;
 	AbstractObject* owner_ = nullptr;
-	bool bEditorMode_ = false; // エディターモード
-	int layer_ = 0; // レイヤー
+	bool bEditorMode_ = false;
+	int layer_ = 0;
 };
