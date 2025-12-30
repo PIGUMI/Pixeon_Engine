@@ -289,6 +289,7 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 		for (uint32_t bi = 0; bi < mesh->mNumBones; ++bi) {
 			aiBone* ab = mesh->mBones[bi];
 			std::string bname = ab->mName.C_Str();
+
 			int boneIndex = -1;
 			auto it = boneMap.find(bname);
 			if (it == boneMap.end()) {
@@ -296,8 +297,10 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 				boneMap[bname] = boneIndex;
 				Bone newBone;
 				newBone.name = bname;
+
 				newBone.offset = AssimpToXM_RowMajor(ab->mOffsetMatrix);
 				newBone.invOffset = DirectX::XMMatrixInverse(nullptr, newBone.offset);
+
 				newBone.parentIndex = -1;
 				newBone.nodeIndex = -1;
 				shared->bones.push_back(newBone);
@@ -305,9 +308,10 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 			else {
 				boneIndex = it->second;
 			}
+
 			for (uint32_t w = 0; w < ab->mNumWeights; ++w) {
 				uint32_t vid = ab->mWeights[w].mVertexId;
-				float     val = ab->mWeights[w].mWeight;
+				float val = ab->mWeights[w].mWeight;
 				if (vid < tmp.size())
 					tmp[vid].w.push_back({ boneIndex, val });
 			}
@@ -365,9 +369,14 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 				mv.boneWeights[k] = arr[k].second;
 				total += arr[k].second;
 			}
-			if (total > 0.f && fabs(total - 1.f) > 1e-5f) {
+			if (total > 1e-7f) {
 				for (int k = 0; k < count; ++k)
 					mv.boneWeights[k] /= total;
+			}
+			else {
+				mv.boneWeights[0] = 1.0f;
+				for (int k = 1; k < 4; ++k)
+					mv.boneWeights[k] = 0.0f;
 			}
 		}
 		vertices.push_back(mv);
@@ -400,23 +409,7 @@ void ModelManager::ProcessMaterials(const aiScene* scene,
 		aiMaterial* mat = scene->mMaterials[i];
 		MaterialShared ms;
 
-		// ディフューズカラー
-		aiColor4D col(1.0f, 1.0f, 1.0f, 1.0f);
-		if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, col)) {
-			ms.baseColor = { col.r, col.g, col.b, col.a };
-		}
-
-		// アンビエントカラー (フォールバック)
-		aiColor4D ambient;
-		if (AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_AMBIENT, ambient)) {
-			// ディフューズが白の場合はアンビエントを使用
-			if (ms.baseColor.x == 1.0f && ms.baseColor.y == 1.0f &&
-				ms.baseColor.z == 1.0f && ms.baseColor.w == 1.0f) {
-				if (ambient.r != 1.0f || ambient.g != 1.0f || ambient.b != 1.0f) {
-					ms.baseColor = { ambient.r, ambient.g, ambient.b, ambient.a };
-				}
-			}
-		}
+		ms.baseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 		// テクスチャ
 		aiString texPath;
@@ -594,7 +587,29 @@ void ModelManager::BuildNodeHierarchy(aiNode* node,
 	AnimationClip::NodeInfo ni;
 	ni.name = nm;
 	ni.parentIndex = parentIndex;
-	ni.localTransform = AssimpToXM_RowMajor(node->mTransformation);
+
+	DirectX::XMMATRIX localTransform = AssimpToXM_RowMajor(node->mTransformation);
+
+	DirectX::XMVECTOR scale, rotation, translation;
+	if (DirectX::XMMatrixDecompose(&scale, &rotation, &translation, localTransform)) {
+		DirectX::XMFLOAT3 scaleF;
+		DirectX::XMStoreFloat3(&scaleF, scale);
+
+		// 異常なスケール（2倍以上または0.5倍以下）を検出
+		bool hasAbnormalScale = (scaleF.x > 2.0f || scaleF.x < 0.5f ||
+			scaleF.y > 2.0f || scaleF.y < 0.5f ||
+			scaleF.z > 2.0f || scaleF.z < 0.5f);
+
+		if (hasAbnormalScale) {
+			// スケールを1に正規化して再構築
+			DirectX::XMVECTOR normalScale = DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+			localTransform = DirectX::XMMatrixScalingFromVector(normalScale) *
+				DirectX::XMMatrixRotationQuaternion(rotation) *
+				DirectX::XMMatrixTranslationFromVector(translation);
+		}
+	}
+
+	ni.localTransform = localTransform;
 
 	int current = (int)clip.nodeHierarchy.size();
 	nodeNameToIndex[nm] = current;
