@@ -28,6 +28,12 @@ private:
 	};
 
 public:
+	enum class CullMode : uint8_t {
+		Back = 0,
+		Front = 1,
+		None = 2
+	};
+
 	ModelRenderComponent() = default;
 	~ModelRenderComponent() = default;
 
@@ -51,13 +57,14 @@ public:
 
 	bool SetMaterialTexture(int materialIndex, const std::string& texLogicalPath);
 
-	// メッシュごとのオフセット設定
 	void SetMeshOffset(size_t meshIndex, const DirectX::XMFLOAT3& offset);
 	DirectX::XMFLOAT3 GetMeshOffset(size_t meshIndex) const;
 
-	// メッシュごとのスケール設定
 	void SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT3& scale);
 	DirectX::XMFLOAT3 GetMeshScale(size_t meshIndex) const;
+
+	void SetMeshCullMode(size_t meshIndex, CullMode mode);
+	CullMode GetMeshCullMode(size_t meshIndex) const;
 
 private:
 	struct CBData {
@@ -70,8 +77,9 @@ private:
 		std::string                          texName;
 		std::shared_ptr<TextureResource>     tex;
 		DirectX::XMFLOAT4                    color;
-		DirectX::XMFLOAT3                    meshOffset;  // メッシュごとのオフセット
-		DirectX::XMFLOAT3                    meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+		DirectX::XMFLOAT3                    meshOffset;
+		DirectX::XMFLOAT3                    meshScale;
+		CullMode                             cullMode;
 	};
 
 	bool EnsureShaders(bool forceRecreateLayout = false);
@@ -88,6 +96,7 @@ private:
 
 	bool EnsureWhiteTexture();
 	bool EnsureDebugFallbackTextures();
+	bool EnsureRasterizerStates();
 
 	void DiagnoseAndReportTextureIssue(size_t submeshIdx,
 		const SubMesh& sm,
@@ -117,6 +126,11 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11SamplerState>        s_linearSmp;
 	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  s_whiteTexSRV;
 	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  s_magentaTexSRV;
+
+	// ラスタライザーステート
+	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>     s_rasterizerCullBack;
+	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>     s_rasterizerCullFront;
+	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>     s_rasterizerCullNone;
 
 	std::vector<uint8_t> m_texIssueReported;
 

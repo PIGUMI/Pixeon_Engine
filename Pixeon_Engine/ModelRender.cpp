@@ -13,6 +13,9 @@ using namespace DirectX;
 Microsoft::WRL::ComPtr<ID3D11SamplerState>       ModelRenderComponent::s_linearSmp;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_whiteTexSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_magentaTexSRV;
+Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullBack;
+Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullFront;
+Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullNone;
 
 void ModelRenderComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
@@ -46,6 +49,7 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 	RefreshMaterialCache();
 	if (!EnsureShaders(true)) return false;
 	if (!EnsureConstantBuffer()) return false;
+	if (!EnsureRasterizerStates()) return false;
 	m_texIssueReported.assign(m_model->submeshes.size(), 0);
 	m_ready = true;
 	return true;
@@ -59,11 +63,11 @@ void ModelRenderComponent::RefreshMaterialCache() {
 		MaterialRuntime rt;
 		rt.texName = m.baseColorTex;
 		rt.color = m.baseColor;
-		rt.meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // 初期オフセットは0
-		rt.meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);  // 初期スケールは1
+		rt.meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		rt.meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+		rt.cullMode = CullMode::Back; // デフォルトは裏面カリング
 
 		if (!m.baseColorTex.empty()) {
-			// 埋め込みテクスチャチェック
 			if (m.isEmbedded && m.baseColorTex[0] == '*') {
 				auto srv = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, m.baseColorTex);
 				if (srv) {
@@ -120,6 +124,7 @@ bool ModelRenderComponent::EnsureShaders(bool forceRecreateLayout) {
 		dev->CreateSamplerState(&sd, s_linearSmp.GetAddressOf());
 	}
 	EnsureDebugFallbackTextures();
+	EnsureRasterizerStates();
 	return true;
 }
 
@@ -230,6 +235,52 @@ bool ModelRenderComponent::EnsureDebugFallbackTextures() {
 	return (s_whiteTexSRV && s_magentaTexSRV);
 }
 
+bool ModelRenderComponent::EnsureRasterizerStates() {
+	auto dev = DirectX11::GetInstance()->GetDevice();
+	if (!dev) return false;
+
+	// 裏面カリング（デフォルト）
+	if (!s_rasterizerCullBack) {
+		D3D11_RASTERIZER_DESC rd{};
+		rd.FillMode = D3D11_FILL_SOLID;
+		rd.CullMode = D3D11_CULL_BACK;
+		rd.FrontCounterClockwise = FALSE;
+		rd.DepthClipEnable = TRUE;
+		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullBack.GetAddressOf()))) {
+			OutputDebugStringA("[ModelRenderComponent] RasterizerState(CullBack) 作成失敗\n");
+			return false;
+		}
+	}
+
+	// 表面カリング
+	if (!s_rasterizerCullFront) {
+		D3D11_RASTERIZER_DESC rd{};
+		rd.FillMode = D3D11_FILL_SOLID;
+		rd.CullMode = D3D11_CULL_FRONT;
+		rd.FrontCounterClockwise = FALSE;
+		rd.DepthClipEnable = TRUE;
+		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullFront.GetAddressOf()))) {
+			OutputDebugStringA("[ModelRenderComponent] RasterizerState(CullFront) 作成失敗\n");
+			return false;
+		}
+	}
+
+	// カリングなし（両面描画）
+	if (!s_rasterizerCullNone) {
+		D3D11_RASTERIZER_DESC rd{};
+		rd.FillMode = D3D11_FILL_SOLID;
+		rd.CullMode = D3D11_CULL_NONE;
+		rd.FrontCounterClockwise = FALSE;
+		rd.DepthClipEnable = TRUE;
+		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullNone.GetAddressOf()))) {
+			OutputDebugStringA("[ModelRenderComponent] RasterizerState(CullNone) 作成失敗\n");
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 	const SubMesh& sm, const MaterialRuntime* mat,
 	ID3D11ShaderResourceView* chosenSRV, bool usedMagentaFallback, bool usedWhiteFallback)
@@ -292,7 +343,6 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const {
 	Transform t = _Parent->GetTransform();
 
-	// メッシュ固有のスケールとオブジェクトのスケールを合成
 	XMMATRIX S = XMMatrixScaling(
 		t.scale.x * scale.x,
 		t.scale.y * scale.y,
@@ -301,7 +351,6 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(const DirectX::XMFL
 
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
 
-	// オフセットを適用した位置行列
 	XMMATRIX T = XMMatrixTranslation(
 		t.position.x + offset.x,
 		t.position.y + offset.y,
@@ -329,6 +378,16 @@ void ModelRenderComponent::SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT
 DirectX::XMFLOAT3 ModelRenderComponent::GetMeshScale(size_t meshIndex) const {
 	if (meshIndex >= m_materials.size()) return DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	return m_materials[meshIndex].meshScale;
+}
+
+void ModelRenderComponent::SetMeshCullMode(size_t meshIndex, CullMode mode) {
+	if (meshIndex >= m_materials.size()) return;
+	m_materials[meshIndex].cullMode = mode;
+}
+
+ModelRenderComponent::CullMode ModelRenderComponent::GetMeshCullMode(size_t meshIndex) const {
+	if (meshIndex >= m_materials.size()) return CullMode::Back;
+	return m_materials[meshIndex].cullMode;
 }
 
 void ModelRenderComponent::EnsureDefaultBoneMatrices()
@@ -396,6 +455,7 @@ void ModelRenderComponent::Draw(int Layer) {
 		DirectX::XMFLOAT4 materialColor = m_color;
 		DirectX::XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		DirectX::XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
+		CullMode cullMode = CullMode::Back;
 		bool usedWhite = true;
 		bool usedMagenta = false;
 		MaterialRuntime* matPtr = nullptr;
@@ -409,8 +469,9 @@ void ModelRenderComponent::Draw(int Layer) {
 			materialColor.z *= mat.color.z;
 			materialColor.w *= mat.color.w;
 
-			meshOffset = mat.meshOffset; // メッシュオフセットを取得
-			meshScale = mat.meshScale;   // メッシュスケールを取得
+			meshOffset = mat.meshOffset;
+			meshScale = mat.meshScale;
+			cullMode = mat.cullMode;
 
 			if (mat.tex && mat.tex->srv) {
 				srv = mat.tex->srv.Get();
@@ -433,7 +494,23 @@ void ModelRenderComponent::Draw(int Layer) {
 			usedWhite = false;
 		}
 
-		// メッシュごとのオフセットとスケールを適用したワールド行列
+		// カリングモードに応じたラスタライザーステートを設定
+		ID3D11RasterizerState* rasterizerState = nullptr;
+		switch (cullMode) {
+		case CullMode::Back:
+			rasterizerState = s_rasterizerCullBack.Get();
+			break;
+		case CullMode::Front:
+			rasterizerState = s_rasterizerCullFront.Get();
+			break;
+		case CullMode::None:
+			rasterizerState = s_rasterizerCullNone.Get();
+			break;
+		}
+		if (rasterizerState) {
+			ctx->RSSetState(rasterizerState);
+		}
+
 		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale);
 
 		CBData cbd;
@@ -454,6 +531,9 @@ void ModelRenderComponent::Draw(int Layer) {
 			DiagnoseAndReportTextureIssue(i, sm, matPtr, srv, usedMagenta, usedWhite);
 		}
 	}
+
+	// デフォルトのラスタライザーステートに戻す
+	ctx->RSSetState(s_rasterizerCullBack.Get());
 }
 
 void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx)
@@ -514,15 +594,12 @@ void ModelRenderComponent::SaveToFile(std::ostream& out) {
 	out << m_vsName << "\n" << m_psName << "\n";
 	out << _LayerNumber << "\n";
 
-	// マテリアル数を保存
 	out << m_materials.size() << "\n";
 	for (const auto& mat : m_materials) {
-		// テクスチャ名を保存
 		out << mat.texName << "\n";
-		// メッシュオフセットを保存
 		out << mat.meshOffset.x << " " << mat.meshOffset.y << " " << mat.meshOffset.z << "\n";
-		// メッシュスケールを保存
 		out << mat.meshScale.x << " " << mat.meshScale.y << " " << mat.meshScale.z << "\n";
+		out << static_cast<int>(mat.cullMode) << "\n";
 	}
 }
 
@@ -537,12 +614,10 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 
 	SetModel(m_modelPath);
 
-	// マテリアル数を読み込み
 	size_t matCount = 0;
 	in >> matCount;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-	// 各マテリアルのデータを読み込み
 	for (size_t i = 0; i < matCount && i < m_materials.size(); ++i) {
 		std::string texName;
 		std::getline(in, texName);
@@ -555,14 +630,17 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 		in >> scale.x >> scale.y >> scale.z;
 		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-		// テクスチャを設定
+		int cullModeInt;
+		in >> cullModeInt;
+		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 		if (!texName.empty() && texName != m_materials[i].texName) {
 			SetMaterialTexture(i, texName);
 		}
 
-		// オフセットとスケールを設定
 		m_materials[i].meshOffset = offset;
 		m_materials[i].meshScale = scale;
+		m_materials[i].cullMode = static_cast<CullMode>(cullModeInt);
 	}
 }
 
@@ -667,7 +745,6 @@ void ModelRenderComponent::DrawInspector() {
 
 			std::string nodeLabel = "Mat " + std::to_string(i);
 			if (ImGui::TreeNode(nodeLabel.c_str())) {
-				// テクスチャ設定
 				std::string shown = m_materials[i].texName.empty() ? SJ("(なし)") : m_materials[i].texName;
 				ImGui::Text("tex=%s", shown.c_str());
 				ImGui::SameLine();
@@ -677,7 +754,6 @@ void ModelRenderComponent::DrawInspector() {
 					ImGui::OpenPopup("TextureSelectPopup");
 				}
 
-				// メッシュオフセット設定
 				ImGui::Separator();
 				ImGui::Text("%s", SJ("メッシュオフセット").c_str());
 				float offset[3] = {
@@ -691,7 +767,6 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshOffset.z = offset[2];
 				}
 
-				// メッシュスケール設定
 				ImGui::Text("%s", SJ("メッシュスケール").c_str());
 				float scale[3] = {
 					m_materials[i].meshScale.x,
@@ -704,7 +779,18 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshScale.z = scale[2];
 				}
 
-				// リセットボタン
+				ImGui::Separator();
+				ImGui::Text("%s", SJ("カリングモード").c_str());
+				const char* cullModeNames[] = {
+					SJ("裏面カリング(通常)").c_str(),
+					SJ("表面カリング").c_str(),
+					SJ("両面描画").c_str()
+				};
+				int currentCullMode = static_cast<int>(m_materials[i].cullMode);
+				if (ImGui::Combo("CullMode", &currentCullMode, cullModeNames, 3)) {
+					m_materials[i].cullMode = static_cast<CullMode>(currentCullMode);
+				}
+
 				if (ImGui::Button(SJ("オフセットリセット").c_str())) {
 					m_materials[i].meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 				}
@@ -720,7 +806,6 @@ void ModelRenderComponent::DrawInspector() {
 		ImGui::TreePop();
 	}
 
-	// テクスチャ選択ポップアップ
 	if (m_openTexPopup) {
 		ImGui::OpenPopup("TextureSelectPopup");
 	}
