@@ -739,7 +739,7 @@ void ModelRenderComponent::DrawInspector() {
 
 	title = "マテリアル一覧##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::TreeNode(SJ(title.c_str()).c_str())) {
-		ImGui::Text("%s %zu", SJ("マテリアル数: ").c_str(), m_materials.size());
+		ImGui::Text("%s %zu", SJ("マテリアル数:").c_str(), m_materials.size());
 		for (size_t i = 0; i < m_materials.size(); ++i) {
 			ImGui::PushID((int)i);
 
@@ -781,11 +781,17 @@ void ModelRenderComponent::DrawInspector() {
 
 				ImGui::Separator();
 				ImGui::Text("%s", SJ("カリングモード").c_str());
+
+				// 文字列を事前に変数として保持してダングリングポインタを回避
+				std::string cullBack = SJ("裏面カリング(通常)");
+				std::string cullFront = SJ("表面カリング");
+				std::string cullNone = SJ("両面描画");
 				const char* cullModeNames[] = {
-					SJ("裏面カリング(通常)").c_str(),
-					SJ("表面カリング").c_str(),
-					SJ("両面描画").c_str()
+					cullBack.c_str(),
+					cullFront.c_str(),
+					cullNone.c_str()
 				};
+
 				int currentCullMode = static_cast<int>(m_materials[i].cullMode);
 				if (ImGui::Combo("CullMode", &currentCullMode, cullModeNames, 3)) {
 					m_materials[i].cullMode = static_cast<CullMode>(currentCullMode);
