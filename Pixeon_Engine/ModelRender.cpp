@@ -42,7 +42,6 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 		m_boneMatrices.clear();
 		m_useBoneMatrices = false;
 	}
-	// ★ここまで追加
 
 	RefreshMaterialCache();
 	if (!EnsureShaders(true)) return false;
@@ -61,6 +60,7 @@ void ModelRenderComponent::RefreshMaterialCache() {
 		rt.texName = m.baseColorTex;
 		rt.color = m.baseColor;
 		rt.meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // 初期オフセットは0
+		rt.meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);  // 初期スケールは1
 
 		if (!m.baseColorTex.empty()) {
 			// 埋め込みテクスチャチェック
@@ -242,7 +242,7 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 
 	if (sm.materialIndex >= m_materials.size()) {
 		issue = TextureIssue::MaterialIndexOutOfRange;
-		detail = "submesh.materialIndex=" + std::to_string(sm.materialIndex);
+		detail = "submesh. materialIndex=" + std::to_string(sm.materialIndex);
 	}
 	else {
 		const MaterialRuntime* mrt = mat;
@@ -289,9 +289,16 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 	}
 }
 
-DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(const DirectX::XMFLOAT3& offset) const {
+DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const {
 	Transform t = _Parent->GetTransform();
-	XMMATRIX S = XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
+
+	// メッシュ固有のスケールとオブジェクトのスケールを合成
+	XMMATRIX S = XMMatrixScaling(
+		t.scale.x * scale.x,
+		t.scale.y * scale.y,
+		t.scale.z * scale.z
+	);
+
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
 
 	// オフセットを適用した位置行列
@@ -300,6 +307,7 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(const DirectX::XMFL
 		t.position.y + offset.y,
 		t.position.z + offset.z
 	);
+
 	return S * R * T;
 }
 
@@ -311,6 +319,16 @@ void ModelRenderComponent::SetMeshOffset(size_t meshIndex, const DirectX::XMFLOA
 DirectX::XMFLOAT3 ModelRenderComponent::GetMeshOffset(size_t meshIndex) const {
 	if (meshIndex >= m_materials.size()) return DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	return m_materials[meshIndex].meshOffset;
+}
+
+void ModelRenderComponent::SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT3& scale) {
+	if (meshIndex >= m_materials.size()) return;
+	m_materials[meshIndex].meshScale = scale;
+}
+
+DirectX::XMFLOAT3 ModelRenderComponent::GetMeshScale(size_t meshIndex) const {
+	if (meshIndex >= m_materials.size()) return DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	return m_materials[meshIndex].meshScale;
 }
 
 void ModelRenderComponent::EnsureDefaultBoneMatrices()
@@ -377,6 +395,7 @@ void ModelRenderComponent::Draw(int Layer) {
 		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
 		DirectX::XMFLOAT4 materialColor = m_color;
 		DirectX::XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
+		DirectX::XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
 		bool usedWhite = true;
 		bool usedMagenta = false;
 		MaterialRuntime* matPtr = nullptr;
@@ -391,6 +410,7 @@ void ModelRenderComponent::Draw(int Layer) {
 			materialColor.w *= mat.color.w;
 
 			meshOffset = mat.meshOffset; // メッシュオフセットを取得
+			meshScale = mat.meshScale;   // メッシュスケールを取得
 
 			if (mat.tex && mat.tex->srv) {
 				srv = mat.tex->srv.Get();
@@ -413,8 +433,8 @@ void ModelRenderComponent::Draw(int Layer) {
 			usedWhite = false;
 		}
 
-		// メッシュごとのオフセットを適用したワールド行列
-		XMMATRIX world = BuildMeshWorldMatrix(meshOffset);
+		// メッシュごとのオフセットとスケールを適用したワールド行列
+		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale);
 
 		CBData cbd;
 		cbd.World = XMMatrixTranspose(world);
@@ -501,6 +521,8 @@ void ModelRenderComponent::SaveToFile(std::ostream& out) {
 		out << mat.texName << "\n";
 		// メッシュオフセットを保存
 		out << mat.meshOffset.x << " " << mat.meshOffset.y << " " << mat.meshOffset.z << "\n";
+		// メッシュスケールを保存
+		out << mat.meshScale.x << " " << mat.meshScale.y << " " << mat.meshScale.z << "\n";
 	}
 }
 
@@ -529,13 +551,18 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 		in >> offset.x >> offset.y >> offset.z;
 		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
+		DirectX::XMFLOAT3 scale;
+		in >> scale.x >> scale.y >> scale.z;
+		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 		// テクスチャを設定
 		if (!texName.empty() && texName != m_materials[i].texName) {
 			SetMaterialTexture(i, texName);
 		}
 
-		// オフセットを設定
+		// オフセットとスケールを設定
 		m_materials[i].meshOffset = offset;
+		m_materials[i].meshScale = scale;
 	}
 }
 
@@ -634,7 +661,7 @@ void ModelRenderComponent::DrawInspector() {
 
 	title = "マテリアル一覧##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::TreeNode(SJ(title.c_str()).c_str())) {
-		ImGui::Text("%s %zu", SJ("マテリアル数:").c_str(), m_materials.size());
+		ImGui::Text("%s %zu", SJ("マテリアル数: ").c_str(), m_materials.size());
 		for (size_t i = 0; i < m_materials.size(); ++i) {
 			ImGui::PushID((int)i);
 
@@ -664,9 +691,26 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshOffset.z = offset[2];
 				}
 
+				// メッシュスケール設定
+				ImGui::Text("%s", SJ("メッシュスケール").c_str());
+				float scale[3] = {
+					m_materials[i].meshScale.x,
+					m_materials[i].meshScale.y,
+					m_materials[i].meshScale.z
+				};
+				if (ImGui::DragFloat3("Scale", scale, 0.01f, 0.01f, 10.0f)) {
+					m_materials[i].meshScale.x = scale[0];
+					m_materials[i].meshScale.y = scale[1];
+					m_materials[i].meshScale.z = scale[2];
+				}
+
 				// リセットボタン
 				if (ImGui::Button(SJ("オフセットリセット").c_str())) {
 					m_materials[i].meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button(SJ("スケールリセット").c_str())) {
+					m_materials[i].meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 				}
 
 				ImGui::TreePop();
@@ -748,7 +792,7 @@ void ModelRenderComponent::ShowModelSelectPopup()
 		auto list = AssetManager::Instance()->GetCachedAssetNames(true);
 
 		{
-			std::string label = SJ("登録モデル数: ") + std::to_string(list.size());
+			std::string label = SJ("登録モデル数:  ") + std::to_string(list.size());
 			ImGui::Text("%s", label.c_str());
 		}
 
@@ -794,7 +838,7 @@ void ModelRenderComponent::ShowModelSelectPopup()
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("リロード").c_str())) {
+		if (ImGui::Button(SJ("再ロード").c_str())) {
 			if (!m_modelPath.empty()) SetModel(m_modelPath);
 		}
 
@@ -804,12 +848,10 @@ void ModelRenderComponent::ShowModelSelectPopup()
 
 void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
 {
-	// モデル選択ポップアップと同様の構成に統一
 	if (!m_openTexPopup || materialIndex < 0 || materialIndex >= (int)m_materials.size())
 		return;
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		MessageBox(nullptr, "デバッグ: テクスチャ選択ポップアップ表示1", "Debug", MB_OK);
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
 		static char filter[128] = "";
@@ -817,7 +859,7 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
 
 		auto list = AssetManager::Instance()->GetCachedTextureNames();
 
-		ImGui::Text("%s: %zu", SJ("候補数").c_str(), list.size());
+		ImGui::Text("%s: %zu", SJ("総数").c_str(), list.size());
 		ImGui::Separator();
 
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
@@ -832,7 +874,6 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
 			if (ImGui::Selectable(dispName.c_str(), selected)) {
 				highlight = i;
 				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-					// ダブルクリックで即適用
 					m_materials[materialIndex].texName = rawName;
 					m_materials[materialIndex].tex = TextureManager::Instance()->LoadOrGet(rawName);
 					ImGui::CloseCurrentPopup();
@@ -840,7 +881,6 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
 					m_texPopupMatIndex = -1;
 				}
 			}
-			// 現在使用中のテクスチャを表示
 			if (m_materials[materialIndex].texName == rawName) {
 				ImGui::SameLine();
 				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[使用中]").c_str());

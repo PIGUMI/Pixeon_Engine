@@ -55,6 +55,10 @@ public:
 	void SetMeshOffset(size_t meshIndex, const DirectX::XMFLOAT3& offset);
 	DirectX::XMFLOAT3 GetMeshOffset(size_t meshIndex) const;
 
+	// メッシュごとのスケール設定
+	void SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT3& scale);
+	DirectX::XMFLOAT3 GetMeshScale(size_t meshIndex) const;
+
 private:
 	struct CBData {
 		DirectX::XMMATRIX World;
@@ -66,7 +70,8 @@ private:
 		std::string                          texName;
 		std::shared_ptr<TextureResource>     tex;
 		DirectX::XMFLOAT4                    color;
-		DirectX::XMFLOAT3                    meshOffset; // メッシュごとのオフセット
+		DirectX::XMFLOAT3                    meshOffset;  // メッシュごとのオフセット
+		DirectX::XMFLOAT3                    meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	};
 
 	bool EnsureShaders(bool forceRecreateLayout = false);
@@ -79,7 +84,7 @@ private:
 
 	void RecreateInputLayout();
 	DirectX::XMMATRIX BuildWorldMatrix() const;
-	DirectX::XMMATRIX BuildMeshWorldMatrix(const DirectX::XMFLOAT3& offset) const;
+	DirectX::XMMATRIX BuildMeshWorldMatrix(const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const;
 
 	bool EnsureWhiteTexture();
 	bool EnsureDebugFallbackTextures();
