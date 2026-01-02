@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "1.00234 13.1044 8.9484 12.69 0.199999 7.62248e-39 -0.206285 11.1177 -0.777457 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "0.162815 12.172 5.53521 12.58 0.149999 7.62248e-39 0.0280561 10.6776 -4.35158 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -67,7 +67,7 @@
         {
             "Components": [
                 {
-                    "Data": "MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n6\nPNG/TX_Munkki_Costume1.png\n0 0 0\n1 1 1.1\n2\nPNG/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1.1\n0\nPNG/TX_Munkki_Hair.png\n0 0 0\n1 1 1.1\n0\nPNG/TX_Munkki_Face.png\n0 0 0\n1 1 1.1\n0\n\n0 0 0\n1 1 1.1\n0\nPNG/TX_Munkki_Skin.png\n0 0 0\n1 1 0.9\n2\n",
+                    "Data": "MB_Munkki_v1.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n2\n6\nPNG/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n2\nPNG/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Skin.png\n0 0 0\n1 1 0.9\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -88,27 +88,6 @@
                     0.10000000149011612,
                     0.10000000149011612,
                     0.10000000149011612
-                ]
-            }
-        },
-        {
-            "Components": [],
-            "Name": "NewObject1",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
                 ]
             }
         }
