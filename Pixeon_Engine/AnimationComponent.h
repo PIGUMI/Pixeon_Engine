@@ -74,6 +74,7 @@ private:
 	bool IsValidMatrix(const DirectX::XMMATRIX& m) const;
 
 	void RebuildAnimationClips();
+	void LazyLoadClip(int clipIndex);
 
 	void EnsureLinked();
 
@@ -109,4 +110,15 @@ private:
 	int m_skeletonClipIndex = 0;
 
 	std::string m_linkedModelPath;
+
+	std::vector<std::string> m_cachedFBXList;
+	std::vector<int> m_filteredIndices;
+	char m_filterBuffer[128] = "";
+	int m_highlightIndex = -1;
+	int m_extIdxUI = 0;
+	int m_clipIdxUI = 0;
+
+	bool m_clipNamesNeedUpdate = true;
+	std::vector<std::string> m_clipNamesCache;
+	std::vector<const char*> m_clipNamePtrs;
 };

@@ -190,6 +190,11 @@ void AnimationComponent::BuildClipPose(const AnimationClipRuntime& rtClip, float
 	std::vector<DirectX::XMFLOAT4X4>& outFinal)
 {
 	if (!m_resource) return;
+
+	if (!rtClip.isLoaded && m_currentClip >= 0) {
+		const_cast<AnimationComponent*>(this)->LazyLoadClip(m_currentClip);
+	}
+
 	if (m_skeletonClipIndex < 0 || m_skeletonClipIndex >= (int)m_resource->clips.size()) return;
 
 	// スケルトンはモデル側（固定）
@@ -254,14 +259,27 @@ void AnimationComponent::DrawInspector() {
 	if (!ImGui::CollapsingHeader(title.c_str()))
 		return;
 
-	// クリップ数と選択（統合済み）
+	// クリップ名キャッシュの更新
+	if (m_clipNamesNeedUpdate) {
+		m_clipNamesCache.clear();
+		m_clipNamePtrs.clear();
+		m_clipNamesCache.reserve(m_clips.size());
+		m_clipNamePtrs.reserve(m_clips.size());
+
+		for (auto& c : m_clips) {
+			m_clipNamesCache.push_back(c.name);
+		}
+		for (auto& name : m_clipNamesCache) {
+			m_clipNamePtrs.push_back(name.c_str());
+		}
+		m_clipNamesNeedUpdate = false;
+	}
+
+	// クリップ数と選択
 	ImGui::Text("Clips: %zu", m_clips.size());
 	if (!m_clips.empty()) {
-		std::vector<const char*> names;
-		names.reserve(m_clips.size());
-		for (auto& c : m_clips) names.push_back(c.name.c_str());
 		int idx = m_currentClip;
-		if (ImGui::Combo("Current Clip", &idx, names.data(), (int)names.size())) {
+		if (ImGui::Combo("Current Clip", &idx, m_clipNamePtrs.data(), (int)m_clipNamePtrs.size())) {
 			SetAnimationClip(idx);
 		}
 	}
@@ -282,18 +300,28 @@ void AnimationComponent::DrawInspector() {
 	// 外部アニメFBX管理UI
 	ImGui::Separator();
 	ImGui::Text("External FBX Animation Files:");
-	for (int i = 0; i < (int)m_externalAnimationFiles.size(); ++i) {
-		ImGui::BulletText("[%d] %s", i, m_externalAnimationFiles[i].c_str());
-		ImGui::SameLine();
-		std::string btnId = "Remove##ext" + std::to_string(i);
-		if (ImGui::SmallButton(btnId.c_str())) {
-			m_externalAnimationFiles.erase(m_externalAnimationFiles.begin() + i);
-			RebuildAnimationClips();
-			if (m_currentClip >= (int)m_clips.size()) m_currentClip = (int)m_clips.size() - 1;
-			break;
+
+	// 折りたたみ可能にして描画負荷を軽減
+	if (ImGui::TreeNode("Loaded Files")) {
+		for (int i = 0; i < (int)m_externalAnimationFiles.size(); ++i) {
+			ImGui::BulletText("[%d] %s", i, m_externalAnimationFiles[i].c_str());
+			ImGui::SameLine();
+			std::string btnId = "Remove##ext" + std::to_string(i);
+			if (ImGui::SmallButton(btnId.c_str())) {
+				m_externalAnimationFiles.erase(m_externalAnimationFiles.begin() + i);
+				RebuildAnimationClips();
+				if (m_currentClip >= (int)m_clips.size()) m_currentClip = (int)m_clips.size() - 1;
+				break;
+			}
 		}
+		ImGui::TreePop();
 	}
+
 	if (ImGui::Button("Add From Model Cache")) {
+		m_cachedFBXList = GetFBXListFromModelManager();
+		m_filterBuffer[0] = '\0';
+		m_highlightIndex = -1;
+		m_filteredIndices.clear();
 		ImGui::OpenPopup("AnimFBXSelectPopup");
 	}
 	ImGui::SameLine();
@@ -303,25 +331,35 @@ void AnimationComponent::DrawInspector() {
 
 	// FBX選択ポップアップ
 	if (ImGui::BeginPopupModal("AnimFBXSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		static char filter[128] = "";
-		ImGui::InputText("Filter", filter, sizeof(filter));
+		bool filterChanged = ImGui::InputText("Filter", m_filterBuffer, sizeof(m_filterBuffer));
 
-		auto list = GetFBXListFromModelManager();
-		ImGui::Text("Count: %zu", list.size());
+		if (filterChanged || m_filteredIndices.empty()) {
+			m_filteredIndices.clear();
+			std::string filterStr(m_filterBuffer);
+			for (int i = 0; i < (int)m_cachedFBXList.size(); ++i) {
+				if (filterStr.empty() || m_cachedFBXList[i].find(filterStr) != std::string::npos) {
+					m_filteredIndices.push_back(i);
+				}
+			}
+			if (filterChanged) m_highlightIndex = -1;
+		}
+
+		ImGui::Text("Count: %zu / %zu", m_filteredIndices.size(), m_cachedFBXList.size());
 		ImGui::Separator();
 
 		ImGui::BeginChild("AnimFBXSelectList", ImVec2(420, 320), true);
-		static int highlight = -1;
-		for (int i = 0; i < (int)list.size(); ++i) {
-			const std::string& rawName = list[i];
-			if (filter[0] && rawName.find(filter) == std::string::npos) continue;
-			bool selected = (highlight == i);
+		for (int i = 0; i < (int)m_filteredIndices.size(); ++i) {
+			int actualIndex = m_filteredIndices[i];
+			const std::string& rawName = m_cachedFBXList[actualIndex];
+			bool selected = (m_highlightIndex == actualIndex);
+
 			if (ImGui::Selectable(rawName.c_str(), selected)) {
-				highlight = i;
+				m_highlightIndex = actualIndex;
 				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 					AddAnimationFile(rawName);
+					m_cachedFBXList.clear();
+					m_filteredIndices.clear();
 					ImGui::CloseCurrentPopup();
-					highlight = -1;
 				}
 			}
 		}
@@ -329,46 +367,49 @@ void AnimationComponent::DrawInspector() {
 
 		ImGui::Separator();
 		if (ImGui::Button("Add")) {
-			if (highlight >= 0 && highlight < (int)list.size()) {
-				AddAnimationFile(list[highlight]);
+			if (m_highlightIndex >= 0 && m_highlightIndex < (int)m_cachedFBXList.size()) {
+				AddAnimationFile(m_cachedFBXList[m_highlightIndex]);
 			}
+			m_cachedFBXList.clear();
+			m_filteredIndices.clear();
 			ImGui::CloseCurrentPopup();
-			highlight = -1;
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Cancel")) {
+			m_cachedFBXList.clear();
+			m_filteredIndices.clear();
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
 
-	// インデックス指定でのアニメ再生
+	// インデックス指定でのアニメ再生（折りたたみ可能）
 	ImGui::Separator();
-	ImGui::Text("Play by Index (ExternalIndex + ClipIndexInFile)");
-	static int extIdxUI = 0;
-	static int clipIdxUI = 0;
-	int extCount = GetExternalFileCount();
-	if (extCount <= 0) {
-		ImGui::TextUnformatted("No external FBX registered.");
-	}
-	else {
-		if (extIdxUI < 0) extIdxUI = 0;
-		if (extIdxUI >= extCount) extIdxUI = extCount - 1;
+	if (ImGui::TreeNode("Advanced:  Play by Index")) {
+		int extCount = GetExternalFileCount();
+		if (extCount <= 0) {
+			ImGui::TextUnformatted("No external FBX registered.");
+		}
+		else {
+			if (m_extIdxUI < 0) m_extIdxUI = 0;
+			if (m_extIdxUI >= extCount) m_extIdxUI = extCount - 1;
 
-		int clipCount = GetClipCountInExternalFile(extIdxUI);
-		if (clipCount < 0) clipCount = 0;
-		if (clipIdxUI < 0) clipIdxUI = 0;
-		if (clipIdxUI >= clipCount && clipCount > 0) clipIdxUI = clipCount - 1;
+			int clipCount = GetClipCountInExternalFile(m_extIdxUI);
+			if (clipCount < 0) clipCount = 0;
+			if (m_clipIdxUI < 0) m_clipIdxUI = 0;
+			if (m_clipIdxUI >= clipCount && clipCount > 0) m_clipIdxUI = clipCount - 1;
 
-		ImGui::InputInt("External File Index", &extIdxUI);
-		ImGui::InputInt("Clip Index In File", &clipIdxUI);
-		ImGui::Text("ExternalCount=%d, ClipCount=%d", extCount, clipCount);
+			ImGui::InputInt("External File Index", &m_extIdxUI);
+			ImGui::InputInt("Clip Index In File", &m_clipIdxUI);
+			ImGui::Text("ExternalCount=%d, ClipCount=%d", extCount, clipCount);
 
-		if (ImGui::Button("Set Animation by Indices")) {
-			if (SetAnimationByExternalIndex(extIdxUI, clipIdxUI)) {
-				Play();
+			if (ImGui::Button("Set Animation by Indices")) {
+				if (SetAnimationByExternalIndex(m_extIdxUI, m_clipIdxUI)) {
+					Play();
+				}
 			}
 		}
+		ImGui::TreePop();
 	}
 }
 
@@ -388,7 +429,11 @@ void AnimationComponent::Restart() { m_time = 0.f; m_playing = true; m_paused = 
 
 bool AnimationComponent::SetAnimationClip(int clipIndex) {
 	if (clipIndex < 0 || clipIndex >= (int)m_clips.size()) return false;
-	m_currentClip = clipIndex; m_time = 0.f;
+
+	LazyLoadClip(clipIndex);
+
+	m_currentClip = clipIndex;
+	m_time = 0.f;
 	return true;
 }
 
@@ -475,7 +520,7 @@ bool AnimationComponent::SetAnimationByExternalIndex(int externalFileIndex, int 
 void AnimationComponent::RebuildAnimationClips() {
 	if (!m_resource) return;
 
-	auto buildFromResource = [&](const std::shared_ptr<ModelSharedResource>& res,
+	auto buildClipMetadata = [&](const std::shared_ptr<ModelSharedResource>& res,
 		const std::string& prefix,
 		ClipOrigin::Source src,
 		int externalFileIndex)
@@ -484,86 +529,12 @@ void AnimationComponent::RebuildAnimationClips() {
 			for (int ci = 0; ci < (int)res->clips.size(); ++ci) {
 				const auto& c = res->clips[ci];
 
+				// メタデータのみ構築（実データは遅延ロード）
 				AnimationClipRuntime rt;
 				rt.name = prefix.empty() ? c.name : (prefix + ":" + c.name);
 				rt.duration = c.duration / c.tps;
 				rt.tps = c.tps;
-				rt.isLoaded = true;
-
-				for (auto& ch : c.channels) {
-					AnimationChannelRuntime rch;
-					rch.nodeIndex = ch.nodeIndex;
-
-					std::set<float> times;
-					for (auto& k : ch.positionKeys) times.insert(k.first);
-					for (auto& k : ch.rotationKeys) times.insert(k.first);
-					for (auto& k : ch.scaleKeys)    times.insert(k.first);
-
-					for (float t : times) {
-						BoneTransform bt;
-						// 位置補間
-						if (!ch.positionKeys.empty()) {
-							auto it = std::lower_bound(
-								ch.positionKeys.begin(), ch.positionKeys.end(),
-								std::pair<float, DirectX::XMFLOAT3>(t, {}),
-								[](auto& a, auto& b) {return a.first < b.first; });
-							if (it == ch.positionKeys.begin()) bt.position = it->second;
-							else if (it == ch.positionKeys.end()) bt.position = ch.positionKeys.back().second;
-							else {
-								auto prev = std::prev(it);
-								float f = (t - prev->first) / (it->first - prev->first);
-								bt.position = {
-									prev->second.x + (it->second.x - prev->second.x) * f,
-									prev->second.y + (it->second.y - prev->second.y) * f,
-									prev->second.z + (it->second.z - prev->second.z) * f
-								};
-							}
-						}
-						else bt.position = { 0,0,0 };
-
-						// 回転補間
-						if (!ch.rotationKeys.empty()) {
-							auto it = std::lower_bound(
-								ch.rotationKeys.begin(), ch.rotationKeys.end(),
-								std::pair<float, DirectX::XMFLOAT4>(t, {}),
-								[](auto& a, auto& b) {return a.first < b.first; });
-							if (it == ch.rotationKeys.begin()) bt.rotation = it->second;
-							else if (it == ch.rotationKeys.end()) bt.rotation = ch.rotationKeys.back().second;
-							else {
-								auto prev = std::prev(it);
-								float f = (t - prev->first) / (it->first - prev->first);
-								XMVECTOR qa = XMLoadFloat4(&prev->second);
-								XMVECTOR qb = XMLoadFloat4(&it->second);
-								XMVECTOR q = XMQuaternionNormalize(XMQuaternionSlerp(qa, qb, f));
-								XMStoreFloat4(&bt.rotation, q);
-							}
-						}
-						else bt.rotation = { 0,0,0,1 };
-
-						// スケール補間
-						if (!ch.scaleKeys.empty()) {
-							auto it = std::lower_bound(
-								ch.scaleKeys.begin(), ch.scaleKeys.end(),
-								std::pair<float, DirectX::XMFLOAT3>(t, {}),
-								[](auto& a, auto& b) {return a.first < b.first; });
-							if (it == ch.scaleKeys.begin()) bt.scale = it->second;
-							else if (it == ch.scaleKeys.end()) bt.scale = ch.scaleKeys.back().second;
-							else {
-								auto prev = std::prev(it);
-								float f = (t - prev->first) / (it->first - prev->first);
-								bt.scale = {
-									prev->second.x + (it->second.x - prev->second.x) * f,
-									prev->second.y + (it->second.y - prev->second.y) * f,
-									prev->second.z + (it->second.z - prev->second.z) * f
-								};
-							}
-						}
-						else bt.scale = { 1,1,1 };
-						bt.isValid = true;
-						rch.timeline[t] = bt;
-					}
-					rt.channels.push_back(rch);
-				}
+				rt.isLoaded = false;  // ← まだロードしていない
 
 				ClipOrigin origin;
 				origin.source = src;
@@ -579,20 +550,15 @@ void AnimationComponent::RebuildAnimationClips() {
 	m_clips.clear();
 	m_clipOrigins.clear();
 
-	// モデル内クリップ
-	buildFromResource(m_resource, "", ClipOrigin::Source::Model, -1);
+	// モデル内クリップ（メタデータのみ）
+	buildClipMetadata(m_resource, "", ClipOrigin::Source::Model, -1);
 
-	// 外部アニメFBX
+	// 外部アニメFBX（メタデータのみ）
 	for (int fi = 0; fi < (int)m_externalAnimationFiles.size(); ++fi) {
 		const auto& path = m_externalAnimationFiles[fi];
 		auto extRes = ModelManager::Instance()->LoadOrGet(path);
 		std::string prefix = GetFileStem(path);
-		buildFromResource(extRes, prefix, ClipOrigin::Source::External, fi);
-	}
-
-	// すべての統合クリップを、モデルのスケルトンにリバインド
-	for (auto& rtClip : m_clips) {
-		RebindChannelNodeIndices(m_resource.get(), rtClip);
+		buildClipMetadata(extRes, prefix, ClipOrigin::Source::External, fi);
 	}
 
 	// インデックスの整合
@@ -604,4 +570,117 @@ void AnimationComponent::RebuildAnimationClips() {
 		if (prevIndex >= (int)m_clips.size()) prevIndex = (int)m_clips.size() - 1;
 		m_currentClip = prevIndex;
 	}
+
+	// キャッシュ無効化
+	m_clipNamesNeedUpdate = true;
+}
+
+void AnimationComponent::LazyLoadClip(int clipIndex) {
+	if (clipIndex < 0 || clipIndex >= (int)m_clips.size()) return;
+	auto& rt = m_clips[clipIndex];
+
+	// 既にロード済み
+	if (rt.isLoaded) return;
+
+	// ロード元リソースを取得
+	const auto& origin = m_clipOrigins[clipIndex];
+	std::shared_ptr<ModelSharedResource> sourceRes;
+
+	if (origin.source == ClipOrigin::Source::Model) {
+		sourceRes = m_resource;
+	}
+	else {
+		if (origin.externalFileIndex >= 0 && origin.externalFileIndex < (int)m_externalAnimationFiles.size()) {
+			sourceRes = ModelManager::Instance()->LoadOrGet(m_externalAnimationFiles[origin.externalFileIndex]);
+		}
+	}
+
+	if (!sourceRes || origin.clipIndexInSource < 0 || origin.clipIndexInSource >= (int)sourceRes->clips.size()) {
+		return;
+	}
+
+	const auto& c = sourceRes->clips[origin.clipIndexInSource];
+
+	// チャンネルデータを構築
+	for (auto& ch : c.channels) {
+		AnimationChannelRuntime rch;
+		rch.nodeIndex = ch.nodeIndex;
+
+		std::set<float> times;
+		for (auto& k : ch.positionKeys) times.insert(k.first);
+		for (auto& k : ch.rotationKeys) times.insert(k.first);
+		for (auto& k : ch.scaleKeys)    times.insert(k.first);
+
+		for (float t : times) {
+			BoneTransform bt;
+
+			// 位置補間
+			if (!ch.positionKeys.empty()) {
+				auto it = std::lower_bound(
+					ch.positionKeys.begin(), ch.positionKeys.end(),
+					std::pair<float, DirectX::XMFLOAT3>(t, {}),
+					[](auto& a, auto& b) {return a.first < b.first; });
+				if (it == ch.positionKeys.begin()) bt.position = it->second;
+				else if (it == ch.positionKeys.end()) bt.position = ch.positionKeys.back().second;
+				else {
+					auto prev = std::prev(it);
+					float f = (t - prev->first) / (it->first - prev->first);
+					bt.position = {
+						prev->second.x + (it->second.x - prev->second.x) * f,
+						prev->second.y + (it->second.y - prev->second.y) * f,
+						prev->second.z + (it->second.z - prev->second.z) * f
+					};
+				}
+			}
+			else bt.position = { 0,0,0 };
+
+			// 回転補間
+			if (!ch.rotationKeys.empty()) {
+				auto it = std::lower_bound(
+					ch.rotationKeys.begin(), ch.rotationKeys.end(),
+					std::pair<float, DirectX::XMFLOAT4>(t, {}),
+					[](auto& a, auto& b) {return a.first < b.first; });
+				if (it == ch.rotationKeys.begin()) bt.rotation = it->second;
+				else if (it == ch.rotationKeys.end()) bt.rotation = ch.rotationKeys.back().second;
+				else {
+					auto prev = std::prev(it);
+					float f = (t - prev->first) / (it->first - prev->first);
+					XMVECTOR qa = XMLoadFloat4(&prev->second);
+					XMVECTOR qb = XMLoadFloat4(&it->second);
+					XMVECTOR q = XMQuaternionNormalize(XMQuaternionSlerp(qa, qb, f));
+					XMStoreFloat4(&bt.rotation, q);
+				}
+			}
+			else bt.rotation = { 0,0,0,1 };
+
+			// スケール補間
+			if (!ch.scaleKeys.empty()) {
+				auto it = std::lower_bound(
+					ch.scaleKeys.begin(), ch.scaleKeys.end(),
+					std::pair<float, DirectX::XMFLOAT3>(t, {}),
+					[](auto& a, auto& b) {return a.first < b.first; });
+				if (it == ch.scaleKeys.begin()) bt.scale = it->second;
+				else if (it == ch.scaleKeys.end()) bt.scale = ch.scaleKeys.back().second;
+				else {
+					auto prev = std::prev(it);
+					float f = (t - prev->first) / (it->first - prev->first);
+					bt.scale = {
+						prev->second.x + (it->second.x - prev->second.x) * f,
+						prev->second.y + (it->second.y - prev->second.y) * f,
+						prev->second.z + (it->second.z - prev->second.z) * f
+					};
+				}
+			}
+			else bt.scale = { 1,1,1 };
+
+			bt.isValid = true;
+			rch.timeline[t] = bt;
+		}
+		rt.channels.push_back(rch);
+	}
+
+	// ノードインデックスを再バインド
+	RebindChannelNodeIndices(m_resource.get(), rt);
+
+	rt.isLoaded = true;
 }
