@@ -27,6 +27,7 @@ struct LightGPU {
 
 static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
+static ID3D11Buffer* gLightCountCB = nullptr;
 
 Scene::~Scene()
 {
@@ -56,6 +57,10 @@ Scene::~Scene()
 	if (gLightCB) {
 		gLightCB->Release();
 		gLightCB = nullptr;
+	}
+	if (gLightCountCB) {  // © ’Ç‰Á
+		gLightCountCB->Release();
+		gLightCountCB = nullptr;
 	}
 }
 

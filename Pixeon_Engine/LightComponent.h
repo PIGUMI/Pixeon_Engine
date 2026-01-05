@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include <DirectXMath.h>
+#include<DirectXMath.h>
 
 class LightComponent : public AbstractComponent
 {
@@ -16,7 +16,8 @@ public:
 
 	void Init(AbstractObject* Prt) override;
 	void UInit() override;
-	void EditUpdate() override;      // 必要であれば回転から方向を更新
+	void EditUpdate() override;
+	void Draw(int Layer) override;
 	void DrawInspector() override;
 
 	// ライトの基本パラメータ
@@ -40,20 +41,32 @@ public:
 	void SetEnabled(bool e) { m_enabled = e; }
 	bool IsEnabled() const { return m_enabled; }
 
+	void SetDebugDraw(bool draw) { m_debugDraw = draw; }
+	bool IsDebugDraw() const { return m_debugDraw; }
+
+	void SetOffset(const DirectX::XMFLOAT3& offset) { m_offset = offset; }
+	DirectX::XMFLOAT3 GetOffset() const { return m_offset; }
+
 	// 計算補助
 	DirectX::XMFLOAT3 GetWorldPosition() const;
-	DirectX::XMFLOAT3 GetWorldDirection() const; // 前方（-Z or +Z）設計に合わせる
+	DirectX::XMFLOAT3 GetWorldDirection() const;
 
 	// 保存 / 読込
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
 private:
+	void DrawDirectionalLight();
+	void DrawPointLight();
+	void DrawSpotLight();
+
 	LightType           m_type = LightType::Directional;
 	DirectX::XMFLOAT3   m_color{ 1,1,1 };
 	float               m_intensity = 1.0f;
-	float               m_range = 10.0f;         // Point/Spot
-	float               m_spotInnerDeg = 20.0f;  // Spot
-	float               m_spotOuterDeg = 35.0f;  // Spot (外側)
+	float               m_range = 10.0f;
+	float               m_spotInnerDeg = 20.0f;
+	float               m_spotOuterDeg = 35.0f;
 	bool                m_enabled = true;
+	bool                m_debugDraw = true;
+	DirectX::XMFLOAT3   m_offset{ 0, 0, 0 };
 };

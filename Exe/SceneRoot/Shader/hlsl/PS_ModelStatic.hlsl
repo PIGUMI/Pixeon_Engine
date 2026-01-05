@@ -37,18 +37,18 @@ struct PS_INPUT
     float4 pos : SV_POSITION;
     float3 normal : NORMAL;
     float2 uv : TEXCOORD;
+    float3 worldPos : WORLDPOS; // ← ここを追加
 };
 
 float AttenuationPoint(float dist, float range)
 {
     float a = saturate(1.0 - dist / range);
-    // なだらか減衰: a^2
     return a * a;
 }
 
 float SpotFactor(float3 L, float3 dir, float innerCos, float outerCos)
 {
-    float c = dot(-L, dir); // L は light->point 方向なので -L がライト前方
+    float c = dot(-L, dir);
     if (c <= outerCos)
         return 0;
     if (c >= innerCos)
@@ -95,10 +95,7 @@ float4 main(PS_INPUT i) : SV_TARGET
 {
     float4 texCol = gBaseTex.Sample(gLinear, i.uv);
     float3 N = normalize(i.normal);
-    // ワールド変換後の正規化を VS でやっていればそのまま
-    float3 P = 0; // ライト計算で P が必要な場合は VS から位置を渡す (別構造体で)
-    // 簡易: P を再計算しない → Point/Spot の正しい距離減衰には必要
-    // 正確にするなら VS_OUTPUT に worldPos(float3) を追加して受け取ってください。
+    float3 P = i.worldPos; // ← ワールド座標を正しく取得
 
     float3 lighting = 0;
     [unroll]

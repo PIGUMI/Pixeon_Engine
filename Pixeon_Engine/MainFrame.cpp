@@ -194,6 +194,13 @@ void MainFrame::Draw()
 			break;
 		}
 		GUI::GetInstance()->EndDraw();
+
+		//for (int i = 0; i < MAX_LAYER_COUNT; i++)
+		//{
+		//	EngineFrame::GetInstance()->Draw(i);
+		//}
+
+
 		DirectX11::GetInstance()->EndDraw();
 
 		_updateDraw = false;
