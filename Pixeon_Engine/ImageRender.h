@@ -119,7 +119,7 @@ private:
 	DirectX::XMFLOAT4 m_color = { 1,1,1,1 };
 
 	// シェーダ名
-	std::string m_vsName = "VS_ImgQuad";
+	std::string m_vsName = "VS_ImgQuad_Lit";
 	std::string m_psName = "PS_ImgQuad";
 
 	// D3D

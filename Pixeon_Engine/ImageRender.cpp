@@ -30,6 +30,8 @@ void ImageRender::SaveToFile(std::ostream& out) {
 	out << _LayerNumber << std::endl;
 	out << m_textureName << std::endl;
 	out << (int)m_mode << std::endl;
+	out << m_vsName << std::endl;
+	out << m_psName << std::endl;
 	out << m_size2D.x << " " << m_size2D.y << std::endl;
 	out << m_sizeWorld.x << " " << m_sizeWorld.y << std::endl;
 	out << m_offset2D.x << " " << m_offset2D.y << std::endl;
@@ -44,6 +46,8 @@ void ImageRender::LoadFromFile(std::istream& in) {
 	in >> _LayerNumber;
 	in >> m_textureName;
 	in >> mode; m_mode = (PlacementMode)mode;
+	in >> m_vsName;
+	in >> m_psName;
 	in >> m_size2D.x >> m_size2D.y;
 	in >> m_sizeWorld.x >> m_sizeWorld.y;
 	in >> m_offset2D.x >> m_offset2D.y;

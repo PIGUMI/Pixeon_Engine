@@ -1,6 +1,7 @@
 Texture2D gTex0 : register(t0);
 SamplerState gSamp : register(s0);
 
+// ライト構造体（ModelStaticと同じ）
 struct LightGPU
 {
     float3 position;
@@ -60,7 +61,7 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
     float3 result = 0;
     
     if (l.type == 0)
-    {
+    { // Directional
         float3 L = -normalize(l.direction);
         float ndl = saturate(dot(N, L));
         result = l.color * (ndl * l.intensity);
@@ -80,7 +81,7 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
         float att = AttenuationPoint(dist, l.range);
         
         if (l.type == 2)
-        {
+        { // Spot
             float sf = SpotFactor(L, l.direction, l.innerCos, l.outerCos);
             att *= sf;
             if (att <= 0)
@@ -100,6 +101,7 @@ float4 main(PS_IN i) : SV_Target
     float3 N = normalize(i.normal);
     float3 P = i.worldPos;
     
+    // ライティング計算
     float3 lighting = 0;
     [unroll]
     for (int li = 0; li < gLightCount; ++li)
@@ -107,8 +109,10 @@ float4 main(PS_IN i) : SV_Target
         lighting += ApplyLight(gLights[li], P, N);
     }
     
+    // アンビエント（環境光）
     float3 ambient = 0.1 * i.col.rgb;
     
+    // 最終カラー = (環境光 + ライティング) * テクスチャ * 頂点カラー
     float3 color = (ambient + lighting) * tex.rgb * i.col.rgb;
     
     return float4(color, tex.a * i.col.a);
