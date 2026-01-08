@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-6.45581 -0.666198 53.4996 65.4993 3.59 7.62248e-39 -2.34139 3.66911 45.4823 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
+                    "Data": "10.9752 22.717 24.8801 66.6792 3.06 7.62248e-39 4.51075 21.9019 17.2942 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -30,7 +30,7 @@
         {
             "Components": [
                 {
-                    "Data": "SkyBox.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n1\nkloppenheim_02_puresky.jpg\n0 0 0\n1 1 1\n0\n",
+                    "Data": "SkyBox.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n1 0 0\n1 1 1\n1\nkloppenheim_02_puresky.jpg\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -57,7 +57,7 @@
         {
             "Components": [
                 {
-                    "Data": "Idele.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n2\n6\nPNG/TX_Munkki_Costume1.png\n0 0 0\n1 1 1.03\n2\nPNG/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n2\nPNG/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "Idele.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n2\n6 0 0\n1 1 1\n6\nPNG/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\nPNG/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
@@ -89,7 +89,7 @@
         {
             "Components": [
                 {
-                    "Data": "stone_fire_pit_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1\ntextures/stone_fire_pit_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
+                    "Data": "stone_fire_pit_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1 0 0\n1 1 1\n1\ntextures/stone_fire_pit_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -197,7 +197,7 @@
         {
             "Components": [
                 {
-                    "Data": "boulder_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1\ntextures/boulder_01_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
+                    "Data": "boulder_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1 0 0\n1 1 1\n1\ntextures/boulder_01_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -224,7 +224,7 @@
         {
             "Components": [
                 {
-                    "Data": "island_tree_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n3\ntextures/island_tree_01_diff_4k.jpg\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\ntextures/island_tree_01_branches_diff_4k.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "island_tree_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n3 0 0\n1 1 1\n3\ntextures/island_tree_01_diff_4k.jpg\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\ntextures/island_tree_01_branches_diff_4k.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -251,7 +251,7 @@
         {
             "Components": [
                 {
-                    "Data": "coast_rocks_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1\ntextures/coast_rocks_01_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
+                    "Data": "coast_rocks_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1 0 0\n1 1 1\n1\ntextures/coast_rocks_01_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -278,7 +278,7 @@
         {
             "Components": [
                 {
-                    "Data": "Lantern_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n2\ntextures/Lantern_01_brass_diff_4k.png\n0 0 0\n1 1 1\n0\ntextures/Lantern_01_brass_diff_4k.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "Lantern_01_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n2 0 0\n1 1 1\n2\ntextures/Lantern_01_brass_diff_4k.png\n0 0 0\n1 1 1\n0\ntextures/Lantern_01_brass_diff_4k.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },

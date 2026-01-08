@@ -344,17 +344,17 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(const DirectX::XMFL
 	Transform t = _Parent->GetTransform();
 
 	XMMATRIX S = XMMatrixScaling(
-		t.scale.x * scale.x,
-		t.scale.y * scale.y,
-		t.scale.z * scale.z
+		t.scale.x * scale.x * m_globalScale.x,
+		t.scale.y * scale.y * m_globalScale.y,
+		t.scale.z * scale.z * m_globalScale.z
 	);
 
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
 
 	XMMATRIX T = XMMatrixTranslation(
-		t.position.x + offset.x,
-		t.position.y + offset.y,
-		t.position.z + offset.z
+		t.position.x + offset.x + m_globalOffset.x,
+		t.position.y + offset.y + m_globalOffset.y,
+		t.position.z + offset.z + m_globalOffset.z
 	);
 
 	return S * R * T;
@@ -594,6 +594,9 @@ void ModelRenderComponent::SaveToFile(std::ostream& out) {
 	out << m_vsName << "\n" << m_psName << "\n";
 	out << _LayerNumber << "\n";
 
+	out << m_globalOffset.x << " " << m_globalOffset.y << " " << m_globalOffset.z << "\n";
+	out << m_globalScale.x << " " << m_globalScale.y << " " << m_globalScale.z << "\n";
+
 	out << m_materials.size() << "\n";
 	for (const auto& mat : m_materials) {
 		out << mat.texName << "\n";
@@ -610,6 +613,12 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 	std::getline(in, m_vsName);
 	std::getline(in, m_psName);
 	in >> _LayerNumber;
+	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+	// 全体オフセット・スケールを読み込み
+	in >> m_globalOffset.x >> m_globalOffset.y >> m_globalOffset.z;
+	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	in >> m_globalScale.x >> m_globalScale.y >> m_globalScale.z;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	SetModel(m_modelPath);
@@ -732,6 +741,26 @@ void ModelRenderComponent::DrawInspector() {
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ベース色設定").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::ColorEdit4("Color", (float*)&m_color);
+
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("全体オフセット").c_str());
+	ImGui::TableSetColumnIndex(1);
+	float globalOffset[3] = { m_globalOffset.x, m_globalOffset.y, m_globalOffset.z };
+	if (ImGui::DragFloat3("GlobalOffset", globalOffset, 0.01f, -100.0f, 100.0f)) {
+		m_globalOffset.x = globalOffset[0];
+		m_globalOffset.y = globalOffset[1];
+		m_globalOffset.z = globalOffset[2];
+	}
+
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("全体スケール").c_str());
+	ImGui::TableSetColumnIndex(1);
+	float globalScale[3] = { m_globalScale.x, m_globalScale.y, m_globalScale.z };
+	if (ImGui::DragFloat3("GlobalScale", globalScale, 0.01f, 0.01f, 10.0f)) {
+		m_globalScale.x = globalScale[0];
+		m_globalScale.y = globalScale[1];
+		m_globalScale.z = globalScale[2];
+	}
 
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0);

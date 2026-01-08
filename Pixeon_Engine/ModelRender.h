@@ -66,6 +66,12 @@ public:
 	void SetMeshCullMode(size_t meshIndex, CullMode mode);
 	CullMode GetMeshCullMode(size_t meshIndex) const;
 
+	void SetGlobalOffset(const DirectX::XMFLOAT3& offset) { m_globalOffset = offset; }
+	DirectX::XMFLOAT3 GetGlobalOffset() const { return m_globalOffset; }
+
+	void SetGlobalScale(const DirectX::XMFLOAT3& scale) { m_globalScale = scale; }
+	DirectX::XMFLOAT3 GetGlobalScale() const { return m_globalScale; }
+
 private:
 	struct CBData {
 		DirectX::XMMATRIX World;
@@ -107,6 +113,8 @@ private:
 
 	void EnsureDefaultBoneMatrices();
 
+
+
 private:
 	std::string m_modelPath;
 	std::shared_ptr<ModelSharedResource> m_model;
@@ -140,4 +148,7 @@ private:
 
 	std::vector<DirectX::XMFLOAT4X4> m_boneMatrices;
 	bool m_useBoneMatrices = false;
+
+	DirectX::XMFLOAT3 m_globalOffset{ 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 m_globalScale{ 1.0f, 1.0f, 1.0f };
 };
