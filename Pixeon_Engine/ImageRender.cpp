@@ -501,7 +501,7 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 }
 
 void ImageRender::Draw(int Layer) {
-	if (Layer != _LayerNumber)return;
+	if (Layer != _LayerNumber) return;
 	if (!m_ready) return;
 	auto* dx = DirectX11::GetInstance();
 	auto ctx = dx->GetContext();
@@ -554,6 +554,27 @@ void ImageRender::Draw(int Layer) {
 	CameraComponent* cam = scene ? scene->GetMainCamera() : nullptr;
 
 	CBVS cb{};
+
+	// ワールド行列を構築
+	if (_Parent) {
+		Transform t = _Parent->GetTransform();
+		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
+		DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(
+			t.rotation.x + offset3DRot.x,
+			t.rotation.y + offset3DRot.y,
+			t.rotation.z + offset3DRot.z
+		);
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(
+			t.position.x + m_offset3D.x,
+			t.position.y + m_offset3D.y,
+			t.position.z + m_offset3D.z
+		);
+		cb.World = DirectX::XMMatrixTranspose(S * R * T);
+	}
+	else {
+		cb.World = DirectX::XMMatrixIdentity();
+	}
+
 	if (cam) {
 		cb.View = DirectX::XMMatrixTranspose(cam->GetView());
 		cb.Proj = DirectX::XMMatrixTranspose(cam->GetProjection());
@@ -562,6 +583,7 @@ void ImageRender::Draw(int Layer) {
 		cb.View = DirectX::XMMatrixIdentity();
 		cb.Proj = DirectX::XMMatrixIdentity();
 	}
+
 	cb.Color = m_color;
 	cb.mode2D = mode2DFlag;
 
@@ -578,6 +600,7 @@ void ImageRender::Draw(int Layer) {
 
 	ctx->VSSetShader(m_vs.Get(), nullptr, 0);
 	ctx->PSSetShader(m_ps.Get(), nullptr, 0);
+
 	ID3D11Buffer* cbs[] = { m_cbVS.Get() };
 	ctx->VSSetConstantBuffers(0, 1, cbs);
 	ctx->PSSetConstantBuffers(0, 1, cbs);

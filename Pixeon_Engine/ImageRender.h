@@ -68,11 +68,12 @@ private:
 		DirectX::XMFLOAT2 uv;
 	};
 	struct CBVS {
+		DirectX::XMMATRIX World;
 		DirectX::XMMATRIX View;
 		DirectX::XMMATRIX Proj;
-		DirectX::XMFLOAT4 Color; // 色
+		DirectX::XMFLOAT4 Color;
 		int mode2D;
-		float pad[3];            // 16Bアラインメント
+		float pad[3];
 	};
 
 	// 内部処理

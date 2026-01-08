@@ -340,7 +340,6 @@ void Scene::LoadToFile() {
 	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + _name + ".scene";
 	std::ifstream inFile(filePath);
 	if (!inFile.is_open()) {
-		// ファイルが開けなかった場合、falseを返す
 		return;
 	}
 
@@ -469,7 +468,7 @@ void Scene::UploadLightsToGPU() {
 	if (!gLightCB) {
 		D3D11_BUFFER_DESC bd{};
 		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(LightGPU) * kMaxLights + 16; // 余裕
+		bd.ByteWidth = sizeof(LightGPU) * kMaxLights + 16;
 		bd.Usage = D3D11_USAGE_DYNAMIC;
 		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		dev->CreateBuffer(&bd, nullptr, &gLightCB);
@@ -491,7 +490,7 @@ void Scene::UploadLightsToGPU() {
 		lights[count].range = l->GetRange();
 		float innerRad = DirectX::XMConvertToRadians(l->GetSpotInner());
 		float outerRad = DirectX::XMConvertToRadians(l->GetSpotOuter());
-		lights[count].innerCos = cosf(innerRad * 0.5f); // 半角で扱うなら適宜
+		lights[count].innerCos = cosf(innerRad * 0.5f);
 		lights[count].outerCos = cosf(outerRad * 0.5f);
 		lights[count].enabled = 1.0f;
 		++count;
