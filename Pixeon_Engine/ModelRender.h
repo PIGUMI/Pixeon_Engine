@@ -72,6 +72,9 @@ public:
 	void SetGlobalScale(const DirectX::XMFLOAT3& scale) { m_globalScale = scale; }
 	DirectX::XMFLOAT3 GetGlobalScale() const { return m_globalScale; }
 
+	void SetGlobalRotation(const DirectX::XMFLOAT3& rotation) { m_globalRotation = rotation; }
+	DirectX::XMFLOAT3 GetGlobalRotation() const { return m_globalRotation; }
+
 private:
 	struct CBData {
 		DirectX::XMMATRIX World;
@@ -151,4 +154,5 @@ private:
 
 	DirectX::XMFLOAT3 m_globalOffset{ 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 m_globalScale{ 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT3 m_globalRotation{ 0.0f, 0.0f, 0.0f };
 };

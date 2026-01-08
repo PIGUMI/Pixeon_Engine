@@ -241,12 +241,16 @@ bool ImageRender::EnsureBuffers() {
 bool ImageRender::EnsureDepthStencilState() {
 	if (s_depthStencilState) return true;
 	D3D11_DEPTH_STENCIL_DESC desc = {};
-	desc.DepthEnable = FALSE; // 2DではこれでOK
-	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+	desc.DepthEnable = TRUE;
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	desc.StencilEnable = FALSE;
+
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	HRESULT hr = dev->CreateDepthStencilState(&desc, s_depthStencilState.GetAddressOf());
 	return SUCCEEDED(hr);
+
 }
 
 void ImageRender::UpdateVB(const Vertex v[4]) {
