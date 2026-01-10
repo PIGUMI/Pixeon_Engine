@@ -475,7 +475,10 @@ void Scene::UploadLightsToGPU() {
 	}
 	if (!gLightCB) return;
 
-	LightGPU lights[kMaxLights]{};
+	// 配列を明示的にゼロクリア
+	LightGPU lights[kMaxLights];
+	memset(lights, 0, sizeof(lights));
+
 	int count = 0;
 	for (auto* l : _lights) {
 		if (!l || !l->IsEnabled()) continue;
@@ -495,6 +498,11 @@ void Scene::UploadLightsToGPU() {
 		lights[count].enabled = 1.0f;
 		++count;
 	}
+
+	for (int i = count; i < kMaxLights; ++i) {
+		lights[i].enabled = 0.0f;
+	}
+
 	struct LightCountCB { int count; float pad[3]; };
 	static ID3D11Buffer* gLightCountCB = nullptr;
 	if (!gLightCountCB) {
