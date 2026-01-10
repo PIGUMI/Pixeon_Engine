@@ -295,21 +295,21 @@ void EngineFrame::GameViewWindow()
 	}
 }
 
-void  EngineFrame::HierarchyWindow()
+void EngineFrame::HierarchyWindow()
 {
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ヒエラルキー").c_str());
-	// シーン内のオブジェクトをリスト表示
+
 	Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("シーン: ").c_str());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("シーン:  ").c_str());
 	ImGui::SameLine();
 	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(currentScene ? currentScene->GetName() : "No Scene").c_str());
 	ImGui::Separator();
+
 	// 右クリックでコンテキストメニュー表示
 	if (ImGui::BeginPopupContextWindow("HierarchyContextMenu", ImGuiPopupFlags_MouseButtonRight))
 	{
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("オブジェクトの追加").c_str())) {
 			AbstractObject* newObj = new AbstractObject();
-			// 名前を比較、同じ名前付けられないようにする
 			int suffix = 1;
 			std::string baseName = "NewObject";
 			std::string newName = baseName;
@@ -335,34 +335,12 @@ void  EngineFrame::HierarchyWindow()
 
 	if (currentScene) {
 		std::vector<AbstractObject*> objects = currentScene->GetObjects();
+
+		// ルートオブジェクト（親がいないオブジェクト）のみを表示
 		for (size_t i = 0; i < objects.size(); ++i) {
 			AbstractObject* obj = objects[i];
-			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-			if (obj == SelectedObject) {
-				flags |= ImGuiTreeNodeFlags_Selected;
-			}
-			bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)obj, flags, GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str());
-			if (ImGui::IsItemClicked()) {
-				SelectedObject = obj;
-			}
-
-			// オブジェクトごとにユニークなラベルを作成
-			std::string popupLabel = "ObjectContextMenu_" + std::to_string((intptr_t)obj);
-
-			// 右クリックでコンテキストメニュー表示
-			if (ImGui::BeginPopupContextItem(popupLabel.c_str(), ImGuiPopupFlags_MouseButtonRight))
-			{
-				if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("Prefabとして保存").c_str())) {
-					EngineFrame::GetInstance()->AddPrefab(obj);
-				}
-				if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str())) {
-					SceneManger::GetInstance()->GetCurrentScene()->RemoveObject(obj);
-					SelectedObject = nullptr;
-				}
-				ImGui::EndPopup();
-			}
-			if (nodeOpen) {
-				ImGui::TreePop();
+			if (obj->GetParent() == nullptr) {
+				DrawObjectNode(obj);
 			}
 		}
 	}
@@ -835,5 +813,119 @@ void EngineFrame::SceneRenameWindow()
 			}
 		}
 		ImGui::End();
+	}
+}
+
+void EngineFrame::DrawObjectNode(AbstractObject* obj)
+{
+	if (!obj) return;
+
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+	// 子オブジェクトがない場合は葉ノード
+	if (obj->GetChildren().empty()) {
+		flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+	}
+
+	if (obj == SelectedObject) {
+		flags |= ImGuiTreeNodeFlags_Selected;
+	}
+
+	bool nodeOpen = ImGui::TreeNodeEx(
+		(void*)(intptr_t)obj,
+		flags,
+		GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str()
+	);
+
+	// クリックで選択
+	if (ImGui::IsItemClicked()) {
+		SelectedObject = obj;
+	}
+
+	// ドラッグ&ドロップソース
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+		ImGui::SetDragDropPayload("HIERARCHY_OBJECT", &obj, sizeof(AbstractObject*));
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	// ドラッグ&ドロップターゲット
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_OBJECT")) {
+			AbstractObject* draggedObj = *(AbstractObject**)payload->Data;
+			if (draggedObj && draggedObj != obj) {
+				// 循環参照チェック
+				bool isCircular = false;
+				AbstractObject* parent = obj;
+				while (parent) {
+					if (parent == draggedObj) {
+						isCircular = true;
+						break;
+					}
+					parent = parent->GetParent();
+				}
+
+				if (!isCircular) {
+					draggedObj->SetParent(obj);
+				}
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	// 右クリックでコンテキストメニュー表示
+	std::string popupLabel = "ObjectContextMenu_" + std::to_string((intptr_t)obj);
+	if (ImGui::BeginPopupContextItem(popupLabel.c_str(), ImGuiPopupFlags_MouseButtonRight))
+	{
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("子オブジェクトを作成").c_str())) {
+			AbstractObject* newChild = new AbstractObject();
+			int suffix = 1;
+			std::string baseName = "ChildObject";
+			std::string newName = baseName;
+
+			// 名前の重複チェック
+			Scene* scene = SceneManger::GetInstance()->GetCurrentScene();
+			bool nameExists = true;
+			while (nameExists) {
+				nameExists = false;
+				for (const auto& sceneObj : scene->GetObjects()) {
+					if (sceneObj->GetObjectName() == newName) {
+						nameExists = true;
+						break;
+					}
+				}
+				if (nameExists) {
+					newName = baseName + std::to_string(suffix);
+					suffix++;
+				}
+			}
+
+			newChild->SetObjectName(newName);
+			newChild->SetParent(obj);
+			scene->AddObjectLocal(newChild);
+		}
+
+		if (obj->GetParent() && ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("親から切り離す").c_str())) {
+			obj->RemoveParent();
+		}
+
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("Prefabとして保存").c_str())) {
+			EngineFrame::GetInstance()->AddPrefab(obj);
+		}
+
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("削除").c_str())) {
+			// 子オブジェクトも含めて削除
+			SceneManger::GetInstance()->GetCurrentScene()->RemoveObject(obj);
+			SelectedObject = nullptr;
+		}
+		ImGui::EndPopup();
+	}
+
+	// ツリーノードが開いている場合、子オブジェクトを表示
+	if (nodeOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
+		for (auto child : obj->GetChildren()) {
+			DrawObjectNode(child);
+		}
+		ImGui::TreePop();
 	}
 }

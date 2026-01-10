@@ -26,6 +26,13 @@ public:
 	Transform GetTransform() { return _transform; }
 	void SetTransform(Transform transform) { _transform = transform; }
 
+	// ローカルトランスフォームの取得・設定
+	Transform GetLocalTransform() { return _transform; }
+	void SetLocalTransform(const Transform& transform) { _transform = transform; }
+
+	// ワールドトランスフォームの取得
+	Transform GetWorldTransform();
+
 	std::string GetObjectName() { return _ObjectName; }
 	void SetObjectName(const std::string& name) { _ObjectName = name; }
 
@@ -41,10 +48,28 @@ public:
 		_transform.scale = { x, y, z };
 	}
 
-public:
+	// ワールド位置の取得
+	DirectX::XMFLOAT3 GetWorldPosition();
 
+public:
+	// 親子関係の管理
+	void SetParent(AbstractObject* parent);
+	AbstractObject* GetParent() const { return _parentObject; }
+	void RemoveParent();
+
+	void AddChild(AbstractObject* child);
+	void RemoveChild(AbstractObject* child);
+	std::vector<AbstractObject*>& GetChildren() { return _children; }
+	const std::vector<AbstractObject*>& GetChildren() const { return _children; }
+
+	// 階層的な更新・描画
+	void UpdateHierarchy();
+	void DrawHierarchy(int Layer);
+
+public:
 	// 名前からコンポーネントを取得
 	AbstractComponent* GetComponent(const std::string& name);
+
 	// 型からコンポーネントを取得
 	template<typename T = AbstractComponent>
 	T* GetComponent() {
@@ -56,6 +81,7 @@ public:
 		}
 		return nullptr;
 	}
+
 	// 全コンポーネントの取得
 	std::vector<AbstractComponent*> GetComponents() { return _components; }
 
@@ -72,14 +98,16 @@ public:
 	}
 
 	std::vector<AbstractComponent*> GetComponentsByTypeID(int typeID);
+
 	// コンポーネントの削除
 	void RemoveComponent(AbstractComponent* comp);
+
 	// コンポーネントの追加
 	template<typename T = AbstractComponent>
 	T* AddComponent() {
 		T* newComp = new T();
 		newComp->Init(this);
-		// 同じ型のコンポーネントが既に存在する場合は名前に番号を付与
+		// 同一型のコンポーネントが既に存在する場合は名前に番号を付与
 		std::string baseName = newComp->GetComponentName();
 
 		int count = 1;
@@ -93,6 +121,7 @@ public:
 
 	void SetParentScene(Scene* scene) { _ParentScene = scene; }
 	Scene* GetParentScene() const { return _ParentScene; }
+
 public:
 	// variable Setter And Getter
 	void SetInt(const std::string& key, int value) { _intValues[key] = value; }
@@ -106,9 +135,16 @@ protected:
 	Transform _transform;
 	std::vector<AbstractComponent*> _components;
 	Scene* _ParentScene = nullptr;
-	std::map<std::string, int>		_intValues;
-	std::map<std::string, float>	_floatValues;
-	std::map<std::string, bool>		_boolValues;
+
+	// 親子関係
+	AbstractObject* _parentObject = nullptr;
+	std::vector<AbstractObject*> _children;
+
+	std::map<std::string, int> _intValues;
+	std::map<std::string, float> _floatValues;
+	std::map<std::string, bool> _boolValues;
+
+	friend class Scene;
 };
 
 #endif // !_OBJECT_H_

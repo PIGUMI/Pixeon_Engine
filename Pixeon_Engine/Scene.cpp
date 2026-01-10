@@ -100,9 +100,9 @@ void Scene::BeginPlay() {
 
 void Scene::EditUpdate() {
 	InGame = false;
-	if (!EndPlayCalled){
+	if (!EndPlayCalled) {
 		EndPlayCalled = true;
-		for (auto& obj : _objects){
+		for (auto& obj : _objects) {
 			if (obj) obj->UInit();
 			delete obj;
 		}
@@ -131,6 +131,7 @@ void Scene::EditUpdate() {
 		}
 	}
 	_ToBeAdded.clear();
+
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -144,12 +145,34 @@ void Scene::EditUpdate() {
 			}
 		}
 	}
-	for (auto& obj : _objects) if (obj)obj->EditUpdate();
+
+	// ルートオブジェクトのみ更新（子は自動的に更新される）
+	for (auto& obj : _objects) {
+		if (obj && obj->GetParent() == nullptr) {
+			obj->EditUpdate();
+		}
+	}
+
+	// 削除処理
 	for (auto& obj : _ToBeRemoved) {
 		if (!obj) continue;
+
+		// 親から切り離す
+		if (obj->GetParent()) {
+			obj->GetParent()->RemoveChild(obj);
+		}
+
+		// 子オブジェクトの親参照をクリア
+		for (auto child : obj->GetChildren()) {
+			if (child) {
+				child->_parentObject = nullptr;  // 直接アクセス（protectedメンバー）
+			}
+		}
+
 		auto it = std::find(_objects.begin(), _objects.end(), obj);
 		if (it != _objects.end()) {
 			_objects.erase(it);
+			obj->UInit();
 			delete obj;
 		}
 	}
@@ -167,6 +190,7 @@ void Scene::PlayUpdate() {
 		}
 	}
 	_ToBeAdded.clear();
+
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -180,6 +204,7 @@ void Scene::PlayUpdate() {
 			}
 		}
 	}
+
 	if (pPhysicsWorld)
 	{
 		try
@@ -187,38 +212,38 @@ void Scene::PlayUpdate() {
 			int numObjects = pPhysicsWorld->getNumCollisionObjects();
 			if (numObjects >= 0 && numObjects < 10000)
 			{
-				bool hasInvakudObjects = false;
+				bool hasInvalidObjects = false;
 				for (int i = 0; i < numObjects; i++)
 				{
 					btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
 					if (!obj || !obj->getCollisionShape())
 					{
-						hasInvakudObjects = true;
+						hasInvalidObjects = true;
 						break;
 					}
 				}
 
-				if (!hasInvakudObjects){
+				if (!hasInvalidObjects) {
 					float timeStep = 1.0f / 60.0f;
 					int maxSubSteps = 10;
 					bool valid = true;
-					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i){
+					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i) {
 						btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
 						btRigidBody* body = btRigidBody::upcast(obj);
-						if (!body || !body->getCollisionShape() || !body->getMotionState()){
+						if (!body || !body->getCollisionShape() || !body->getMotionState()) {
 							valid = false;
 							break;
 						}
 					}
-					if (valid){
+					if (valid) {
 						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps);
 					}
 				}
-				else{
+				else {
 					CleanupAndReinitializePhysics();
 				}
 			}
-			else{
+			else {
 				CleanupAndReinitializePhysics();
 			}
 		}
@@ -227,13 +252,36 @@ void Scene::PlayUpdate() {
 			CleanupAndReinitializePhysics();
 		}
 	}
-	for (auto& obj : _objects) if (obj)obj->InGameUpdate();
+
+	// ルートオブジェクトのみ更新（子は自動的に更新される）
+	for (auto& obj : _objects) {
+		if (obj && obj->GetParent() == nullptr) {
+			obj->InGameUpdate();
+		}
+	}
+
 	if (_collisionManager)_collisionManager->Update();
+
+	// 削除処理
 	for (auto& obj : _ToBeRemoved) {
 		if (!obj) continue;
+
+		// 親から切り離す
+		if (obj->GetParent()) {
+			obj->GetParent()->RemoveChild(obj);
+		}
+
+		// 子オブジェクトの親参照をクリア
+		for (auto child : obj->GetChildren()) {
+			if (child) {
+				child->_parentObject = nullptr;
+			}
+		}
+
 		auto it = std::find(_objects.begin(), _objects.end(), obj);
 		if (it != _objects.end()) {
 			_objects.erase(it);
+			obj->UInit();
 			delete obj;
 		}
 	}
@@ -242,20 +290,33 @@ void Scene::PlayUpdate() {
 
 void Scene::Draw(int Layer) {
 	UploadLightsToGPU();
-	// オブジェクトの描画
-	std::vector<AbstractObject*> sortedList = _objects;
+
+	std::vector<AbstractObject*> sortedList;
+
+	// ルートオブジェクトのみをソート対象にする
+	for (auto& obj : _objects) {
+		if (obj && obj->GetParent() == nullptr) {
+			sortedList.push_back(obj);
+		}
+	}
+
 	if (_MainCamera) {
 		std::sort(sortedList.begin(), sortedList.end(), [this](AbstractObject* a, AbstractObject* b) {
 			if (!a || !b) return false;
 			DirectX::XMFLOAT3 camPos = _MainCamera->GetPosition();
-			DirectX::XMFLOAT3 posA = a->GetTransform().position;
-			DirectX::XMFLOAT3 posB = b->GetTransform().position;
-			float distA = (camPos.x - posA.x) * (camPos.x - posA.x) + (camPos.y - posA.y) * (camPos.y - posA.y) + (camPos.z - posA.z) * (camPos.z - posA.z);
-			float distB = (camPos.x - posB.x) * (camPos.x - posB.x) + (camPos.y - posB.y) * (camPos.y - posB.y) + (camPos.z - posB.z) * (camPos.z - posB.z);
-			// 距離が近い順にソート
+			DirectX::XMFLOAT3 posA = a->GetWorldPosition();
+			DirectX::XMFLOAT3 posB = b->GetWorldPosition();
+			float distA = (camPos.x - posA.x) * (camPos.x - posA.x) +
+				(camPos.y - posA.y) * (camPos.y - posA.y) +
+				(camPos.z - posA.z) * (camPos.z - posA.z);
+			float distB = (camPos.x - posB.x) * (camPos.x - posB.x) +
+				(camPos.y - posB.y) * (camPos.y - posB.y) +
+				(camPos.z - posB.z) * (camPos.z - posB.z);
 			return distA > distB;
 			});
 	}
+
+	// ルートオブジェクトを描画（子は自動的に描画される）
 	for (auto& obj : sortedList)
 	{
 		if (obj)
@@ -278,7 +339,7 @@ void Scene::SaveToFile() {
 	else {
 		SaveObjects = _objects;
 	}
-	// 現在時刻の取得
+
 	auto Now = std::chrono::system_clock::now();
 	auto in_time_t = std::chrono::system_clock::to_time_t(Now);
 	std::tm localtime;
@@ -296,9 +357,29 @@ void Scene::SaveToFile() {
 			// オブジェクトの基本情報の保存
 			nlohmann::json ObjectData;
 			ObjectData["Name"] = Object->GetObjectName();
-			ObjectData["Transform"]["Position"] = { Object->GetTransform().position.x, Object->GetTransform().position.y, Object->GetTransform().position.z };
-			ObjectData["Transform"]["Rotation"] = { Object->GetTransform().rotation.x, Object->GetTransform().rotation.y, Object->GetTransform().rotation.z };
-			ObjectData["Transform"]["Scale"] = { Object->GetTransform().scale.x,    Object->GetTransform().scale.y,    Object->GetTransform().scale.z };
+			ObjectData["Transform"]["Position"] = {
+				Object->GetTransform().position.x,
+				Object->GetTransform().position.y,
+				Object->GetTransform().position.z
+			};
+			ObjectData["Transform"]["Rotation"] = {
+				Object->GetTransform().rotation.x,
+				Object->GetTransform().rotation.y,
+				Object->GetTransform().rotation.z
+			};
+			ObjectData["Transform"]["Scale"] = {
+				Object->GetTransform().scale.x,
+				Object->GetTransform().scale.y,
+				Object->GetTransform().scale.z
+			};
+
+			// 親子関係の保存
+			if (Object->GetParent()) {
+				ObjectData["Parent"] = Object->GetParent()->GetObjectName();
+			}
+			else {
+				ObjectData["Parent"] = "";
+			}
 
 			// コンポーネントデータの保存
 			nlohmann::json ComponentData = nlohmann::json::array();
@@ -324,7 +405,7 @@ void Scene::SaveToFile() {
 	File = SettingManager::GetInstance()->GetSceneFilePath() + _name + ".scene";
 	std::ofstream outFile(File);
 	if (outFile.is_open()) {
-		outFile << SceneData.dump(4); // インデント幅4で保存
+		outFile << SceneData.dump(4);
 		outFile.close();
 	}
 }
@@ -343,11 +424,18 @@ void Scene::LoadToFile() {
 	_name = sceneData["SceneSettings"]["Name"].get<std::string>();
 	_MainCameraNumber = sceneData["SceneSettings"]["MainCameraNumber"].get<int>();
 
-	// Objectsの読み込み
+	// オブジェクト名とオブジェクトポインタのマップ
+	std::map<std::string, AbstractObject*> objectMap;
+	std::map<AbstractObject*, std::string> parentNames;
+
+	// Objectsの読み込み（第一段階：オブジェクト生成）
 	for (const auto& objData : sceneData["Objects"]) {
 		AbstractObject* newObj = new AbstractObject();
 		newObj->SetParentScene(this);
-		newObj->SetObjectName(objData["Name"].get<std::string>());
+
+		std::string objName = objData["Name"].get<std::string>();
+		newObj->SetObjectName(objName);
+
 		// Transformの読み込み
 		auto pos = objData["Transform"]["Position"];
 		auto rot = objData["Transform"]["Rotation"];
@@ -357,6 +445,12 @@ void Scene::LoadToFile() {
 		transform.rotation = { rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>() };
 		transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
 		newObj->SetTransform(transform);
+
+		// 親の名前を記録（後で設定）
+		if (objData.contains("Parent") && !objData["Parent"].get<std::string>().empty()) {
+			parentNames[newObj] = objData["Parent"].get<std::string>();
+		}
+
 		// コンポーネントの読み込み
 		for (const auto& compData : objData["Components"]) {
 			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
@@ -372,7 +466,20 @@ void Scene::LoadToFile() {
 				MessageBox(nullptr, "コンポーネントの追加に失敗しました", "Error", MB_OK);
 			}
 		}
+
+		objectMap[objName] = newObj;
 		AddObjectLocal(newObj);
+	}
+
+	// 第二段階：親子関係の復元
+	for (const auto& pair : parentNames) {
+		AbstractObject* child = pair.first;
+		const std::string& parentName = pair.second;
+
+		auto it = objectMap.find(parentName);
+		if (it != objectMap.end()) {
+			child->SetParent(it->second);
+		}
 	}
 
 	// 登録されているメインカメラと同じ番号のカメラコンポーネントを探す
@@ -601,7 +708,33 @@ void Scene::AddObjectLocal(AbstractObject* obj) {
 
 void Scene::RemoveObject(AbstractObject* obj) {
 	if (!obj) return;
-	_ToBeRemoved.push_back(obj);
+
+	// 子オブジェクトも全て削除対象に追加
+	std::vector<AbstractObject*> toRemove;
+	toRemove.push_back(obj);
+
+	// 再帰的に子オブジェクトを収集
+	std::function<void(AbstractObject*)> collectChildren = [&](AbstractObject* parent) {
+		for (auto child : parent->GetChildren()) {
+			if (child) {
+				toRemove.push_back(child);
+				collectChildren(child);
+			}
+		}
+		};
+	collectChildren(obj);
+
+	// 親から切り離す
+	obj->RemoveParent();
+
+	// 全て削除リストに追加
+	for (auto removeObj : toRemove) {
+		// 重複チェック
+		auto it = std::find(_ToBeRemoved.begin(), _ToBeRemoved.end(), removeObj);
+		if (it == _ToBeRemoved.end()) {
+			_ToBeRemoved.push_back(removeObj);
+		}
+	}
 }
 
 bool Scene::AddObject(AbstractObject* obj)
