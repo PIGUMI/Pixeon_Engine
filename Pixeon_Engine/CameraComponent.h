@@ -10,6 +10,7 @@ public:
 	void Init(AbstractObject* Prt)	override;
 	void EditUpdate()		override;
 	void InGameUpdate()		override;
+	void Draw(int Layer)	override;  // 追加
 
 	void DrawInspector() override;
 
@@ -22,8 +23,9 @@ public:
 	DirectX::XMMATRIX GetProjection();
 	DirectX::XMFLOAT3 GetForwardVector();
 	DirectX::XMFLOAT3 GetRightVector();
+	DirectX::XMFLOAT3 GetUpVector();  // 修正：戻り値の型を変更
 
-	// ワールド座標を取得
+	// ワールド座標の取得
 	DirectX::XMFLOAT3 GetWorldPosition() const;
 	DirectX::XMFLOAT3 GetWorldFixation() const;
 
@@ -50,9 +52,16 @@ public:
 	void SetIsChangeCalculation(bool isChange) { _IsChangeCalculation = isChange; }
 	int GetCameraNumber() const { return _CameraNumber; }
 	void SetCameraNumber(int num) { _CameraNumber = num; }
-	DirectX::XMFLOAT3 GetUpVector() const { return _Up; }
+	DirectX::XMFLOAT3 GetUpVectorValue() const { return _Up; }  // 名前変更
+
+	void SetDebugDraw(bool draw) { _debugDraw = draw; }  // 追加
+	bool IsDebugDraw() const { return _debugDraw; }      // 追加
 
 private:
+	// デバッグ描画用メソッド
+	void DrawCameraVisualization();  // 追加
+	void DrawFrustum();              // 追加
+
 	AbstractObject* _Parent;
 	DirectX::XMFLOAT3 _PositionOffset;      // カメラ位置のオフセット
 	DirectX::XMFLOAT3 _Rotation;
@@ -66,4 +75,5 @@ private:
 	bool _IsKeyMove = false;
 	bool _IsChangeCalculation = false;
 	int _CameraNumber = -1;
+	bool _debugDraw = true;  // 追加
 };
