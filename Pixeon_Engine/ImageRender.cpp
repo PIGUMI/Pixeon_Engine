@@ -537,19 +537,19 @@ void ImageRender::Draw(int Layer) {
 
 	if (m_mode == PlacementMode::Screen2D) {
 		UpdateVertices2D(v, zClip2D);
-		mode2DFlag = 1;
+		mode2DFlag = 1; // 2D配置
 	}
 	else if (m_mode == PlacementMode::Billboard) {
 		UpdateVerticesBillboard(v);
-		mode2DFlag = 0;
+		mode2DFlag = 0; // ビルボード
 	}
 	else if (m_mode == PlacementMode::UI) {
 		UpdateVerticesUI(v);
-		mode2DFlag = 0;
+		mode2DFlag = 0; // UI
 	}
 	else {
 		UpdateVerticesWorld3D(v);
-		mode2DFlag = 0;
+		mode2DFlag = 2; // 3D配置（新しい値）
 	}
 
 	UpdateVB(v);

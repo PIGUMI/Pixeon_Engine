@@ -1,7 +1,6 @@
 Texture2D gTex0 : register(t0);
 SamplerState gSamp : register(s0);
 
-// ライト構造体（ModelStaticと同じ）
 struct LightGPU
 {
     float3 position;
@@ -34,6 +33,7 @@ struct PS_IN
     float4 col : COLOR0;
     float3 worldPos : WORLDPOS;
     float3 normal : NORMAL;
+    bool isFrontFace : SV_IsFrontFace; // 追加：表裏判定
 };
 
 float AttenuationPoint(float dist, float range)
@@ -61,9 +61,10 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
     float3 result = 0;
     
     if (l.type == 0)
-    { // Directional
+    {
+        // Directional
         float3 L = -normalize(l.direction);
-        float ndl = saturate(dot(N, L));
+        float ndl = saturate(abs(dot(N, L))); // abs()で両面対応
         result = l.color * (ndl * l.intensity);
     }
     else
@@ -74,14 +75,15 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
             return 0;
         
         float3 L = Lvec / dist;
-        float ndl = saturate(dot(N, L));
+        float ndl = saturate(abs(dot(N, L))); // abs()で両面対応
         if (ndl <= 0)
             return 0;
         
         float att = AttenuationPoint(dist, l.range);
         
         if (l.type == 2)
-        { // Spot
+        {
+            // Spot
             float sf = SpotFactor(L, l.direction, l.innerCos, l.outerCos);
             att *= sf;
             if (att <= 0)
@@ -98,7 +100,13 @@ float4 main(PS_IN i) : SV_Target
 {
     float4 tex = gTex0.Sample(gSamp, i.uv);
     
+    // 表裏に応じて法線を反転（両面ライティング）
     float3 N = normalize(i.normal);
+    if (!i.isFrontFace)
+    {
+        N = -N;
+    }
+    
     float3 P = i.worldPos;
     
     // ライティング計算

@@ -1,6 +1,6 @@
 cbuffer VS_CB : register(b0)
 {
-    float4x4 World; // 追加
+    float4x4 World;
     float4x4 View;
     float4x4 Proj;
     float4 Color;
@@ -27,20 +27,48 @@ VS_OUT main(VS_IN i)
 {
     VS_OUT o;
     
-    if (mode2D != 0)
+    if (mode2D == 1)
     {
+        // 2D配置モード（スクリーン座標）
         o.pos = float4(i.pos, 1.0f);
         o.worldPos = float3(0, 0, 0);
         o.normal = float3(0, 0, -1);
     }
-    else
+    else if (mode2D == 2)
     {
+        // 3D配置モード（World3D）
         float4 wpos = mul(float4(i.pos, 1.0f), World);
         o.worldPos = wpos.xyz;
         
         float4 vpos = mul(wpos, View);
         o.pos = mul(vpos, Proj);
         
+        // ローカル法線 (0, 0, 1) をワールド変換
+        // スケールの影響を除去するため、回転成分のみを使用
+        float3 localNormal = float3(0, 0, 1);
+        
+        // ワールド行列の回転部分から法線を計算（スケール無視）
+        float3 worldNormalX = normalize(World[0].xyz);
+        float3 worldNormalY = normalize(World[1].xyz);
+        float3 worldNormalZ = normalize(World[2].xyz);
+        
+        // ローカル法線をワールド空間に変換
+        o.normal = normalize(
+            localNormal.x * worldNormalX +
+            localNormal.y * worldNormalY +
+            localNormal.z * worldNormalZ
+        );
+    }
+    else
+    {
+        // ビルボード/UIモード - カメラの方向を向いた法線
+        float4 wpos = mul(float4(i.pos, 1.0f), World);
+        o.worldPos = wpos.xyz;
+        
+        float4 vpos = mul(wpos, View);
+        o.pos = mul(vpos, Proj);
+        
+        // カメラの視線方向の逆を法線とする（ビルボード用）
         o.normal = normalize(-View[2].xyz);
     }
     

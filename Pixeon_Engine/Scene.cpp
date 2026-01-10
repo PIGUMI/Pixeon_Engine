@@ -27,7 +27,7 @@ struct LightGPU {
 
 static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
-static ID3D11Buffer* gLightCountCB = nullptr;
+static ID3D11Buffer* gLightCountCB = nullptr;  // ここを static にする
 
 Scene::~Scene()
 {
@@ -54,14 +54,7 @@ Scene::~Scene()
 		}
 	}
 	_SaveObjects.clear();
-	if (gLightCB) {
-		gLightCB->Release();
-		gLightCB = nullptr;
-	}
-	if (gLightCountCB) {  // ← 追加
-		gLightCountCB->Release();
-		gLightCountCB = nullptr;
-	}
+	_lights.clear();
 }
 
 void Scene::Init() {
@@ -468,21 +461,21 @@ void Scene::UploadLightsToGPU() {
 	if (!gLightCB) {
 		D3D11_BUFFER_DESC bd{};
 		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(LightGPU) * kMaxLights + 16;
+		bd.ByteWidth = sizeof(LightGPU) * kMaxLights;
 		bd.Usage = D3D11_USAGE_DYNAMIC;
 		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		dev->CreateBuffer(&bd, nullptr, &gLightCB);
 	}
 	if (!gLightCB) return;
 
-	// 配列を明示的にゼロクリア
 	LightGPU lights[kMaxLights];
-	memset(lights, 0, sizeof(lights));
+	memset(lights, 0, sizeof(LightGPU) * kMaxLights);
 
 	int count = 0;
 	for (auto* l : _lights) {
 		if (!l || !l->IsEnabled()) continue;
 		if (count >= kMaxLights) break;
+
 		auto pos = l->GetWorldPosition();
 		auto dir = l->GetWorldDirection();
 		lights[count].position = pos;
@@ -499,12 +492,8 @@ void Scene::UploadLightsToGPU() {
 		++count;
 	}
 
-	for (int i = count; i < kMaxLights; ++i) {
-		lights[i].enabled = 0.0f;
-	}
-
 	struct LightCountCB { int count; float pad[3]; };
-	static ID3D11Buffer* gLightCountCB = nullptr;
+
 	if (!gLightCountCB) {
 		D3D11_BUFFER_DESC bd{};
 		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -513,24 +502,32 @@ void Scene::UploadLightsToGPU() {
 		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		dev->CreateBuffer(&bd, nullptr, &gLightCountCB);
 	}
+
 	{
 		D3D11_MAPPED_SUBRESOURCE mp{};
 		if (SUCCEEDED(ctx->Map(gLightCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mp))) {
 			memcpy(mp.pData, lights, sizeof(LightGPU) * kMaxLights);
 			ctx->Unmap(gLightCB, 0);
 		}
+	}
+
+	if (gLightCountCB) {
 		D3D11_MAPPED_SUBRESOURCE mp2{};
 		if (SUCCEEDED(ctx->Map(gLightCountCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mp2))) {
-			((LightCountCB*)mp2.pData)->count = count;
+			LightCountCB* countData = (LightCountCB*)mp2.pData;
+			countData->count = count;
+			countData->pad[0] = 0.0f;
+			countData->pad[1] = 0.0f;
+			countData->pad[2] = 0.0f;
 			ctx->Unmap(gLightCountCB, 0);
 		}
 	}
+
 	ID3D11Buffer* cbs1[] = { gLightCB };
 	ctx->PSSetConstantBuffers(1, 1, cbs1);
 	ID3D11Buffer* cbs2[] = { gLightCountCB };
 	ctx->PSSetConstantBuffers(2, 1, cbs2);
 }
-
 void Scene::InitPhysics()
 {
 	pCollisionConfig = new btDefaultCollisionConfiguration();
