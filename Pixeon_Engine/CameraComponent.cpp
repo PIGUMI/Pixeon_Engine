@@ -73,7 +73,21 @@ void CameraComponent::DrawCameraVisualization() {
 
 	DirectX::XMFLOAT3 camPos = GetWorldPosition();
 	DirectX::XMFLOAT3 fixPos = GetWorldFixation();
-	DirectX::XMFLOAT3 forward = GetForwardVector();
+
+	// 正しい前方向を計算（注視点方向）
+	DirectX::XMFLOAT3 forward;
+	forward.x = fixPos.x - camPos.x;  // 修正
+	forward.y = fixPos.y - camPos.y;  // 修正
+	forward.z = fixPos.z - camPos.z;  // 修正
+
+	// 正規化
+	float len = sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
+	if (len > 0.0001f) {
+		forward.x /= len;
+		forward.y /= len;
+		forward.z /= len;
+	}
+
 	DirectX::XMFLOAT3 right = GetRightVector();
 	DirectX::XMFLOAT3 up = GetUpVector();
 
@@ -171,7 +185,22 @@ void CameraComponent::DrawFrustum() {
 	DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
 
 	DirectX::XMFLOAT3 camPos = GetWorldPosition();
-	DirectX::XMFLOAT3 forward = GetForwardVector();
+	DirectX::XMFLOAT3 fixPos = GetWorldFixation();
+
+	// 正しい前方向を計算（注視点方向）
+	DirectX::XMFLOAT3 forward;
+	forward.x = fixPos.x - camPos.x;  // 修正
+	forward.y = fixPos.y - camPos.y;  // 修正
+	forward.z = fixPos.z - camPos.z;  // 修正
+
+	// 正規化
+	float len = sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
+	if (len > 0.0001f) {
+		forward.x /= len;
+		forward.y /= len;
+		forward.z /= len;
+	}
+
 	DirectX::XMFLOAT3 right = GetRightVector();
 	DirectX::XMFLOAT3 up = GetUpVector();
 
@@ -350,7 +379,6 @@ void CameraComponent::LoadFromFile(std::istream& in) {
 	in >> _debugDraw;
 }
 
-// 修正：親オブジェクトの回転を考慮
 DirectX::XMFLOAT3 CameraComponent::GetWorldPosition() const {
 	if (!_Parent) return _PositionOffset;
 
@@ -379,7 +407,6 @@ DirectX::XMFLOAT3 CameraComponent::GetWorldPosition() const {
 	return worldPos;
 }
 
-// 修正：親オブジェクトの回転を考慮
 DirectX::XMFLOAT3 CameraComponent::GetWorldFixation() const {
 	if (!_Parent) return _FixationOffset;
 
@@ -453,10 +480,8 @@ DirectX::XMMATRIX CameraComponent::GetProjection() {
 	return Proj;
 }
 
-// 修正：親オブジェクトの回転を考慮
 DirectX::XMFLOAT3 CameraComponent::GetForwardVector() {
 	if (!_Parent) {
-		// 親がない場合はローカル回転のみ
 		DirectX::XMFLOAT3 forward;
 		forward.x = cosf(_Rotation.y) * sinf(_Rotation.x);
 		forward.y = sinf(_Rotation.y);
@@ -473,27 +498,23 @@ DirectX::XMFLOAT3 CameraComponent::GetForwardVector() {
 
 	Transform trans = _Parent->GetWorldTransform();
 
-	// ローカル回転からフォワードベクトルを計算
 	DirectX::XMFLOAT3 localForward;
 	localForward.x = cosf(_Rotation.y) * sinf(_Rotation.x);
 	localForward.y = sinf(_Rotation.y);
 	localForward.z = cosf(_Rotation.y) * cosf(_Rotation.x);
 
-	// 親の回転行列を作成
 	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
 		trans.rotation.x,
 		trans.rotation.y,
 		trans.rotation.z
 	);
 
-	// ローカルフォワードを親の回転で変換
 	DirectX::XMVECTOR localFwdVec = DirectX::XMLoadFloat3(&localForward);
 	DirectX::XMVECTOR worldFwdVec = DirectX::XMVector3Transform(localFwdVec, rotMat);
 
 	DirectX::XMFLOAT3 worldForward;
 	DirectX::XMStoreFloat3(&worldForward, worldFwdVec);
 
-	// 正規化
 	float len = sqrtf(worldForward.x * worldForward.x + worldForward.y * worldForward.y + worldForward.z * worldForward.z);
 	if (len != 0.0f) {
 		worldForward.x /= len;
@@ -504,7 +525,6 @@ DirectX::XMFLOAT3 CameraComponent::GetForwardVector() {
 	return worldForward;
 }
 
-// 修正：親オブジェクトの回転を考慮
 DirectX::XMFLOAT3 CameraComponent::GetRightVector() {
 	DirectX::XMFLOAT3 up = _Up;
 	DirectX::XMFLOAT3 forward = GetForwardVector();
