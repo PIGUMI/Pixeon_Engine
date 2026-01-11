@@ -14,6 +14,8 @@
 #include "AnimationComponent.h"
 #include "RigidBody.h"
 #include "BoxCollision.h"
+#include "Animator2DComponent.h"
+#include "Animator2D.h"
 
 #include "Input.h"
 
@@ -189,6 +191,23 @@ extern "C" {
 			return PN_ERROR_NOT_FOUND;
 		}
 		*outObject = reinterpret_cast<Object>(obj);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject)
+	{
+		if (!name || !outObject) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* parentObjPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(parentObject, &parentObjPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		AbstractObject* childObj = parentObjPtr->FindChildByName(name);
+		if (!childObj) {
+			*outObject = nullptr;
+			return PN_ERROR_NOT_FOUND;
+		}
+		*outObject = reinterpret_cast<Object>(childObj);
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object)
@@ -449,7 +468,7 @@ extern "C" {
 		Move = MouseMoveY();
 		return Move;
 	}
-	APIResult FixedMouseCursor(bool enbled)
+	PIXEON_API APIResult FixedMouseCursor(bool enbled)
 	{
 		MainFrame::GetInstance()->fixedMouseCursor(enbled);
 		return PN_SUCCESS;
@@ -1622,6 +1641,58 @@ extern "C" {
 				}
 			}
 		);
+		return PN_SUCCESS;
+	}
+
+	// Animator2D Component
+	PIXEON_API APIResult GetAnimator2D(Component animatorComp, const char* animatorName, Animator2d* outHandel)
+	{
+		if (!animatorName || !outHandel) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(animatorComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		Animator2DComponent* animator2DComp = dynamic_cast<Animator2DComponent*>(compPtr);
+		if (!animator2DComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		Animator2D* animator = animator2DComp->GetAnimator2D(std::string(animatorName));
+		if (!animator) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		*outHandel = reinterpret_cast<Animator2d>(animator);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult Animator2DPlay(Animator2d animator)
+	{
+		Animator2D* animatorPtr = reinterpret_cast<Animator2D*>(animator);
+		if (!animatorPtr) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		animatorPtr->Start();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult Animator2DStop(Animator2d animator)
+	{
+		Animator2D* animatorPtr = reinterpret_cast<Animator2D*>(animator);
+		if (!animatorPtr) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		animatorPtr->Stop();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult Animator2DIsEnd(Animator2d animator, bool* End)
+	{
+		if (!End) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		Animator2D* animatorPtr = reinterpret_cast<Animator2D*>(animator);
+		if (!animatorPtr) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*End = animatorPtr->bEnded_;
 		return PN_SUCCESS;
 	}
 };

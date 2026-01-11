@@ -21,6 +21,7 @@ typedef enum {
 typedef void* SceneHandle;
 typedef void* Object;
 typedef void* Component;
+typedef void* Animator2d;
 
 #pragma pack(push, 1)
 
@@ -83,6 +84,7 @@ extern "C" {
 	PIXEON_API APIResult ChangeScene(const char* sceneName);
 	PIXEON_API APIResult SceneGetObjectCount(SceneHandle scene, int* outCount);
 	PIXEON_API APIResult FindObjectByName(SceneHandle scene, const char* name, Object* outObject);
+	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject);
 	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject);
 	PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object);
 	PIXEON_API APIResult RemoveObjectFromScene(SceneHandle scene, Object object);
@@ -207,6 +209,13 @@ extern "C" {
 	PIXEON_API APIResult BoxCollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback);
 	PIXEON_API APIResult BoxCollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback);
 	PIXEON_API APIResult BoxCollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback);
+
+	// Animator2D Component
+	PIXEON_API APIResult GetAnimator2D(Component animatorComp,const char* animatorName,Animator2d* outHandel);
+	PIXEON_API APIResult Animator2DPlay(Animator2d animator);
+	PIXEON_API APIResult Animator2DStop(Animator2d animator);
+	PIXEON_API APIResult Animator2DIsEnd(Animator2d animator,bool* End);
+
 };
 
 #endif// API.h

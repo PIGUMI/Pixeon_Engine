@@ -3,96 +3,13 @@
         {
             "Components": [
                 {
-                    "Data": "5.62673 2.98034 -1.00185 1.46999 0.199998 6.33678e-39 -4.12419 0.993669 -1.98815 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "14.2489 4.12799 4.37357 1.29995 0.279996 6.33678e-39 4.98868 1.36447 1.80229 0 1 0 1.0472 1.77778 0.1 2000 10 0 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
             ],
             "Name": "EditorCamera",
             "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [],
-            "Name": "Player",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "9.64287e-38 0 0 0 0 6.33678e-39 9.64287e-38 0 -10 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 1 1 ",
-                    "Name": "CameraComponent",
-                    "Type": 0
-                }
-            ],
-            "Name": "Head",
-            "Parent": "Player",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    3.5,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1.5 3 1.5 0 1.5 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                }
-            ],
-            "Name": "Body",
-            "Parent": "Player",
             "Transform": {
                 "Position": [
                     0.0,

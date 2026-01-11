@@ -27,7 +27,7 @@ struct LightGPU {
 
 static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
-static ID3D11Buffer* gLightCountCB = nullptr;  // ここを static にする
+static ID3D11Buffer* gLightCountCB = nullptr;
 
 Scene::~Scene()
 {
@@ -89,14 +89,13 @@ void Scene::Init() {
 }
 
 void Scene::BeginPlay() {
-	// Objects Clone
 	for (auto& obj : _objects) {
-		if (obj) {
+		if (obj && obj->GetParent() == nullptr) {
 			AbstractObject* cloneObj = obj->Clone();
 			_SaveObjects.push_back(cloneObj);
 		}
 	}
-	// Physics Cleanup
+
 	if (pPhysicsWorld)
 	{
 		while (pPhysicsWorld->getNumCollisionObjects() > 0)
@@ -109,11 +108,11 @@ void Scene::BeginPlay() {
 		pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
 		pPhysicsWorld->getConstraintSolver()->reset();
 	}
-	// CameraNumber Save
+
 	editorCameraNumber = _MainCameraNumber;
-	// BeginPlay Call
+
 	for (auto& obj : _objects) {
-		if (obj)obj->BeginPlay();
+		if (obj) obj->BeginPlay();
 	}
 	EndPlayCalled = false;
 }
@@ -122,15 +121,39 @@ void Scene::EditUpdate() {
 	InGame = false;
 	if (!EndPlayCalled) {
 		EndPlayCalled = true;
+
+		// 既存のオブジェクトを削除
 		for (auto& obj : _objects) {
-			if (obj) obj->UInit();
-			delete obj;
+			if (obj) {
+				obj->_parentObject = nullptr;  // 親参照をクリア
+				obj->_children.clear();        // 子リストをクリア
+				obj->UInit();
+				delete obj;
+			}
 		}
 		_ToBeAdded.clear();
 		_ToBeAddedBuffer.clear();
 		_objects.clear();
-		_objects = _SaveObjects;
+
+		// SaveObjectsから復元（ルートのみ）
+		for (auto& obj : _SaveObjects) {
+			if (obj && obj->GetParent() == nullptr) {
+				_objects.push_back(obj);
+
+				// 子オブジェクトも_objectsに追加（再帰的）
+				std::function<void(AbstractObject*)> addChildren = [&](AbstractObject* parent) {
+					for (auto child : parent->GetChildren()) {
+						if (child) {
+							_objects.push_back(child);
+							addChildren(child);  // 再帰的に孫も追加
+						}
+					}
+					};
+				addChildren(obj);
+			}
+		}
 		_SaveObjects.clear();
+
 		_MainCameraNumber = editorCameraNumber;
 		for (auto& obj : _objects) {
 			if (!obj) continue;
@@ -138,11 +161,12 @@ void Scene::EditUpdate() {
 				if (!comp) continue;
 				if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
 					CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
-					if (cam->GetCameraNumber() == _MainCameraNumber)_MainCamera = cam;
+					if (cam->GetCameraNumber() == _MainCameraNumber) _MainCamera = cam;
 				}
 			}
 		}
 	}
+
 	ProcessThreadSafeAdditions();
 	for (auto& obj : _ToBeAdded) {
 		if (obj) {
@@ -372,7 +396,6 @@ void Scene::DrawUI()
 {
 }
 
-
 void Scene::SaveToFile() {
 	std::vector<AbstractObject*> SaveObjects;
 	if (InGame) {
@@ -541,7 +564,6 @@ void Scene::LoadToFile() {
 	}
 }
 
-
 void Scene::SetMainCamera(CameraComponent* camera){
 	_MainCamera = camera;
 	if (_MainCamera)
@@ -567,7 +589,6 @@ void Scene::SetMainCameraNumber(int num)
 		}
 	}
 }
-
 
 AbstractObject* Scene::FindObjectByName(const char* name)
 {
