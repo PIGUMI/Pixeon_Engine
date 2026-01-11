@@ -412,7 +412,7 @@ void RigidBody::SyncTransformFromBullet()
 	pRigidBody_->getMotionState()->getWorldTransform(worldTransform);
 
 	btVector3 origin = worldTransform.getOrigin();
-	auto currentTransform = _Parent->GetTransform();
+	auto currentTransform = _Parent->GetWorldTransform();
 	currentTransform.position = DirectX::XMFLOAT3(origin.getX(), origin.getY(), origin.getZ());
 
 	btQuaternion rotation = worldTransform.getRotation();
@@ -424,7 +424,7 @@ void RigidBody::SyncTransformFromBullet()
 void RigidBody::SyncTransformToBullet()
 {
 	if (!pRigidBody_ || !_Parent) return;
-	auto currentTransform = _Parent->GetTransform();
+	auto currentTransform = _Parent->GetWorldTransform();
 
 	btTransform worldTransform;
 	worldTransform.setOrigin(btVector3
@@ -519,7 +519,7 @@ void RigidBody::CreateRigidBody()
 	startTransform.setIdentity();
 	if (_Parent)
 	{
-		auto currentTransform = _Parent->GetTransform();
+		auto currentTransform = _Parent->GetWorldTransform();
 		startTransform.setOrigin(btVector3(
 			currentTransform.position.x,
 			currentTransform.position.y,

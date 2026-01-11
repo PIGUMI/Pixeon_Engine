@@ -23,7 +23,7 @@ void CameraComponent::Init(AbstractObject* Prt) {
 }
 
 void CameraComponent::EditUpdate() {
-	auto trans = _Parent->GetTransform();
+	auto trans = _Parent->GetWorldTransform();
 
 	if (_IsChangeCalculation) {
 		DirectX::XMFLOAT3 worldPos = GetWorldPosition();
@@ -40,7 +40,7 @@ void CameraComponent::EditUpdate() {
 }
 
 void CameraComponent::InGameUpdate() {
-	auto trans = _Parent->GetTransform();
+	auto trans = _Parent->GetWorldTransform();
 
 	if (_IsChangeCalculation) {
 		DirectX::XMFLOAT3 worldPos = GetWorldPosition();
@@ -354,7 +354,7 @@ void CameraComponent::LoadFromFile(std::istream& in) {
 DirectX::XMFLOAT3 CameraComponent::GetWorldPosition() const {
 	if (!_Parent) return _PositionOffset;
 
-	Transform trans = _Parent->GetTransform();
+	Transform trans = _Parent->GetWorldTransform();
 
 	// 親オブジェクトの回転行列を作成
 	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
@@ -383,7 +383,7 @@ DirectX::XMFLOAT3 CameraComponent::GetWorldPosition() const {
 DirectX::XMFLOAT3 CameraComponent::GetWorldFixation() const {
 	if (!_Parent) return _FixationOffset;
 
-	Transform trans = _Parent->GetTransform();
+	Transform trans = _Parent->GetWorldTransform();
 
 	// 親オブジェクトの回転行列を作成
 	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
@@ -471,7 +471,7 @@ DirectX::XMFLOAT3 CameraComponent::GetForwardVector() {
 		return forward;
 	}
 
-	Transform trans = _Parent->GetTransform();
+	Transform trans = _Parent->GetWorldTransform();
 
 	// ローカル回転からフォワードベクトルを計算
 	DirectX::XMFLOAT3 localForward;

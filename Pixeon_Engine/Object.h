@@ -62,10 +62,6 @@ public:
 	std::vector<AbstractObject*>& GetChildren() { return _children; }
 	const std::vector<AbstractObject*>& GetChildren() const { return _children; }
 
-	// 階層的な更新・描画
-	void UpdateHierarchy();
-	void DrawHierarchy(int Layer);
-
 public:
 	// 名前からコンポーネントを取得
 	AbstractComponent* GetComponent(const std::string& name);

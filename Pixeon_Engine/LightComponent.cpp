@@ -23,7 +23,6 @@ void LightComponent::UInit() {
 }
 
 void LightComponent::EditUpdate() {
-	// 必要なら動的更新（アニメーションライト等）。今は特殊なし。
 }
 
 void LightComponent::Draw(int Layer) {
@@ -44,7 +43,7 @@ void LightComponent::Draw(int Layer) {
 
 DirectX::XMFLOAT3 LightComponent::GetWorldPosition() const {
 	if (!_Parent) return { 0,0,0 };
-	Transform t = _Parent->GetTransform();
+	Transform t = _Parent->GetWorldTransform();
 
 	// オフセットを回転に応じて適用
 	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
@@ -65,7 +64,7 @@ DirectX::XMFLOAT3 LightComponent::GetWorldPosition() const {
 
 DirectX::XMFLOAT3 LightComponent::GetWorldDirection() const {
 	if (!_Parent) return { 0,-1,0 };
-	Transform t = _Parent->GetTransform();
+	Transform t = _Parent->GetWorldTransform();
 	float cy = cosf(t.rotation.y);
 	float sy = sinf(t.rotation.y);
 	float cx = cosf(t.rotation.x);

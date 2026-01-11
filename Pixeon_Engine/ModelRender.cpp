@@ -174,7 +174,7 @@ bool ModelRenderComponent::EnsureConstantBuffer() {
 }
 
 DirectX::XMMATRIX ModelRenderComponent::BuildWorldMatrix() const {
-	Transform t = _Parent->GetTransform();
+	Transform t = _Parent->GetWorldTransform();
 	XMMATRIX S = XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
 	XMMATRIX T = XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
@@ -342,7 +342,7 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 
 DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 	const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const {
-	Transform t = _Parent->GetTransform();
+	Transform t = _Parent->GetWorldTransform();
 
 	XMMATRIX meshLocalScale = XMMatrixScaling(
 		scale.x * m_globalScale.x,

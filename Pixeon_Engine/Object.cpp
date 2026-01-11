@@ -22,7 +22,7 @@ void AbstractObject::EditUpdate() {
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
 		if (comp) comp->EditUpdate();
 	}
-	// 子オブジェクトのEditUpdateも呼ぶ
+
 	for (auto child : _children) {
 		if (child) child->EditUpdate();
 	}
@@ -33,7 +33,7 @@ void AbstractObject::InGameUpdate() {
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
 		if (comp) comp->InGameUpdate();
 	}
-	// 子オブジェクトのInGameUpdateも呼ぶ
+
 	for (auto child : _children) {
 		if (child) child->InGameUpdate();
 	}
@@ -43,7 +43,7 @@ void AbstractObject::Draw(int Layer) {
 	for (auto comp : _components) {
 		comp->Draw(Layer);
 	}
-	// 子オブジェクトの描画も行う
+
 	for (auto child : _children) {
 		if (child) child->Draw(Layer);
 	}

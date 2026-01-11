@@ -296,7 +296,7 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 	DirectX::XMMATRIX V = cam->GetView();
 	DirectX::XMMATRIX P = cam->GetProjection();
 
-	Transform t = _Parent->GetTransform();
+	Transform t = _Parent->GetWorldTransform();
 	DirectX::XMVECTOR posW = DirectX::XMVectorSet(t.position.x, t.position.y, t.position.z, 1.0f);
 
 	DirectX::XMVECTOR clip = DirectX::XMVector4Transform(DirectX::XMVector4Transform(posW, V), P);
@@ -350,7 +350,7 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&right));
 	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&up));
 
-	Transform t = _Parent->GetTransform();
+	Transform t = _Parent->GetWorldTransform();
 	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
 	DirectX::XMVECTOR off = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&m_offset3D), R);
 	DirectX::XMVECTOR center = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&t.position), off);
@@ -390,7 +390,7 @@ void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
 	t.scale = { 1.0f,1.0f,1.0f };
 	if (_Parent)
 	{
-		t = _Parent->GetTransform();
+		t = _Parent->GetWorldTransform();
 	}
 	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x + offset3DRot.x, t.rotation.y + offset3DRot.y, t.rotation.z + offset3DRot.z);
 	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(R.r[0]);
@@ -561,7 +561,7 @@ void ImageRender::Draw(int Layer) {
 
 	// ワールド行列を構築
 	if (_Parent) {
-		Transform t = _Parent->GetTransform();
+		Transform t = _Parent->GetWorldTransform();
 		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
 		DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(
 			t.rotation.x + offset3DRot.x,

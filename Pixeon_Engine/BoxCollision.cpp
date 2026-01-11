@@ -14,7 +14,7 @@ void BoxCollision::Init(AbstractObject* Prt)
 
 	CreateBoxShape();
 
-	auto currentScene = _Parent->GetTransform();
+	auto currentScene = _Parent->GetWorldTransform();
 	f3LastPosition_ = currentScene.position;
 	f3LastRotation_ = currentScene.rotation;
 	f3LastScale_ = currentScene.scale;
@@ -53,7 +53,7 @@ void BoxCollision::EditUpdate()
 {
 	if (_Parent)
 	{
-		auto currentTransform = _Parent->GetTransform();
+		auto currentTransform = _Parent->GetWorldTransform();
 		bool transformChanged =
 			f3LastPosition_.x != currentTransform.position.x ||
 			f3LastPosition_.y != currentTransform.position.y ||
@@ -92,7 +92,7 @@ void BoxCollision::Draw(int Layer)
 	if (!m_b_BoxLine)return;
 	if (_Parent)
 	{
-		auto transform = _Parent->GetTransform();
+		auto transform = _Parent->GetWorldTransform();
 		DirectX::XMFLOAT3 pos = transform.position;
 		DirectX::XMFLOAT3 size = f3Size_;
 		DirectX::XMFLOAT3 center = f3Center_;
@@ -275,16 +275,16 @@ bool BoxCollision::CheckCollision(BoxCollision* otherBox, CollisionInfo& outColl
 
 	if (otherBox == this)return false;
 
-	DirectX::XMFLOAT3 pos1 = _Parent->GetTransform().position;
-	DirectX::XMFLOAT3 rot1 = _Parent->GetTransform().rotation;
+	DirectX::XMFLOAT3 pos1 = _Parent->GetWorldTransform().position;
+	DirectX::XMFLOAT3 rot1 = _Parent->GetWorldTransform().rotation;
 	DirectX::XMFLOAT3 size1 = f3Size_;
 
 	pos1.x += f3Center_.x;
 	pos1.y += f3Center_.y;
 	pos1.z += f3Center_.z;
 
-	DirectX::XMFLOAT3 pos2 = otherBox->GetParent()->GetTransform().position;
-	DirectX::XMFLOAT3 rot2 = otherBox->GetParent()->GetTransform().rotation;
+	DirectX::XMFLOAT3 pos2 = otherBox->GetParent()->GetWorldTransform().position;
+	DirectX::XMFLOAT3 rot2 = otherBox->GetParent()->GetWorldTransform().rotation;
 	DirectX::XMFLOAT3 size2 = otherBox->f3Size_;
 
 	pos2.x += otherBox->f3Center_.x;
