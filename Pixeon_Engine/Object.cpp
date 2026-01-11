@@ -133,6 +133,16 @@ void AbstractObject::RemoveParent() {
 	}
 }
 
+AbstractObject* AbstractObject::FindChildByName(const std::string& name)
+{
+	for (auto child : _children) {
+		if (child && child->GetObjectName() == name) {
+			return child;
+		}
+	}
+	return nullptr;
+}
+
 void AbstractObject::AddChild(AbstractObject* child) {
 	if (!child) return;
 

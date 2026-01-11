@@ -56,6 +56,7 @@ public:
 	void SetParent(AbstractObject* parent);
 	AbstractObject* GetParent() const { return _parentObject; }
 	void RemoveParent();
+	AbstractObject* FindChildByName(const std::string& name);
 
 	void AddChild(AbstractObject* child);
 	void RemoveChild(AbstractObject* child);

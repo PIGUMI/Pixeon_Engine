@@ -84,6 +84,7 @@ extern "C" {
 	PIXEON_API APIResult ChangeScene(const char* sceneName);
 	PIXEON_API APIResult SceneGetObjectCount(SceneHandle scene, int* outCount);
 	PIXEON_API APIResult FindObjectByName(SceneHandle scene, const char* name, Object* outObject);
+	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject);
 	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject);
 	PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object);
 	PIXEON_API APIResult RemoveObjectFromScene(SceneHandle scene, Object object);

@@ -193,6 +193,23 @@ extern "C" {
 		*outObject = reinterpret_cast<Object>(obj);
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject)
+	{
+		if (!name || !outObject) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* parentObjPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(parentObject, &parentObjPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		AbstractObject* childObj = parentObjPtr->FindChildByName(name);
+		if (!childObj) {
+			*outObject = nullptr;
+			return PN_ERROR_NOT_FOUND;
+		}
+		*outObject = reinterpret_cast<Object>(childObj);
+		return PN_SUCCESS;
+	}
 	PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object)
 	{
 		if (!object) {
