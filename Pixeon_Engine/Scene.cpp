@@ -32,6 +32,16 @@ static ID3D11Buffer* gLightCountCB = nullptr;  // ここを static にする
 Scene::~Scene()
 {
 	SaveToFile();
+
+	// 全オブジェクトの親子関係を先に切断
+	for (auto& obj : _objects) {
+		if (obj) {
+			obj->_parentObject = nullptr;
+			obj->_children.clear();
+		}
+	}
+
+	// オブジェクトを削除
 	for (auto& obj : _objects) {
 		if (obj) {
 			obj->UInit();
@@ -39,21 +49,31 @@ Scene::~Scene()
 		}
 	}
 	_objects.clear();
+
 	CleanupPhysics();
+
+	// ToBeAdded も同様に処理
 	for (auto& obj : _ToBeAdded) {
 		if (obj) {
+			obj->_parentObject = nullptr;
+			obj->_children.clear();
 			obj->UInit();
 			delete obj;
 		}
 	}
 	_ToBeAdded.clear();
+
+	// SaveObjects も同様に処理
 	for (auto& obj : _SaveObjects) {
 		if (obj) {
+			obj->_parentObject = nullptr;
+			obj->_children.clear();
 			obj->UInit();
 			delete obj;
 		}
 	}
 	_SaveObjects.clear();
+
 	_lights.clear();
 }
 
@@ -154,29 +174,40 @@ void Scene::EditUpdate() {
 	}
 
 	// 削除処理
-	for (auto& obj : _ToBeRemoved) {
-		if (!obj) continue;
+	if (!_ToBeRemoved.empty()) {
+		// 削除前に親子関係を全て切断
+		for (auto& obj : _ToBeRemoved) {
+			if (!obj) continue;
 
-		// 親から切り離す
-		if (obj->GetParent()) {
-			obj->GetParent()->RemoveChild(obj);
-		}
-
-		// 子オブジェクトの親参照をクリア
-		for (auto child : obj->GetChildren()) {
-			if (child) {
-				child->_parentObject = nullptr;  // 直接アクセス（protectedメンバー）
+			// 親から切り離す
+			if (obj->GetParent()) {
+				obj->GetParent()->RemoveChild(obj);
+				obj->_parentObject = nullptr;
 			}
+
+			// 子オブジェクトの親参照をクリア
+			for (auto child : obj->GetChildren()) {
+				if (child) {
+					child->_parentObject = nullptr;
+				}
+			}
+			obj->_children.clear();
 		}
 
-		auto it = std::find(_objects.begin(), _objects.end(), obj);
-		if (it != _objects.end()) {
-			_objects.erase(it);
+		// オブジェクトを削除
+		for (auto& obj : _ToBeRemoved) {
+			if (!obj) continue;
+
+			auto it = std::find(_objects.begin(), _objects.end(), obj);
+			if (it != _objects.end()) {
+				_objects.erase(it);
+			}
+
 			obj->UInit();
 			delete obj;
 		}
+		_ToBeRemoved.clear();
 	}
-	_ToBeRemoved.clear();
 }
 
 void Scene::PlayUpdate() {
@@ -263,29 +294,40 @@ void Scene::PlayUpdate() {
 	if (_collisionManager)_collisionManager->Update();
 
 	// 削除処理
-	for (auto& obj : _ToBeRemoved) {
-		if (!obj) continue;
+	if (!_ToBeRemoved.empty()) {
+		// 削除前に親子関係を全て切断
+		for (auto& obj : _ToBeRemoved) {
+			if (!obj) continue;
 
-		// 親から切り離す
-		if (obj->GetParent()) {
-			obj->GetParent()->RemoveChild(obj);
-		}
-
-		// 子オブジェクトの親参照をクリア
-		for (auto child : obj->GetChildren()) {
-			if (child) {
-				child->_parentObject = nullptr;
+			// 親から切り離す
+			if (obj->GetParent()) {
+				obj->GetParent()->RemoveChild(obj);
+				obj->_parentObject = nullptr;
 			}
+
+			// 子オブジェクトの親参照をクリア
+			for (auto child : obj->GetChildren()) {
+				if (child) {
+					child->_parentObject = nullptr;
+				}
+			}
+			obj->_children.clear();
 		}
 
-		auto it = std::find(_objects.begin(), _objects.end(), obj);
-		if (it != _objects.end()) {
-			_objects.erase(it);
+		// オブジェクトを削除
+		for (auto& obj : _ToBeRemoved) {
+			if (!obj) continue;
+
+			auto it = std::find(_objects.begin(), _objects.end(), obj);
+			if (it != _objects.end()) {
+				_objects.erase(it);
+			}
+
 			obj->UInit();
 			delete obj;
 		}
+		_ToBeRemoved.clear();
 	}
-	_ToBeRemoved.clear();
 }
 
 void Scene::Draw(int Layer) {
@@ -709,27 +751,22 @@ void Scene::AddObjectLocal(AbstractObject* obj) {
 void Scene::RemoveObject(AbstractObject* obj) {
 	if (!obj) return;
 
-	// 子オブジェクトも全て削除対象に追加
-	std::vector<AbstractObject*> toRemove;
-	toRemove.push_back(obj);
+	if (obj->GetParent()) {
+		obj->RemoveParent();
+	}
 
-	// 再帰的に子オブジェクトを収集
-	std::function<void(AbstractObject*)> collectChildren = [&](AbstractObject* parent) {
+	std::vector<AbstractObject*> toRemove;
+	std::function<void(AbstractObject*)> collectAllChildren = [&](AbstractObject* parent) {
+		toRemove.push_back(parent);
 		for (auto child : parent->GetChildren()) {
 			if (child) {
-				toRemove.push_back(child);
-				collectChildren(child);
+				collectAllChildren(child);
 			}
 		}
 		};
-	collectChildren(obj);
+	collectAllChildren(obj);
 
-	// 親から切り離す
-	obj->RemoveParent();
-
-	// 全て削除リストに追加
 	for (auto removeObj : toRemove) {
-		// 重複チェック
 		auto it = std::find(_ToBeRemoved.begin(), _ToBeRemoved.end(), removeObj);
 		if (it == _ToBeRemoved.end()) {
 			_ToBeRemoved.push_back(removeObj);

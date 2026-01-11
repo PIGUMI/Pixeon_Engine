@@ -50,23 +50,16 @@ void AbstractObject::Draw(int Layer) {
 }
 
 void AbstractObject::UInit() {
-	// まず親から切り離す
+
 	RemoveParent();
 
-	// 子オブジェクトのコピーを作成（削除中にリストが変更される可能性があるため）
-	std::vector<AbstractObject*> childrenCopy = _children;
-	_children.clear();
-
-	// 子オブジェクトを削除
-	for (auto child : childrenCopy) {
+	for (auto child : _children) {
 		if (child) {
-			child->_parentObject = nullptr;  // 親参照をクリア
-			child->UInit();
-			delete child;
+			child->_parentObject = nullptr;
 		}
 	}
+	_children.clear();
 
-	// コンポーネントを削除
 	for (auto comp : _components) {
 		if (comp) {
 			comp->UInit();
