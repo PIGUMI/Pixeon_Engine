@@ -890,6 +890,35 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 	std::string popupLabel = "ObjectContextMenu_" + std::to_string((intptr_t)obj);
 	if (ImGui::BeginPopupContextItem(popupLabel.c_str(), ImGuiPopupFlags_MouseButtonRight))
 	{
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("複製").c_str())) {
+			AbstractObject* newObj = obj->Clone();
+			int suffix = 1;
+			std::string baseName = obj->GetObjectName();
+			std::string newName = baseName;
+			// 名前の重複チェック
+			Scene* scene = SceneManger::GetInstance()->GetCurrentScene();
+			bool nameExists = true;
+			while (nameExists) {
+				nameExists = false;
+				for (const auto& sceneObj : scene->GetObjects()) {
+					if (sceneObj->GetObjectName() == newName) {
+						nameExists = true;
+						break;
+					}
+				}
+				if (nameExists) {
+					newName = baseName + std::to_string(suffix);
+					suffix++;
+				}
+			}
+			newObj->SetParent(obj->GetParent());
+			if (obj->GetParent())
+			{
+				obj->GetParent()->AddChild(newObj);
+			}
+			newObj->SetObjectName(newName);
+			scene->AddObjectLocal(newObj);
+		}
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("子オブジェクトを作成").c_str())) {
 			AbstractObject* newChild = new AbstractObject();
 			int suffix = 1;
