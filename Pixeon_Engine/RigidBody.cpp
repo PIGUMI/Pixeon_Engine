@@ -412,32 +412,73 @@ void RigidBody::SyncTransformFromBullet()
 	pRigidBody_->getMotionState()->getWorldTransform(worldTransform);
 
 	btVector3 origin = worldTransform.getOrigin();
-	auto currentTransform = _Parent->GetWorldTransform();
-	currentTransform.position = DirectX::XMFLOAT3(origin.getX(), origin.getY(), origin.getZ());
-
 	btQuaternion rotation = worldTransform.getRotation();
-	currentTransform.rotation = QuaternionToEuler(rotation);
 
-	_Parent->SetTransform(currentTransform);
+	DirectX::XMFLOAT3 worldPos(origin.getX(), origin.getY(), origin.getZ());
+	DirectX::XMFLOAT3 worldRot = QuaternionToEuler(rotation);
+
+	if (_Parent->GetParent()) {
+		Transform parentWorld = _Parent->GetParent()->GetWorldTransform();
+
+		DirectX::XMMATRIX parentRotMat = DirectX::XMMatrixRotationRollPitchYaw(
+			parentWorld.rotation.x,
+			parentWorld.rotation.y,
+			parentWorld.rotation.z
+		);
+
+		DirectX::XMMATRIX invParentRotMat = DirectX::XMMatrixInverse(nullptr, parentRotMat);
+
+		DirectX::XMVECTOR worldPosVec = DirectX::XMLoadFloat3(&worldPos);
+		DirectX::XMVECTOR parentPosVec = DirectX::XMLoadFloat3(&parentWorld.position);
+		DirectX::XMVECTOR relativePos = DirectX::XMVectorSubtract(worldPosVec, parentPosVec);
+
+		DirectX::XMVECTOR localPosVec = DirectX::XMVector3Transform(relativePos, invParentRotMat);
+
+		DirectX::XMFLOAT3 localPos;
+		DirectX::XMStoreFloat3(&localPos, localPosVec);
+		localPos.x /= parentWorld.scale.x;
+		localPos.y /= parentWorld.scale.y;
+		localPos.z /= parentWorld.scale.z;
+
+		DirectX::XMFLOAT3 localRot;
+		localRot.x = worldRot.x - parentWorld.rotation.x;
+		localRot.y = worldRot.y - parentWorld.rotation.y;
+		localRot.z = worldRot.z - parentWorld.rotation.z;
+
+		Transform localTransform = _Parent->GetTransform();
+		localTransform.position = localPos;
+		localTransform.rotation = localRot;
+		_Parent->SetTransform(localTransform);
+	}
+	else {
+		Transform currentTransform = _Parent->GetTransform();
+		currentTransform.position = worldPos;
+		currentTransform.rotation = worldRot;
+		_Parent->SetTransform(currentTransform);
+	}
 }
 
 void RigidBody::SyncTransformToBullet()
 {
 	if (!pRigidBody_ || !_Parent) return;
-	auto currentTransform = _Parent->GetWorldTransform();
 
-	btTransform worldTransform;
-	worldTransform.setOrigin(btVector3
-	(
-		currentTransform.position.x,
-		currentTransform.position.y,
-		currentTransform.position.z
+	auto worldTransform = _Parent->GetWorldTransform();
+
+	btTransform bulletWorldTransform;
+	bulletWorldTransform.setOrigin(btVector3(
+		worldTransform.position.x,
+		worldTransform.position.y,
+		worldTransform.position.z
 	));
 
-	worldTransform.setRotation(EulerToQuaternion(currentTransform.rotation));
+	bulletWorldTransform.setRotation(EulerToQuaternion(worldTransform.rotation));
 
-	pRigidBody_->setWorldTransform(worldTransform);
-	pRigidBody_->getMotionState()->setWorldTransform(worldTransform);
+	pRigidBody_->setWorldTransform(bulletWorldTransform);
+	pRigidBody_->getMotionState()->setWorldTransform(bulletWorldTransform);
+
+	if (bKinematic_) {
+		pRigidBody_->activate();
+	}
 }
 
 void RigidBody::SyncPositionToBullet(const DirectX::XMFLOAT3& position)
@@ -452,8 +493,7 @@ void RigidBody::SyncPositionToBullet(const DirectX::XMFLOAT3& position)
 	pRigidBody_->setWorldTransform(transform);
 	pRigidBody_->getMotionState()->setWorldTransform(transform);
 
-	if (bKinematic_)
-	{
+	if (bKinematic_) {
 		pRigidBody_->setLinearVelocity(linearVel);
 		pRigidBody_->setAngularVelocity(angularVel);
 		pRigidBody_->activate();
@@ -472,8 +512,7 @@ void RigidBody::SyncRotationToBullet(const DirectX::XMFLOAT3& rotation)
 	pRigidBody_->setWorldTransform(transform);
 	pRigidBody_->getMotionState()->setWorldTransform(transform);
 
-	if (bKinematic_)
-	{
+	if (bKinematic_) {
 		pRigidBody_->setLinearVelocity(linearVel);
 		pRigidBody_->setAngularVelocity(angularVel);
 		pRigidBody_->activate();
@@ -519,13 +558,14 @@ void RigidBody::CreateRigidBody()
 	startTransform.setIdentity();
 	if (_Parent)
 	{
-		auto currentTransform = _Parent->GetWorldTransform();
+		// ワールド座標のTransformを使用
+		auto worldTransform = _Parent->GetWorldTransform();
 		startTransform.setOrigin(btVector3(
-			currentTransform.position.x,
-			currentTransform.position.y,
-			currentTransform.position.z
+			worldTransform.position.x,
+			worldTransform.position.y,
+			worldTransform.position.z
 		));
-		startTransform.setRotation(EulerToQuaternion(currentTransform.rotation));
+		startTransform.setRotation(EulerToQuaternion(worldTransform.rotation));
 	}
 	pMotionState_ = new btDefaultMotionState(startTransform);
 

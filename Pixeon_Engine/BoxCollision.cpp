@@ -89,67 +89,65 @@ void BoxCollision::InGameUpdate()
 void BoxCollision::Draw(int Layer)
 {
 	if (Layer != _LayerNumber) return;
-	if (!m_b_BoxLine)return;
-	if (_Parent)
-	{
-		auto transform = _Parent->GetWorldTransform();
-		DirectX::XMFLOAT3 pos = transform.position;
-		DirectX::XMFLOAT3 size = f3Size_;
-		DirectX::XMFLOAT3 center = f3Center_;
-		DirectX::XMFLOAT3 rot = transform.rotation;
+	if (!m_b_BoxLine) return;
+	if (!_Parent) return;
 
-		// 回転行列（XYZ順）- GameObjectの位置を中心に回転
-		DirectX::XMMATRIX matRot =
-			DirectX::XMMatrixRotationZ(rot.z) *
-			DirectX::XMMatrixRotationY(rot.y) *
-			DirectX::XMMatrixRotationX(rot.x);
+	auto transform = _Parent->GetWorldTransform();
+	DirectX::XMFLOAT3 pos = transform.position;
+	DirectX::XMFLOAT3 size = f3Size_;
+	DirectX::XMFLOAT3 center = f3Center_;
+	DirectX::XMFLOAT3 rot = transform.rotation;
 
-		// 8頂点（ローカル座標系）- GameObjectの中心を原点とする
-		DirectX::XMFLOAT3 localCorners[8] = {
-			{center.x - size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
-			{center.x + size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
-			{center.x + size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
-			{center.x - size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
-			{center.x - size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
-			{center.x + size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
-			{center.x + size.x / 2, center.y + size.y / 2, center.z + size.z / 2},
-			{center.x - size.x / 2, center.y + size.y / 2, center.z + size.z / 2}
-		};
+	DirectX::XMMATRIX matRot =
+		DirectX::XMMatrixRotationX(rot.x) *
+		DirectX::XMMatrixRotationY(rot.y) *
+		DirectX::XMMatrixRotationZ(rot.z);
 
-		// ワールド座標系に変換
-		DirectX::XMFLOAT3 worldCorners[8];
-		for (int i = 0; i < 8; ++i) {
-			// ローカル頂点を回転
-			DirectX::XMVECTOR v = DirectX::XMVectorSet(localCorners[i].x, localCorners[i].y, localCorners[i].z, 1.0f);
-			v = DirectX::XMVector3Transform(v, matRot);
-			// GameObjectの位置を加算
-			v = DirectX::XMVectorAdd(v, DirectX::XMVectorSet(pos.x, pos.y, pos.z, 0.0f));
-			DirectX::XMStoreFloat3(&worldCorners[i], v);
-		}
+	DirectX::XMFLOAT3 localCorners[8] = {
+		{center.x - size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
+		{center.x + size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
+		{center.x + size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
+		{center.x - size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
+		{center.x - size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
+		{center.x + size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
+		{center.x + size.x / 2, center.y + size.y / 2, center.z + size.z / 2},
+		{center.x - size.x / 2, center.y + size.y / 2, center.z + size.z / 2}
+	};
 
-		DirectX::XMFLOAT4 color = bTrigger_
-			? DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f) // Trigger: Yellow
-			: DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f); // 通常: Red
+	DirectX::XMFLOAT3 worldCorners[8];
+	for (int i = 0; i < 8; ++i) {
+		DirectX::XMVECTOR v = DirectX::XMVectorSet(localCorners[i].x, localCorners[i].y, localCorners[i].z, 1.0f);
+		v = DirectX::XMVector3Transform(v, matRot);
+		v = DirectX::XMVectorAdd(v, DirectX::XMVectorSet(pos.x, pos.y, pos.z, 0.0f));
+		DirectX::XMStoreFloat3(&worldCorners[i], v);
+	}
 
-		int edges[12][2] = {
-			{0,1},{1,2},{2,3},{3,0},
-			{4,5},{5,6},{6,7},{7,4},
-			{0,4},{1,5},{2,6},{3,7}
-		};
-		auto Cam = _Parent->GetParentScene()->GetMainCamera();
-		DirectX::XMFLOAT4X4 Proj = Cam->GetProjectionMatrix();
-		DirectX::XMFLOAT4X4 view = Cam->GetViewMatrix();
-		DirectX::XMFLOAT4X4 world;
-		DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
-		for (int i = 0; i < 12; ++i) {
-			LineRenderer::GetInstance()->DrawLine(
-				worldCorners[edges[i][0]],
-				worldCorners[edges[i][1]],
-				color,
-				world, view, Proj,
-				0.05f // まずは小さい値で
-			);
-		}
+	DirectX::XMFLOAT4 color = bTrigger_
+		? DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)
+		: DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	int edges[12][2] = {
+		{0,1},{1,2},{2,3},{3,0},
+		{4,5},{5,6},{6,7},{7,4},
+		{0,4},{1,5},{2,6},{3,7}
+	};
+
+	auto Cam = _Parent->GetParentScene()->GetMainCamera();
+	if (!Cam) return;
+
+	DirectX::XMFLOAT4X4 Proj = Cam->GetProjectionMatrix();
+	DirectX::XMFLOAT4X4 view = Cam->GetViewMatrix();
+	DirectX::XMFLOAT4X4 world;
+	DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
+
+	for (int i = 0; i < 12; ++i) {
+		LineRenderer::GetInstance()->DrawLine(
+			worldCorners[edges[i][0]],
+			worldCorners[edges[i][1]],
+			color,
+			world, view, Proj,
+			0.05f
+		);
 	}
 }
 
@@ -368,6 +366,7 @@ void BoxCollision::ProcessCollisionCallBacks()
 
 bool BoxCollision::OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX::XMFLOAT3& rot1, const DirectX::XMFLOAT3& size1, const DirectX::XMFLOAT3& pos2, const DirectX::XMFLOAT3& rot2, const DirectX::XMFLOAT3& size2, CollisionInfo& info)
 {
+	// ワールド座標で当たり判定を実行
 	DirectX::XMFLOAT3 min1 = { pos1.x - size1.x * 0.5f, pos1.y - size1.y * 0.5f, pos1.z - size1.z * 0.5f };
 	DirectX::XMFLOAT3 max1 = { pos1.x + size1.x * 0.5f, pos1.y + size1.y * 0.5f, pos1.z + size1.z * 0.5f };
 
