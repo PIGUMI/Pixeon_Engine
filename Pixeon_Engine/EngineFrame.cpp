@@ -156,7 +156,6 @@ bool EngineFrame::AddPrefab(AbstractObject* prefab)
 		if (prefab == nullptr) return false;
 		AbstractObject* Copy = prefab->Clone();
 		Copy->SetParentScene(nullptr);
-		// 同じ名前のPrefabが存在する場合、名前に番号を付与
 		std::string baseName = Copy->GetObjectName();
 		int count = 1;
 		while (GetPrefabByName(Copy->GetObjectName())) {
@@ -208,8 +207,25 @@ void EngineFrame::RemovePrefab(AbstractObject* ptr)
 void EngineFrame::SavePrefabs()
 {
 	std::vector<AbstractObject*> SaveObjects;
-	SaveObjects = prefabs_;
-	// 現在時刻の取得
+
+	// ルートPrefabとその子孫を全て収集
+	for (auto& prefab : prefabs_) {
+		if (prefab) {
+			SaveObjects.push_back(prefab);
+
+			// 子オブジェクトも再帰的に追加
+			std::function<void(AbstractObject*)> collectChildren = [&](AbstractObject* parent) {
+				for (auto child : parent->GetChildren()) {
+					if (child) {
+						SaveObjects.push_back(child);
+						collectChildren(child);
+					}
+				}
+				};
+			collectChildren(prefab);
+		}
+	}
+
 	auto Now = std::chrono::system_clock::now();
 	auto in_time_t = std::chrono::system_clock::to_time_t(Now);
 	std::tm localtime;
@@ -218,17 +234,35 @@ void EngineFrame::SavePrefabs()
 	nlohmann::json SceneData;
 	SceneData["SceneSettings"]["Name"] = "prefabs";
 
-	// オブジェクトデータの保存
 	nlohmann::json ObjectArray = nlohmann::json::array();
 
 	for (const auto& Object : SaveObjects) {
 		if (Object) {
-			// オブジェクトの基本情報の保存
 			nlohmann::json ObjectData;
 			ObjectData["Name"] = Object->GetObjectName();
-			ObjectData["Transform"]["Position"] = { Object->GetTransform().position.x, Object->GetTransform().position.y, Object->GetTransform().position.z };
-			ObjectData["Transform"]["Rotation"] = { Object->GetTransform().rotation.x, Object->GetTransform().rotation.y, Object->GetTransform().rotation.z };
-			ObjectData["Transform"]["Scale"] = { Object->GetTransform().scale.x,    Object->GetTransform().scale.y,    Object->GetTransform().scale.z };
+			ObjectData["Transform"]["Position"] = {
+				Object->GetTransform().position.x,
+				Object->GetTransform().position.y,
+				Object->GetTransform().position.z
+			};
+			ObjectData["Transform"]["Rotation"] = {
+				Object->GetTransform().rotation.x,
+				Object->GetTransform().rotation.y,
+				Object->GetTransform().rotation.z
+			};
+			ObjectData["Transform"]["Scale"] = {
+				Object->GetTransform().scale.x,
+				Object->GetTransform().scale.y,
+				Object->GetTransform().scale.z
+			};
+
+			// 親子関係の保存
+			if (Object->GetParent()) {
+				ObjectData["Parent"] = Object->GetParent()->GetObjectName();
+			}
+			else {
+				ObjectData["Parent"] = "";
+			}
 
 			// コンポーネントデータの保存
 			nlohmann::json ComponentData = nlohmann::json::array();
@@ -249,57 +283,116 @@ void EngineFrame::SavePrefabs()
 	}
 	SceneData["Objects"] = ObjectArray;
 
-	// ファイル名の生成
-	std::string File;
-	File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab" + ".meta";
+	// ファイル名の生成（修正：空白を削除）
+	std::string File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab.meta";
 	std::ofstream outFile(File);
 	if (outFile.is_open()) {
-		outFile << SceneData.dump(4); // インデント幅4で保存
+		outFile << SceneData.dump(4);
 		outFile.close();
+	}
+	else {
+		MessageBox(nullptr, ("Prefabファイルの保存に失敗:  " + File).c_str(), "Error", MB_OK);
 	}
 }
 
 void EngineFrame::LoadPrefabs()
 {
-	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + "Prefab" + ".meta";
+	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab.meta";
 	std::ifstream inFile(filePath);
+
 	if (!inFile.is_open()) {
+		// ファイルが存在しない場合は警告せずに終了
 		return;
 	}
 
-	nlohmann::json sceneData;
-	inFile >> sceneData;
-	inFile.close();
+	try {
+		nlohmann::json sceneData;
+		inFile >> sceneData;
+		inFile.close();
 
-	// Objectsの読み込み
-	for (const auto& objData : sceneData["Objects"]) {
-		AbstractObject* newObj = new AbstractObject();
-		newObj->SetParentScene(nullptr);
-		newObj->SetObjectName(objData["Name"].get<std::string>());
-		// Transformの読み込み
-		auto pos = objData["Transform"]["Position"];
-		auto rot = objData["Transform"]["Rotation"];
-		auto scl = objData["Transform"]["Scale"];
-		Transform transform;
-		transform.position = { pos[0].get<float>(), pos[1].get<float>(), pos[2].get<float>() };
-		transform.rotation = { rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>() };
-		transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
-		newObj->SetTransform(transform);
-		// コンポーネントの読み込み
-		for (const auto& compData : objData["Components"]) {
-			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
-			auto name = compData["Name"].get<std::string>();
-			auto data = compData["Data"].get<std::string>();
-			AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
-			if (newComp) {
-				newComp->SetComponentName(name);
-				std::istringstream iss(data);
-				newComp->LoadFromFile(iss);
+		// データ検証
+		if (!sceneData.contains("Objects")) {
+			MessageBox(nullptr, "Prefabファイルが不正です（Objects が見つかりません）", "Error", MB_OK);
+			return;
+		}
+
+		std::map<std::string, AbstractObject*> objectMap;
+		std::map<AbstractObject*, std::string> parentNames;
+
+		// 第一段階：全オブジェクトを生成
+		for (const auto& objData : sceneData["Objects"]) {
+			AbstractObject* newObj = new AbstractObject();
+			newObj->SetParentScene(nullptr);
+
+			std::string objName = objData["Name"].get<std::string>();
+			newObj->SetObjectName(objName);
+
+			// Transform の読み込み
+			auto pos = objData["Transform"]["Position"];
+			auto rot = objData["Transform"]["Rotation"];
+			auto scl = objData["Transform"]["Scale"];
+			Transform transform;
+			transform.position = { pos[0].get<float>(), pos[1].get<float>(), pos[2].get<float>() };
+			transform.rotation = { rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>() };
+			transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
+			newObj->SetTransform(transform);
+
+			// 親の名前を記録（後で設定）
+			if (objData.contains("Parent") && !objData["Parent"].get<std::string>().empty()) {
+				parentNames[newObj] = objData["Parent"].get<std::string>();
 			}
-			else {
-				MessageBox(nullptr, "コンポーネントの追加に失敗しました", "Error", MB_OK);
+
+			// コンポーネントの読み込み
+			if (objData.contains("Components")) {
+				for (const auto& compData : objData["Components"]) {
+					auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
+					auto name = compData["Name"].get<std::string>();
+					auto data = compData["Data"].get<std::string>();
+					AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
+					if (newComp) {
+						newComp->SetComponentName(name);
+						std::istringstream iss(data);
+						newComp->LoadFromFile(iss);
+					}
+				}
+			}
+
+			objectMap[objName] = newObj;
+		}
+
+		// 第二段階：親子関係の復元
+		for (const auto& pair : parentNames) {
+			AbstractObject* child = pair.first;
+			const std::string& parentName = pair.second;
+
+			auto it = objectMap.find(parentName);
+			if (it != objectMap.end()) {
+				child->SetParent(it->second);
 			}
 		}
-		prefabs_.push_back(newObj);
+
+		// 第三段階：ルートオブジェクト（親がいないオブジェクト）のみをprefabs_に追加
+		int rootCount = 0;
+		for (const auto& pair : objectMap) {
+			AbstractObject* obj = pair.second;
+			if (obj && obj->GetParent() == nullptr) {
+				prefabs_.push_back(obj);
+				rootCount++;
+			}
+		}
+
+		// デバッグ情報（成功時のみ）
+		if (rootCount > 0) {
+			std::string msg = std::to_string(rootCount) + " 個のPrefabを読み込みました";
+			OutputDebugStringA(msg.c_str());
+		}
+	}
+	catch (const std::exception& e) {
+		MessageBox(nullptr, ("Prefab読み込みエラー:  " + std::string(e.what())).c_str(), "Error", MB_OK);
+		inFile.close();
+	}
+	catch (...) {
+		MessageBox(nullptr, "Prefab読み込み中に不明なエラーが発生しました", "Error", MB_OK);
+		inFile.close();
 	}
 }

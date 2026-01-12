@@ -489,11 +489,9 @@ void Scene::LoadToFile() {
 	_name = sceneData["SceneSettings"]["Name"].get<std::string>();
 	_MainCameraNumber = sceneData["SceneSettings"]["MainCameraNumber"].get<int>();
 
-	// オブジェクト名とオブジェクトポインタのマップ
 	std::map<std::string, AbstractObject*> objectMap;
 	std::map<AbstractObject*, std::string> parentNames;
 
-	// Objectsの読み込み（第一段階：オブジェクト生成）
 	for (const auto& objData : sceneData["Objects"]) {
 		AbstractObject* newObj = new AbstractObject();
 		newObj->SetParentScene(this);
@@ -511,12 +509,10 @@ void Scene::LoadToFile() {
 		transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
 		newObj->SetTransform(transform);
 
-		// 親の名前を記録（後で設定）
 		if (objData.contains("Parent") && !objData["Parent"].get<std::string>().empty()) {
 			parentNames[newObj] = objData["Parent"].get<std::string>();
 		}
 
-		// コンポーネントの読み込み
 		for (const auto& compData : objData["Components"]) {
 			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
 			auto name = compData["Name"].get<std::string>();
@@ -536,7 +532,6 @@ void Scene::LoadToFile() {
 		AddObjectLocal(newObj);
 	}
 
-	// 第二段階：親子関係の復元
 	for (const auto& pair : parentNames) {
 		AbstractObject* child = pair.first;
 		const std::string& parentName = pair.second;
@@ -547,7 +542,6 @@ void Scene::LoadToFile() {
 		}
 	}
 
-	// 登録されているメインカメラと同じ番号のカメラコンポーネントを探す
 	for (auto& obj : _ToBeAdded) {
 		if (!obj) continue;
 		for (auto& comp : obj->GetComponents()) {
