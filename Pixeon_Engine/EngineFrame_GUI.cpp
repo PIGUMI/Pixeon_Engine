@@ -596,10 +596,9 @@ void  EngineFrame::ContentWindow()
 	ImGui::End();
 }
 
-void EngineFrame::PrefabWindow(){
+void EngineFrame::PrefabWindow() {
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Prefab").c_str());
 
-	// Prefabリストの取得
 	std::vector<AbstractObject*> prefabs = EngineFrame::GetInstance()->GetPrefabs();
 
 	if (prefabs.empty()) {
@@ -613,7 +612,6 @@ void EngineFrame::PrefabWindow(){
 		return;
 	}
 
-	// 右クリックメニュー（空白部分）
 	if (ImGui::BeginPopupContextWindow("prefab_context", ImGuiMouseButton_Right)) {
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("すべてクリア").c_str())) {
 			for (auto prefab : prefabs) {
@@ -646,14 +644,11 @@ void EngineFrame::PrefabWindow(){
 		std::string idName = prefabName + "##prefab_" + std::to_string(index++);
 
 		float groupX = ImGui::GetCursorPosX();
-
-		// アイコンを中央揃え
 		float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
 		ImGui::SetCursorPosX(cursorX);
 
 		bool isSelected = (prefab == selectedPrefab);
 
-		// ボタン色
 		if (!isSelected) {
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
@@ -683,7 +678,6 @@ void EngineFrame::PrefabWindow(){
 
 		ImGui::PopStyleColor(3);
 
-		// テキストを中央揃え
 		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
 		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
@@ -694,7 +688,6 @@ void EngineFrame::PrefabWindow(){
 			isSelected, 0, ImVec2(itemWidth, 0)
 		);
 
-		// 右クリックメニュー
 		if (ImGui::BeginPopupContextItem("prefab_item_context")) {
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Prefab:  %s").c_str(), prefabName.c_str());
 			ImGui::Separator();
@@ -703,7 +696,7 @@ void EngineFrame::PrefabWindow(){
 				Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 				if (currentScene) {
 					AbstractObject* newObj = prefab->Clone();
-					// 名前の重複を避ける
+
 					std::string baseName = newObj->GetObjectName();
 					int count = 1;
 					std::string newName = baseName;
@@ -722,7 +715,18 @@ void EngineFrame::PrefabWindow(){
 						}
 					}
 					newObj->SetObjectName(newName);
+
 					currentScene->AddObjectLocal(newObj);
+
+					std::function<void(AbstractObject*)> addAllChildren = [&](AbstractObject* parent) {
+						for (auto child : parent->GetChildren()) {
+							if (child) {
+								currentScene->AddObjectLocal(child);
+								addAllChildren(child);
+							}
+						}
+						};
+					addAllChildren(newObj);
 				}
 			}
 
@@ -737,16 +741,14 @@ void EngineFrame::PrefabWindow(){
 		}
 		ImGui::PopID();
 
-		// クリック処理
 		if (iconClicked || nameClicked) {
 			selectedPrefab = prefab;
 
-			// ダブルクリックでシーンに追加
 			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 				Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 				if (currentScene) {
 					AbstractObject* newObj = prefab->Clone();
-					// 名前の重複を避ける
+
 					std::string baseName = newObj->GetObjectName();
 					int count = 1;
 					std::string newName = baseName;
@@ -765,7 +767,18 @@ void EngineFrame::PrefabWindow(){
 						}
 					}
 					newObj->SetObjectName(newName);
+
 					currentScene->AddObjectLocal(newObj);
+
+					std::function<void(AbstractObject*)> addAllChildren = [&](AbstractObject* parent) {
+						for (auto child : parent->GetChildren()) {
+							if (child) {
+								currentScene->AddObjectLocal(child);
+								addAllChildren(child);
+							}
+						}
+						};
+					addAllChildren(newObj);
 				}
 			}
 		}

@@ -93,6 +93,16 @@ void Scene::BeginPlay() {
 		if (obj && obj->GetParent() == nullptr) {
 			AbstractObject* cloneObj = obj->Clone();
 			_SaveObjects.push_back(cloneObj);
+
+			std::function<void(AbstractObject*)> collectChildren = [&](AbstractObject* parent) {
+				for (auto child : parent->GetChildren()) {
+					if (child) {
+						_SaveObjects.push_back(child);
+						collectChildren(child);
+					}
+				}
+				};
+			collectChildren(cloneObj);
 		}
 	}
 
@@ -398,11 +408,16 @@ void Scene::DrawUI()
 
 void Scene::SaveToFile() {
 	std::vector<AbstractObject*> SaveObjects;
+
 	if (InGame) {
 		SaveObjects = _SaveObjects;
 	}
 	else {
-		SaveObjects = _objects;
+		for (auto& obj : _objects) {
+			if (obj) {
+				SaveObjects.push_back(obj);
+			}
+		}
 	}
 
 	auto Now = std::chrono::system_clock::now();
@@ -414,12 +429,10 @@ void Scene::SaveToFile() {
 	SceneData["SceneSettings"]["Name"] = _name;
 	SceneData["SceneSettings"]["MainCameraNumber"] = _MainCameraNumber;
 
-	// オブジェクトデータの保存
 	nlohmann::json ObjectArray = nlohmann::json::array();
 
 	for (const auto& Object : SaveObjects) {
 		if (Object) {
-			// オブジェクトの基本情報の保存
 			nlohmann::json ObjectData;
 			ObjectData["Name"] = Object->GetObjectName();
 			ObjectData["Transform"]["Position"] = {
@@ -438,7 +451,6 @@ void Scene::SaveToFile() {
 				Object->GetTransform().scale.z
 			};
 
-			// 親子関係の保存
 			if (Object->GetParent()) {
 				ObjectData["Parent"] = Object->GetParent()->GetObjectName();
 			}
@@ -446,7 +458,6 @@ void Scene::SaveToFile() {
 				ObjectData["Parent"] = "";
 			}
 
-			// コンポーネントデータの保存
 			nlohmann::json ComponentData = nlohmann::json::array();
 			for (const auto& comp : Object->GetComponents()) {
 				if (comp) {
@@ -465,13 +476,17 @@ void Scene::SaveToFile() {
 	}
 	SceneData["Objects"] = ObjectArray;
 
-	// ファイル名の生成
-	std::string File;
-	File = SettingManager::GetInstance()->GetSceneFilePath() + _name + ".scene";
+	std::string File = SettingManager::GetInstance()->GetSceneFilePath() + _name + ".scene";
 	std::ofstream outFile(File);
 	if (outFile.is_open()) {
 		outFile << SceneData.dump(4);
 		outFile.close();
+
+		std::string msg = "[Scene] Saved " + std::to_string(SaveObjects.size()) + " objects to " + File + "\n";
+		OutputDebugStringA(msg.c_str());
+	}
+	else {
+		MessageBox(nullptr, ("シーンファイルの保存に失敗:  " + File).c_str(), "Error", MB_OK);
 	}
 }
 
@@ -479,82 +494,95 @@ void Scene::LoadToFile() {
 	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + _name + ".scene";
 	std::ifstream inFile(filePath);
 	if (!inFile.is_open()) {
+		OutputDebugStringA(("[Scene] Failed to open:  " + filePath + "\n").c_str());
 		return;
 	}
 
-	nlohmann::json sceneData;
-	inFile >> sceneData;
-	inFile.close();
+	try {
+		nlohmann::json sceneData;
+		inFile >> sceneData;
+		inFile.close();
 
-	_name = sceneData["SceneSettings"]["Name"].get<std::string>();
-	_MainCameraNumber = sceneData["SceneSettings"]["MainCameraNumber"].get<int>();
+		_name = sceneData["SceneSettings"]["Name"].get<std::string>();
+		_MainCameraNumber = sceneData["SceneSettings"]["MainCameraNumber"].get<int>();
 
-	std::map<std::string, AbstractObject*> objectMap;
-	std::map<AbstractObject*, std::string> parentNames;
+		std::map<std::string, AbstractObject*> objectMap;
+		std::map<AbstractObject*, std::string> parentNames;
 
-	for (const auto& objData : sceneData["Objects"]) {
-		AbstractObject* newObj = new AbstractObject();
-		newObj->SetParentScene(this);
+		int objectCount = 0;
+		for (const auto& objData : sceneData["Objects"]) {
+			AbstractObject* newObj = new AbstractObject();
+			newObj->SetParentScene(this);
 
-		std::string objName = objData["Name"].get<std::string>();
-		newObj->SetObjectName(objName);
+			std::string objName = objData["Name"].get<std::string>();
+			newObj->SetObjectName(objName);
 
-		// Transformの読み込み
-		auto pos = objData["Transform"]["Position"];
-		auto rot = objData["Transform"]["Rotation"];
-		auto scl = objData["Transform"]["Scale"];
-		Transform transform;
-		transform.position = { pos[0].get<float>(), pos[1].get<float>(), pos[2].get<float>() };
-		transform.rotation = { rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>() };
-		transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
-		newObj->SetTransform(transform);
+			auto pos = objData["Transform"]["Position"];
+			auto rot = objData["Transform"]["Rotation"];
+			auto scl = objData["Transform"]["Scale"];
+			Transform transform;
+			transform.position = { pos[0].get<float>(), pos[1].get<float>(), pos[2].get<float>() };
+			transform.rotation = { rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>() };
+			transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
+			newObj->SetTransform(transform);
 
-		if (objData.contains("Parent") && !objData["Parent"].get<std::string>().empty()) {
-			parentNames[newObj] = objData["Parent"].get<std::string>();
-		}
-
-		for (const auto& compData : objData["Components"]) {
-			auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
-			auto name = compData["Name"].get<std::string>();
-			auto data = compData["Data"].get<std::string>();
-			AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
-			if (newComp) {
-				newComp->SetComponentName(name);
-				std::istringstream iss(data);
-				newComp->LoadFromFile(iss);
+			if (objData.contains("Parent") && !objData["Parent"].get<std::string>().empty()) {
+				parentNames[newObj] = objData["Parent"].get<std::string>();
 			}
-			else {
-				MessageBox(nullptr, "コンポーネントの追加に失敗しました", "Error", MB_OK);
-			}
-		}
 
-		objectMap[objName] = newObj;
-		AddObjectLocal(newObj);
-	}
-
-	for (const auto& pair : parentNames) {
-		AbstractObject* child = pair.first;
-		const std::string& parentName = pair.second;
-
-		auto it = objectMap.find(parentName);
-		if (it != objectMap.end()) {
-			child->SetParent(it->second);
-		}
-	}
-
-	for (auto& obj : _ToBeAdded) {
-		if (!obj) continue;
-		for (auto& comp : obj->GetComponents()) {
-			if (!comp) continue;
-			if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
-				CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
-				if (cam->GetCameraNumber() == _MainCameraNumber) {
-					SetMainCamera(cam);
-					break;
+			if (objData.contains("Components")) {
+				for (const auto& compData : objData["Components"]) {
+					auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
+					auto name = compData["Name"].get<std::string>();
+					auto data = compData["Data"].get<std::string>();
+					AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, type);
+					if (newComp) {
+						newComp->SetComponentName(name);
+						std::istringstream iss(data);
+						newComp->LoadFromFile(iss);
+					}
 				}
 			}
+
+			objectMap[objName] = newObj;
+			AddObjectLocal(newObj);
+			objectCount++;
 		}
-		if (_MainCamera) break;
+
+		for (const auto& pair : parentNames) {
+			AbstractObject* child = pair.first;
+			const std::string& parentName = pair.second;
+
+			auto it = objectMap.find(parentName);
+			if (it != objectMap.end()) {
+				child->SetParent(it->second);
+			}
+			else {
+				OutputDebugStringA(("[Scene] Warning: Parent not found: " + parentName + "\n").c_str());
+			}
+		}
+
+		std::string msg = "[Scene] Loaded " + std::to_string(objectCount) + " objects from " + filePath + "\n";
+		OutputDebugStringA(msg.c_str());
+
+		for (auto& obj : _ToBeAdded) {
+			if (!obj) continue;
+			for (auto& comp : obj->GetComponents()) {
+				if (!comp) continue;
+				if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
+					CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
+					if (cam->GetCameraNumber() == _MainCameraNumber) {
+						SetMainCamera(cam);
+						break;
+					}
+				}
+			}
+			if (_MainCamera) break;
+		}
+	}
+	catch (const std::exception& e) {
+		MessageBox(nullptr, ("シーン読み込みエラー: " + std::string(e.what())).c_str(), "Error", MB_OK);
+		inFile.close();
 	}
 }
 
@@ -692,6 +720,7 @@ void Scene::UploadLightsToGPU() {
 	ID3D11Buffer* cbs2[] = { gLightCountCB };
 	ctx->PSSetConstantBuffers(2, 1, cbs2);
 }
+
 void Scene::InitPhysics()
 {
 	pCollisionConfig = new btDefaultCollisionConfiguration();
@@ -758,9 +787,15 @@ void Scene::CleanupAndReinitializePhysics()
 }
 
 void Scene::AddObjectLocal(AbstractObject* obj) {
-	if (obj) {
-		_ToBeAdded.push_back(obj);
-	}
+	if (!obj) return;
+
+	auto it = std::find(_ToBeAdded.begin(), _ToBeAdded.end(), obj);
+	if (it != _ToBeAdded.end()) return;
+
+	auto it2 = std::find(_objects.begin(), _objects.end(), obj);
+	if (it2 != _objects.end()) return;
+
+	_ToBeAdded.push_back(obj);
 }
 
 void Scene::RemoveObject(AbstractObject* obj) {
