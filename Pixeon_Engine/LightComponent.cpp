@@ -17,7 +17,7 @@ void LightComponent::Init(AbstractObject* owner) {
 }
 
 void LightComponent::UInit() {
-	// Scene から除外
+	// Scene から除去
 	if (_Parent && _Parent->GetParentScene())
 		_Parent->GetParentScene()->UnregisterLight(this);
 }
@@ -65,14 +65,29 @@ DirectX::XMFLOAT3 LightComponent::GetWorldPosition() const {
 DirectX::XMFLOAT3 LightComponent::GetWorldDirection() const {
 	if (!_Parent) return { 0,-1,0 };
 	Transform t = _Parent->GetWorldTransform();
-	float cy = cosf(t.rotation.y);
-	float sy = sinf(t.rotation.y);
-	float cx = cosf(t.rotation.x);
-	float sx = sinf(t.rotation.x);
-	DirectX::XMFLOAT3 f{ sy * cx, -sx, cy * cx };
-	float len = sqrtf(f.x * f.x + f.y * f.y + f.z * f.z);
-	if (len > 0.0001f) { f.x /= len; f.y /= len; f.z /= len; }
-	return f;
+
+	float totalRotX = t.rotation.x + m_rotationOffset.x;
+	float totalRotY = t.rotation.y + m_rotationOffset.y;
+	float totalRotZ = t.rotation.z + m_rotationOffset.z;
+
+	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
+		totalRotX, totalRotY, totalRotZ
+	);
+
+	DirectX::XMVECTOR forwardVec = DirectX::XMVectorSet(0, 0, -1, 0);
+	DirectX::XMVECTOR rotatedDir = DirectX::XMVector3Transform(forwardVec, rotMat);
+
+	DirectX::XMFLOAT3 direction;
+	DirectX::XMStoreFloat3(&direction, rotatedDir);
+
+	float len = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+	if (len > 0.0001f) {
+		direction.x /= len;
+		direction.y /= len;
+		direction.z /= len;
+	}
+
+	return direction;
 }
 
 void LightComponent::DrawInspector() {
@@ -89,9 +104,21 @@ void LightComponent::DrawInspector() {
 		ImGui::ColorEdit3("Color", (float*)&m_color);
 		ImGui::DragFloat("Intensity", &m_intensity, 0.01f, 0.0f, 100.0f);
 
-		// オフセット追加
-		ImGui::Text(SJ("オフセット").c_str());
+		// 位置オフセット
+		ImGui::Text(SJ("位置オフセット").c_str());
 		ImGui::DragFloat3("##Offset", (float*)&m_offset, 0.1f);
+
+		ImGui::Text(SJ("回転オフセット").c_str());
+		DirectX::XMFLOAT3 rotOffsetDeg = {
+			DirectX::XMConvertToDegrees(m_rotationOffset.x),
+			DirectX::XMConvertToDegrees(m_rotationOffset.y),
+			DirectX::XMConvertToDegrees(m_rotationOffset.z)
+		};
+		if (ImGui::DragFloat3("##RotationOffset", (float*)&rotOffsetDeg, 0.1f)) {
+			m_rotationOffset.x = DirectX::XMConvertToRadians(rotOffsetDeg.x);
+			m_rotationOffset.y = DirectX::XMConvertToRadians(rotOffsetDeg.y);
+			m_rotationOffset.z = DirectX::XMConvertToRadians(rotOffsetDeg.z);
+		}
 
 		ImGui::Checkbox("Enabled", &m_enabled);
 		ImGui::Checkbox(SJ("デバッグ描画").c_str(), &m_debugDraw);
@@ -111,7 +138,8 @@ void LightComponent::SaveToFile(std::ostream& out) {
 		<< m_intensity << " " << m_range << " "
 		<< m_spotInnerDeg << " " << m_spotOuterDeg << " "
 		<< m_enabled << " " << m_debugDraw << " "
-		<< m_offset.x << " " << m_offset.y << " " << m_offset.z << " ";  // ← オフセット追加
+		<< m_offset.x << " " << m_offset.y << " " << m_offset.z << " "
+		<< m_rotationOffset.x << " " << m_rotationOffset.y << " " << m_rotationOffset.z << " ";
 }
 
 void LightComponent::LoadFromFile(std::istream& in) {
@@ -121,7 +149,8 @@ void LightComponent::LoadFromFile(std::istream& in) {
 	in >> m_intensity >> m_range;
 	in >> m_spotInnerDeg >> m_spotOuterDeg;
 	in >> m_enabled >> m_debugDraw;
-	in >> m_offset.x >> m_offset.y >> m_offset.z;  // ← オフセット追加
+	in >> m_offset.x >> m_offset.y >> m_offset.z;
+	in >> m_rotationOffset.x >> m_rotationOffset.y >> m_rotationOffset.z;
 }
 
 void LightComponent::DrawDirectionalLight() {
@@ -140,7 +169,7 @@ void LightComponent::DrawDirectionalLight() {
 	float iconSize = 0.5f;
 	DirectX::XMFLOAT4 color(m_color.x, m_color.y, m_color.z, 1.0f);
 
-	// 中心から8方向に線を描画（太陽マーク風）
+	// 中心から8方向に短線を描画（太陽マーク風）
 	DirectX::XMFLOAT3 axes[] = {
 		{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0},
 		{0, 0, 1}, {0, 0, -1}, {0.7f, 0.7f, 0}, {-0.7f, -0.7f, 0}
@@ -156,7 +185,7 @@ void LightComponent::DrawDirectionalLight() {
 		LineRenderer::GetInstance()->DrawLine(start, end, color, world, view, proj, 0.02f);
 	}
 
-	// 方向を示す矢印
+	// 光の方向を示す矢印
 	float arrowLength = 2.0f;
 	DirectX::XMFLOAT3 arrowEnd = {
 		pos.x + dir.x * arrowLength,
@@ -165,7 +194,7 @@ void LightComponent::DrawDirectionalLight() {
 	};
 	LineRenderer::GetInstance()->DrawLine(pos, arrowEnd, color, world, view, proj, 0.05f);
 
-	// 矢印の先端
+	// 矢の先端
 	DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&dir);
 	DirectX::XMVECTOR upVec = DirectX::XMVectorSet(0, 1, 0, 0);
 	if (fabsf(dir.y) > 0.99f) {
@@ -258,7 +287,7 @@ void LightComponent::DrawPointLight() {
 		LineRenderer::GetInstance()->DrawLine(p1, p2, color, world, view, proj, 0.02f);
 	}
 
-	// 中心マーカー（小さい十字）
+	// 中心マーカー（十字線表示）
 	float markerSize = 0.3f;
 	DirectX::XMFLOAT3 axes[] = {
 		{markerSize, 0, 0}, {-markerSize, 0, 0},
@@ -292,7 +321,7 @@ void LightComponent::DrawSpotLight() {
 	float outerRadius = m_range * tanf(outerAngle * 0.5f);
 	float innerRadius = m_range * tanf(innerAngle * 0.5f);
 
-	// 方向の終点
+	// 光線の終点
 	DirectX::XMFLOAT3 endPos = {
 		pos.x + dir.x * m_range,
 		pos.y + dir.y * m_range,
@@ -337,16 +366,13 @@ void LightComponent::DrawSpotLight() {
 		DirectX::XMStoreFloat3(&p1, p1Vec);
 		DirectX::XMStoreFloat3(&p2, p2Vec);
 
-		// 円の線
 		LineRenderer::GetInstance()->DrawLine(p1, p2, color, world, view, proj, 0.02f);
 
-		// コーンの側面（等間隔に8本描画）
 		if (i % 2 == 0) {
 			LineRenderer::GetInstance()->DrawLine(pos, p1, color, world, view, proj, 0.02f);
 		}
 	}
 
-	// 内側のコーン（点線風に描画）
 	for (int i = 0; i < segments; i += 2) {
 		float angle1 = DirectX::XM_2PI * i / segments;
 		float angle2 = DirectX::XM_2PI * (i + 1) / segments;
@@ -370,6 +396,5 @@ void LightComponent::DrawSpotLight() {
 		LineRenderer::GetInstance()->DrawLine(p1, p2, color, world, view, proj, 0.02f);
 	}
 
-	// 中心線（方向を示す）
 	LineRenderer::GetInstance()->DrawLine(pos, endPos, color, world, view, proj, 0.05f);
 }

@@ -164,9 +164,6 @@
     <ClCompile Include="RigidBody.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClCompile>
-    <ClCompile Include="LightComponent.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
-    </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\basics</Filter>
     </ClCompile>
@@ -232,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="IScript.cpp">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Component\Other</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -346,9 +346,6 @@
     <ClInclude Include="RigidBody.h">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClInclude>
-    <ClInclude Include="LightComponent.h">
-      <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
-    </ClInclude>
     <ClInclude Include="CameraComponent.h">
       <Filter>ソース ファイル\1_MainFrame\Component\basics</Filter>
     </ClInclude>
@@ -408,6 +405,9 @@
     </ClInclude>
     <ClInclude Include="IScript.h">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClInclude>
+    <ClInclude Include="LightComponent.h">
+      <Filter>ソース ファイル\1_MainFrame\Component\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

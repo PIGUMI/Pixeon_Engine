@@ -47,6 +47,9 @@ public:
 	void SetOffset(const DirectX::XMFLOAT3& offset) { m_offset = offset; }
 	DirectX::XMFLOAT3 GetOffset() const { return m_offset; }
 
+	void SetRotationOffset(const DirectX::XMFLOAT3& rotOffset) { m_rotationOffset = rotOffset; }
+	DirectX::XMFLOAT3 GetRotationOffset() const { return m_rotationOffset; }
+
 	// 計算補助
 	DirectX::XMFLOAT3 GetWorldPosition() const;
 	DirectX::XMFLOAT3 GetWorldDirection() const;
@@ -69,4 +72,5 @@ private:
 	bool                m_enabled = true;
 	bool                m_debugDraw = true;
 	DirectX::XMFLOAT3   m_offset{ 0, 0, 0 };
+	DirectX::XMFLOAT3   m_rotationOffset{ 0, 0, 0 };  // ★追加: ??転オフセット（ラジアン）
 };
