@@ -83,7 +83,38 @@ void BoxCollision::EditUpdate()
 
 void BoxCollision::InGameUpdate()
 {
-	EditUpdate();
+	if (_Parent)
+	{
+		auto currentTransform = _Parent->GetWorldTransform();
+		bool transformChanged =
+			f3LastPosition_.x != currentTransform.position.x ||
+			f3LastPosition_.y != currentTransform.position.y ||
+			f3LastPosition_.z != currentTransform.position.z ||
+			f3LastRotation_.x != currentTransform.rotation.x ||
+			f3LastRotation_.y != currentTransform.rotation.y ||
+			f3LastRotation_.z != currentTransform.rotation.z ||
+			f3LastScale_.x != currentTransform.scale.x ||
+			f3LastScale_.y != currentTransform.scale.y ||
+			f3LastScale_.z != currentTransform.scale.z;
+
+		if (transformChanged)
+		{
+			if (pAttachedRigidBody_ && pAttachedRigidBody_->IsKinematic())
+			{
+				bTransformDirty_ = true;
+			}
+
+			f3LastPosition_ = currentTransform.position;
+			f3LastRotation_ = currentTransform.rotation;
+			f3LastScale_ = currentTransform.scale;
+		}
+	}
+
+	if (bTransformDirty_)
+	{
+		UpdateCollisionShape();
+		bTransformDirty_ = false;
+	}
 }
 
 void BoxCollision::Draw(int Layer)
@@ -307,7 +338,18 @@ void BoxCollision::CreateBoxShape()
 	{
 		delete pBoxShape_;
 	}
-	pBoxShape_ = new btBoxShape(btVector3(f3Size_.x * 0.5f, f3Size_.y * 0.5f, f3Size_.z * 0.5f));
+
+	DirectX::XMFLOAT3 worldScale = { 1.0f, 1.0f, 1.0f };
+	if (_Parent)
+	{
+		worldScale = _Parent->GetWorldTransform().scale;
+	}
+
+	pBoxShape_ = new btBoxShape(btVector3(
+		f3Size_.x * 0.5f * worldScale.x,
+		f3Size_.y * 0.5f * worldScale.y,
+		f3Size_.z * 0.5f * worldScale.z
+	));
 }
 
 void BoxCollision::UpdateCollisionShape()
@@ -328,6 +370,12 @@ void BoxCollision::UpdateCollisionShape()
 		localTransform.setIdentity();
 		localTransform.setOrigin(btVector3(f3Center_.x, f3Center_.y, f3Center_.z));
 		pAttachedRigidBody_->AddCollisionShape(pBoxShape_, localTransform);
+
+		if (pAttachedRigidBody_->GetBtRigidBody())
+		{
+			pAttachedRigidBody_->GetBtRigidBody()->activate(true);
+		}
+
 		SetTrigger(bTrigger_);
 	}
 }

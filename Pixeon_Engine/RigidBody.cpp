@@ -593,7 +593,8 @@ void RigidBody::CreateRigidBody()
 	bAddedToWorld_ = false;
 }
 
-void RigidBody::UpdateMassProperties() {
+void RigidBody::UpdateMassProperties()
+{
 	if (pCompoundShape_)
 	{
 		if (bKinematic_ || fMass_ == 0.0f)
@@ -608,6 +609,10 @@ void RigidBody::UpdateMassProperties() {
 		{
 			pRigidBody_->setMassProps(fMass_, localInertia_);
 			pRigidBody_->updateInertiaTensor();
+
+			pCompoundShape_->recalculateLocalAabb();
+
+			pRigidBody_->activate(true);
 		}
 	}
 }
