@@ -89,6 +89,8 @@ void Scene::Init() {
 }
 
 void Scene::BeginPlay() {
+	//_lights.clear();
+
 	for (auto& obj : _objects) {
 		if (obj && obj->GetParent() == nullptr) {
 			AbstractObject* cloneObj = obj->Clone();
@@ -125,6 +127,8 @@ void Scene::BeginPlay() {
 		if (obj) obj->BeginPlay();
 	}
 	EndPlayCalled = false;
+
+	UploadLightsToGPU();
 }
 
 void Scene::EditUpdate() {
@@ -664,24 +668,35 @@ void Scene::UploadLightsToGPU() {
 	memset(lights, 0, sizeof(LightGPU) * kMaxLights);
 
 	int count = 0;
-	for (auto* l : _lights) {
-		if (!l || !l->IsEnabled()) continue;
-		if (count >= kMaxLights) break;
 
-		auto pos = l->GetWorldPosition();
-		auto dir = l->GetWorldDirection();
-		lights[count].position = pos;
-		lights[count].direction = dir;
-		lights[count].intensity = l->GetIntensity();
-		lights[count].color = l->GetColor();
-		lights[count].type = (float)((int)l->GetType());
-		lights[count].range = l->GetRange();
-		float innerRad = DirectX::XMConvertToRadians(l->GetSpotInner());
-		float outerRad = DirectX::XMConvertToRadians(l->GetSpotOuter());
-		lights[count].innerCos = cosf(innerRad * 0.5f);
-		lights[count].outerCos = cosf(outerRad * 0.5f);
-		lights[count].enabled = 1.0f;
-		++count;
+	for (auto* obj : _objects) {
+		if (!obj) continue;
+
+		bool isSaveObject = std::find(_SaveObjects.begin(), _SaveObjects.end(), obj) != _SaveObjects.end();
+		if (isSaveObject) continue;
+
+		auto lightComps = obj->GetComponentsByType<LightComponent>();
+		for (auto* l : lightComps) {
+			if (!l || !l->IsEnabled()) continue;
+			if (count >= kMaxLights) break;
+
+			auto pos = l->GetWorldPosition();
+			auto dir = l->GetWorldDirection();
+
+			lights[count].position = pos;
+			lights[count].direction = dir;
+			lights[count].intensity = l->GetIntensity();
+			lights[count].color = l->GetColor();
+			lights[count].type = (float)((int)l->GetType());
+			lights[count].range = l->GetRange();
+			float innerRad = DirectX::XMConvertToRadians(l->GetSpotInner());
+			float outerRad = DirectX::XMConvertToRadians(l->GetSpotOuter());
+			lights[count].innerCos = cosf(innerRad * 0.5f);
+			lights[count].outerCos = cosf(outerRad * 0.5f);
+			lights[count].enabled = 1.0f;
+			++count;
+		}
+		if (count >= kMaxLights) break;
 	}
 
 	struct LightCountCB { int count; float pad[3]; };
