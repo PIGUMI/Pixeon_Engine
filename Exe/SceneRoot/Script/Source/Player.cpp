@@ -21,9 +21,7 @@ void Script_Player::Update() {
 	headTransform.rotation.x -= (float)MouseY * 0.01f;
 	headTransform.rotation.y += (float)MouseX * 0.01f;
 	SetObjectTransform(headObject, &headTransform);
-
 }
 
 void Script_Player::EndPlay() {
-    // EndPlay
 }
