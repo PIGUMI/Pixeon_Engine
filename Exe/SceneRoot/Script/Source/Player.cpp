@@ -6,7 +6,7 @@ void Script_Player::BeginPlay() {
 	FindObjectByName(scene, "Player", &playerObject);
 	FindChildObjectByName(playerObject, "Head", &headObject);
 	FixedMouseCursor(true);
-	SetMainCamera(1);
+	SetMainCamera(0);
 }
 
 void Script_Player::Update() {

@@ -1,0 +1,184 @@
+{
+    "KeyFrames": [
+        {
+            "Active": false,
+            "CurveInfo": {
+                "ControlPoint1": [
+                    0.0,
+                    0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EditorFlag": {
+                "bPosition": true,
+                "bRotation": false,
+                "bScale": false,
+                "bUVPosition": false,
+                "bUVScale": false
+            },
+            "EndTime": 1.9999998807907104,
+            "EndTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Layer": 0,
+            "StartTime": 1.0,
+            "StartTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    -2.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Texture": ""
+        },
+        {
+            "Active": true,
+            "CurveInfo": {
+                "ControlPoint1": [
+                    0.0,
+                    0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EditorFlag": {
+                "bPosition": true,
+                "bRotation": false,
+                "bScale": false,
+                "bUVPosition": false,
+                "bUVScale": false
+            },
+            "EndTime": 1.0,
+            "EndTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    -2.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    10.0,
+                    10.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    0.125,
+                    0.125
+                ]
+            },
+            "Layer": 0,
+            "StartTime": 0.0,
+            "StartTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    10.0,
+                    10.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    0.125,
+                    0.125
+                ]
+            },
+            "Texture": "PSX/Textures/T_Industrial_Textures.png"
+        }
+    ],
+    "Loop": false,
+    "ProjectName": "Test",
+    "TotalDuration": 1.9999998807907104,
+    "ViewMode": 0
+}
