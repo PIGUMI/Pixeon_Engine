@@ -632,7 +632,7 @@ extern "C" {
 		*outCameraNumber = cameraComp->GetCameraNumber();
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult GetCamaeraUpVector(Component camera, Float3* outUp)
+	PIXEON_API APIResult GetCamaraUpVector(Component camera, Float3* outUp)
 	{
 		if (!outUp) {
 			return PN_ERROR_INVALID_PARAMETER;

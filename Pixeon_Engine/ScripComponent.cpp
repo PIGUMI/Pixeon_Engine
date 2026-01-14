@@ -9,14 +9,9 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <cstdlib> // system
 #include <vector>
 
 namespace fs = std::filesystem;
-
-// Create/Destroy function types (DLL 側でエクスポートされていること)
-typedef IScript* (*CreateScriptInstanceFunc)();
-typedef void (*DestroyScriptInstanceFunc)(IScript*);
 
 void ScripComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
@@ -56,7 +51,7 @@ void ScripComponent::LoadFromFile(std::istream& in) {
 void ScripComponent::RefreshScriptList() {
 	_scriptList.clear();
 	try {
-		const fs::path srcDir = SettingManager::GetInstance()->GetScriptFilePath();;
+		const fs::path srcDir = SettingManager::GetInstance()->GetScriptFilePath();
 		if (!fs::exists(srcDir)) {
 			fs::create_directories(srcDir);
 		}
@@ -105,7 +100,7 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
 		std::ostringstream cpp;
 		cpp << "#include \"" << scriptName << ".h\"\n\n";
 		cpp << "void " << className << "::BeginPlay() {\n    // BeginPlay\n}\n\n";
-		cpp << "void " << className << "::Update() {\n    // Update\n}\n\n";
+		cpp << "void " << className << ":: Update() {\n    // Update\n}\n\n";
 		cpp << "void " << className << "::EndPlay() {\n    // EndPlay\n}\n";
 
 		if (!fs::exists(headerPath)) {
@@ -128,82 +123,50 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
 	}
 }
 
-std::string ScripComponent::GetVSDevEnvPath() const {
-	const std::vector<std::string> vsPaths = {
-		"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat",
-		"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Auxiliary\\Build\\vcvars64.bat",
-		"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
-	};
-	for (auto& p : vsPaths) {
-		if (fs::exists(p)) return p;
-	}
-	return "";
-}
-
-bool ScripComponent::BuildScriptDll(const std::string& scriptName) {
-	// スクリプト名が空ならビルドしない
-	if (scriptName.empty()) return false;
-	std::string vcvars = GetVSDevEnvPath();
-	if (vcvars.empty()) {
-		_buildLog = "vcvars64.bat not found. Configure Visual Studio path.";
-		_showBuildLog = true;
-		return false;
-	}
-
-	const fs::path srcDir = SettingManager::GetInstance()->GetScriptFilePath();
-	const fs::path includeDir = SettingManager::GetInstance()->GetScriptFilePath() + "Include";
-	const fs::path binDir = SettingManager::GetInstance()->GetDLLFilePath();;
-	fs::create_directories(binDir);
-
-	std::string srcPath = (srcDir / (scriptName + ".cpp")).string();
-	std::string dllPath = (binDir / (scriptName + ".dll")).string();
-	std::string libPath = (binDir / (scriptName + ".lib")).string();
-	std::string pdbPath = (binDir / (scriptName + ".pdb")).string();
-	std::string engineLib = (includeDir / "Pixeon_Engine.lib").string();
-
-	std::string logFile = SettingManager::GetInstance()->GetScriptLogFilePath() + "build_" + scriptName + ".log";
-	std::ostringstream cmd;
-	cmd << "cmd /C \"call \"" << vcvars << "\" && "
-		<< "cl /LD /EHsc /MD "
-		<< "\"" << srcPath << "\" "
-		<< "\"" + SettingManager::GetInstance()->GetScriptFilePath() + "Include/IScript.cpp\" "
-		<< "/Fe:\"" << dllPath << "\" "
-		<< "/I\"" << includeDir.string() << "\" "
-		<< "/link /LIBPATH:\"" << includeDir.string() << "\" \"" << engineLib << "\" user32.lib "
-		<< "/IMPLIB:\"" << libPath << "\" "
-		<< "/PDB:\"" << pdbPath << "\""
-		<< " > \"" << logFile << "\" 2>&1\"";
-
-	int res = std::system(cmd.str().c_str());
-
-	_buildLog.clear();
-	if (fs::exists(logFile)) {
-		std::ifstream ifs(logFile);
-		std::ostringstream ss;
-		ss << ifs.rdbuf();
-		_buildLog = ss.str();
-		_showBuildLog = true;
-	}
-	else {
-		_buildLog = "No build log produced.";
-		_showBuildLog = true;
-	}
-
-	if (fs::exists(dllPath) && res == 0) {
-		_buildLog = "Build succeeded.\n\n" + _buildLog;
-		return true;
-	}
-	else {
-		_buildLog = "Build failed.\n\n" + _buildLog;
-		return false;
-	}
-}
-
 bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 	std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
+
+	// DLLが存在しない場合、ScriptManagerを通じてビルド
 	if (!fs::exists(dllPath)) {
-		BuildScriptDll(scriptName);
+		auto result = ScriptManager::Instance().BuildScriptDll(scriptName);
+		_buildLog = result.log;
+		_buildSuccess = result.success;
+		_showBuildLog = true;
+
+		if (!result.success) {
+			std::cerr << "[ScripComponent] Build failed for " << scriptName << std::endl;
+			return false;
+		}
 	}
+	else {
+		// DLLが存在する場合でも、ソースの方が新しい場合はリビルド
+		std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
+		if (fs::exists(srcPath)) {
+			try {
+				auto cppTime = fs::last_write_time(srcPath);
+				auto dllTime = fs::last_write_time(dllPath);
+
+				if (cppTime > dllTime) {
+					// ソースの方が新しいのでリビルド
+					_buildLog = "Source file is newer than DLL. Rebuilding.. .\n\n";
+					_showBuildLog = true;
+
+					auto result = ScriptManager::Instance().BuildScriptDll(scriptName);
+					_buildLog += result.log;
+					_buildSuccess = result.success;
+
+					if (!result.success) {
+						std::cerr << "[ScripComponent] Rebuild failed for " << scriptName << std::endl;
+						return false;
+					}
+				}
+			}
+			catch (...) {
+				// タイムスタンプ比較失敗時は既存のDLLを使用
+			}
+		}
+	}
+
 	return LoadScript(scriptName);
 }
 
@@ -214,12 +177,11 @@ bool ScripComponent::LoadScript(const std::string& scriptName) {
 	_scriptName = scriptName;
 	IScript* inst = ScriptManager::Instance().CreateScriptInstance(scriptName, this);
 	if (!inst) {
-		std::cerr << "[ScripComponent] Failed to create script instance: " << scriptName << std::endl;
+		std::cerr << "[ScripComponent] Failed to create script instance:  " << scriptName << std::endl;
 		_scriptInstance = nullptr;
 		return false;
 	}
 	_scriptInstance = inst;
-	//_scriptInstance->BeginPlay();
 	return true;
 }
 
@@ -236,7 +198,7 @@ void ScripComponent::UnLoadScript() {
 	}
 }
 
-// --- ImGui Inspector 実装 ---
+// --- ImGui Inspector 表示 ---
 void ScripComponent::DrawInspector() {
 	std::string label = GUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
 	std::string Ptr = std::to_string((uintptr_t)this);
@@ -244,7 +206,7 @@ void ScripComponent::DrawInspector() {
 
 	if (!ImGui::CollapsingHeader(GUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
 
-	// テーブル
+	// テーブル化
 	if (ImGui::BeginTable(("ScriptTable_" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		// Available Scripts
 		ImGui::TableNextRow();
@@ -259,7 +221,7 @@ void ScripComponent::DrawInspector() {
 			if (_selectedIndex < 0) _selectedIndex = 0;
 			ImGui::PushItemWidth(-1);
 			if (ImGui::Combo(("##ScriptList_" + Ptr).c_str(), &_selectedIndex, items.data(), (int)items.size())) {
-				// 選択変更時の処理はここに（特になし）
+				// 選択変更時の処理はここに(必要になれば)
 			}
 			ImGui::PopItemWidth();
 		}
@@ -285,16 +247,42 @@ void ScripComponent::DrawInspector() {
 					for (size_t i = 0; i < _scriptList.size(); ++i) {
 						if (_scriptList[i] == name) { _selectedIndex = (int)i; break; }
 					}
+
+					// 作成成功メッセージ
+					_buildLog = "Script files created successfully:\n";
+					_buildLog += "- " + name + ".h\n";
+					_buildLog += "- " + name + ".cpp\n";
+					_buildSuccess = true;
+					_showBuildLog = true;
+				}
+				else {
+					_buildLog = "Failed to create script files for:  " + name;
+					_buildSuccess = false;
+					_showBuildLog = true;
 				}
 			}
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(("Build##build_" + Ptr).c_str())) {
 			std::string name;
-			if (_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) name = _scriptList[_selectedIndex];
+			if (_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) {
+				name = _scriptList[_selectedIndex];
+			}
 			if (name.empty()) name = std::string(_newNameBuf);
 			if (!name.empty()) {
-				BuildScriptDll(name);
+				// ScriptManagerのビルド機能を使用
+				auto result = ScriptManager::Instance().BuildScriptDll(name);
+				_buildLog = result.log;
+				_buildSuccess = result.success;
+				_showBuildLog = true;
+
+				if (result.success) {
+					std::cout << "[ScripComponent] Build succeeded for " << name << std::endl;
+				}
+				else {
+					std::cerr << "[ScripComponent] Build failed for " << name << ": " << result.errorMessage << std::endl;
+				}
+
 				RefreshScriptList();
 			}
 		}
@@ -303,15 +291,35 @@ void ScripComponent::DrawInspector() {
 			std::string name;
 			if (_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) name = _scriptList[_selectedIndex];
 			if (!name.empty()) {
-				LoadScriptByName(name);
+				bool success = LoadScriptByName(name);
+				if (success && _scriptInstance) {
+					_buildLog = "Script loaded successfully:  " + name;
+					_buildSuccess = true;
+					_showBuildLog = true;
+				}
+				else if (!_showBuildLog) {
+					// ビルドログがまだ表示されていない場合（ビルドせずにロードした場合）
+					_buildLog = "Failed to load script: " + name;
+					_buildSuccess = false;
+					_showBuildLog = true;
+				}
 			}
 		}
 		if (ImGui::Button(("Unload##unload_" + Ptr).c_str())) {
-			UnLoadScript();
+			if (!_scriptName.empty()) {
+				std::string unloadedName = _scriptName;
+				UnLoadScript();
+				_buildLog = "Script unloaded:  " + unloadedName;
+				_buildSuccess = true;
+				_showBuildLog = true;
+			}
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(("Refresh##refresh_" + Ptr).c_str())) {
 			RefreshScriptList();
+			_buildLog = "Script list refreshed.  Found " + std::to_string(_scriptList.size()) + " script(s).";
+			_buildSuccess = true;
+			_showBuildLog = true;
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(("Reload##reload_" + Ptr).c_str())) {
@@ -319,13 +327,18 @@ void ScripComponent::DrawInspector() {
 				std::string name = _scriptList[_selectedIndex];
 				if (!name.empty()) {
 					UnLoadScript();
-					LoadScriptByName(name);
+					bool success = LoadScriptByName(name);
+					if (success) {
+						_buildLog = "Script reloaded successfully: " + name;
+						_buildSuccess = true;
+						_showBuildLog = true;
+					}
 				}
 			}
 		}
 		ImGui::EndGroup();
 
-		// Loaded 情報
+		// Loaded 状態
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Loaded");
 		ImGui::TableSetColumnIndex(1);
@@ -355,22 +368,102 @@ void ScripComponent::DrawInspector() {
 				std::string fn = _callBuf;
 				if (!fn.empty()) {
 					_scriptInstance->CallCustom(fn);
+					_buildLog = "Called function: " + fn;
+					_buildSuccess = true;
+					_showBuildLog = true;
 				}
+			}
+			else {
+				_buildLog = "Cannot call function:  No script loaded";
+				_buildSuccess = false;
+				_showBuildLog = true;
 			}
 		}
 
 		ImGui::EndTable();
 	}
 
-	// Build log
+	// ビルドログ表示エリア（ImGuiで表示）
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	// ログウィンドウのヘッダー
+	ImGui::BeginGroup();
+
+	// ステータス表示
 	if (_showBuildLog) {
-		if (ImGui::CollapsingHeader(("Build Log##log_" + Ptr).c_str())) {
-			ImGui::BeginChild(("BuildLogChild_" + Ptr).c_str(), ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
-			ImGui::TextUnformatted(GUI::GetInstance()->ShiftJISToUTF8(_buildLog).c_str());
-			ImGui::EndChild();
+		if (_buildSuccess) {
+			ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "[SUCCESS]");
 		}
+		else {
+			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "[FAILED]");
+		}
+		ImGui::SameLine();
 	}
 
-	ImGui::TextDisabled("Script sources: Script/Src/*.cpp  -> Build -> Script/Bin/*.dll");
-	ImGui::TextDisabled("Create Script: generates header+cpp skeleton. Implement logic in generated cpp.");
+	ImGui::Text("Build / Action Log");
+
+	ImGui::SameLine();
+	if (ImGui::SmallButton(("Clear##clearlog_" + Ptr).c_str())) {
+		_buildLog.clear();
+		_showBuildLog = false;
+	}
+
+	// ログ表示領域
+	ImGui::BeginChild(("BuildLogDisplay_" + Ptr).c_str(),
+		ImVec2(0, 250),
+		true,
+		ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+	if (_showBuildLog && !_buildLog.empty()) {
+		// ログ内容を色分けして表示
+		std::string convertedLog = GUI::GetInstance()->ShiftJISToUTF8(_buildLog);
+
+		// エラー行を赤色で表示
+		std::istringstream logStream(convertedLog);
+		std::string line;
+		while (std::getline(logStream, line)) {
+			// エラー関連のキーワードを含む行を赤色で表示
+			if (line.find("error") != std::string::npos ||
+				line.find("Error") != std::string::npos ||
+				line.find("ERROR") != std::string::npos ||
+				line.find("failed") != std::string::npos ||
+				line.find("Failed") != std::string::npos) {
+				ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "%s", line.c_str());
+			}
+			// 警告行を黄色で表示
+			else if (line.find("warning") != std::string::npos ||
+				line.find("Warning") != std::string::npos ||
+				line.find("WARNING") != std::string::npos) {
+				ImGui::TextColored(ImVec4(1.0f, 0.9f, 0.3f, 1.0f), "%s", line.c_str());
+			}
+			// 成功メッセージを緑色で表示
+			else if (line.find("succeeded") != std::string::npos ||
+				line.find("success") != std::string::npos ||
+				line.find("Success") != std::string::npos ||
+				line.find("completed") != std::string::npos) {
+				ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.3f, 1.0f), "%s", line.c_str());
+			}
+			// 通常のログ
+			else {
+				ImGui::TextUnformatted(line.c_str());
+			}
+		}
+
+		// 自動スクロール（新しいログが追加された時）
+		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+			ImGui::SetScrollHereY(1.0f);
+		}
+	}
+	else {
+		ImGui::TextDisabled("No log messages.  Perform an action to see output.");
+	}
+
+	ImGui::EndChild();
+	ImGui::EndGroup();
+
+	ImGui::Spacing();
+	ImGui::TextDisabled("Script sources: Script/Src/*. cpp  -> Build -> Script/Bin/*. dll");
+	ImGui::TextDisabled("Create Script:  generates header+cpp skeleton.  Implement logic in generated cpp.");
 }

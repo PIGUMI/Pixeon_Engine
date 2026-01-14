@@ -38,9 +38,7 @@ public:
 	// ユーティリティ（Inspector 用）
 	bool LoadScriptByName(const std::string& scriptName);
 	bool CreateScriptFiles(const std::string& scriptName);
-	bool BuildScriptDll(const std::string& scriptName);
 	void RefreshScriptList();
-	std::string GetVSDevEnvPath() const;
 
 	IScript* GetScriptInstance() const { return _scriptInstance; }
 	std::string GetScriptName() const { return _scriptName; }
@@ -56,6 +54,7 @@ private:
 	char _callBuf[128] = {};
 	std::string _buildLog;
 	bool _showBuildLog = false;
+	bool _buildSuccess = false;
 };
 
 #endif // !SCRIPT_COMPONENT_H

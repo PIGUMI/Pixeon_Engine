@@ -7,12 +7,7 @@
 #include <Windows.h>
 #include <mutex>
 #include <vector>
-/*
- Scriptを管理するマネージャークラス
- DLLの読み込み・解放を行う
-*/
 
-// 前方宣言
 class ScripComponent;
 class IScript;
 
@@ -22,20 +17,23 @@ public:
 	static ScriptManager& Instance();
 	static void Release();
 
-	// コンポーネント要求に応じてスクリプトインスタンスを作成し返す
-	// 成功なら IScript* を返す。失敗なら nullptr。
 	IScript* CreateScriptInstance(const std::string& scriptName, ScripComponent* owner);
 
-	// コンポーネントが自分のスクリプトインスタンスを破棄するとき呼ぶ
 	void DestroyScriptInstance(const std::string& scriptName, ScripComponent* owner);
 
-	// 毎フレーム呼ぶ：ファイル更新チェック → 必要ならビルド → ホットリロード
 	void Update();
 
-	// VS 開発者コマンドプロンプトのパスを返す（vcvars64.bat）
 	std::string GetVSDevEnvPath() const;
 
 	void RegisterAllScripts();
+
+	struct BuildResult {
+		bool success;
+		std::string log;
+		std::string errorMessage;
+	};
+
+	BuildResult BuildScriptDll(const std::string& scriptName);
 
 private:
 	ScriptManager() = default;
@@ -51,12 +49,11 @@ private:
 		std::filesystem::file_time_type lastCppWriteTime;
 	};
 
-	// 内部API
 	bool BuildScriptDll(const std::string& scriptName, std::string& outError);
 	bool LoadDllForScript(const std::string& scriptName, DllEntry& entry);
 	void UnloadDllEntry(DllEntry& entry);
 
-	std::map<std::string, DllEntry> _dllMap; // key = scriptName
+	std::map<std::string, DllEntry> _dllMap;
 	std::mutex _mutex;
 };
 

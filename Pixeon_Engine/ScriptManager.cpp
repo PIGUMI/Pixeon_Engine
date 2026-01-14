@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <cstdlib>
 #include <chrono>
 #include <thread>
@@ -51,7 +52,7 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 	std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
 	std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
-	// 初回か、ソースが新しいかをチェックしビルドが必要ならビルド
+	// 初回か、ソースが新しいかチェックしてビルドが必要ならビルド
 	bool needBuild = false;
 	if (!fs::exists(dllPath)) {
 		needBuild = true;
@@ -59,7 +60,7 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 	else if (fs::exists(srcPath)) {
 		auto cppTime = fs::last_write_time(srcPath);
 		if (entry.lastCppWriteTime != cppTime) {
-			// 時刻が変わっている（初期時は default なので build）
+			// タイムスタンプが変わっている(初回なら default なので build)
 			if (cppTime > fs::last_write_time(dllPath)) {
 				needBuild = true;
 			}
@@ -68,14 +69,15 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 	}
 
 	if (needBuild) {
-		std::string err;
-		if (!BuildScriptDll(scriptName, err)) {
-			std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << err << std::endl;
+		auto result = BuildScriptDll(scriptName);
+		if (!result.success) {
+			std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << result.errorMessage << std::endl;
+			// ビルド失敗時は古いDLLも使用しない
 			return nullptr;
 		}
 	}
 
-	// DLLが未ロードならロード
+	// DLLがまだロードでないならロード
 	if (entry.hDll == nullptr) {
 		if (!LoadDllForScript(scriptName, entry)) {
 			std::cerr << "[ScriptManager] Load DLL failed for " << scriptName << std::endl;
@@ -83,7 +85,7 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 		}
 	}
 
-	// CreateScriptInstance 関数を取り出してインスタンス生成
+	// CreateScriptInstance 関数を呼び出してインスタンス作成
 	auto createFunc = (CreateScriptInstanceFunc)GetProcAddress(entry.hDll, "CreateScriptInstance");
 	if (!createFunc) {
 		std::cerr << "[ScriptManager] CreateScriptInstance not found in " << scriptName << std::endl;
@@ -114,16 +116,16 @@ void ScriptManager::DestroyScriptInstance(const std::string& scriptName, ScripCo
 
 	IScript* instance = itInst->second;
 	if (instance) {
-		// EndPlay 呼び出し（安全のため）してから Destroy
+		// EndPlay 呼び出し(安全のため)→ Destroy
 		instance->EndPlay();
 
-		// DestroyScriptInstance を DLL から呼ぶ（あれば）
+		// DestroyScriptInstance を DLL から呼ぶ(あれば)
 		auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(entry.hDll, "DestroyScriptInstance");
 		if (destroyFunc) {
 			destroyFunc(instance);
 		}
 		else {
-			// 万一エクスポートがなければ delete
+			// エクスポートされていないなら delete
 			delete instance;
 		}
 	}
@@ -153,9 +155,9 @@ void ScriptManager::Update()
 		if (fs::exists(srcPath)) {
 			auto cppTime = fs::last_write_time(srcPath);
 			if (entry.lastCppWriteTime != cppTime) {
-				// ソースタイムが変化
+				// ソースタイムスタンプ変化
 				entry.lastCppWriteTime = cppTime;
-				// 比較：cpp > dll
+				// 比較:  cpp > dll
 				if (!fs::exists(dllPath) || cppTime > fs::last_write_time(dllPath)) {
 					needBuild = true;
 				}
@@ -164,11 +166,11 @@ void ScriptManager::Update()
 
 		if (needBuild) {
 			std::cout << "[ScriptManager] Detected change in " << scriptName << ", building..." << std::endl;
-			std::string err;
-			if (BuildScriptDll(scriptName, err)) {
+			auto result = BuildScriptDll(scriptName);
+			if (result.success) {
 				std::cout << "[ScriptManager] Build succeeded for " << scriptName << ", reloading..." << std::endl;
 
-				// ホットリロード処理：
+				// ホットリロード処理: 
 				// 1) 古いインスタンスを DestroyScriptInstance で削除
 				// 2) FreeLibrary
 				// 3) LoadLibrary (新DLL)
@@ -219,7 +221,7 @@ void ScriptManager::Update()
 					IScript* newInst = createFunc();
 					if (newInst) {
 						entry.instances[owner] = newInst;
-						// BeginPlay はここで呼ぶ（必要なら）
+						// BeginPlay はここで呼ぶ(必要なら)
 						newInst->BeginPlay();
 					}
 				}
@@ -228,7 +230,7 @@ void ScriptManager::Update()
 				std::cout << "[ScriptManager] Reload completed for " << scriptName << std::endl;
 			}
 			else {
-				std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << err << std::endl;
+				std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << result.errorMessage << std::endl;
 			}
 		}
 
@@ -240,7 +242,7 @@ bool ScriptManager::LoadDllForScript(const std::string& scriptName, DllEntry& en
 {
 	std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 	if (!fs::exists(dllPath)) {
-		std::cerr << "[ScriptManager] DLL not found: " << dllPath << std::endl;
+		std::cerr << "[ScriptManager] DLL not found:  " << dllPath << std::endl;
 		return false;
 	}
 	entry.hDll = LoadLibraryA(dllPath.c_str());
@@ -254,7 +256,7 @@ bool ScriptManager::LoadDllForScript(const std::string& scriptName, DllEntry& en
 
 void ScriptManager::UnloadDllEntry(DllEntry& entry)
 {
-	// すべてのインスタンスを破棄（DLLの DestroyScriptInstance を使う）
+	// 全てのインスタンスを破棄(DLLの DestroyScriptInstance を使う)
 	if (entry.hDll) {
 		auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(entry.hDll, "DestroyScriptInstance");
 		for (auto& kv : entry.instances) {
@@ -311,11 +313,11 @@ void ScriptManager::RegisterAllScripts()
 			catch (...) {
 				// if cannot read time, leave default
 			}
-			// hDll==nullptr, instances empty, refCount==0 の監視エントリを作るだけ
+			// hDll==nullptr, instances empty, refCount==0 の仮エントリを作るだけ
 			_dllMap.emplace(name, std::move(entry));
 		}
 		else {
-			// 既に存在する場合はタイムスタンプを最新にしておく（Update の差分検出の基準になる）
+			// 既に存在する場合はタイムスタンプを最新にしておく(Update の処理判断の基準になる)
 			try {
 				it->second.lastCppWriteTime = fs::last_write_time(p.path());
 			}
@@ -324,8 +326,11 @@ void ScriptManager::RegisterAllScripts()
 	}
 }
 
-bool ScriptManager::BuildScriptDll(const std::string& scriptName, std::string& outError)
+ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scriptName)
 {
+	BuildResult result;
+	result.success = false;
+
 	// Paths
 	std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
 	std::string headerPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".h";
@@ -335,24 +340,45 @@ bool ScriptManager::BuildScriptDll(const std::string& scriptName, std::string& o
 	std::string libPath = binDir + "/" + scriptName + ".lib";
 	std::string pdbPath = binDir + "/" + scriptName + ".pdb";
 
+	// ログファイルパス
+	std::string logFile = SettingManager::GetInstance()->GetScriptLogFilePath() + "build_" + scriptName + ".log";
+
 	// check vcvars
 	std::string vcvars = GetVSDevEnvPath();
 	if (vcvars.empty()) {
-		outError = "vcvars64.bat not found";
-		return false;
+		result.errorMessage = "vcvars64.bat not found.  Please install Visual Studio 2022.";
+		result.log = result.errorMessage;
+		return result;
+	}
+
+	// ソースファイルが存在するか確認
+	if (!fs::exists(srcPath)) {
+		result.errorMessage = "Source file not found: " + srcPath;
+		result.log = result.errorMessage;
+		return result;
 	}
 
 	// ensure directories
 	try {
 		fs::create_directories(binDir);
+		fs::path logDir = fs::path(logFile).parent_path();
+		fs::create_directories(logDir);
 	}
 	catch (...) {}
 
-	// Build command (simple synchronous)
-	// Note: adjust Engine lib name if needed
-	std::string engineLib = includeDir + "\\Pixeon_Engine.lib"; // adjust as needed
+	fs::file_time_type oldDllTime;
+	bool hadOldDll = false;
+	if (fs::exists(dllPath)) {
+		try {
+			oldDllTime = fs::last_write_time(dllPath);
+			hadOldDll = true;
+		}
+		catch (...) {}
+	}
+
+	// Build command
+	std::string engineLib = includeDir + "\\Pixeon_Engine.lib";
 	std::ostringstream cmd;
-	// Wrap with call to vcvars and cl compile & link
 	cmd << "cmd /C \"call \"" << vcvars << "\" && "
 		<< "cl /LD /EHsc /MD "
 		<< "\"" << srcPath << "\" "
@@ -361,22 +387,62 @@ bool ScriptManager::BuildScriptDll(const std::string& scriptName, std::string& o
 		<< "/I\"" << includeDir << "\" "
 		<< "/link /LIBPATH:\"" << includeDir << "\" \"" << engineLib << "\" user32.lib "
 		<< "/IMPLIB:\"" << libPath << "\" "
-		<< "/PDB:\"" << pdbPath << "\"\"";
+		<< "/PDB:\"" << pdbPath << "\""
+		<< " > \"" << logFile << "\" 2>&1\"";
 
 	std::string command = cmd.str();
 
 	std::cout << "[ScriptManager] Running build command: " << command << std::endl;
-	int result = std::system(command.c_str()); // blocking
-	if (result != 0) {
-		outError = "cl returned error code " + std::to_string(result);
-		return false;
+	int exitCode = std::system(command.c_str());
+
+	// ログファイルを読み込む
+	if (fs::exists(logFile)) {
+		std::ifstream ifs(logFile);
+		std::ostringstream ss;
+		ss << ifs.rdbuf();
+		result.log = ss.str();
+	}
+	else {
+		result.log = "No build log produced.";
 	}
 
-	// verify build produced dll
-	if (!fs::exists(dllPath)) {
-		outError = "dll not found after build: " + dllPath;
-		return false;
+	// ビルド結果を判定
+	if (exitCode != 0) {
+		result.errorMessage = "cl. exe returned error code " + std::to_string(exitCode);
+		result.log = "Build failed (Exit code: " + std::to_string(exitCode) + ")\n\n" + result.log;
+		result.success = false;
+		return result;
 	}
+
+	// DLLが存在するか確認
+	if (!fs::exists(dllPath)) {
+		result.errorMessage = "DLL not found after build: " + dllPath;
+		result.log = "Build failed:  DLL was not created.\n\n" + result.log;
+		result.success = false;
+		return result;
+	}
+
+	// DLLが実際に更新されたか確認（タイムスタンプチェック）
+	if (hadOldDll) {
+		try {
+			fs::file_time_type newDllTime = fs::last_write_time(dllPath);
+			if (newDllTime <= oldDllTime) {
+				// DLLが更新されていない = ビルド失敗
+				result.errorMessage = "DLL was not updated after build (compilation likely failed)";
+				result.log = "Build failed: DLL timestamp unchanged.\n\n" + result.log;
+				result.success = false;
+				return result;
+			}
+		}
+		catch (...) {
+			// タイムスタンプ取得失敗時は警告を追加
+			result.log = "Warning: Could not verify DLL update time.\n\n" + result.log;
+		}
+	}
+
+	// 成功
+	result.success = true;
+	result.log = "Build succeeded.\n\n" + result.log;
 
 	// update last write time
 	try {
@@ -386,5 +452,5 @@ bool ScriptManager::BuildScriptDll(const std::string& scriptName, std::string& o
 	}
 	catch (...) {}
 
-	return true;
+	return result;
 }
