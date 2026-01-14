@@ -15,5 +15,5 @@ private:
 private:
 	Animator2DManager() = default;
 	~Animator2DManager() = default;
-	static Animator2DManager* instance;
+	static Animator2DManager* _instance;
 };

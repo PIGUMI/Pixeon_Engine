@@ -121,12 +121,12 @@ int MainFrame::Init(const EngineConfig& InPut)
 void MainFrame::Update()
 {
 	// フレーム制御
-	DWORD currentTime = timeGetTime();
-	float deltaTime = static_cast<float>(currentTime - _lastUpdateTime);
+	DWORD current_Time = timeGetTime();
+	float delta_Time = static_cast<float>(current_Time - _lastUpdateTime);
 
-	if (deltaTime >= _targetFrameTime) {
+	if (delta_Time >= _targetFrameTime) {
 		// deltaTime を秒単位に変換
-		_deltaTime = deltaTime * 0.001f; // ms -> s
+		_deltaTime = delta_Time * 0.001f; // ms -> s
 		// 入力更新
 		UpdateInput(GetWindowHandle());
 
@@ -146,7 +146,7 @@ void MainFrame::Update()
 		SetMouseFreeze(_fixedMouseCursorFlag);
 
 		// 更新時間記録
-		_lastUpdateTime = currentTime;
+		_lastUpdateTime = current_Time;
 		_updateDraw = true;
 	}
 }
@@ -166,13 +166,13 @@ void MainFrame::Draw()
 		ID3D11DepthStencilView* dsv = dx11->GetDefaultDSV()->GetView();
 
 		// レイヤーごとの描画
-		float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
-		dx11->GetContext()->ClearRenderTargetView(hdrRTV, clearColor);
+		float clear_Color[4] = { 0.0f,0.0f,0.0f,0.0f };
+		dx11->GetContext()->ClearRenderTargetView(hdrRTV, clear_Color);
 		dx11->GetContext()->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		dx11->GetContext()->OMSetRenderTargets(1, &hdrRTV, dsv);
 
-		int LayerIndex = 0;
+		int Layer_Index = 0;
 		for (auto layerRT : _layerRenderTargets) {
 			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
@@ -180,7 +180,7 @@ void MainFrame::Draw()
 			switch (_softwareMode)
 			{
 			case SoftWareMode::ENGINE:
-				EngineFrame::GetInstance()->Draw(LayerIndex);
+				EngineFrame::GetInstance()->Draw(Layer_Index);
 				break;
 			case SoftWareMode::ANIMTOR2D:
 				Animator2DFrame::GetInstance()->Draw();
@@ -197,7 +197,7 @@ void MainFrame::Draw()
 				(float)_engineConfig.screenWidth,
 				(float)_engineConfig.screenHeight
 			);
-			LayerIndex++;
+			Layer_Index++;
 		}
 
 		// トーンマッピング＆最終合成

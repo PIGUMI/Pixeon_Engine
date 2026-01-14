@@ -33,12 +33,11 @@ public:
 
 	void DrawDebugGUI();
 
-	void StartAutoSync(std::chrono::milliseconds interval = std::chrono::milliseconds(1000),
-		bool recursive = true);
+	void StartAutoSync(std::chrono::milliseconds interval = std::chrono::milliseconds(1000),bool recursive = true);
 
 	void StopAutoSync();
 
-	bool IsAutoSyncRunning() const { return m_watchRunning_.load(); }
+	bool IsAutoSyncRunning() const { return _watchRunning.load(); }
 
 	std::vector<std::string> GetCachedAssetNames(bool onlyModelExt = false) const;
 	std::vector<std::string> GetCachedTextureNames() const;
@@ -67,29 +66,29 @@ private:
 
 private:
 
-	std::string m_root_;
-	LoadMode m_mode_ = LoadMode::FromSource;
+	std::string _root;
+	LoadMode _mode = LoadMode::FromSource;
 
-	std::unordered_map<std::string, std::vector<uint8_t>> m_cache_;
-	std::unordered_map<std::string, FileMeta> m_fileMeta_;
+	std::unordered_map<std::string, std::vector<uint8_t>> _cache;
+	std::unordered_map<std::string, FileMeta> _fileMeta;
 
-	std::deque<ChangeLog> m_recentChanges_;
+	std::deque<ChangeLog> _recentChanges;
 
-	std::thread m_watchThread_;
-	std::atomic<bool> m_watchRunning_{ false };
-	std::chrono::milliseconds m_interval_{ 1000 };
-	bool m_recursive_ = true;
+	std::thread _watchThread;
+	std::atomic<bool> _watchRunning{ false };
+	std::chrono::milliseconds _interval{ 1000 };
+	bool _recursive = true;
 
-	std::atomic<uint64_t> m_scanCount_{ 0 };
-	std::atomic<uint64_t> m_lastDiffAdds_{ 0 };
-	std::atomic<uint64_t> m_lastDiffRemoves_{ 0 };
-	std::atomic<uint64_t> m_lastDiffMods_{ 0 };
-	std::atomic<uint64_t> m_lastScanDurationMs_{ 0 };
+	std::atomic<uint64_t> _scanCount{ 0 };
+	std::atomic<uint64_t> _lastDiffAdds{ 0 };
+	std::atomic<uint64_t> _lastDiffRemoves{ 0 };
+	std::atomic<uint64_t> _lastDiffMods{ 0 };
+	std::atomic<uint64_t> _lastScanDurationMs{ 0 };
 
-	mutable std::mutex m_mtx_;
+	mutable std::mutex _mtx;
 
-	static AssetManager* s_instance_;
-	static constexpr size_t kMaxRecentChanges_ = 64;
+	static AssetManager* _instance;
+	static constexpr size_t _kMaxRecentChanges = 64;
 };
 
 #endif // ASSETMANAGER_H

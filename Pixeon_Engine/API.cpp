@@ -1,3 +1,9 @@
+/*
+* ファイル名　API
+* 説      明  API関数群
+*	          PixeonEngineの機能を外部から利用するためのインターフェースを提供します。
+*/
+
 #include "API.h"
 #include "MainFrame.h"
 #include "SceneManger.h"
