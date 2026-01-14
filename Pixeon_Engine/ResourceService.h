@@ -14,12 +14,11 @@ public:
 	std::shared_ptr<ModelSharedResource> GetModel(const std::string& name);
 	std::shared_ptr<SoundResource> GetSound(const std::string& name, bool streaming = false);
 
-	// 拡張子から自動ディスパッチ（例: ".fbx" → Model / ".png" → Texture）
 	bool AutoResolve(const std::string& name);
 
 private:
 	ResourceService() = default;
-	static ResourceService* s_instance;
+	static ResourceService* _instance;
 };
 
 #endif // RESOURCE_SERVICE_H

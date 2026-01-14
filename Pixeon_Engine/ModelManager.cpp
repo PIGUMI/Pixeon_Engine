@@ -39,7 +39,7 @@
 #endif
 #endif
 
-ModelManager* ModelManager::s_instance = nullptr;
+ModelManager* ModelManager::_instance = nullptr;
 
 /*
 * 関数名　: MM_NormalizePath
@@ -89,8 +89,8 @@ static void BuildNodeWorldMatrices(aiNode* node,
 * 説　明　: シングルトンインスタンスを取得する
 */
 ModelManager* ModelManager::Instance() {
-	if (!s_instance) s_instance = new ModelManager();
-	return s_instance;
+	if (!_instance) _instance = new ModelManager();
+	return _instance;
 }
 
 /*
@@ -100,10 +100,10 @@ ModelManager* ModelManager::Instance() {
 * 説　明　: シングルトンインスタンスを削除する
 */
 void ModelManager::DeleteInstance() {
-	if (s_instance) {
-		s_instance->UnInit();
-		delete s_instance;
-		s_instance = nullptr;
+	if (_instance) {
+		_instance->UnInit();
+		delete _instance;
+		_instance = nullptr;
 	}
 }
 
@@ -114,10 +114,10 @@ void ModelManager::DeleteInstance() {
 * 説　明　: モデルマネージャを初期化解除する
 */
 void ModelManager::UnInit() {
-	std::lock_guard<std::mutex> lk(m_mtx);
-	m_cache.clear();
-	m_embeddedTextures.clear();
-	m_frame = 0;
+	std::lock_guard<std::mutex> lk(_mtx);
+	_cache.clear();
+	_embeddedTextures.clear();
+	_frame = 0;
 }
 
 /*
@@ -127,19 +127,19 @@ void ModelManager::UnInit() {
 * 説　明　: モデルを読み込むか、既に読み込まれている場合はそれを取得する
 */
 std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& logicalName) {
-	std::lock_guard<std::mutex> lk(m_mtx);
-	m_frame++;
-	auto it = m_cache.find(logicalName);
-	if (it != m_cache.end()) {
+	std::lock_guard<std::mutex> lk(_mtx);
+	_frame++;
+	auto it = _cache.find(logicalName);
+	if (it != _cache.end()) {
 		if (auto sp = it->second.weak.lock()) {
-			it->second.lastUse = m_frame;
+			it->second.lastUse = _frame;
 			return sp;
 		}
 	}
 	auto res = LoadInternal(logicalName);
 	if (res) {
-		Entry e; e.weak = res; e.lastUse = m_frame; e.gpuBytes = res->gpuBytes;
-		m_cache[logicalName] = e;
+		Entry e; e.weak = res; e.lastUse = _frame; e.gpuBytes = res->gpuBytes;
+		_cache[logicalName] = e;
 	}
 	return res;
 }
@@ -259,7 +259,7 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 		std::string texKey = modelName + ":: *" + std::to_string(i);
 
 		// 既に処理済みならスキップ
-		if (m_embeddedTextures.find(texKey) != m_embeddedTextures.end()) {
+		if (_embeddedTextures.find(texKey) != _embeddedTextures.end()) {
 			continue;
 		}
 
@@ -310,7 +310,7 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 			Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
 			if (SUCCEEDED(device->CreateTexture2D(&desc, &initData, texture.GetAddressOf()))) {
 				if (SUCCEEDED(device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf()))) {
-					m_embeddedTextures[texKey] = srv;
+					_embeddedTextures[texKey] = srv;
 #ifdef _DEBUG
 					OutputDebugStringA(("[ModelManager] Embedded texture loaded: " + texKey + "\n").c_str());
 #endif
@@ -336,8 +336,8 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelManager::GetEmbeddedTextur
 	}
 
 	std::string key = modelName + "::" + texturePath;
-	auto it = m_embeddedTextures.find(key);
-	if (it != m_embeddedTextures.end()) {
+	auto it = _embeddedTextures.find(key);
+	if (it != _embeddedTextures.end()) {
 		return it->second;
 	}
 	return nullptr;
@@ -767,9 +767,9 @@ void ModelManager::BuildNodeHierarchy(aiNode* node,
 * 説　明　: 使用されていないモデルリソースをガベージコレクションする
 */
 void ModelManager::GarbageCollect() {
-	std::lock_guard<std::mutex> lk(m_mtx);
-	for (auto it = m_cache.begin(); it != m_cache.end();) {
-		if (it->second.weak.expired()) it = m_cache.erase(it);
+	std::lock_guard<std::mutex> lk(_mtx);
+	for (auto it = _cache.begin(); it != _cache.end();) {
+		if (it->second.weak.expired()) it = _cache.erase(it);
 		else ++it;
 	}
 }
@@ -781,31 +781,31 @@ void ModelManager::GarbageCollect() {
 * 説　明　: デバッグ用GUIを描画する
 */
 void ModelManager::DrawDebugGUI() {
-	std::lock_guard<std::mutex> lk(m_mtx);
+	std::lock_guard<std::mutex> lk(_mtx);
 	ImGui::TextUnformatted("ModelManager");
 	ImGui::Separator();
 	size_t alive = 0;
 	size_t totalGPU = 0;
-	for (auto& kv : m_cache) {
+	for (auto& kv : _cache) {
 		if (!kv.second.weak.expired()) {
 			alive++;
 			totalGPU += kv.second.gpuBytes;
 		}
 	}
-	ImGui::Text("Cached: %zu (alive=%zu)", m_cache.size(), alive);
+	ImGui::Text("Cached: %zu (alive=%zu)", _cache.size(), alive);
 	ImGui::Text("GPU Approx Total: %. 2f MB", totalGPU / (1024.0 * 1024.0));
-	ImGui::Text("Embedded Textures: %zu", m_embeddedTextures.size());
+	ImGui::Text("Embedded Textures: %zu", _embeddedTextures.size());
 	static char filter[128] = "";
 	ImGui::InputText("Filter##Model", filter, sizeof(filter));
 	if (ImGui::Button("GC Dead")) {
-		for (auto it = m_cache.begin(); it != m_cache.end();) {
-			if (it->second.weak.expired()) it = m_cache.erase(it);
+		for (auto it = _cache.begin(); it != _cache.end();) {
+			if (it->second.weak.expired()) it = _cache.erase(it);
 			else ++it;
 		}
 	}
 	ImGui::Separator();
 	ImGui::BeginChild("ModelList", ImVec2(0, 160), true);
-	for (auto& kv : m_cache) {
+	for (auto& kv : _cache) {
 		if (filter[0] && kv.first.find(filter) == std::string::npos) continue;
 		bool aliveRes = !kv.second.weak.expired();
 		ImGui::Text("%s | %s | %. 2f KB | lastUse=%llu",

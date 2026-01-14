@@ -62,9 +62,9 @@ private:
 		uint64_t lastUse = 0;
 		size_t gpuBytes = 0;
 	};
-	std::unordered_map<std::string, Entry> m_cache;
-	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_embeddedTextures;
-	uint64_t m_frame = 0;
-	std::mutex m_mtx;
-	static ModelManager* s_instance;
+	std::unordered_map<std::string, Entry> _cache;
+	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> _embeddedTextures;
+	uint64_t _frame = 0;
+	std::mutex _mtx;
+	static ModelManager* _instance;
 };
