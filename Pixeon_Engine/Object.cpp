@@ -1,12 +1,28 @@
+/*
+* ファイル名　: Object
+* 説　　　明　: オブジェクトクラス実装
+*/
 #include "Object.h"
 #include "Component.h"
 #include "ImageRender.h"
 #include "Animator2DComponent.h"
 #include <DirectXMath.h>
 
+/*
+* 関数名　: Init
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: 初期化処理
+*/
 void AbstractObject::Init() {
 }
 
+/*
+* 関数名　: BeginPlay
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: ゲーム開始時の処理
+*/
 void AbstractObject::BeginPlay() {
 	for (auto comp : _components) {
 		if (comp) comp->BeginPlay();
@@ -17,6 +33,12 @@ void AbstractObject::BeginPlay() {
 	}
 }
 
+/*
+* 関数名　: EditUpdate
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: エディタ更新処理
+*/
 void AbstractObject::EditUpdate() {
 	for (auto comp : _components) {
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
@@ -28,6 +50,12 @@ void AbstractObject::EditUpdate() {
 	}
 }
 
+/*
+* 関数名　: InGameUpdate
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: ゲーム更新処理
+*/
 void AbstractObject::InGameUpdate() {
 	for (auto comp : _components) {
 		if (comp && comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) continue;
@@ -39,6 +67,12 @@ void AbstractObject::InGameUpdate() {
 	}
 }
 
+/*
+* 関数名　: Draw
+* 引　数　: Layer	描画レイヤー
+* 戻り値　: なし
+* 説　明　: 描画処理
+*/
 void AbstractObject::Draw(int Layer) {
 	for (auto comp : _components) {
 		comp->Draw(Layer);
@@ -49,7 +83,13 @@ void AbstractObject::Draw(int Layer) {
 	}
 }
 
-void AbstractObject::UInit() {
+/*
+* 関数名　: UnInit
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: 終了処理
+*/
+void AbstractObject::UnInit() {
 
 	RemoveParent();
 
@@ -69,6 +109,12 @@ void AbstractObject::UInit() {
 	_components.clear();
 }
 
+/*
+* 関数名　: GetWorldTransform
+* 引　数　: なし
+* 戻り値　: ワールドトランスフォーム
+* 説　明　: ワールドトランスフォームの取得
+*/
 Transform AbstractObject::GetWorldTransform() {
 	if (!_parentObject) {
 		return _transform;
@@ -108,11 +154,23 @@ Transform AbstractObject::GetWorldTransform() {
 	return worldTransform;
 }
 
+/*
+* 関数名　: GetWorldPosition
+* 引　数　: なし
+* 戻り値　: ワールド位置
+* 説　明　: ワールド位置の取得
+*/
 DirectX::XMFLOAT3 AbstractObject::GetWorldPosition() {
 	Transform worldTransform = GetWorldTransform();
 	return worldTransform.position;
 }
 
+/*
+* 関数名　: SetParent
+* 引　数　: parent	新しい親オブジェクト
+* 戻り値　: なし
+* 説　明　: 親オブジェクトの設定
+*/
 void AbstractObject::SetParent(AbstractObject* parent) {
 	if (_parentObject == parent) return;
 
@@ -126,6 +184,12 @@ void AbstractObject::SetParent(AbstractObject* parent) {
 	}
 }
 
+/*
+* 関数名　: RemoveParent
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: 親オブジェクトの削除
+*/
 void AbstractObject::RemoveParent() {
 	if (_parentObject) {
 		_parentObject->RemoveChild(this);
@@ -133,6 +197,12 @@ void AbstractObject::RemoveParent() {
 	}
 }
 
+/*
+* 関数名　: FindChildByName
+* 引　数　: name	子オブジェクト名
+* 戻り値　: 見つかった子オブジェクト、見つからなければnullptr
+* 説　明　: 名前から子オブジェクトを検索
+*/
 AbstractObject* AbstractObject::FindChildByName(const std::string& name)
 {
 	for (auto child : _children) {
@@ -143,6 +213,12 @@ AbstractObject* AbstractObject::FindChildByName(const std::string& name)
 	return nullptr;
 }
 
+/*
+* 関数名　: AddChild
+* 引　数　: child	追加する子オブジェクト
+* 戻り値　: なし
+* 説　明　: 子オブジェクトの追加
+*/
 void AbstractObject::AddChild(AbstractObject* child) {
 	if (!child) return;
 
@@ -153,6 +229,12 @@ void AbstractObject::AddChild(AbstractObject* child) {
 	_children.push_back(child);
 }
 
+/*
+* 関数名　: RemoveChild
+* 引　数　: child	削除する子オブジェクト
+* 戻り値　: なし
+* 説　明　: 子オブジェクトの削除
+*/
 void AbstractObject::RemoveChild(AbstractObject* child) {
 	if (!child) return;
 
@@ -162,6 +244,12 @@ void AbstractObject::RemoveChild(AbstractObject* child) {
 	}
 }
 
+/*
+* 関数名　: Clone
+* 引　数　: なし
+* 戻り値　: クローンされたオブジェクト
+* 説　明　: オブジェクトのクローン作成
+*/
 AbstractObject* AbstractObject::Clone() {
 	AbstractObject* newObj = new AbstractObject();
 	newObj->_transform = this->_transform;
@@ -192,6 +280,12 @@ AbstractObject* AbstractObject::Clone() {
 	return newObj;
 }
 
+/*
+* 関数名　: GetComponent
+* 引　数　: name	コンポーネント名
+* 戻り値　: 見つかったコンポーネント、見つからなければnullptr
+* 説　明　: 名前からコンポーネントを取得
+*/
 AbstractComponent* AbstractObject::GetComponent(const std::string& name)
 {
 	for (auto comp : _components) {
@@ -202,6 +296,12 @@ AbstractComponent* AbstractObject::GetComponent(const std::string& name)
 	return nullptr;
 }
 
+/*
+* 関数名　: GetComponentsByTypeID
+* 引　数　: typeID	コンポーネントの型ID
+* 戻り値　: 指定型のコンポーネントリスト
+* 説　明　: 型IDからコンポーネントを取得
+*/
 std::vector<AbstractComponent*> AbstractObject::GetComponentsByTypeID(int typeID)
 {
 	std::vector<AbstractComponent*> result;
@@ -213,6 +313,12 @@ std::vector<AbstractComponent*> AbstractObject::GetComponentsByTypeID(int typeID
 	return result;
 }
 
+/*
+* 関数名　: RemoveComponent
+* 引　数　: comp	削除するコンポーネント
+* 戻り値　: なし
+* 説　明　: コンポーネントの削除
+*/
 void AbstractObject::RemoveComponent(AbstractComponent* comp) {
 	if (comp == nullptr) return;
 	auto it = std::remove(_components.begin(), _components.end(), comp);

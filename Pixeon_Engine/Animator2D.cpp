@@ -1,3 +1,7 @@
+/*
+* ファイル名　: Animator2D
+* 説　　　明　: 2Dアニメーションを管理するコンポーネント
+*/
 #include "Animator2D.h"
 #include "SettingManager.h"
 #include "GUI.h"
@@ -6,6 +10,12 @@
 #include <chrono>
 #include <algorithm>
 
+/*
+* 関数名　: GetTimeSeconds
+* 引　数　: なし
+* 戻り値　: double 現在の時間（秒）
+* 説　明　: 現在の時間を秒単位で取得する
+*/
 static double GetTimeSeconds()
 {
 	using clock = std::chrono::steady_clock;
@@ -14,6 +24,12 @@ static double GetTimeSeconds()
 	return std::chrono::duration_cast<std::chrono::duration<double>>(epoch).count();
 }
 
+/*
+* 関数名　: Animator2D
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: コンストラクタ
+*/
 Animator2D::Animator2D()
 	:bLoop_(false),
 	bFirst_(true),
@@ -25,6 +41,12 @@ Animator2D::Animator2D()
 	PreviewImage->Init(owner_);
 }
 
+/*
+* 関数名　: ~Animator2D
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: デストラクタ
+*/
 Animator2D::~Animator2D()
 {
 	if (PreviewImage)
@@ -34,6 +56,12 @@ Animator2D::~Animator2D()
 	}
 }
 
+/*
+* 関数名　: Update
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: アニメーションの更新
+*/
 void Animator2D::Update()
 {
 	double nowSec = GetTimeSeconds();
@@ -63,11 +91,23 @@ void Animator2D::Update()
 	KeyFrameUpdate();
 }
 
+/*
+* 関数名　: EditorUpdate
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: エディターモード時のアニメーション更新
+*/
 void Animator2D::EditorUpdate()
 {
 	KeyFrameUpdate();
 }
 
+/*
+* 関数名　: Draw
+* 引　数　: Layer 描画レイヤー
+* 戻り値　: なし
+* 説　明　: アニメーションの描画
+*/
 void Animator2D::Draw(int Layer)
 {
 	std::vector<KeyFrame> SortedKeyFrames = KeyFrames_;
@@ -134,6 +174,12 @@ void Animator2D::Draw(int Layer)
 	}
 }
 
+/*
+* 関数名　: Debug
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: デバッグ情報の表示
+*/
 void Animator2D::Debug()
 {
 	ImGui::Begin("Animator2D Debug");
@@ -170,6 +216,12 @@ void Animator2D::Debug()
 	ImGui::End();
 }
 
+/*
+* 関数名　: SaveFile
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: アニメーションデータをファイルに保存する
+*/
 void Animator2D::SaveFile()
 {
 	nlohmann::json SaveJson;
@@ -223,6 +275,12 @@ void Animator2D::SaveFile()
 	}
 }
 
+/*
+* 関数名　: LoadFile
+* 引　数　: FilePath ファイルパス
+* 戻り値　: なし
+* 説　明　: アニメーションデータをファイルから読み込む
+*/
 void Animator2D::LoadFile(std::string FilePath)
 {
 	std::ifstream inFile(FilePath);
@@ -301,6 +359,12 @@ void Animator2D::LoadFile(std::string FilePath)
 	}
 }
 
+/*
+* 関数名　: LoadCache
+* 引　数　: in 入力ストリーム
+* 戻り値　: なし
+* 説　明　: アニメーションデータをキャッシュから読み込む
+*/
 void Animator2D::LoadCache(std::ifstream& in)
 {
 	// プロジェクト名
@@ -335,28 +399,58 @@ void Animator2D::LoadCache(std::ifstream& in)
 	}
 }
 
+/*
+* 関数名　: AddKeyFrame
+* 引　数　: keyframe 追加するキーフレーム
+* 戻り値　: なし
+* 説　明　: キーフレームを追加する
+*/
 void Animator2D::AddKeyFrame(const KeyFrame& keyframe)
 {
 	KeyFrames_.push_back(keyframe);
 }
 
+/*
+* 関数名　: RemoveKeyFrame
+* 引　数　: ptr 削除するキーフレームのポインタ
+* 戻り値　: なし
+* 説　明　: キーフレームを削除する
+*/
 void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 {
 	KeyFrames_.erase(std::remove_if(KeyFrames_.begin(), KeyFrames_.end(),
 		[ptr](const KeyFrame& kf) { return &kf == ptr; }), KeyFrames_.end());
 }
 
+/*
+* 関数名　: SetOwner
+* 引　数　: owner 所有者オブジェクト
+* 戻り値　: なし
+* 説　明　: 所有者オブジェクトを設定する
+*/
 void Animator2D::SetOwner(AbstractObject* owner)
 {
 	owner_ = owner;
 	PreviewImage->SetParent(owner);
 }
 
+/*
+* 関数名　: PreviewUpdate
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: プレビュー用の更新処理
+*/
 void Animator2D::PreviewUpdate()
 {
 	PreviewImage->Update();
 }
 
+/*
+* 関数名　: Copy
+* 引　数　: なし
+* 戻り値　: Animator2D* コピーされたアニメーター
+* 説　明　: アニメーターをコピーする
+*/
 Animator2D* Animator2D::Copy()
 {
 	Animator2D* newAnimator = new Animator2D();
@@ -371,6 +465,12 @@ Animator2D* Animator2D::Copy()
 	return newAnimator;
 }
 
+/*
+* 関数名　: KeyFrameUpdate
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: キーフレームの更新処理
+*/
 void Animator2D::KeyFrameUpdate()
 {
 	for (auto& obj : KeyFrames_)
@@ -414,6 +514,12 @@ void Animator2D::KeyFrameUpdate()
 	}
 }
 
+/*
+* 関数名　: Stop
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: アニメーションを停止する
+*/
 void Animator2D::Stop()
 {
 	bFirst_ = true;
@@ -424,12 +530,28 @@ void Animator2D::Stop()
 	}
 }
 
+/*
+* 関数名　: Start
+* 引　数　: なし
+* 戻り値　: なし
+* 説　明　: アニメーションを開始する
+*/
 void Animator2D::Start()
 {
 	bFirst_ = true;
 	fNowTime_ = 0.0f;
 }
 
+/*
+* 関数名　: EaseByBezierCurve
+* 引　数　: curve カーブデータ
+*          startvalue 開始値
+*          endvalue 終了値
+*          elapsed 経過時間
+*          duration 総時間
+* 戻り値　: DirectX::XMFLOAT2 補間後の値
+* 説　明　: ベジェ曲線によるイージング補間を行う
+*/
 DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const DirectX::XMFLOAT2& startvalue, const DirectX::XMFLOAT2& endvalue, float elapsed, float duration)
 {
 	float t;

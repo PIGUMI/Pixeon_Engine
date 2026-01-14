@@ -18,7 +18,7 @@ public:
 	virtual void EditUpdate();
 	virtual void InGameUpdate();
 	virtual void Draw(int Layer);
-	virtual void UInit();
+	virtual void UnInit();
 
 	AbstractObject* Clone();
 public:

@@ -44,7 +44,7 @@ Scene::~Scene()
 	// オブジェクトを削除
 	for (auto& obj : _objects) {
 		if (obj) {
-			obj->UInit();
+			obj->UnInit();
 			delete obj;
 		}
 	}
@@ -57,7 +57,7 @@ Scene::~Scene()
 		if (obj) {
 			obj->_parentObject = nullptr;
 			obj->_children.clear();
-			obj->UInit();
+			obj->UnInit();
 			delete obj;
 		}
 	}
@@ -68,7 +68,7 @@ Scene::~Scene()
 		if (obj) {
 			obj->_parentObject = nullptr;
 			obj->_children.clear();
-			obj->UInit();
+			obj->UnInit();
 			delete obj;
 		}
 	}
@@ -141,7 +141,7 @@ void Scene::EditUpdate() {
 			if (obj) {
 				obj->_parentObject = nullptr;  // 親参照をクリア
 				obj->_children.clear();        // 子リストをクリア
-				obj->UInit();
+				obj->UnInit();
 				delete obj;
 			}
 		}
@@ -241,7 +241,7 @@ void Scene::EditUpdate() {
 				_objects.erase(it);
 			}
 
-			obj->UInit();
+			obj->UnInit();
 			delete obj;
 		}
 		_ToBeRemoved.clear();
@@ -361,7 +361,7 @@ void Scene::PlayUpdate() {
 				_objects.erase(it);
 			}
 
-			obj->UInit();
+			obj->UnInit();
 			delete obj;
 		}
 		_ToBeRemoved.clear();
