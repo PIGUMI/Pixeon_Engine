@@ -1,7 +1,7 @@
 ﻿#ifndef MAIN_FRAME_H
 #define MAIN_FRAME_H
 
-#define PIXEON_ENGINE_VERSION "2.3.0"
+#define PIXEON_ENGINE_VERSION (400.0f)
 #define PIXEON_ENGINE_INEDITOR true
 #define MAX_LAYER_COUNT (10)
 
@@ -45,7 +45,7 @@ public:
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
 	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
 	SoftWareMode GetSoftwareMode() const { return _softwareMode; }
-	void fixedMouseCursor(bool fixedCursor) { fixedMouseCursorFlag = fixedCursor; }
+	void fixedMouseCursor(bool fixedCursor) { _fixedMouseCursorFlag = fixedCursor; }
 private:
 	DWORD _lastUpdateTime;
 	bool _updateDraw;
@@ -59,7 +59,7 @@ private:
 	SoftWareMode _softwareMode;
 	EngineConfig _engineConfig;
 
-	bool fixedMouseCursorFlag = false;
+	bool _fixedMouseCursorFlag = false;
 private:
 	MainFrame() = default;
 	~MainFrame() = default;

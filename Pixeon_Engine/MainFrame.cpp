@@ -1,9 +1,7 @@
-﻿/* MainFrame */
-/*
-* ソフトウェアのメインフレームクラス
-* エンジン全体の初期化、更新、描画、終了処理
-* Render管理、GUI管理、各種マネージャーの初期化などを担当
-* シングルトンパターンで実装
+﻿/*
+* ファイル名　MainFrame
+* 説　　　明　ソフトウェアのメインフレームクラス
+*		　　　エンジン全体の初期化、更新、描画、終了処理
 */
 
 #include "MainFrame.h"
@@ -29,6 +27,12 @@
 
 MainFrame* MainFrame::instance_ = nullptr;
 
+/*
+* 関数名　GetInstance
+* 引　数　なし
+* 戻り値　MainFrame*：MainFrameのインスタンスへのポインタ
+* 説　明　MainFrameのシングルトンインスタンスを取得する関数
+*/
 MainFrame* MainFrame::GetInstance() {
 	if (instance_ == nullptr) {
 		instance_ = new MainFrame();
@@ -36,6 +40,12 @@ MainFrame* MainFrame::GetInstance() {
 	return instance_;
 }
 
+/*
+* 関数名　DeleteInstance
+* 引　数　なし
+* 戻り値　なし
+* 説　明　MainFrameのシングルトンインスタンスを削除する関数
+*/
 void MainFrame::DeleteInstance() {
 	if (instance_ != nullptr) {
 		delete instance_;
@@ -43,6 +53,12 @@ void MainFrame::DeleteInstance() {
 	}
 }
 
+/*
+* 関数名　Init
+* 引　数　const EngineConfig& InPut：エンジン初期化設定構造体への参照
+* 戻り値　int：初期化成功なら0、失敗なら-1
+* 説　明　MainFrameの初期化を行う関数
+*/
 int MainFrame::Init(const EngineConfig& InPut)
 {
 	_targetFrameTime = 1000.0f / 70.0f;
@@ -96,6 +112,12 @@ int MainFrame::Init(const EngineConfig& InPut)
 	return 0;
 }
 
+/*
+* 関数名　Update
+* 引　数　なし
+* 戻り値　なし
+* 説　明　MainFrameの更新処理を行う関数
+*/
 void MainFrame::Update()
 {
 	// フレーム制御
@@ -121,7 +143,7 @@ void MainFrame::Update()
 			break;
 		}
 
-		SetMouseFreeze(fixedMouseCursorFlag);
+		SetMouseFreeze(_fixedMouseCursorFlag);
 
 		// 更新時間記録
 		_lastUpdateTime = currentTime;
@@ -129,6 +151,12 @@ void MainFrame::Update()
 	}
 }
 
+/*
+* 関数名　Draw
+* 引　数　なし
+* 戻り値　なし
+* 説　明　MainFrameの描画処理を行う関数
+*/
 void MainFrame::Draw()
 {
 	if (_updateDraw) {
@@ -137,6 +165,7 @@ void MainFrame::Draw()
 		ID3D11RenderTargetView* hdrRTV = dx11->GetHDRRTV();
 		ID3D11DepthStencilView* dsv = dx11->GetDefaultDSV()->GetView();
 
+		// レイヤーごとの描画
 		float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
 		dx11->GetContext()->ClearRenderTargetView(hdrRTV, clearColor);
 		dx11->GetContext()->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -171,6 +200,7 @@ void MainFrame::Draw()
 			LayerIndex++;
 		}
 
+		// トーンマッピング＆最終合成
 		_finalRenderTarget->SetRenderZBuffer(false);
 		_finalRenderTarget->Begin(dx11->GetContext());
 		dx11->ApplyToneMappingPass();
@@ -195,18 +225,18 @@ void MainFrame::Draw()
 		}
 		GUI::GetInstance()->EndDraw();
 
-		//for (int i = 0; i < MAX_LAYER_COUNT; i++)
-		//{
-		//	EngineFrame::GetInstance()->Draw(i);
-		//}
-
-
 		DirectX11::GetInstance()->EndDraw();
 
 		_updateDraw = false;
 	}
 }
 
+/*
+* 関数名　UnInit
+* 引　数　なし
+* 戻り値　なし
+* 説　明　MainFrameの終了処理を行う関数
+*/
 void MainFrame::UnInit() {
 	// レンダーテクスチャ解放
 	for (auto layerRT : _layerRenderTargets) {
@@ -240,6 +270,12 @@ void MainFrame::UnInit() {
 	CoUninitialize();
 }
 
+/*
+* 関数名　GetFinalRenderTargetSRV
+* 引　数　なし
+* 戻り値　ID3D11ShaderResourceView*：最終レンダーテクスチャのシェーダーリソースビューへのポインタ
+* 説　明　最終レンダーテクスチャのシェーダーリソースビューを取得する関数
+*/
 ID3D11ShaderResourceView* MainFrame::GetFinalRenderTargetSRV()
 {
 	if (_finalRenderTarget) {
