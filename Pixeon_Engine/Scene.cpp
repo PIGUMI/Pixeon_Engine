@@ -89,8 +89,6 @@ void Scene::Init() {
 }
 
 void Scene::BeginPlay() {
-	//_lights.clear();
-
 	for (auto& obj : _objects) {
 		if (obj && obj->GetParent() == nullptr) {
 			AbstractObject* cloneObj = obj->Clone();
@@ -295,6 +293,8 @@ void Scene::PlayUpdate() {
 				if (!hasInvalidObjects) {
 					float timeStep = 1.0f / 60.0f;
 					int maxSubSteps = 10;
+					float fixedTimeStep = 1.0f / 120.0f;
+
 					bool valid = true;
 					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i) {
 						btCollisionObject* obj = pPhysicsWorld->getCollisionObjectArray()[i];
@@ -304,8 +304,14 @@ void Scene::PlayUpdate() {
 							break;
 						}
 					}
+
 					if (valid) {
-						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps);
+						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
+
+						if (numObjects > 50) {
+							// Broadphase ‚ÌÅ“K‰»
+							pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
+						}
 					}
 				}
 				else {
@@ -743,8 +749,23 @@ void Scene::InitPhysics()
 	pOverlappingPairCache = new btDbvtBroadphase();
 	pSolver = new btSequentialImpulseConstraintSolver();
 	pPhysicsWorld = new btDiscreteDynamicsWorld(pDispatcher, pOverlappingPairCache, pSolver, pCollisionConfig);
-	// d—Í‚ÌÝ’è
+
 	pPhysicsWorld->setGravity(btVector3(0, -9.81f, 0));
+
+	pPhysicsWorld->getSolverInfo().m_numIterations = 20;
+	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
+
+	pPhysicsWorld->getSolverInfo().m_splitImpulse = true;
+	pPhysicsWorld->getSolverInfo().m_splitImpulsePenetrationThreshold = -0.02f;
+
+	pPhysicsWorld->getSolverInfo().m_erp = 0.2f;
+	pPhysicsWorld->getSolverInfo().m_erp2 = 0.2f;
+
+	pPhysicsWorld->getSolverInfo().m_globalCfm = 0.0f;
+
+	pPhysicsWorld->getDispatchInfo().m_useContinuous = true;
+
+	pPhysicsWorld->getSolverInfo().m_timeStep = 1.0f / 120.0f;
 }
 
 void Scene::CleanupPhysics()

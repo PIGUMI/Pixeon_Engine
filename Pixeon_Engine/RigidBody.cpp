@@ -580,6 +580,14 @@ void RigidBody::CreateRigidBody()
 
 	pRigidBody_->setUserPointer(this);
 
+	pRigidBody_->setCcdMotionThreshold(0.1f);
+	pRigidBody_->setCcdSweptSphereRadius(0.2f);
+
+	if (pCompoundShape_)
+	{
+		pCompoundShape_->setMargin(0.04f);
+	}
+
 	// •¨—ƒpƒ‰ƒ[ƒ^‚ğİ’è
 	SetFriction(fFriction_);
 	SetRestitution(fRestitution_);

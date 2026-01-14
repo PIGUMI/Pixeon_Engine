@@ -354,22 +354,58 @@ void BoxCollision::CreateBoxShape()
 
 void BoxCollision::UpdateCollisionShape()
 {
-	if (pAttachedRigidBody_ && pBoxShape_)
+	if (!pBoxShape_) return;
+
+	bool wasInWorld = false;
+	btDiscreteDynamicsWorld* physicsWorld = nullptr;
+
+	if (pAttachedRigidBody_ && pAttachedRigidBody_->GetBtRigidBody())
 	{
+		if (_Parent && _Parent->GetParentScene())
+		{
+			physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
+			if (physicsWorld)
+			{
+				// ˆê’Uƒ[ƒ‹ƒh‚©‚çíœ
+				physicsWorld->removeRigidBody(pAttachedRigidBody_->GetBtRigidBody());
+				wasInWorld = true;
+			}
+		}
 		pAttachedRigidBody_->RemoveCollisionShape(pBoxShape_);
 	}
+
+	// Œ`ó‚ÌÄì¬
 	if (pBoxShape_)
 	{
 		delete pBoxShape_;
 		pBoxShape_ = nullptr;
 	}
-	pBoxShape_ = new btBoxShape(btVector3(f3Size_.x * 0.5f, f3Size_.y * 0.5f, f3Size_.z * 0.5f));
+
+	DirectX::XMFLOAT3 worldScale = { 1.0f, 1.0f, 1.0f };
+	if (_Parent)
+	{
+		worldScale = _Parent->GetWorldTransform().scale;
+	}
+
+	pBoxShape_ = new btBoxShape(btVector3(
+		f3Size_.x * 0.5f * worldScale.x,
+		f3Size_.y * 0.5f * worldScale.y,
+		f3Size_.z * 0.5f * worldScale.z
+	));
+
+	pBoxShape_->setMargin(0.04f);
+
 	if (pAttachedRigidBody_ && pBoxShape_)
 	{
 		btTransform localTransform;
 		localTransform.setIdentity();
 		localTransform.setOrigin(btVector3(f3Center_.x, f3Center_.y, f3Center_.z));
 		pAttachedRigidBody_->AddCollisionShape(pBoxShape_, localTransform);
+
+		if (wasInWorld && physicsWorld)
+		{
+			physicsWorld->addRigidBody(pAttachedRigidBody_->GetBtRigidBody());
+		}
 
 		if (pAttachedRigidBody_->GetBtRigidBody())
 		{
