@@ -147,9 +147,12 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 				auto dllTime = fs::last_write_time(dllPath);
 
 				if (cppTime > dllTime) {
-					// ソースの方が新しいのでリビルド
-					_buildLog = "Source file is newer than DLL. Rebuilding.. .\n\n";
+					// ソースの方が新しいので、すべてのインスタンスをアンロードしてからリビルド
+					_buildLog = "Source file is newer than DLL. Rebuilding...\n\n";
 					_showBuildLog = true;
+
+					// ScriptManagerを通じてこのスクリプトの全インスタンスをアンロード
+					ScriptManager::Instance().UnloadAllInstancesOfScript(scriptName);
 
 					auto result = ScriptManager::Instance().BuildScriptDll(scriptName);
 					_buildLog += result.log;
@@ -169,6 +172,7 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 
 	return LoadScript(scriptName);
 }
+
 
 bool ScripComponent::LoadScript(const std::string& scriptName) {
 	if (_scriptInstance) {
@@ -206,9 +210,7 @@ void ScripComponent::DrawInspector() {
 
 	if (!ImGui::CollapsingHeader(GUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
 
-	// テーブル化
 	if (ImGui::BeginTable(("ScriptTable_" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
-		// Available Scripts
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Available Scripts");
 		ImGui::TableSetColumnIndex(1);
@@ -221,12 +223,10 @@ void ScripComponent::DrawInspector() {
 			if (_selectedIndex < 0) _selectedIndex = 0;
 			ImGui::PushItemWidth(-1);
 			if (ImGui::Combo(("##ScriptList_" + Ptr).c_str(), &_selectedIndex, items.data(), (int)items.size())) {
-				// 選択変更時の処理はここに(必要になれば)
 			}
 			ImGui::PopItemWidth();
 		}
 
-		// New Script Name
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("New Script Name");
 		ImGui::TableSetColumnIndex(1);
@@ -234,7 +234,6 @@ void ScripComponent::DrawInspector() {
 		ImGui::InputText(("##NewScriptName_" + Ptr).c_str(), _newNameBuf, sizeof(_newNameBuf));
 		ImGui::PopItemWidth();
 
-		// Actions
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Actions");
 		ImGui::TableSetColumnIndex(1);
@@ -248,7 +247,6 @@ void ScripComponent::DrawInspector() {
 						if (_scriptList[i] == name) { _selectedIndex = (int)i; break; }
 					}
 
-					// 作成成功メッセージ
 					_buildLog = "Script files created successfully:\n";
 					_buildLog += "- " + name + ".h\n";
 					_buildLog += "- " + name + ".cpp\n";
@@ -270,9 +268,14 @@ void ScripComponent::DrawInspector() {
 			}
 			if (name.empty()) name = std::string(_newNameBuf);
 			if (!name.empty()) {
+				// ビルド前にこのスクリプトの全インスタンスをアンロード
+				_buildLog = "Unloading all instances of script: " + name + "\n\n";
+				_showBuildLog = true;
+				ScriptManager::Instance().UnloadAllInstancesOfScript(name);
+
 				// ScriptManagerのビルド機能を使用
 				auto result = ScriptManager::Instance().BuildScriptDll(name);
-				_buildLog = result.log;
+				_buildLog += result.log;
 				_buildSuccess = result.success;
 				_showBuildLog = true;
 
@@ -298,7 +301,6 @@ void ScripComponent::DrawInspector() {
 					_showBuildLog = true;
 				}
 				else if (!_showBuildLog) {
-					// ビルドログがまだ表示されていない場合（ビルドせずにロードした場合）
 					_buildLog = "Failed to load script: " + name;
 					_buildSuccess = false;
 					_showBuildLog = true;
@@ -326,19 +328,36 @@ void ScripComponent::DrawInspector() {
 			if (_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) {
 				std::string name = _scriptList[_selectedIndex];
 				if (!name.empty()) {
-					UnLoadScript();
-					bool success = LoadScriptByName(name);
-					if (success) {
-						_buildLog = "Script reloaded successfully: " + name;
-						_buildSuccess = true;
-						_showBuildLog = true;
+					_buildLog = "Reloading script: " + name + "\n\n";
+					_showBuildLog = true;
+
+					// ScriptManagerを通じてこのスクリプトの全インスタンスをアンロード
+					ScriptManager::Instance().UnloadAllInstancesOfScript(name);
+
+					// リビルド
+					auto result = ScriptManager::Instance().BuildScriptDll(name);
+					_buildLog += result.log;
+					_buildSuccess = result.success;
+
+					if (result.success) {
+						// ビルド成功したらロード
+						bool loadSuccess = LoadScriptByName(name);
+						if (loadSuccess) {
+							_buildLog += "\nScript reloaded successfully:  " + name;
+						}
+						else {
+							_buildLog += "\nFailed to load script after rebuild:  " + name;
+							_buildSuccess = false;
+						}
+					}
+					else {
+						_buildLog += "\nReload failed due to build errors. ";
 					}
 				}
 			}
 		}
 		ImGui::EndGroup();
 
-		// Loaded 状態
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Loaded");
 		ImGui::TableSetColumnIndex(1);
@@ -355,7 +374,6 @@ void ScripComponent::DrawInspector() {
 			ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "None");
 		}
 
-		// CallCustom
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Call Function");
 		ImGui::TableSetColumnIndex(1);
@@ -383,15 +401,12 @@ void ScripComponent::DrawInspector() {
 		ImGui::EndTable();
 	}
 
-	// ビルドログ表示エリア（ImGuiで表示）
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::Spacing();
 
-	// ログウィンドウのヘッダー
 	ImGui::BeginGroup();
 
-	// ステータス表示
 	if (_showBuildLog) {
 		if (_buildSuccess) {
 			ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "[SUCCESS]");
@@ -410,48 +425,41 @@ void ScripComponent::DrawInspector() {
 		_showBuildLog = false;
 	}
 
-	// ログ表示領域
 	ImGui::BeginChild(("BuildLogDisplay_" + Ptr).c_str(),
 		ImVec2(0, 250),
 		true,
 		ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
 	if (_showBuildLog && !_buildLog.empty()) {
-		// ログ内容を色分けして表示
 		std::string convertedLog = GUI::GetInstance()->ShiftJISToUTF8(_buildLog);
 
-		// エラー行を赤色で表示
 		std::istringstream logStream(convertedLog);
 		std::string line;
 		while (std::getline(logStream, line)) {
-			// エラー関連のキーワードを含む行を赤色で表示
 			if (line.find("error") != std::string::npos ||
 				line.find("Error") != std::string::npos ||
 				line.find("ERROR") != std::string::npos ||
 				line.find("failed") != std::string::npos ||
-				line.find("Failed") != std::string::npos) {
+				line.find("Failed") != std::string::npos ||
+				line.find("cannot open") != std::string::npos) {
 				ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "%s", line.c_str());
 			}
-			// 警告行を黄色で表示
 			else if (line.find("warning") != std::string::npos ||
 				line.find("Warning") != std::string::npos ||
 				line.find("WARNING") != std::string::npos) {
 				ImGui::TextColored(ImVec4(1.0f, 0.9f, 0.3f, 1.0f), "%s", line.c_str());
 			}
-			// 成功メッセージを緑色で表示
 			else if (line.find("succeeded") != std::string::npos ||
 				line.find("success") != std::string::npos ||
 				line.find("Success") != std::string::npos ||
 				line.find("completed") != std::string::npos) {
 				ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.3f, 1.0f), "%s", line.c_str());
 			}
-			// 通常のログ
 			else {
 				ImGui::TextUnformatted(line.c_str());
 			}
 		}
 
-		// 自動スクロール（新しいログが追加された時）
 		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
 			ImGui::SetScrollHereY(1.0f);
 		}
@@ -464,6 +472,6 @@ void ScripComponent::DrawInspector() {
 	ImGui::EndGroup();
 
 	ImGui::Spacing();
-	ImGui::TextDisabled("Script sources: Script/Src/*. cpp  -> Build -> Script/Bin/*. dll");
+	ImGui::TextDisabled("Script sources:  Script/Src/*. cpp -> Build -> Script/Bin/*.dll");
 	ImGui::TextDisabled("Create Script:  generates header+cpp skeleton.  Implement logic in generated cpp.");
 }

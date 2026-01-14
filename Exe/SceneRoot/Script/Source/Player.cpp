@@ -5,6 +5,7 @@ void Script_Player::BeginPlay() {
 	GetCurrentScene(&scene);
 	FindObjectByName(scene, "Player", &playerObject);
 	FindChildObjectByName(playerObject, "Head", &headObject);
+	FindChildObjectByName(playerObject, "Body", &bodyObject);
 	FindComponent(headObject, "CameraComponent", &CameraComp);
 	FixedMouseCursor(true);
 	SetMainCamera(1);
@@ -31,6 +32,11 @@ void Script_Player::Update() {
 	{
 		playerTransform.position.x += -forward.x * 0.1f;
 		playerTransform.position.z += -forward.z * 0.1f;
+		transform bodyTransform;
+
+		GetObjectTransform(bodyObject, &bodyTransform);
+		bodyTransform.rotation.y = headTransform.rotation.y;
+		SetObjectTransform(bodyObject, &bodyTransform);
 	}
 	SetObjectTransform(playerObject, &playerTransform);
 }

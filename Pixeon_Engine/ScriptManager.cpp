@@ -41,6 +41,50 @@ ScriptManager::~ScriptManager()
 	_dllMap.clear();
 }
 
+bool ScriptManager::IsScriptLoaded(const std::string& scriptName)
+{
+	std::lock_guard<std::mutex> lk(_mutex);
+	auto it = _dllMap.find(scriptName);
+	if (it == _dllMap.end()) return false;
+	return (it->second.hDll != nullptr && it->second.refCount > 0);
+}
+
+void ScriptManager::UnloadAllInstancesOfScript(const std::string& scriptName)
+{
+	std::lock_guard<std::mutex> lk(_mutex);
+	auto it = _dllMap.find(scriptName);
+	if (it == _dllMap.end()) return;
+
+	auto& entry = it->second;
+
+	// すべてのインスタンスを破棄
+	if (entry.hDll) {
+		auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(entry.hDll, "DestroyScriptInstance");
+
+		// インスタンスのコピーを作成（イテレート中の変更を避けるため）
+		std::vector<std::pair<ScripComponent*, IScript*>> instancesCopy;
+		for (auto& kv : entry.instances) {
+			instancesCopy.push_back(kv);
+		}
+
+		// すべてのインスタンスを破棄
+		for (auto& kv : instancesCopy) {
+			IScript* inst = kv.second;
+			if (inst) {
+				inst->EndPlay();
+				if (destroyFunc) destroyFunc(inst);
+				else delete inst;
+			}
+		}
+		entry.instances.clear();
+
+		// DLLをアンロード
+		FreeLibrary(entry.hDll);
+		entry.hDll = nullptr;
+		entry.refCount = 0;
+	}
+}
+
 IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, ScripComponent* owner)
 {
 	std::lock_guard<std::mutex> lk(_mutex);
@@ -69,6 +113,12 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 	}
 
 	if (needBuild) {
+		// ビルド前にDLLをアンロード（重要！）
+		if (entry.hDll != nullptr) {
+			std::cout << "[ScriptManager] Unloading DLL before rebuild:  " << scriptName << std::endl;
+			UnloadDllEntry(entry);
+		}
+
 		auto result = BuildScriptDll(scriptName);
 		if (!result.success) {
 			std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << result.errorMessage << std::endl;
@@ -166,41 +216,35 @@ void ScriptManager::Update()
 
 		if (needBuild) {
 			std::cout << "[ScriptManager] Detected change in " << scriptName << ", building..." << std::endl;
+
+			// 保存しておくデータ
+			auto oldH = entry.hDll;
+			auto owners = std::vector<ScripComponent*>{};
+			for (auto& kv : entry.instances) owners.push_back(kv.first);
+
+			// Destroy old instances and unload DLL before build
+			for (auto owner : owners) {
+				auto itInst = entry.instances.find(owner);
+				if (itInst == entry.instances.end()) continue;
+				IScript* instance = itInst->second;
+				if (instance) {
+					instance->EndPlay();
+					auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(oldH, "DestroyScriptInstance");
+					if (destroyFunc) destroyFunc(instance);
+					else delete instance;
+				}
+				entry.instances.erase(itInst);
+			}
+
+			// Free old dll BEFORE building
+			if (oldH) {
+				FreeLibrary(oldH);
+				entry.hDll = nullptr;
+			}
+
 			auto result = BuildScriptDll(scriptName);
 			if (result.success) {
 				std::cout << "[ScriptManager] Build succeeded for " << scriptName << ", reloading..." << std::endl;
-
-				// ホットリロード処理: 
-				// 1) 古いインスタンスを DestroyScriptInstance で削除
-				// 2) FreeLibrary
-				// 3) LoadLibrary (新DLL)
-				// 4) 各 owner に対して CreateScriptInstance を呼んで新インスタンスを再作成し BeginPlay を呼ぶ
-
-				// 保存しておくデータ
-				auto oldH = entry.hDll;
-				auto owners = std::vector<ScripComponent*>{};
-				for (auto& kv : entry.instances) owners.push_back(kv.first);
-
-				// Destroy old instances
-				for (auto owner : owners) {
-					auto itInst = entry.instances.find(owner);
-					if (itInst == entry.instances.end()) continue;
-					IScript* instance = itInst->second;
-					if (instance) {
-						instance->EndPlay();
-						auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(oldH, "DestroyScriptInstance");
-						if (destroyFunc) destroyFunc(instance);
-						else delete instance;
-					}
-					// erase mapping now
-					entry.instances.erase(itInst);
-				}
-
-				// Free old dll
-				if (oldH) {
-					FreeLibrary(oldH);
-					entry.hDll = nullptr;
-				}
 
 				// Load new dll
 				if (!LoadDllForScript(scriptName, entry)) {
@@ -366,6 +410,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	}
 	catch (...) {}
 
+	// 古いDLLのタイムスタンプを記録（ビルド前）
 	fs::file_time_type oldDllTime;
 	bool hadOldDll = false;
 	if (fs::exists(dllPath)) {
@@ -403,12 +448,12 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		result.log = ss.str();
 	}
 	else {
-		result.log = "No build log produced.";
+		result.log = "No build log produced. ";
 	}
 
 	// ビルド結果を判定
 	if (exitCode != 0) {
-		result.errorMessage = "cl. exe returned error code " + std::to_string(exitCode);
+		result.errorMessage = "cl.exe returned error code " + std::to_string(exitCode);
 		result.log = "Build failed (Exit code: " + std::to_string(exitCode) + ")\n\n" + result.log;
 		result.success = false;
 		return result;

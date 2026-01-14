@@ -35,6 +35,9 @@ public:
 
 	BuildResult BuildScriptDll(const std::string& scriptName);
 
+	void UnloadAllInstancesOfScript(const std::string& scriptName);
+
+	bool IsScriptLoaded(const std::string& scriptName);
 private:
 	ScriptManager() = default;
 	~ScriptManager();

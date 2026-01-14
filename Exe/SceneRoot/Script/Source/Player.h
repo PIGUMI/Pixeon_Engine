@@ -9,6 +9,7 @@ public:
 private:
     Object playerObject;
 	Object headObject;
+	Object bodyObject;
     Component CameraComp;
 };
 
