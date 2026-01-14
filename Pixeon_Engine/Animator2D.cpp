@@ -105,8 +105,8 @@ void Animator2D::Draw(int Layer)
 				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
 					kf.NowTransform.UVPosition.x,
 					kf.NowTransform.UVPosition.y,
-					kf.NowTransform.UVScale.x,
-					kf.NowTransform.UVScale.y));
+					kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
+					kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
 			}
 			else
 			{
@@ -118,8 +118,8 @@ void Animator2D::Draw(int Layer)
 				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
 					kf.NowTransform.UVPosition.x,
 					kf.NowTransform.UVPosition.y,
-					kf.NowTransform.UVScale.x,
-					kf.NowTransform.UVScale.y));
+					kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
+					kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
 			}
 			PreviewImage->SetLayerNumber(layer_);
 			PreviewImage->SetColor(kf.NowTransform.Color);
