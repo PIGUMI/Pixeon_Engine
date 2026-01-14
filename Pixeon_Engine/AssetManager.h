@@ -27,7 +27,7 @@ public:
 
 	void SetRoot(const std::string& root);
 	void SetLoadMode(LoadMode m);
-	bool LoadAsset(const std::string& logicalName, std::vector<uint8_t>& outData); // ê∂ÉoÉCÉgéÊìæ
+	bool LoadAsset(const std::string& logicalName, std::vector<uint8_t>& outData);
 	bool Exists(const std::string& logicalName);
 	void ClearRawCache();
 

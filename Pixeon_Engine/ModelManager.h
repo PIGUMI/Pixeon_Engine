@@ -19,7 +19,6 @@ public:
 	void GarbageCollect();
 	void DrawDebugGUI();
 
-	// 埋め込みテクスチャ取得
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetEmbeddedTexture(
 		const std::string& modelName, const std::string& texturePath);
 

@@ -6,7 +6,6 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-// テクスチャ共有リソース
 struct TextureResource {
 	std::string name;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
@@ -18,10 +17,9 @@ struct TextureResource {
 struct MaterialShared {
 	DirectX::XMFLOAT4 baseColor{ 1,1,1,1 };
 	std::string baseColorTex;
-	bool isEmbedded = false;  // 追加: 埋め込みテクスチャかどうか
+	bool isEmbedded = false;
 };
 
-// SubMesh構造体に頂点カラーフラグを追加
 struct SubMesh {
 	uint32_t indexOffset = 0;
 	uint32_t indexCount = 0;
@@ -29,20 +27,15 @@ struct SubMesh {
 	bool skinned = false;
 	bool hasUV = true;
 	bool uvAllZero = false;
-	bool hasVertexColors = false;  // 追加
+	bool hasVertexColors = false;
 };
 
-// ------------------------------------------------------------
-// Bone.offset : InverseBindPose (aiBone::mOffsetMatrix そのまま)
-// Bone.invOffset : BindPose = inverse(InverseBindPose)
-// nodeIndex : アニメ用ノード階層(clip.nodeHierarchy)上の index
-// ------------------------------------------------------------
 struct Bone {
 	std::string name;
 	int parentIndex = -1;
 	int nodeIndex = -1;
-	DirectX::XMMATRIX offset;     // InverseBindPose
-	DirectX::XMMATRIX invOffset;  // BindPose = inverse(offset)
+	DirectX::XMMATRIX offset;
+	DirectX::XMMATRIX invOffset;
 };
 
 struct AnimationChannel {
@@ -95,7 +88,7 @@ struct ModelVertex {
 	float normal[3];
 	float tangent[4];
 	float uv[2];
-	float color[4];  // 追加:  頂点カラー
+	float color[4];
 	uint32_t boneIndices[4];
 	float boneWeights[4];
 };

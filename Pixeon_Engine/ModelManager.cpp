@@ -1,4 +1,8 @@
-﻿#define NOMINMAX
+﻿/*
+* ファイル名　: ModelManager
+* 説　　　明　: 3Dモデルの読み込みと管理を行うクラス
+*/
+#define NOMINMAX
 #include "AnimationDebug.h"
 #include "ModelManager.h"
 #include "AssetManager.h"
@@ -37,6 +41,12 @@
 
 ModelManager* ModelManager::s_instance = nullptr;
 
+/*
+* 関数名　: MM_NormalizePath
+* 引　数  : std::string s : 元のパス文字列
+* 戻り値  : std::string : 正規化されたパス文字列
+* 説　明　: パスの正規化を行う
+*/
 static std::string MM_NormalizePath(std::string s) {
 	for (auto& c : s) if (c == '\\') c = '/';
 	while (s.size() && (s[0] == '/' || (s.size() >= 2 && s.rfind("./", 0) == 0))) {
@@ -46,6 +56,15 @@ static std::string MM_NormalizePath(std::string s) {
 	}
 	return s;
 }
+
+/*
+* 関数名　: BuildNodeWorldMatrices
+* 引　数  : aiNode* node : 現在のノード
+*          : const DirectX::XMMATRIX& parentWorld : 親ノードのワールド行列
+*          : std::unordered_map<std::string, DirectX::XMMATRIX>& out : 出力マップ
+* 戻り値  : なし
+* 説　明　: ノードのワールド行列を再帰的に構築する
+*/
 static void BuildNodeWorldMatrices(aiNode* node,
 	const DirectX::XMMATRIX& parentWorld,
 	std::unordered_map<std::string, DirectX::XMMATRIX>& out)
@@ -63,10 +82,23 @@ static void BuildNodeWorldMatrices(aiNode* node,
 	}
 }
 
+/*
+* 関数名　: Instance
+* 引　数  : なし
+* 戻り値  : ModelManager* : シングルトンインスタンスのポインタ
+* 説　明　: シングルトンインスタンスを取得する
+*/
 ModelManager* ModelManager::Instance() {
 	if (!s_instance) s_instance = new ModelManager();
 	return s_instance;
 }
+
+/*
+* 関数名　: DeleteInstance
+* 引　数  : なし
+* 戻り値  : なし
+* 説　明　: シングルトンインスタンスを削除する
+*/
 void ModelManager::DeleteInstance() {
 	if (s_instance) {
 		s_instance->UnInit();
@@ -74,6 +106,13 @@ void ModelManager::DeleteInstance() {
 		s_instance = nullptr;
 	}
 }
+
+/*
+* 関数名　: UnInit
+* 引　数  : なし
+* 戻り値  : なし
+* 説　明　: モデルマネージャを初期化解除する
+*/
 void ModelManager::UnInit() {
 	std::lock_guard<std::mutex> lk(m_mtx);
 	m_cache.clear();
@@ -81,6 +120,12 @@ void ModelManager::UnInit() {
 	m_frame = 0;
 }
 
+/*
+* 関数名　: LoadOrGet
+* 引　数  : const std::string& logicalName : モデルの論理名
+* 戻り値  : std::shared_ptr<ModelSharedResource> : 読み込まれたモデルリソースの共有ポインタ
+* 説　明　: モデルを読み込むか、既に読み込まれている場合はそれを取得する
+*/
 std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& logicalName) {
 	std::lock_guard<std::mutex> lk(m_mtx);
 	m_frame++;
@@ -99,6 +144,12 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& 
 	return res;
 }
 
+/*
+* 関数名　: LoadInternal
+* 引　数  : const std::string& logicalName : モデルの論理名
+* 戻り値  : std::shared_ptr<ModelSharedResource> : 読み込まれたモデルリソースの共有ポインタ
+* 説　明　: モデルを内部的に読み込む
+*/
 std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::string& logicalName) {
 	std::vector<uint8_t> data;
 	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
@@ -186,6 +237,14 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 	return shared;
 }
 
+/*
+* 関数名　: ProcessEmbeddedTextures
+* 引　数  : const aiScene* scene : Assimpのシーンデータ
+*          : std::shared_ptr<ModelSharedResource> shared : モデル共有リソース
+*          : const std::string& modelName : モデルの論理名
+* 戻り値  : なし
+* 説　明　: シーン内の埋め込みテクスチャを処理する
+*/
 void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 	std::shared_ptr<ModelSharedResource> shared,
 	const std::string& modelName)
@@ -261,6 +320,13 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 	}
 }
 
+/*
+* 関数名　: GetEmbeddedTexture
+* 引　数  : const std::string& modelName : モデルの論理名
+*          : const std::string& texturePath : テクスチャのパス
+* 戻り値  : Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> : 埋め込みテクスチャのSRV
+* 説　明　: 埋め込みテクスチャを取得する
+*/
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelManager::GetEmbeddedTexture(
 	const std::string& modelName, const std::string& texturePath)
 {
@@ -277,6 +343,16 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelManager::GetEmbeddedTextur
 	return nullptr;
 }
 
+/*
+* 関数名　: ProcessNode
+* 引　数  : aiNode* node : 現在のノード
+*         : const aiScene* scene : Assimpのシーンデータ
+*         : std::vector<ModelVertex>& vertices : 頂点データのベクター
+*         : std::vector<uint32_t>& indices : インデックスデータのベクター
+*         : std::shared_ptr<ModelSharedResource> shared : モデル共有リソース
+* 戻り値  : なし
+* 説　明　: ノードを処理し、メッシュデータを抽出する
+*/
 void ModelManager::ProcessNode(aiNode* node, const aiScene* scene,
 	std::vector<ModelVertex>& vertices,
 	std::vector<uint32_t>& indices,
@@ -289,6 +365,16 @@ void ModelManager::ProcessNode(aiNode* node, const aiScene* scene,
 		ProcessNode(node->mChildren[i], scene, vertices, indices, shared);
 }
 
+/*
+* 関数名　: ProcessMesh
+* 引　数  : aiMesh* mesh : 現在のメッシュ
+*         : const aiScene* scene : Assimpのシーンデータ
+*         : std::vector<ModelVertex>& vertices : 頂点データのベクター
+*         : std::vector<uint32_t>& indices : インデックスデータのベクター
+*         : std::shared_ptr<ModelSharedResource> shared : モデル共有リソース
+* 戻り値  : なし
+* 説　明　: メッシュを処理し、頂点とインデックスデータを抽出する
+*/
 void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 	std::vector<ModelVertex>& vertices,
 	std::vector<uint32_t>& indices,
@@ -429,6 +515,13 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 	shared->submeshes.push_back(sm);
 }
 
+/*
+* 関数名　: ProcessMaterials
+* 引　数  : const aiScene* scene : Assimpのシーンデータ
+*          : std::shared_ptr<ModelSharedResource> shared : モデル共有リソース
+* 戻り値  : なし
+* 説　明　: マテリアルを処理し、テクスチャパスなどを抽出する
+*/
 void ModelManager::ProcessMaterials(const aiScene* scene,
 	std::shared_ptr<ModelSharedResource> shared) {
 	for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
@@ -437,14 +530,12 @@ void ModelManager::ProcessMaterials(const aiScene* scene,
 
 		ms.baseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-		// テクスチャ
 		aiString texPath;
 		if (AI_SUCCESS == mat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath)) {
 			std::string path = texPath.C_Str();
 
-			// 埋め込みテクスチャかチェック
 			if (!path.empty() && path[0] == '*') {
-				ms.baseColorTex = path; // "*0", "*1" などをそのまま保存
+				ms.baseColorTex = path;
 				ms.isEmbedded = true;
 			}
 			else {
@@ -454,19 +545,16 @@ void ModelManager::ProcessMaterials(const aiScene* scene,
 		}
 
 		shared->materials.push_back(ms);
-
-#ifdef _DEBUG
-		std::string log = "[Material " + std::to_string(i) + "] Color=(" +
-			std::to_string(ms.baseColor.x) + "," +
-			std::to_string(ms.baseColor.y) + "," +
-			std::to_string(ms.baseColor.z) + "," +
-			std::to_string(ms.baseColor.w) + ") Tex=" +
-			ms.baseColorTex + (ms.isEmbedded ? " (embedded)" : "") + "\n";
-		OutputDebugStringA(log.c_str());
-#endif
 	}
 }
 
+/*
+* 関数名　: ResolveTexturePath
+* 引　数  : const std::string& modelLogical : モデルの論理名
+*         : const std::string& rawPath : 元のテクスチャパス
+* 戻り値  : std::string : 解決されたテクスチャパス
+* 説　明　: テクスチャパスを解決する
+*/
 std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, const std::string& rawPath) {
 	if (rawPath.empty()) return {};
 	if (rawPath[0] == '*') {
@@ -512,6 +600,13 @@ std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, co
 	return {};
 }
 
+/*
+* 関数名　: ProcessBonesFinalizeHierarchy
+* 引　数  : const aiScene* scene : Assimpのシーンデータ
+*         : std::shared_ptr<ModelSharedResource> shared : モデル共有リソース
+* 戻り値  : なし
+* 説　明　: ボーンの親子関係を確定する
+*/
 void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
 	std::shared_ptr<ModelSharedResource> shared)
 {
@@ -548,6 +643,13 @@ void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
 #endif
 }
 
+/*
+* 関数名　: ProcessAnimations
+* 引　数  : const aiScene* scene : Assimpのシーンデータ
+*         : std::shared_ptr<ModelSharedResource> shared : モデル共有リソース
+* 戻り値  : なし
+* 説　明　: アニメーションを処理し、アニメーションクリップを抽出する
+*/
 void ModelManager::ProcessAnimations(const aiScene* scene,
 	std::shared_ptr<ModelSharedResource> shared)
 {
@@ -597,6 +699,15 @@ void ModelManager::ProcessAnimations(const aiScene* scene,
 	MapBonesToNodes(*shared);
 }
 
+/*
+* 関数名　: BuildNodeHierarchy
+* 引　数  : aiNode* node : 現在のノード
+*         : AnimationClip& clip : アニメーションクリップ
+*         : std::map<std::string, int>& nodeNameToIndex : ノード名からインデックスへのマップ
+*         : int parentIndex : 親ノードのインデックス
+* 戻り値  : なし
+* 説　明　: ノード階層を再帰的に構築する
+*/
 void ModelManager::BuildNodeHierarchy(aiNode* node,
 	AnimationClip& clip,
 	std::map<std::string, int>& nodeNameToIndex,
@@ -649,6 +760,12 @@ void ModelManager::BuildNodeHierarchy(aiNode* node,
 	}
 }
 
+/*
+* 関数名　: GarbageCollect
+* 引　数  : なし
+* 戻り値  : なし
+* 説　明　: 使用されていないモデルリソースをガベージコレクションする
+*/
 void ModelManager::GarbageCollect() {
 	std::lock_guard<std::mutex> lk(m_mtx);
 	for (auto it = m_cache.begin(); it != m_cache.end();) {
@@ -657,6 +774,12 @@ void ModelManager::GarbageCollect() {
 	}
 }
 
+/*
+* 関数名　: DrawDebugGUI
+* 引　数  : なし
+* 戻り値  : なし
+* 説　明　: デバッグ用GUIを描画する
+*/
 void ModelManager::DrawDebugGUI() {
 	std::lock_guard<std::mutex> lk(m_mtx);
 	ImGui::TextUnformatted("ModelManager");
