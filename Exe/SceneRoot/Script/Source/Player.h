@@ -9,6 +9,7 @@ public:
 private:
     Object playerObject;
 	Object headObject;
+    Component CameraComp;
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
