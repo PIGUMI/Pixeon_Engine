@@ -178,7 +178,6 @@
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="PostEffectBase.h" />
     <ClInclude Include="ResourceService.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />

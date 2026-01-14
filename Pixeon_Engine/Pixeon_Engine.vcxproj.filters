@@ -277,9 +277,6 @@
     <ClInclude Include="GameRenderTarget.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
-    <ClInclude Include="PostEffectBase.h">
-      <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
-    </ClInclude>
     <ClInclude Include="SettingManager.h">
       <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClInclude>
