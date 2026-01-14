@@ -17,11 +17,10 @@ public:
 
 	std::shared_ptr<TextureResource> LoadOrGet(const std::string& logicalName);
 
-	void SetMemoryBudget(size_t bytes) { m_budget = bytes; }
+	void SetMemoryBudget(size_t bytes) { _budget = bytes; }
 	void GarbageCollect();
 	void DrawDebugGUI();
 
-	// GUI 用 API
 	bool LoadTexture(const std::string& name);
 	bool Reload(const std::string& name);
 	bool RemoveFromCache(const std::string& name);
@@ -30,7 +29,6 @@ public:
 	bool Unpin(const std::string& name);
 	bool IsPinned(const std::string& name);
 
-	// 追加: 失敗理由取得
 	std::string GetLastFailReason(const std::string& name) const;
 
 private:
@@ -43,17 +41,16 @@ private:
 		uint64_t lastUse = 0;
 		size_t   bytes = 0;
 	};
-	std::unordered_map<std::string, Entry> m_cache;
-	std::unordered_map<std::string, std::shared_ptr<TextureResource>> m_pinned;
+	std::unordered_map<std::string, Entry> _cache;
+	std::unordered_map<std::string, std::shared_ptr<TextureResource>> _pinned;
 
-	// 追加: 名前 -> 失敗理由
-	std::unordered_map<std::string, std::string> m_failReasons;
+	std::unordered_map<std::string, std::string> _failReasons;
 
-	size_t    m_budget = 512ull * 1024 * 1024;
-	uint64_t  m_frame = 0;
-	mutable std::mutex m_mtx;
+	size_t    _budget = 512ull * 1024 * 1024;
+	uint64_t  _frame = 0;
+	mutable std::mutex _mtx;
 
-	static TextureManager* s_instance;
+	static TextureManager* _instance;
 };
 
 #endif // TEXTURE_MANAGER_H

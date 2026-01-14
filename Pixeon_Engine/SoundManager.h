@@ -21,11 +21,11 @@ private:
 	std::shared_ptr<SoundResource> LoadInternal(const std::string& logicalName, bool streaming);
 
 	struct Entry { std::weak_ptr<SoundResource> weak; uint64_t lastUse = 0; size_t bytes = 0; bool streaming = false; };
-	std::unordered_map<std::string, Entry> m_cache;
-	uint64_t m_frame = 0;
-	std::mutex m_mtx;
+	std::unordered_map<std::string, Entry> _cache;
+	uint64_t _frame = 0;
+	std::mutex _mtx;
 
-	static SoundManager* s_instance;
+	static SoundManager* _instance;
 };
 
 #endif // SOUND_MANAGER_H
