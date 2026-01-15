@@ -233,6 +233,9 @@
     <ClCompile Include="LightComponent.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\Other</Filter>
     </ClCompile>
+    <ClCompile Include="Builder.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -405,6 +408,9 @@
     </ClInclude>
     <ClInclude Include="LightComponent.h">
       <Filter>ソース ファイル\1_MainFrame\Component\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Builder.h">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
