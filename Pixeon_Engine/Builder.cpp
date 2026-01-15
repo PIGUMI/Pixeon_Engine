@@ -33,6 +33,19 @@ void Builder::DeleteInstance()
 }
 
 /*
+* 関数名　:Init
+* 引　数　:なし
+* 戻り値　:なし
+* 概　要　:ビルド設定の初期化を行う
+*/
+void Builder::Init()
+{
+	_builderData.gameName = "MyGame";
+	_builderData.startScene = "MainScene";
+	_builderData.gameVersion = "1.0.0";
+}
+
+/*
 * 関数名　:Build
 * 引　数　:なし
 * 戻り値　:成功なら0、失敗なら-1
