@@ -9,6 +9,10 @@
 #include "GUI.h"
 #include "Input.h"
 
+#include <nlohmann/json.hpp>
+#include <set>
+
+
 EngineFrame* EngineFrame::instance = nullptr;
 
 EngineFrame* EngineFrame::GetInstance()
@@ -301,7 +305,7 @@ void EngineFrame::LoadPrefabs()
 	std::ifstream inFile(filePath);
 
 	if (!inFile.is_open()) {
-		// ファイルが存在しない場合は警告せずに終了
+		// ファイルが存在しない場合は警告なしに終了
 		return;
 	}
 
@@ -312,14 +316,15 @@ void EngineFrame::LoadPrefabs()
 
 		// データ検証
 		if (!sceneData.contains("Objects")) {
-			MessageBox(nullptr, "Prefabファイルが不正です（Objects が見つかりません）", "Error", MB_OK);
+			MessageBox(nullptr, "Prefabファイルが不正です(Objects が含まれません)", "Error", MB_OK);
 			return;
 		}
 
 		std::map<std::string, AbstractObject*> objectMap;
 		std::map<AbstractObject*, std::string> parentNames;
+		std::set<std::string> rootPrefabNames;
 
-		// 第一段階：全オブジェクトを生成
+		// 第一段階: 全オブジェクトを生成
 		for (const auto& objData : sceneData["Objects"]) {
 			AbstractObject* newObj = new AbstractObject();
 			newObj->SetParentScene(nullptr);
@@ -337,9 +342,13 @@ void EngineFrame::LoadPrefabs()
 			transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
 			newObj->SetTransform(transform);
 
-			// 親の名前を記録（後で設定）
+			// 親の名前を記録(後で設定)
 			if (objData.contains("Parent") && !objData["Parent"].get<std::string>().empty()) {
 				parentNames[newObj] = objData["Parent"].get<std::string>();
+			}
+			else {
+				// 親がないオブジェクト = ルートPrefab
+				rootPrefabNames.insert(objName);
 			}
 
 			// コンポーネントの読み込み
@@ -360,7 +369,7 @@ void EngineFrame::LoadPrefabs()
 			objectMap[objName] = newObj;
 		}
 
-		// 第二段階：親子関係の復元
+		// 第二段階:親子関係の復元
 		for (const auto& pair : parentNames) {
 			AbstractObject* child = pair.first;
 			const std::string& parentName = pair.second;
@@ -371,24 +380,16 @@ void EngineFrame::LoadPrefabs()
 			}
 		}
 
-		// 第三段階：ルートオブジェクト（親がいないオブジェクト）のみをprefabs_に追加
-		int rootCount = 0;
-		for (const auto& pair : objectMap) {
-			AbstractObject* obj = pair.second;
-			if (obj && obj->GetParent() == nullptr) {
-				prefabs_.push_back(obj);
-				rootCount++;
+		// 第三段階:ルートPrefab(元々親がなかったオブジェクト)のみをprefabs_に追加
+		for (const std::string& rootName : rootPrefabNames) {
+			auto it = objectMap.find(rootName);
+			if (it != objectMap.end() && it->second) {
+				prefabs_.push_back(it->second);
 			}
-		}
-
-		// デバッグ情報（成功時のみ）
-		if (rootCount > 0) {
-			std::string msg = std::to_string(rootCount) + " 個のPrefabを読み込みました";
-			OutputDebugStringA(msg.c_str());
 		}
 	}
 	catch (const std::exception& e) {
-		MessageBox(nullptr, ("Prefab読み込みエラー:  " + std::string(e.what())).c_str(), "Error", MB_OK);
+		MessageBox(nullptr, ("Prefab読み込みエラー:   " + std::string(e.what())).c_str(), "Error", MB_OK);
 		inFile.close();
 	}
 	catch (...) {
