@@ -530,25 +530,9 @@ void ImageRender::Draw(int Layer) {
 	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
 	ctx->OMSetDepthStencilState(s_depthStencilState.Get(), 0);
 
-	// ★ カメラを最新状態に更新（必ずDraw時に取得）
 	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
 
-	// ★ 常にカメラを再取得（Update()の結果を無視）
 	cam = scene ? scene->GetMainCamera() : nullptr;
-
-	// ★ デバッグ出力（毎フレーム出力）
-	static int frameCount = 0;
-	if (frameCount++ % 60 == 0) {  // 60フレームごとに出力
-		char buf[512];
-		sprintf_s(buf, "[ImageRender:: Draw] Object: %s, Cam: %p, Scene: %p, MainCamNum: %d, Mode: %d, Layer: %d\n",
-			_Parent ? _Parent->GetObjectName().c_str() : "NULL",
-			cam,
-			scene,
-			scene ? scene->GetMainCameraNumber() : -1,
-			(int)m_mode,
-			Layer);
-		OutputDebugStringA(buf);
-	}
 
 	Vertex v[4]{};
 	int mode2DFlag = 0;

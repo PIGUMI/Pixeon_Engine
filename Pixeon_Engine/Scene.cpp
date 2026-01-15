@@ -382,7 +382,6 @@ void Scene::Draw(int Layer) {
 
 	std::vector<AbstractObject*> sortedList;
 
-	// ルートオブジェクトのみをソート対象にする
 	for (auto& obj : _objects) {
 		if (obj && obj->GetParent() == nullptr) {
 			sortedList.push_back(obj);
@@ -405,11 +404,8 @@ void Scene::Draw(int Layer) {
 			});
 	}
 
-	// ルートオブジェクトを描画（子は自動的に描画される）
-	for (auto& obj : sortedList)
-	{
-		if (obj)
-		{
+	for (auto& obj : sortedList) {
+		if (obj) {
 			obj->Draw(Layer);
 		}
 	}
