@@ -1,6 +1,62 @@
 {
     "Objects": [
         {
+            "Components": [
+                {
+                    "Data": "-18.3849 4.17118 1.64819 23.7801 0.439999 8.93524e+11 -9.55185 -0.0882008 -0.310178 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "EditroCamera",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    -2.9000000953674316,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Conditioner/Conditioner.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n1 1 1\n0 0 0\n1\nConditioner/Conditioner.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
             "Components": [],
             "Name": "Stage",
             "Parent": "",
@@ -24,11 +80,33 @@
         },
         {
             "Components": [],
-            "Name": "Fances",
+            "Name": "StageObj",
             "Parent": "Stage",
             "Transform": {
                 "Position": [
-                    -1.2999999523162842,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "Bulings",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
                     0.0,
                     0.0
                 ],
@@ -47,32 +125,32 @@
         {
             "Components": [
                 {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "PSX/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n6 0 -6\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
+                    "Data": "12 6 12 0 3 0 0 2 0\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
                     "Name": "RigidBody",
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence4",
-            "Parent": "Fances",
+            "Name": "BuildingA",
+            "Parent": "Bulings",
             "Transform": {
                 "Position": [
-                    1.5,
+                    6.0,
                     0.0,
-                    -13.0
+                    -6.0
                 ],
                 "Rotation": [
                     0.0,
-                    -1.5707963705062866,
+                    -3.1415927410125732,
                     0.0
                 ],
                 "Scale": [
@@ -85,294 +163,28 @@
         {
             "Components": [
                 {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "PSX/ElectricBox.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n0.5 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
+                    "Data": "1 1.9 3 0 0.95 0 0 2 0\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
                     "Name": "RigidBody",
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence3",
-            "Parent": "Fances",
+            "Name": "ElectricBox",
+            "Parent": "Bulings",
             "Transform": {
                 "Position": [
-                    -1.5,
+                    1.600000023841858,
                     0.0,
-                    -13.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence15",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    6.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence14",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    0.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence17",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    12.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence16",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    9.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence14",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    3.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence9",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    -11.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence3",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    -4.5,
-                    0.0,
-                    -13.0
+                    0.699999988079071
                 ],
                 "Rotation": [
                     0.0,
@@ -389,66 +201,28 @@
         {
             "Components": [
                 {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "PSX/Fan.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n0.1 0 -0.4\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
+                    "Data": "0.2 0.8 0.8 0 0.4 0 0 2 0\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
                     "Name": "RigidBody",
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence11",
-            "Parent": "Fances",
+            "Name": "Fan1",
+            "Parent": "Bulings",
             "Transform": {
                 "Position": [
-                    14.899999618530273,
+                    4.599999904632568,
                     0.0,
-                    -5.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    -13.5,
-                    0.0,
-                    -13.0
+                    0.10000000149011612
                 ],
                 "Rotation": [
                     0.0,
@@ -465,370 +239,28 @@
         {
             "Components": [
                 {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "PSX/Fan.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n0.1 0 -0.4\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
+                    "Data": "0.2 0.8 0.8 0 0.4 0 0 2 0\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
                     "Name": "RigidBody",
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence13",
-            "Parent": "Fances",
+            "Name": "Fan",
+            "Parent": "Bulings",
             "Transform": {
                 "Position": [
-                    13.5,
+                    3.700000047683716,
                     0.0,
-                    14.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence6",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    7.5,
-                    0.0,
-                    -13.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence15",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    10.5,
-                    0.0,
-                    14.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence1",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    -10.5,
-                    0.0,
-                    -13.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence5",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    4.5,
-                    0.0,
-                    -13.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence10",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    -8.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence2",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    -7.5,
-                    0.0,
-                    -13.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence7",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    10.5,
-                    0.0,
-                    -13.0
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence12",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    14.899999618530273,
-                    0.0,
-                    -2.5
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -1.5\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 2.5 3 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "MetalFence8",
-            "Parent": "Fances",
-            "Transform": {
-                "Position": [
-                    13.5,
-                    0.0,
-                    -13.0
+                    0.10000000149011612
                 ],
                 "Rotation": [
                     0.0,
@@ -844,7 +276,7 @@
         },
         {
             "Components": [],
-            "Name": "Buildings",
+            "Name": "Other",
             "Parent": "Stage",
             "Transform": {
                 "Position": [
@@ -867,32 +299,338 @@
         {
             "Components": [
                 {
-                    "Data": "PSX/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n6 0 -6\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "PSX/Wheel.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n0 0 0\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "12 6 12 0 3 0 0 2 0\n",
+                    "Data": "0.8 0.25 0.8 0 0.125 0 0 2 0\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "10\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
                     "Name": "RigidBody",
                     "Type": 6
                 }
             ],
-            "Name": "BuildingC",
-            "Parent": "Buildings",
+            "Name": "Wheel",
+            "Parent": "Other",
             "Transform": {
                 "Position": [
-                    5.0,
+                    5.900000095367432,
+                    0.20000000298023224,
+                    0.20000000298023224
+                ],
+                "Rotation": [
+                    0.5305801033973694,
+                    -0.09424776583909988,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/Trash.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n0 0 0\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "Trash1",
+            "Parent": "Other",
+            "Transform": {
+                "Position": [
+                    9.199999809265137,
                     0.0,
-                    -5.5
+                    2.200000047683716
                 ],
                 "Rotation": [
                     0.0,
-                    -3.1415927410125732,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/Ladder.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n0 0 -0.4\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "0.5 1.8 1 0.25 0.9 0 0 2 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "Ladder",
+            "Parent": "Other",
+            "Transform": {
+                "Position": [
+                    -3.0999999046325684,
+                    0.0,
+                    8.199999809265137
+                ],
+                "Rotation": [
+                    0.0,
+                    1.5707963705062866,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/Trash.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n0 0 0\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "Trash",
+            "Parent": "Other",
+            "Transform": {
+                "Position": [
+                    -1.399999976158142,
+                    0.0,
+                    -7.400000095367432
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "Container",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "ContainerA2",
+            "Parent": "Container",
+            "Transform": {
+                "Position": [
+                    -2.5,
+                    0.0,
+                    11.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "ContainerB",
+            "Parent": "Container",
+            "Transform": {
+                "Position": [
+                    -4.599999904632568,
+                    0.0,
+                    -8.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "ContainerA3",
+            "Parent": "Container",
+            "Transform": {
+                "Position": [
+                    -8.699999809265137,
+                    0.0,
+                    3.299999952316284
+                ],
+                "Rotation": [
+                    0.0,
+                    -1.5707963705062866,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "ContainerA1",
+            "Parent": "Container",
+            "Transform": {
+                "Position": [
+                    2.5,
+                    0.0,
+                    11.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "ContainerA",
+            "Parent": "Container",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    11.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "Scale": [
@@ -927,645 +665,23 @@
         {
             "Components": [
                 {
-                    "Data": "PSX/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n15 0 15\n1 1 2.27\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "PSX/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n15 0 15\n1 1 2.27\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "30 2 30 0 -1 0 0 2 1\n",
+                    "Data": "30 0.1 30 0 -0.05 0 0 2 0\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "5\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Data": "1\n1\n0\n0.7\n0\n0\n0.05\n0\n0\n",
                     "Name": "RigidBody",
                     "Type": 6
                 }
             ],
             "Name": "Ground",
             "Parent": "Grounds",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [],
-            "Name": "Ohter",
-            "Parent": "Stage",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/Fan.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0.1 0 -0.4\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.2 0.8 0.8 0 0.4 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "Fan",
-            "Parent": "Ohter",
-            "Transform": {
-                "Position": [
-                    10.399999618530273,
-                    0.0,
-                    0.6000000238418579
-                ],
-                "Rotation": [
-                    0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/TrashBag.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0 0 0\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0.5 0.5 0.5 0 0.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "TrashBag",
-            "Parent": "Ohter",
-            "Transform": {
-                "Position": [
-                    1.7000000476837158,
-                    0.5,
-                    0.8999999761581421
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/Trash.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n0 0 0\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                }
-            ],
-            "Name": "Trash",
-            "Parent": "Ohter",
-            "Transform": {
-                "Position": [
-                    0.10000000149011612,
-                    0.0,
-                    1.7999999523162842
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [],
-            "Name": "Containers",
-            "Parent": "Stage",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerA1",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    6.5,
-                    0.0,
-                    12.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerA",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    -4.0,
-                    0.0,
-                    -8.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerA6",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    -7.900000095367432,
-                    0.0,
-                    12.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerB",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    -7.0,
-                    0.0,
-                    -8.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerA4",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    -3.0999999046325684,
-                    0.0,
-                    12.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerA5",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    -5.5,
-                    0.0,
-                    12.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerA2",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    4.099999904632568,
-                    0.0,
-                    12.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerB1",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    1.7000000476837158,
-                    0.0,
-                    12.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerA3",
-            "Parent": "Containers",
-            "Transform": {
-                "Position": [
-                    -0.699999988079071,
-                    0.0,
-                    12.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "-9.64293 7.93852 4.9297 5.69997 0.489997 8.93524e+11 -4.78385 3.23228 -2.43513 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
-                    "Name": "CameraComponent",
-                    "Type": 0
-                }
-            ],
-            "Name": "EditroCamera",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    -2.9000000953674316,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0.5 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                },
-                {
-                    "Data": "ScriptName Player\n",
-                    "Name": "ScripComponent",
-                    "Type": 3
-                }
-            ],
-            "Name": "Player",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    -3.5999999046325684,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.3769911229610443,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0.5 0.5 0.5 0 0 0 0 2 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "0 0 0 0 0 8.48014e-33 0 0 -10 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 1 0 ",
-                    "Name": "CameraComponent",
-                    "Type": 0
-                },
-                {
-                    "Data": "2 1 1 1 8.05 10 20 35 1 0 0 0 0 0 0 0 ",
-                    "Name": "Light",
-                    "Type": 1
-                }
-            ],
-            "Name": "Head",
-            "Parent": "Player",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    2.0999999046325684,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0.8 1.8 0.8 0 0.9 0 0 2 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                }
-            ],
-            "Name": "Body",
-            "Parent": "Player",
             "Transform": {
                 "Position": [
                     0.0,

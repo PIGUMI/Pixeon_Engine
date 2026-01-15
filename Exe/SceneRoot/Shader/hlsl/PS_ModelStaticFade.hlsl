@@ -21,7 +21,7 @@ struct LightGPU
 };
 cbuffer LightArrayCB : register(b1)
 {
-    LightGPU gLights[8]; // kMaxLights
+    LightGPU gLights[8];
 };
 cbuffer LightCountCB : register(b2)
 {
@@ -38,6 +38,7 @@ struct PS_INPUT
     float3 normal : NORMAL;
     float2 uv : TEXCOORD;
     float3 worldPos : WORLDPOS;
+    float3 viewPos : VIEWPOS;
 };
 
 float AttenuationPoint(float dist, float range)
@@ -105,7 +106,22 @@ float4 main(PS_INPUT i) : SV_TARGET
     }
 
     float3 ambient = 0.1 * gBaseColor.rgb;
-
     float3 color = (ambient + lighting) * texCol.rgb * gBaseColor.rgb;
-    return float4(color, texCol.a * gBaseColor.a);
+    
+    // ビュー空間でのZ距離（カメラからの深度）を使用
+    float distToCamera = length(i.viewPos);
+    
+    // 透過パラメータ（カメラのNearPlane=0.1を考慮）
+    float fadeStartDist = 1.5; // この距離から透明化開始
+    float fadeEndDist = 0.5; // この距離で完全透明
+    
+    // 近いほど透明に（逆補間）
+    float alphaByDistance = saturate((distToCamera - fadeEndDist) / (fadeStartDist - fadeEndDist));
+    
+    // スムーズな透過曲線を適用
+    alphaByDistance = smoothstep(0.0, 1.0, alphaByDistance);
+    
+    float finalAlpha = texCol.a * gBaseColor.a * alphaByDistance;
+    
+    return float4(color, finalAlpha);
 }
