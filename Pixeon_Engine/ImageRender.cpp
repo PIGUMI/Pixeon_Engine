@@ -334,173 +334,71 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 }
 
 void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
-	if (!cam) {
-		float dummyZ = 0.0f;
-		UpdateVertices2D(outV, dummyZ);
-		return;
-	}
-	DirectX::XMMATRIX V = cam->GetView();
-	DirectX::XMMATRIX invV = DirectX::XMMatrixInverse(nullptr, V);
+	// ビルボードもローカル座標で生成
+	float hw = 0.5f;
+	float hh = 0.5f;
 
-	DirectX::XMFLOAT3 right, up;
-	right = DirectX::XMFLOAT3(invV.r[0].m128_f32[0], invV.r[0].m128_f32[1], invV.r[0].m128_f32[2]);
-	up = DirectX::XMFLOAT3(invV.r[1].m128_f32[0], invV.r[1].m128_f32[1], invV.r[1].m128_f32[2]);
-
-	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&right));
-	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&up));
-
-	Transform t = _Parent->GetWorldTransform();
-	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
-	DirectX::XMVECTOR off = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&m_offset3D), R);
-	DirectX::XMVECTOR center = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&t.position), off);
-
-	float hw = m_sizeWorld.x * 0.5f;
-	float hh = m_sizeWorld.y * 0.5f;
-
-	// オペレーター式のあいまいさ回避のため演算を明示的に関数化
-	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-	DirectX::XMVECTOR tr = DirectX::XMVectorAdd(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-	DirectX::XMVECTOR br = DirectX::XMVectorSubtract(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-	DirectX::XMVECTOR bl = DirectX::XMVectorSubtract(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-
-	DirectX::XMFLOAT3 f;
-	DirectX::XMStoreFloat3(&f, tl); outV[0].pos = f; outV[0].uv = { m_uvRect.x, m_uvRect.y };
-	DirectX::XMStoreFloat3(&f, tr); outV[1].pos = f; outV[1].uv = { m_uvRect.z, m_uvRect.y };
-	DirectX::XMStoreFloat3(&f, br); outV[2].pos = f; outV[2].uv = { m_uvRect.z, m_uvRect.w };
-	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
+	outV[0].pos = { -hw,  hh, 0.0f }; outV[0].uv = { m_uvRect.x, m_uvRect.y };
+	outV[1].pos = { hw,  hh, 0.0f }; outV[1].uv = { m_uvRect.z, m_uvRect.y };
+	outV[2].pos = { hw, -hh, 0.0f }; outV[2].uv = { m_uvRect.z, m_uvRect.w };
+	outV[3].pos = { -hw, -hh, 0.0f }; outV[3].uv = { m_uvRect.x, m_uvRect.w };
 }
 
 void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
-	Transform t;
-	t.position = { 0.0f,0.0f,0.0f };
-	t.rotation = { 0.0f,0.0f,0.0f };
-	t.scale = { 1.0f,1.0f,1.0f };
-	if (_Parent)
-	{
-		t = _Parent->GetWorldTransform();
-	}
-	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x + offset3DRot.x, t.rotation.y + offset3DRot.y, t.rotation.z + offset3DRot.z);
-	DirectX::XMVECTOR vRight = DirectX::XMVector3Normalize(R.r[0]);
-	DirectX::XMVECTOR vUp = DirectX::XMVector3Normalize(R.r[1]);
+	float hw = 0.5f;  // 半分の幅
+	float hh = 0.5f;  // 半分の高さ
 
-	DirectX::XMVECTOR off = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&m_offset3D), R);
-	DirectX::XMVECTOR center = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&t.position), off);
-
-	float hw = m_sizeWorld.x * 0.5f;
-	float hh = m_sizeWorld.y * 0.5f;
-
-	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-	DirectX::XMVECTOR tr = DirectX::XMVectorAdd(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-	DirectX::XMVECTOR br = DirectX::XMVectorSubtract(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-	DirectX::XMVECTOR bl = DirectX::XMVectorSubtract(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorMultiply(vRight, DirectX::XMVectorReplicate(hw))),
-		DirectX::XMVectorMultiply(vUp, DirectX::XMVectorReplicate(hh))
-	);
-
-	DirectX::XMFLOAT3 f;
-	DirectX::XMStoreFloat3(&f, tl); outV[0].pos = f; outV[0].uv = { m_uvRect.x, m_uvRect.y };
-	DirectX::XMStoreFloat3(&f, tr); outV[1].pos = f; outV[1].uv = { m_uvRect.z, m_uvRect.y };
-	DirectX::XMStoreFloat3(&f, br); outV[2].pos = f; outV[2].uv = { m_uvRect.z, m_uvRect.w };
-	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
+	// ローカル座標系でZ=0の平面に矩形を配置
+	outV[0].pos = { -hw,  hh, 0.0f }; outV[0].uv = { m_uvRect.x, m_uvRect.y };
+	outV[1].pos = { hw,  hh, 0.0f }; outV[1].uv = { m_uvRect.z, m_uvRect.y };
+	outV[2].pos = { hw, -hh, 0.0f }; outV[2].uv = { m_uvRect.z, m_uvRect.w };
+	outV[3].pos = { -hw, -hh, 0.0f }; outV[3].uv = { m_uvRect.x, m_uvRect.w };
 }
 
-void ImageRender::UpdateVerticesUI(Vertex outV[4])
-{
+void ImageRender::UpdateVerticesUI(Vertex outV[4]) {
+	// UIは2D座標（NDC）で生成
+	// m_offset2D をピクセル単位のオフセットとして使用
+
 	if (!cam) {
+		// カメラがない場合は2Dと同じ
 		float dummyZ = 0.0f;
 		UpdateVertices2D(outV, dummyZ);
 		return;
 	}
 
-	DirectX::XMMATRIX V = cam->GetView();
-	DirectX::XMMATRIX invV = DirectX::XMMatrixInverse(nullptr, V);
+	// スクリーンサイズ取得
+	float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
+	float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
 
-	DirectX::XMFLOAT3 camPosF(
-		invV.r[3].m128_f32[0],
-		invV.r[3].m128_f32[1],
-		invV.r[3].m128_f32[2]
-	);
-	DirectX::XMFLOAT3 rightF(
-		invV.r[0].m128_f32[0],
-		invV.r[0].m128_f32[1],
-		invV.r[0].m128_f32[2]
-	);
-	DirectX::XMFLOAT3 upF(
-		invV.r[1].m128_f32[0],
-		invV.r[1].m128_f32[1],
-		invV.r[1].m128_f32[2]
-	);
-	DirectX::XMFLOAT3 fwdF(
-		invV.r[2].m128_f32[0],
-		invV.r[2].m128_f32[1],
-		invV.r[2].m128_f32[2]
-	);
+	// UI要素のピクセルサイズ（m_sizeWorldをピクセルとして解釈）
+	Transform t = _Parent ? _Parent->GetWorldTransform() : Transform();
+	float pixelWidth = m_sizeWorld.x * t.scale.x;
+	float pixelHeight = m_sizeWorld.y * t.scale.y;
 
-	DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&camPosF);
-	DirectX::XMVECTOR right = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&rightF));
-	DirectX::XMVECTOR up = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&upF));
-	DirectX::XMVECTOR fwd = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&fwdF));
+	// 画面中央からのオフセット（ピクセル単位）
+	float cx = W * 0.5f + m_offset2D.x;
+	float cy = H * 0.5f + m_offset2D.y;
 
-	float uiDistance = 3.0f;
-	DirectX::XMVECTOR baseCenter = DirectX::XMVectorAdd(
-		camPos,
-		DirectX::XMVectorScale(fwd, uiDistance)
-	);
+	float hw = pixelWidth * 0.5f;
+	float hh = pixelHeight * 0.5f;
 
-	DirectX::XMVECTOR offsetWorld =
-		DirectX::XMVectorAdd(
-			DirectX::XMVectorScale(right, m_offset2D.x),
-			DirectX::XMVectorScale(up, m_offset2D.y)
-		);
+	// ピクセル座標 → NDC変換
+	auto toNDC = [&](float x, float y) -> DirectX::XMFLOAT2 {
+		float ndcX = (x / W) * 2.0f - 1.0f;
+		float ndcY = 1.0f - (y / H) * 2.0f;
+		return { ndcX, ndcY };
+		};
 
-	DirectX::XMVECTOR center = DirectX::XMVectorAdd(baseCenter, offsetWorld);
+	DirectX::XMFLOAT2 tl = toNDC(cx - hw, cy - hh);
+	DirectX::XMFLOAT2 tr = toNDC(cx + hw, cy - hh);
+	DirectX::XMFLOAT2 br = toNDC(cx + hw, cy + hh);
+	DirectX::XMFLOAT2 bl = toNDC(cx - hw, cy + hh);
 
-	float hw = m_sizeWorld.x * 0.5f;
-	float hh = m_sizeWorld.y * 0.5f;
-
-	DirectX::XMVECTOR tl = DirectX::XMVectorAdd(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
-		DirectX::XMVectorScale(up, hh)
-	);
-	DirectX::XMVECTOR tr = DirectX::XMVectorAdd(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorScale(right, hw)),
-		DirectX::XMVectorScale(up, hh)
-	);
-	DirectX::XMVECTOR br = DirectX::XMVectorSubtract(
-		DirectX::XMVectorAdd(center, DirectX::XMVectorScale(right, hw)),
-		DirectX::XMVectorScale(up, hh)
-	);
-	DirectX::XMVECTOR bl = DirectX::XMVectorSubtract(
-		DirectX::XMVectorSubtract(center, DirectX::XMVectorScale(right, hw)),
-		DirectX::XMVectorScale(up, hh)
-	);
-
-	DirectX::XMFLOAT3 f;
-	DirectX::XMStoreFloat3(&f, tl); outV[0].pos = f; outV[0].uv = { m_uvRect.x, m_uvRect.y };
-	DirectX::XMStoreFloat3(&f, tr); outV[1].pos = f; outV[1].uv = { m_uvRect.z, m_uvRect.y };
-	DirectX::XMStoreFloat3(&f, br); outV[2].pos = f; outV[2].uv = { m_uvRect.z, m_uvRect.w };
-	DirectX::XMStoreFloat3(&f, bl); outV[3].pos = f; outV[3].uv = { m_uvRect.x, m_uvRect.w };
+	// NDC座標で頂点を生成（Z=0で固定）
+	outV[0].pos = { tl.x, tl.y, 0.0f }; outV[0].uv = { m_uvRect.x, m_uvRect.y };
+	outV[1].pos = { tr.x, tr.y, 0.0f }; outV[1].uv = { m_uvRect.z, m_uvRect.y };
+	outV[2].pos = { br.x, br.y, 0.0f }; outV[2].uv = { m_uvRect.z, m_uvRect.w };
+	outV[3].pos = { bl.x, bl.y, 0.0f }; outV[3].uv = { m_uvRect.x, m_uvRect.w };
 }
 
 void ImageRender::Draw(int Layer) {
@@ -548,7 +446,7 @@ void ImageRender::Draw(int Layer) {
 	}
 	else if (m_mode == PlacementMode::UI) {
 		UpdateVerticesUI(v);
-		mode2DFlag = 0;
+		mode2DFlag = 1;
 	}
 	else {
 		UpdateVerticesWorld3D(v);
@@ -561,18 +459,56 @@ void ImageRender::Draw(int Layer) {
 
 	if (_Parent) {
 		Transform t = _Parent->GetWorldTransform();
-		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
-		DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(
-			t.rotation.x + offset3DRot.x,
-			t.rotation.y + offset3DRot.y,
-			t.rotation.z + offset3DRot.z
-		);
-		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(
-			t.position.x + m_offset3D.x,
-			t.position.y + m_offset3D.y,
-			t.position.z + m_offset3D.z
-		);
-		cb.World = DirectX::XMMatrixTranspose(S * R * T);
+
+		if (m_mode == PlacementMode::Billboard || m_mode == PlacementMode::UI) {
+			// ★ ビルボード/UIモード:  回転は無視、スケールとサイズのみ適用
+			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(
+				t.scale.x * m_sizeWorld.x,
+				t.scale.y * m_sizeWorld.y,
+				1.0f
+			);
+
+			// 回転は単位行列（回転なし）- ビルボードはシェーダー側で処理
+			DirectX::XMMATRIX R = DirectX::XMMatrixIdentity();
+
+			// 位置のみ適用（オフセットは無視 - ビルボードでは意味がない）
+			DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
+
+			cb.World = DirectX::XMMatrixTranspose(S * R * T);
+		}
+		else {
+			// ★ 3D配置/2D配置モード: 通常の変換
+			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(
+				t.scale.x * m_sizeWorld.x,
+				t.scale.y * m_sizeWorld.y,
+				1.0f
+			);
+
+			DirectX::XMMATRIX R;
+			if (m_mode == PlacementMode::World3D) {
+				R = DirectX::XMMatrixRotationRollPitchYaw(
+					t.rotation.x + offset3DRot.x,
+					t.rotation.y + offset3DRot.y,
+					t.rotation.z + offset3DRot.z
+				);
+			}
+			else {
+				R = DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z);
+			}
+
+			DirectX::XMVECTOR offset = DirectX::XMVector3Transform(
+				DirectX::XMLoadFloat3(&m_offset3D),
+				R
+			);
+			DirectX::XMFLOAT3 finalPos;
+			DirectX::XMStoreFloat3(&finalPos,
+				DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&t.position), offset)
+			);
+
+			DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(finalPos.x, finalPos.y, finalPos.z);
+
+			cb.World = DirectX::XMMatrixTranspose(S * R * T);
+		}
 	}
 	else {
 		cb.World = DirectX::XMMatrixIdentity();
