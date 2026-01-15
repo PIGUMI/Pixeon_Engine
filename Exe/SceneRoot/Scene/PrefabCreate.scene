@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-18.3849 4.17118 1.64796 23.7801 0.439999 8.93524e+11 -9.55185 -0.0882008 -0.310178 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
+                    "Data": "-11.8889 14.1052 7.99152 23.9501 0.609999 8.93524e+11 -4.30214 8.37649 4.88933 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -14,34 +14,6 @@
                 "Position": [
                     0.0,
                     -2.9000000953674316,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "Conditioner/Conditioner.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n1 1 1\n0 0 0\n1\nConditioner/Conditioner.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                }
-            ],
-            "Name": "NewObject",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
                     0.0
                 ],
                 "Rotation": [
