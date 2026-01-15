@@ -27,7 +27,7 @@
                 "bUVPosition": false,
                 "bUVScale": false
             },
-            "EndTime": 1.0,
+            "EndTime": 8.800000190734863,
             "EndTransform": {
                 "Color": [
                     1.0,
@@ -91,6 +91,6 @@
     ],
     "Loop": false,
     "ProjectName": "Test",
-    "TotalDuration": 1.0,
+    "TotalDuration": 8.800000190734863,
     "ViewMode": 0
 }

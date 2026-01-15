@@ -265,7 +265,7 @@ void TimelineEditor::DrawKeyFrame(KeyFrame* keyframe, int layerIndex)
 
 	// ŽžŠÔ•\Ž¦
 	char timeText[64];
-	snprintf(timeText, sizeof(timeText), "%. 2f - %.2f", keyframe->StartTime, keyframe->EndTime);
+	snprintf(timeText, sizeof(timeText),"%.2f - %.2f", keyframe->StartTime, keyframe->EndTime);
 	drawList->AddText(
 		ImVec2(startX + 5, y + layerHeight_ / 2 - 7),
 		IM_COL32(255, 255, 255, 255),
