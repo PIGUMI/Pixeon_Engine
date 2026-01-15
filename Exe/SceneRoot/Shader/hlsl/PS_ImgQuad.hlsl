@@ -11,5 +11,10 @@ struct PS_IN
 float4 main(PS_IN i) : SV_Target
 {
     float4 tex = gTex0.Sample(gSamp, i.uv);
-    return tex * i.col;
+    float4 result = tex * i.col;
+    
+    if (result.a < 0.01)
+        discard;
+    
+    return result;
 }

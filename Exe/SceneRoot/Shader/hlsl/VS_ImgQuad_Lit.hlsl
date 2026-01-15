@@ -44,10 +44,9 @@ VS_OUT main(VS_IN i)
         o.pos = mul(vpos, Proj);
         
         // ローカル法線 (0, 0, 1) をワールド変換
-        // スケールの影響を除去するため、回転成分のみを使用
         float3 localNormal = float3(0, 0, 1);
         
-        // ワールド行列の回転部分から法線を計算（スケール無視）
+        // ワールド行列の回転部分から法線を計算（スケール除去）
         float3 worldNormalX = normalize(World[0].xyz);
         float3 worldNormalY = normalize(World[1].xyz);
         float3 worldNormalZ = normalize(World[2].xyz);
@@ -61,15 +60,21 @@ VS_OUT main(VS_IN i)
     }
     else
     {
-        // ビルボード/UIモード - カメラの方向を向いた法線
+        // ビルボード/UIモード - カメラに向かう法線
         float4 wpos = mul(float4(i.pos, 1.0f), World);
         o.worldPos = wpos.xyz;
         
         float4 vpos = mul(wpos, View);
         o.pos = mul(vpos, Proj);
         
-        // カメラの視線方向の逆を法線とする（ビルボード用）
-        o.normal = normalize(-View[2].xyz);
+        float3 camPosWorld = float3(
+            -dot(View[0].xyz, View[3].xyz),
+            -dot(View[1].xyz, View[3].xyz),
+            -dot(View[2].xyz, View[3].xyz)
+        );
+        
+        // ★ ビルボードの位置からカメラへ向かうベクトルを法線とする
+        o.normal = normalize(camPosWorld - o.worldPos);
     }
     
     o.uv = i.uv;

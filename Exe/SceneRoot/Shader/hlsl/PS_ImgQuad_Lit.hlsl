@@ -100,7 +100,9 @@ float4 main(PS_IN i) : SV_Target
 {
     float4 tex = gTex0.Sample(gSamp, i.uv);
     
-    // 表裏に応じて法線を反転（両面ライティング）
+    if (tex.a * i.col.a < 0.01)
+        discard;
+    
     float3 N = normalize(i.normal);
     if (!i.isFrontFace)
     {
@@ -109,7 +111,6 @@ float4 main(PS_IN i) : SV_Target
     
     float3 P = i.worldPos;
     
-    // ライティング計算
     float3 lighting = 0;
     [unroll]
     for (int li = 0; li < gLightCount; ++li)
@@ -117,10 +118,8 @@ float4 main(PS_IN i) : SV_Target
         lighting += ApplyLight(gLights[li], P, N);
     }
     
-    // アンビエント（環境光）
     float3 ambient = 0.1 * i.col.rgb;
     
-    // 最終カラー = (環境光 + ライティング) * テクスチャ * 頂点カラー
     float3 color = (ambient + lighting) * tex.rgb * i.col.rgb;
     
     return float4(color, tex.a * i.col.a);

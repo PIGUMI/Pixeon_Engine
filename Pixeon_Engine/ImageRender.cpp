@@ -247,8 +247,8 @@ bool ImageRender::EnsureDepthStencilState() {
 	D3D11_DEPTH_STENCIL_DESC desc = {};
 
 	desc.DepthEnable = TRUE;
-	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; 
 	desc.StencilEnable = FALSE;
 
 	auto dev = DirectX11::GetInstance()->GetDevice();
