@@ -258,6 +258,7 @@ void Scene::PlayUpdate() {
 	}
 	_ToBeAdded.clear();
 
+	// ★ カメラコンポーネントの更新とメインカメラの設定
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -266,12 +267,19 @@ void Scene::PlayUpdate() {
 			if (comp->GetComponentType() == ComponentManager::COMPONENT_TYPE::CAMERA) {
 				CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
 				cam->SetCameraNumber(i);
+
+				// ★ メインカメラ番号と一致したら、メインカメラを更新
+				if (i == _MainCameraNumber) {
+					_MainCamera = cam;
+				}
+
 				i++;
 				comp->InGameUpdate();
 			}
 		}
 	}
 
+	// 物理演算
 	if (pPhysicsWorld)
 	{
 		try
@@ -309,7 +317,6 @@ void Scene::PlayUpdate() {
 						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 
 						if (numObjects > 50) {
-							// Broadphase の最適化
 							pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
 						}
 					}
@@ -335,21 +342,18 @@ void Scene::PlayUpdate() {
 		}
 	}
 
-	if (_collisionManager)_collisionManager->Update();
+	if (_collisionManager) _collisionManager->Update();
 
 	// 削除処理
 	if (!_ToBeRemoved.empty()) {
-		// 削除前に親子関係を全て切断
 		for (auto& obj : _ToBeRemoved) {
 			if (!obj) continue;
 
-			// 親から切り離す
 			if (obj->GetParent()) {
 				obj->GetParent()->RemoveChild(obj);
 				obj->_parentObject = nullptr;
 			}
 
-			// 子オブジェクトの親参照をクリア
 			for (auto child : obj->GetChildren()) {
 				if (child) {
 					child->_parentObject = nullptr;
@@ -358,7 +362,6 @@ void Scene::PlayUpdate() {
 			obj->_children.clear();
 		}
 
-		// オブジェクトを削除
 		for (auto& obj : _ToBeRemoved) {
 			if (!obj) continue;
 
