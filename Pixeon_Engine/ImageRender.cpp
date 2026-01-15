@@ -247,14 +247,13 @@ bool ImageRender::EnsureDepthStencilState() {
 	D3D11_DEPTH_STENCIL_DESC desc = {};
 
 	desc.DepthEnable = TRUE;
-	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	desc.StencilEnable = FALSE;
 
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	HRESULT hr = dev->CreateDepthStencilState(&desc, s_depthStencilState.GetAddressOf());
 	return SUCCEEDED(hr);
-
 }
 
 void ImageRender::UpdateVB(const Vertex v[4]) {
@@ -531,35 +530,34 @@ void ImageRender::Draw(int Layer) {
 	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
 	ctx->OMSetDepthStencilState(s_depthStencilState.Get(), 0);
 
+	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
+	cam = scene ? scene->GetMainCamera() : nullptr;  // メンバー変数を直接更新
+
 	Vertex v[4]{};
 	int mode2DFlag = 0;
 	float zClip2D = 0.0f;
 
 	if (m_mode == PlacementMode::Screen2D) {
 		UpdateVertices2D(v, zClip2D);
-		mode2DFlag = 1; // 2D配置
+		mode2DFlag = 1;
 	}
 	else if (m_mode == PlacementMode::Billboard) {
 		UpdateVerticesBillboard(v);
-		mode2DFlag = 0; // ビルボード
+		mode2DFlag = 0;
 	}
 	else if (m_mode == PlacementMode::UI) {
 		UpdateVerticesUI(v);
-		mode2DFlag = 0; // UI
+		mode2DFlag = 0;
 	}
 	else {
 		UpdateVerticesWorld3D(v);
-		mode2DFlag = 2; // 3D配置（新しい値）
+		mode2DFlag = 2;
 	}
 
 	UpdateVB(v);
 
-	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
-	CameraComponent* cam = scene ? scene->GetMainCamera() : nullptr;
-
 	CBVS cb{};
 
-	// ワールド行列を構築
 	if (_Parent) {
 		Transform t = _Parent->GetWorldTransform();
 		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
@@ -579,7 +577,7 @@ void ImageRender::Draw(int Layer) {
 		cb.World = DirectX::XMMatrixIdentity();
 	}
 
-	if (cam) {
+	if (cam) {  // メンバー変数camを使用
 		cb.View = DirectX::XMMatrixTranspose(cam->GetView());
 		cb.Proj = DirectX::XMMatrixTranspose(cam->GetProjection());
 	}
