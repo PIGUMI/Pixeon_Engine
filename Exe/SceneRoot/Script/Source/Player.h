@@ -7,6 +7,8 @@ public:
     void Update() override;
     void EndPlay() override;
 private:
+	void Movement();
+private:
     Object playerObject;
 	Object headObject;
 	Object bodyObject;

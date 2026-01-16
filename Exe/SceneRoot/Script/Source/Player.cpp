@@ -13,52 +13,8 @@ void Script_Player::BeginPlay() {
 }
 
 void Script_Player::Update() {
-	int MouseX = 0;
-	int MouseY = 0;
 
-	MouseX = GetMouseMoveX();
-	MouseY = GetMouseMoveY();
-
-	transform headTransform;
-	GetObjectTransform(headObject, &headTransform);
-	headTransform.rotation.x -= (float)MouseY * 0.01f;
-	headTransform.rotation.y += (float)MouseX * 0.01f;
-	if(headTransform.rotation.x > 1.5f)
-	{
-		headTransform.rotation.x = 1.5f;
-	}
-	if(headTransform.rotation.x < -1.5f)
-	{
-		headTransform.rotation.x = -1.5f;
-	}
-	SetObjectTransform(headObject, &headTransform);
-
-	transform playerTransform;
-	GetObjectTransform(playerObject, &playerTransform);
-	if(KeyPressed('W'))
-	{
-		transform bodyTransform;
-		Float3 forward;
-		GetCameraForwardVector(CameraComp, &forward);
-		// YŽ²¬•ª‚ð–³Ž‹‚µ‚Ä…•½ˆÚ“®
-		forward.y = 0.0f;
-		// ³‹K‰»
-		float length = sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
-		if (length > 0.0f)
-		{
-			forward.x /= length;
-			forward.y /= length;
-			forward.z /= length;
-		}
-		playerTransform.position.x += -forward.x * 0.1f;
-		playerTransform.position.y += -forward.y * 0.1f;
-		playerTransform.position.z += -forward.z * 0.1f;
-
-		GetObjectTransform(bodyObject, &bodyTransform);
-		bodyTransform.rotation.y = headTransform.rotation.y;
-		SetObjectTransform(bodyObject, &bodyTransform);
-	}
-	SetObjectTransform(playerObject, &playerTransform);
+	Movement();
 
 	if(KeyTriggered('Q'))
 	{
@@ -69,4 +25,75 @@ void Script_Player::Update() {
 }
 
 void Script_Player::EndPlay() {
+}
+
+void Script_Player::Movement()
+{
+	// Ž‹ŠE‘€ì
+	int Mouse_X = 0;
+	int Mouse_Y = 0;
+
+	// ƒ}ƒEƒX‚ÌˆÚ“®—Ê‚ðŽæ“¾
+	Mouse_X = GetMouseMoveX();
+	Mouse_Y = GetMouseMoveY();
+
+	// “ª•”‚Ì‰ñ“]‚ðXV
+	transform head_Transform;
+	GetObjectTransform(headObject, &head_Transform);
+
+	// ƒ}ƒEƒX‚ÌˆÚ“®—Ê‚ÉŠî‚Ã‚¢‚Ä‰ñ“]‚ð’²®
+	head_Transform.rotation.x -= (float)Mouse_Y * 0.01f;
+	head_Transform.rotation.y += (float)Mouse_X * 0.01f;
+
+	// ã‰º‚Ì‰ñ“]‚ð§ŒÀ
+	if (head_Transform.rotation.x > 1.5f)
+	{
+		head_Transform.rotation.x = 1.5f;
+	}
+	if (head_Transform.rotation.x < -1.5f)
+	{
+		head_Transform.rotation.x = -1.5f;
+	}
+
+	// “ª•”‚Ì•ÏŠ·‚ðÝ’è
+	SetObjectTransform(headObject, &head_Transform);
+
+	// ˆÚ“®‘€ì
+	transform playerTransform;
+	GetObjectTransform(playerObject, &playerTransform);
+
+	// ³‹K‰»
+	transform bodyTransform;
+	Float3 forward;
+	GetCameraForwardVector(CameraComp, &forward);
+	forward.y = 0.0f;
+	float length = sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
+	if (length > 0.0f)
+	{
+		forward.x /= length;
+		forward.y /= length;
+		forward.z /= length;
+	}
+
+	if (KeyPressed('W'))
+	{
+		playerTransform.position.x += -forward.x * 0.1f;
+		playerTransform.position.y += -forward.y * 0.1f;
+		playerTransform.position.z += -forward.z * 0.1f;
+
+		GetObjectTransform(bodyObject, &bodyTransform);
+		bodyTransform.rotation.y = head_Transform.rotation.y;
+		SetObjectTransform(bodyObject, &bodyTransform);
+		SetObjectTransform(playerObject, &playerTransform);
+	}
+	if(KeyPressed('S'))
+	{
+		playerTransform.position.x -= -forward.x * 0.1f;
+		playerTransform.position.y -= -forward.y * 0.1f;
+		playerTransform.position.z -= -forward.z * 0.1f;
+		GetObjectTransform(bodyObject, &bodyTransform);
+		bodyTransform.rotation.y = head_Transform.rotation.y + 3.14f;
+		SetObjectTransform(bodyObject, &bodyTransform);
+		SetObjectTransform(playerObject, &playerTransform);
+	}
 }
