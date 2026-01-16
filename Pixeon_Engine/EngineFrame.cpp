@@ -212,12 +212,9 @@ void EngineFrame::SavePrefabs()
 {
 	std::vector<AbstractObject*> SaveObjects;
 
-	// ルートPrefabとその子孫を全て収集
 	for (auto& prefab : prefabs_) {
 		if (prefab) {
 			SaveObjects.push_back(prefab);
-
-			// 子オブジェクトも再帰的に追加
 			std::function<void(AbstractObject*)> collectChildren = [&](AbstractObject* parent) {
 				for (auto child : parent->GetChildren()) {
 					if (child) {
@@ -228,6 +225,11 @@ void EngineFrame::SavePrefabs()
 				};
 			collectChildren(prefab);
 		}
+	}
+
+	std::map<AbstractObject*, size_t> objectToId;
+	for (size_t i = 0; i < SaveObjects.size(); ++i) {
+		objectToId[SaveObjects[i]] = i;
 	}
 
 	auto Now = std::chrono::system_clock::now();
@@ -243,6 +245,7 @@ void EngineFrame::SavePrefabs()
 	for (const auto& Object : SaveObjects) {
 		if (Object) {
 			nlohmann::json ObjectData;
+			ObjectData["ID"] = objectToId[Object];
 			ObjectData["Name"] = Object->GetObjectName();
 			ObjectData["Transform"]["Position"] = {
 				Object->GetTransform().position.x,
@@ -260,15 +263,13 @@ void EngineFrame::SavePrefabs()
 				Object->GetTransform().scale.z
 			};
 
-			// 親子関係の保存
 			if (Object->GetParent()) {
-				ObjectData["Parent"] = Object->GetParent()->GetObjectName();
+				ObjectData["ParentID"] = objectToId[Object->GetParent()];
 			}
 			else {
-				ObjectData["Parent"] = "";
+				ObjectData["ParentID"] = -1;
 			}
 
-			// コンポーネントデータの保存
 			nlohmann::json ComponentData = nlohmann::json::array();
 			for (const auto& comp : Object->GetComponents()) {
 				if (comp) {
@@ -287,7 +288,6 @@ void EngineFrame::SavePrefabs()
 	}
 	SceneData["Objects"] = ObjectArray;
 
-	// ファイル名の生成（修正：空白を削除）
 	std::string File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab.meta";
 	std::ofstream outFile(File);
 	if (outFile.is_open()) {
@@ -295,7 +295,7 @@ void EngineFrame::SavePrefabs()
 		outFile.close();
 	}
 	else {
-		MessageBox(nullptr, ("Prefabファイルの保存に失敗:  " + File).c_str(), "Error", MB_OK);
+		MessageBox(nullptr, ("Prefabファイルの保存に失敗:   " + File).c_str(), "Error", MB_OK);
 	}
 }
 
@@ -305,7 +305,6 @@ void EngineFrame::LoadPrefabs()
 	std::ifstream inFile(filePath);
 
 	if (!inFile.is_open()) {
-		// ファイルが存在しない場合は警告なしに終了
 		return;
 	}
 
@@ -314,25 +313,22 @@ void EngineFrame::LoadPrefabs()
 		inFile >> sceneData;
 		inFile.close();
 
-		// データ検証
 		if (!sceneData.contains("Objects")) {
 			MessageBox(nullptr, "Prefabファイルが不正です(Objects が含まれません)", "Error", MB_OK);
 			return;
 		}
 
-		std::map<std::string, AbstractObject*> objectMap;
-		std::map<AbstractObject*, std::string> parentNames;
-		std::set<std::string> rootPrefabNames;
+		std::map<size_t, AbstractObject*> idToObject;
+		std::map<size_t, int> childToParentId;
 
-		// 第一段階: 全オブジェクトを生成
 		for (const auto& objData : sceneData["Objects"]) {
 			AbstractObject* newObj = new AbstractObject();
 			newObj->SetParentScene(nullptr);
 
+			size_t objId = objData["ID"].get<size_t>();
 			std::string objName = objData["Name"].get<std::string>();
 			newObj->SetObjectName(objName);
 
-			// Transform の読み込み
 			auto pos = objData["Transform"]["Position"];
 			auto rot = objData["Transform"]["Rotation"];
 			auto scl = objData["Transform"]["Scale"];
@@ -342,16 +338,11 @@ void EngineFrame::LoadPrefabs()
 			transform.scale = { scl[0].get<float>(), scl[1].get<float>(), scl[2].get<float>() };
 			newObj->SetTransform(transform);
 
-			// 親の名前を記録(後で設定)
-			if (objData.contains("Parent") && !objData["Parent"].get<std::string>().empty()) {
-				parentNames[newObj] = objData["Parent"].get<std::string>();
-			}
-			else {
-				// 親がないオブジェクト = ルートPrefab
-				rootPrefabNames.insert(objName);
+			int parentId = objData["ParentID"].get<int>();
+			if (parentId != -1) {
+				childToParentId[objId] = parentId;
 			}
 
-			// コンポーネントの読み込み
 			if (objData.contains("Components")) {
 				for (const auto& compData : objData["Components"]) {
 					auto type = static_cast<ComponentManager::COMPONENT_TYPE>(compData["Type"].get<int>());
@@ -366,25 +357,25 @@ void EngineFrame::LoadPrefabs()
 				}
 			}
 
-			objectMap[objName] = newObj;
+			idToObject[objId] = newObj;
 		}
 
-		// 第二段階:親子関係の復元
-		for (const auto& pair : parentNames) {
-			AbstractObject* child = pair.first;
-			const std::string& parentName = pair.second;
+		for (const auto& pair : childToParentId) {
+			size_t childId = pair.first;
+			size_t parentId = pair.second;
 
-			auto it = objectMap.find(parentName);
-			if (it != objectMap.end()) {
-				child->SetParent(it->second);
+			auto childIt = idToObject.find(childId);
+			auto parentIt = idToObject.find(parentId);
+
+			if (childIt != idToObject.end() && parentIt != idToObject.end()) {
+				childIt->second->SetParent(parentIt->second);
 			}
 		}
 
-		// 第三段階:ルートPrefab(元々親がなかったオブジェクト)のみをprefabs_に追加
-		for (const std::string& rootName : rootPrefabNames) {
-			auto it = objectMap.find(rootName);
-			if (it != objectMap.end() && it->second) {
-				prefabs_.push_back(it->second);
+		for (const auto& pair : idToObject) {
+			AbstractObject* obj = pair.second;
+			if (obj && !obj->GetParent()) {
+				prefabs_.push_back(obj);
 			}
 		}
 	}
