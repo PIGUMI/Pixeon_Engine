@@ -246,7 +246,7 @@ void CapsuleCollision::DrawInspector()
 	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::CollapsingHeader(SJ(label.c_str()).c_str()))return;
 
-	label = "CapsuleParams##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+	label = "CapsuleTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ÉåÉCÉÑÅ[").c_str());
@@ -266,7 +266,7 @@ void CapsuleCollision::DrawInspector()
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("çÇÇ≥").c_str());
 		ImGui::TableSetColumnIndex(1);
 		float height = fHeight_;
-		if (ImGui::InputFloat("##HeightInput", &height, 0.1f, 1.0f, "%. 3f"))
+		if (ImGui::InputFloat("##HeightInput", &height, 0.1f, 1.0f, "%.3f"))
 		{
 			SetHeight(height);
 		}
