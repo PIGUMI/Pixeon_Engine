@@ -755,18 +755,19 @@ void Scene::InitPhysics()
 
 	pPhysicsWorld->getSolverInfo().m_numIterations = 20;
 	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
+	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_WARMSTARTING;
 
 	pPhysicsWorld->getSolverInfo().m_splitImpulse = true;
-	pPhysicsWorld->getSolverInfo().m_splitImpulsePenetrationThreshold = -0.02f;
+	pPhysicsWorld->getSolverInfo().m_splitImpulsePenetrationThreshold = -0.01f;
 
-	pPhysicsWorld->getSolverInfo().m_erp = 0.2f;
-	pPhysicsWorld->getSolverInfo().m_erp2 = 0.2f;
+	pPhysicsWorld->getSolverInfo().m_erp = 0.3f;
+	pPhysicsWorld->getSolverInfo().m_erp2 = 0.3f;
 
-	pPhysicsWorld->getSolverInfo().m_globalCfm = 0.0f;
+	pPhysicsWorld->getSolverInfo().m_globalCfm = 0.00001f;
 
 	pPhysicsWorld->getDispatchInfo().m_useContinuous = true;
 
-	pPhysicsWorld->getSolverInfo().m_timeStep = 1.0f / 120.0f;
+	pPhysicsWorld->getSolverInfo().m_timeStep = 1.0f / 240.0f;
 }
 
 void Scene::CleanupPhysics()

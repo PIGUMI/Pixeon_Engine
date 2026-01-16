@@ -393,7 +393,7 @@ void BoxCollision::UpdateCollisionShape()
 		f3Size_.z * 0.5f * worldScale.z
 	));
 
-	pBoxShape_->setMargin(0.04f);
+	pBoxShape_->setMargin(0.02f);
 
 	if (pAttachedRigidBody_ && pBoxShape_)
 	{
