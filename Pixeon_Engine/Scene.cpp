@@ -258,7 +258,6 @@ void Scene::PlayUpdate() {
 	}
 	_ToBeAdded.clear();
 
-	// ★ カメラコンポーネントの更新とメインカメラの設定
 	int i = 0;
 	for (auto& obj : _objects) {
 		if (!obj) continue;
@@ -268,7 +267,6 @@ void Scene::PlayUpdate() {
 				CameraComponent* cam = dynamic_cast<CameraComponent*>(comp);
 				cam->SetCameraNumber(i);
 
-				// ★ メインカメラ番号と一致したら、メインカメラを更新
 				if (i == _MainCameraNumber) {
 					_MainCamera = cam;
 				}
@@ -300,8 +298,12 @@ void Scene::PlayUpdate() {
 
 				if (!hasInvalidObjects) {
 					float timeStep = 1.0f / 60.0f;
+
 					int maxSubSteps = 10;
-					float fixedTimeStep = 1.0f / 120.0f;
+					if (numObjects > 20) maxSubSteps = 15;
+					if (numObjects > 50) maxSubSteps = 20;
+
+					float fixedTimeStep = 1.0f / 240.0f;
 
 					bool valid = true;
 					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i) {
