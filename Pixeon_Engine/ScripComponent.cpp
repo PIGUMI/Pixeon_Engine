@@ -21,7 +21,12 @@ void ScripComponent::Init(AbstractObject* owner) {
 }
 
 void ScripComponent::BeginPlay() {
-	if (_scriptInstance) _scriptInstance->BeginPlay();
+	if (_scriptInstance)
+	{
+		Object parentObj = static_cast<Object>(_Parent);
+		_scriptInstance->SetParentObject(parentObj);
+		_scriptInstance->BeginPlay();
+	}
 }
 
 void ScripComponent::InGameUpdate() {

@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-0.524088 4.9688 8.65481 -0.0600004 0.52 6.33678e-39 -0.00370588 0 -0.00777072 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "11.8025 1.31269 -0.201282 1.59 0.11 6.33678e-39 1.86476 0.214908 -0.0104174 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -31,51 +31,33 @@
         {
             "Components": [
                 {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
+                    "Data": "PSX/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n2\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "2.3 2.5 5.5 0 1.25 0 0 2 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
+                },
+                {
+                    "Data": "1\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
                 }
             ],
-            "Name": "NewObject",
+            "Name": "ContainerA",
             "Parent": "",
             "Transform": {
                 "Position": [
-                    1.600000023841858,
-                    1.399999976158142,
-                    1.2999999523162842
-                ],
-                "Rotation": [
                     0.0,
-                    -1.0070375204086304,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                }
-            ],
-            "Name": "ChildObject",
-            "Parent": "NewObject",
-            "Transform": {
-                "Position": [
-                    2.0999999046325684,
                     0.0,
                     0.0
                 ],
                 "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
+                    -2.1834068298339844,
+                    -1.8552846908569336,
+                    0.2687980830669403
                 ],
                 "Scale": [
                     1.0,

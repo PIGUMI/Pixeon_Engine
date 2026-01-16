@@ -628,10 +628,11 @@ void RigidBody::UpdateMassProperties()
 
 btQuaternion RigidBody::EulerToQuaternion(const DirectX::XMFLOAT3& euler)
 {
-	DirectX::XMMATRIX rotX = DirectX::XMMatrixRotationX(euler.x);
-	DirectX::XMMATRIX rotY = DirectX::XMMatrixRotationY(euler.y);
-	DirectX::XMMATRIX rotZ = DirectX::XMMatrixRotationZ(euler.z);
-	DirectX::XMMATRIX rotMatrix = rotX * rotY * rotZ;
+	DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationRollPitchYaw(
+		euler.x,
+		euler.y,
+		euler.z
+	);
 
 	DirectX::XMVECTOR quat_vec = DirectX::XMQuaternionRotationMatrix(rotMatrix);
 	DirectX::XMFLOAT4 quat_float;

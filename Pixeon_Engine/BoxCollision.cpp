@@ -128,28 +128,50 @@ void BoxCollision::Draw(int Layer)
 	DirectX::XMFLOAT3 size = f3Size_;
 	DirectX::XMFLOAT3 center = f3Center_;
 	DirectX::XMFLOAT3 rot = transform.rotation;
+	DirectX::XMFLOAT3 scale = transform.scale;
 
-	DirectX::XMMATRIX matRot =
-		DirectX::XMMatrixRotationX(rot.x) *
-		DirectX::XMMatrixRotationY(rot.y) *
-		DirectX::XMMatrixRotationZ(rot.z);
+	// ModelRenderと同じワールド軸回転を使用
+	DirectX::XMMATRIX matRot = DirectX::XMMatrixRotationRollPitchYaw(
+		rot.x,  // Pitch (X軸回転)
+		rot.y,  // Yaw   (Y軸回転)
+		rot.z   // Roll  (Z軸回転)
+	);
 
-	DirectX::XMFLOAT3 localCorners[8] = {
-		{center.x - size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
-		{center.x + size.x / 2, center.y - size.y / 2, center.z - size.z / 2},
-		{center.x + size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
-		{center.x - size.x / 2, center.y + size.y / 2, center.z - size.z / 2},
-		{center.x - size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
-		{center.x + size.x / 2, center.y - size.y / 2, center.z + size.z / 2},
-		{center.x + size.x / 2, center.y + size.y / 2, center.z + size.z / 2},
-		{center.x - size.x / 2, center.y + size.y / 2, center.z + size.z / 2}
+	// スケールを適用したサイズ
+	DirectX::XMFLOAT3 scaledSize = {
+		size.x * scale.x,
+		size.y * scale.y,
+		size.z * scale.z
 	};
 
+	// ローカル座標系でのコーナー(スケール適用済み)
+	DirectX::XMFLOAT3 localCorners[8] = {
+		{center.x - scaledSize.x / 2, center.y - scaledSize.y / 2, center.z - scaledSize.z / 2},
+		{center.x + scaledSize.x / 2, center.y - scaledSize.y / 2, center.z - scaledSize.z / 2},
+		{center.x + scaledSize.x / 2, center.y + scaledSize.y / 2, center.z - scaledSize.z / 2},
+		{center.x - scaledSize.x / 2, center.y + scaledSize.y / 2, center.z - scaledSize.z / 2},
+		{center.x - scaledSize.x / 2, center.y - scaledSize.y / 2, center.z + scaledSize.z / 2},
+		{center.x + scaledSize.x / 2, center.y - scaledSize.y / 2, center.z + scaledSize.z / 2},
+		{center.x + scaledSize.x / 2, center.y + scaledSize.y / 2, center.z + scaledSize.z / 2},
+		{center.x - scaledSize.x / 2, center.y + scaledSize.y / 2, center.z + scaledSize.z / 2}
+	};
+
+	// ワールド座標に変換
 	DirectX::XMFLOAT3 worldCorners[8];
 	for (int i = 0; i < 8; ++i) {
-		DirectX::XMVECTOR v = DirectX::XMVectorSet(localCorners[i].x, localCorners[i].y, localCorners[i].z, 1.0f);
-		v = DirectX::XMVector3Transform(v, matRot);
+		DirectX::XMVECTOR v = DirectX::XMVectorSet(
+			localCorners[i].x,
+			localCorners[i].y,
+			localCorners[i].z,
+			1.0f
+		);
+
+		// 回転を適用
+		v = DirectX::XMVector3TransformNormal(v, matRot);
+
+		// 位置を適用
 		v = DirectX::XMVectorAdd(v, DirectX::XMVectorSet(pos.x, pos.y, pos.z, 0.0f));
+
 		DirectX::XMStoreFloat3(&worldCorners[i], v);
 	}
 
@@ -397,9 +419,11 @@ void BoxCollision::UpdateCollisionShape()
 
 	if (pAttachedRigidBody_ && pBoxShape_)
 	{
+		// ローカル座標系でのトランスフォーム（回転は含めない）
 		btTransform localTransform;
 		localTransform.setIdentity();
 		localTransform.setOrigin(btVector3(f3Center_.x, f3Center_.y, f3Center_.z));
+
 		pAttachedRigidBody_->AddCollisionShape(pBoxShape_, localTransform);
 
 		if (wasInWorld && physicsWorld)

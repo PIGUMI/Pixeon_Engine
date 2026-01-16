@@ -342,8 +342,10 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 
 DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 	const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const {
+
 	Transform t = _Parent->GetWorldTransform();
 
+	// メッシュのローカル変換(GlobalRotation含む)
 	XMMATRIX meshLocalScale = XMMatrixScaling(
 		scale.x * m_globalScale.x,
 		scale.y * m_globalScale.y,
@@ -362,8 +364,10 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 		offset.z + m_globalOffset.z
 	);
 
+	// メッシュローカル変換 = スケール * 回転 * 平行移動
 	XMMATRIX meshLocal = meshLocalScale * meshLocalRotation * meshLocalTranslation;
 
+	// オブジェクトのワールド変換
 	XMMATRIX objectWorld = XMMatrixScaling(
 		t.scale.x, t.scale.y, t.scale.z
 	) * XMMatrixRotationRollPitchYaw(
@@ -372,6 +376,7 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 		t.position.x, t.position.y, t.position.z
 	);
 
+	// メッシュローカルを先に適用してから、オブジェクトワールドを適用
 	return meshLocal * objectWorld;
 }
 
