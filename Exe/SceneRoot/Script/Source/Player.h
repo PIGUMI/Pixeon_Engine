@@ -11,6 +11,7 @@ private:
 	Object headObject;
 	Object bodyObject;
     Component CameraComp;
+    Object Bullet;
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {

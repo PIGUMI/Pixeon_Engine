@@ -7,6 +7,7 @@ void Script_Player::BeginPlay() {
 	FindChildObjectByName(playerObject, "Head", &headObject);
 	FindChildObjectByName(playerObject, "Body", &bodyObject);
 	FindComponent(headObject, "CameraComponent", &CameraComp);
+	FindPrefabObjectByName("Bullet", &Bullet);
 	FixedMouseCursor(true);
 	SetMainCamera(1);
 }
@@ -39,6 +40,13 @@ void Script_Player::Update() {
 		SetObjectTransform(bodyObject, &bodyTransform);
 	}
 	SetObjectTransform(playerObject, &playerTransform);
+
+	if(KeyTriggered('Q'))
+	{
+		SceneHandle scene;
+		GetCurrentScene(&scene);
+		AddObjectToScene(scene, Bullet);
+	}
 }
 
 void Script_Player::EndPlay() {

@@ -14,6 +14,9 @@ public:
 	virtual void EndPlay();
 
 	virtual void CallCustom(const std::string& functionName);
+	void SetParentObject(Object obj) { _parentObject = obj; }
+protected:
+	Object _parentObject = nullptr;
 };
 
 #endif // _ISCRIPT_H_

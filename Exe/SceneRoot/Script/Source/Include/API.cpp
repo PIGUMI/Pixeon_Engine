@@ -1,3 +1,9 @@
+/*
+* ファイル名　API
+* 説      明  API関数群
+*	          PixeonEngineの機能を外部から利用するためのインターフェースを提供します。
+*/
+
 #include "API.h"
 #include "MainFrame.h"
 #include "SceneManger.h"
@@ -632,7 +638,7 @@ extern "C" {
 		*outCameraNumber = cameraComp->GetCameraNumber();
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult GetCamaeraUpVector(Component camera, Float3* outUp)
+	PIXEON_API APIResult GetCamaraUpVector(Component camera, Float3* outUp)
 	{
 		if (!outUp) {
 			return PN_ERROR_INVALID_PARAMETER;
