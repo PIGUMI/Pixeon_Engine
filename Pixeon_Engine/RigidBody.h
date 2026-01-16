@@ -72,6 +72,15 @@ public:
 
 	void SetSpinningFriction(float spinningFriction);
 	float GetSpinningFriction() const { return fSpinningFriction_; }
+
+	void SetRotationConstraint(bool lockX, bool lockY, bool lockZ);
+	void SetRotationConstraintX(bool lock);
+	void SetRotationConstraintY(bool lock);
+	void SetRotationConstraintZ(bool lock);
+
+	bool IsRotationConstraintX() const { return bLockRotationX_; }
+	bool IsRotationConstraintY() const { return bLockRotationY_; }
+	bool IsRotationConstraintZ() const { return bLockRotationZ_; }
 private:
 	void CreateRigidBody();
 	void UpdateMassProperties();
@@ -103,6 +112,10 @@ private:
 
 	bool bAddedToWorld_ = false;
 	bool bManualTransformControl_ = false;
+
+	bool bLockRotationX_ = false;
+	bool bLockRotationY_ = false;
+	bool bLockRotationZ_ = false;
 };
 
 #endif // _RIGID_BODY_H_

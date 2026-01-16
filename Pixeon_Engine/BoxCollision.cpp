@@ -345,11 +345,6 @@ bool BoxCollision::CheckCollision(BoxCollision* otherBox, CollisionInfo& outColl
 	return OBBIntersection(pos1, rot1, size1, pos2, rot2, size2, outCollisionInfo);
 }
 
-std::vector<CollisionInfo> BoxCollision::GetCollisions()
-{
-	return CurrentCollisions_;
-}
-
 void BoxCollision::DrawDebugWireframe()
 {
 }

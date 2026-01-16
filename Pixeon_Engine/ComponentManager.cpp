@@ -8,6 +8,7 @@
 #include "AnimationComponent.h"
 #include "RigidBody.h"
 #include "BoxCollision.h"
+#include "CapsuleCollision.h"
 #include "Animator2DComponent.h"
 #include <Windows.h>
 
@@ -36,6 +37,7 @@ void ComponentManager::Init() {
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATION] = "Animation";
 	_ComponentName[(int)COMPONENT_TYPE::RIGIDBODY] = "RigidBody";
 	_ComponentName[(int)COMPONENT_TYPE::BOX_COLLISION] = "BoxCollision";
+	_ComponentName[(int)COMPONENT_TYPE::CAPSULE_COLLISION] = "CapsuleCollision";
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATOR2D] = "Animator2D";
 }
 
@@ -69,6 +71,9 @@ AbstractComponent* ComponentManager::AddComponent(AbstractObject* owner, COMPONE
 		break;
 	case ComponentManager::COMPONENT_TYPE::BOX_COLLISION:
 		component = owner->AddComponent<BoxCollision>();
+		break;
+	case ComponentManager::COMPONENT_TYPE::CAPSULE_COLLISION:
+		component = owner->AddComponent<CapsuleCollision>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::ANIMATOR2D:
 		component = owner->AddComponent<Animator2DComponent>();

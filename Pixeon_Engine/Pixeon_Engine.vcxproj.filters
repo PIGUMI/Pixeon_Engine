@@ -236,6 +236,9 @@
     <ClCompile Include="Builder.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
+    <ClCompile Include="CapsuleCollision.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -411,6 +414,12 @@
     </ClInclude>
     <ClInclude Include="Builder.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCollision.h">
+      <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleCollision.h">
+      <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

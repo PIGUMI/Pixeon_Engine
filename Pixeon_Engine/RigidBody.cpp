@@ -246,6 +246,32 @@ void RigidBody::DrawInspector()
 		if (ImGui::SliderFloat(SJ("##SpinningFrictionSlider").c_str(), &SpinningFriction, 0.0f, 1.0f, "%.3f"))
 			SetSpinningFriction(SpinningFriction);
 
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("âÒì]êßñÒ").c_str());
+		ImGui::TableSetColumnIndex(1);
+
+		bool lockX = bLockRotationX_;
+		bool lockY = bLockRotationY_;
+		bool lockZ = bLockRotationZ_;
+
+		if (ImGui::BeginTable(SJ("##RotationLockTable").c_str(), 3, ImGuiTableFlags_SizingFixedFit))
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			if (ImGui::Checkbox(SJ("X##LockRotX").c_str(), &lockX))
+				SetRotationConstraintX(lockX);
+
+			ImGui::TableSetColumnIndex(1);
+			if (ImGui::Checkbox(SJ("Y##LockRotY").c_str(), &lockY))
+				SetRotationConstraintY(lockY);
+
+			ImGui::TableSetColumnIndex(2);
+			if (ImGui::Checkbox(SJ("Z##LockRotZ").c_str(), &lockZ))
+				SetRotationConstraintZ(lockZ);
+
+			ImGui::EndTable();
+		}
+
 		ImGui::EndTable();
 	}
 }
@@ -261,6 +287,9 @@ void RigidBody::SaveToFile(std::ostream& out)
 	out << fAngularDamping_ << std::endl;
 	out << fRollingFriction_ << std::endl;
 	out << fSpinningFriction_ << std::endl;
+	out << bLockRotationX_ << std::endl;
+	out << bLockRotationY_ << std::endl;
+	out << bLockRotationZ_ << std::endl;
 }
 
 void RigidBody::LoadFromFile(std::istream& in)
@@ -274,6 +303,9 @@ void RigidBody::LoadFromFile(std::istream& in)
 	in >> fAngularDamping_;
 	in >> fRollingFriction_;
 	in >> fSpinningFriction_;
+	in >> bLockRotationX_;
+	in >> bLockRotationY_;
+	in >> bLockRotationZ_;
 
 	if (pRigidBody_)
 	{
@@ -285,6 +317,7 @@ void RigidBody::LoadFromFile(std::istream& in)
 		SetDamping(fLinearDamping_, fAngularDamping_);
 		SetRollingFriction(fRollingFriction_);
 		SetSpinningFriction(fSpinningFriction_);
+		SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 	}
 }
 
@@ -598,7 +631,7 @@ void RigidBody::CreateRigidBody()
 
 	SetKinematic(bKinematic_);
 	SetGravityEnabled(bUseGravity_);
-
+	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 	bAddedToWorld_ = false;
 }
 
@@ -716,4 +749,39 @@ void RigidBody::SetSpinningFriction(float spinningFriction)
 	{
 		pRigidBody_->setSpinningFriction(spinningFriction);
 	}
+}
+
+void RigidBody::SetRotationConstraint(bool lockX, bool lockY, bool lockZ)
+{
+	bLockRotationX_ = lockX;
+	bLockRotationY_ = lockY;
+	bLockRotationZ_ = lockZ;
+
+	if (pRigidBody_)
+	{
+		btVector3 angularFactor(
+			lockX ? 0.0f : 1.0f,
+			lockY ? 0.0f : 1.0f,
+			lockZ ? 0.0f : 1.0f
+		);
+		pRigidBody_->setAngularFactor(angularFactor);
+	}
+}
+
+void RigidBody::SetRotationConstraintX(bool lock)
+{
+	bLockRotationX_ = lock;
+	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
+}
+
+void RigidBody::SetRotationConstraintY(bool lock)
+{
+	bLockRotationY_ = lock;
+	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
+}
+
+void RigidBody::SetRotationConstraintZ(bool lock)
+{
+	bLockRotationZ_ = lock;
+	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 }

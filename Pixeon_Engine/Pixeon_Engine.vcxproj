@@ -147,10 +147,12 @@
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
+    <ClInclude Include="BaseCollision.h" />
     <ClInclude Include="BoneNodeMapping.h" />
     <ClInclude Include="BoxCollision.h" />
     <ClInclude Include="Builder.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CapsuleCollision.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
@@ -209,6 +211,7 @@
     <ClCompile Include="BoxCollision.cpp" />
     <ClCompile Include="Builder.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CapsuleCollision.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="EasingGraph.cpp" />
