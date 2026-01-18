@@ -376,6 +376,7 @@ void Animator2DFrame::DrawAnimatorControl()
 			msg = "現在の再生時間: " + std::to_string(animator_->fNowTime_) + " 秒";
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fNowTime_);
 			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("プロジェクトを閉じる").c_str())) {
+				animator_->SaveFile();
 				delete animator_;
 				animator_ = nullptr;
 				isPlaying_ = false;
