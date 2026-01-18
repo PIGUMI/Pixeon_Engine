@@ -559,6 +559,24 @@ void Animator2D::Start()
 }
 
 /*
+* 関数名　: GetKeyFrameByName
+* 引　数　: name キーフレーム名
+* 戻り値　: KeyFrame* キーフレームのポインタ（見つからなければnullptr）
+* 説　明　: キーフレーム名からキーフレームを取得する
+*/
+KeyFrame* Animator2D::GetKeyFrameByName(const std::string& name)
+{
+	for (auto& kf : KeyFrames_)
+	{
+		if (kf.KeyFrameName == name)
+		{
+			return &kf;
+		}
+	}
+	return nullptr;
+}
+
+/*
 * 関数名　: EaseByBezierCurve
 * 引　数　: curve カーブデータ
 *          startvalue 開始値

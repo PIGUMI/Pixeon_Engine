@@ -126,6 +126,8 @@ public:
 	void Stop();
 	void Start();
 
+	KeyFrame* GetKeyFrameByName(const std::string& name);
+
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();

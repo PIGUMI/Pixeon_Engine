@@ -106,6 +106,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		ImGui::End();
 		return;
 	}
+
 	if (ImGui::BeginTable(SJ("KeyFrameEditor").c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		std::string msg;
 
