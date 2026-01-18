@@ -131,7 +131,8 @@ extern "C" {
 	PIXEON_API APIResult SetCameraNearFar(Component camera, float inNear, float inFar);
 	PIXEON_API APIResult SetChangeCameraCalculation(Component camera, bool isChange);
 	PIXEON_API APIResult GetCameraNumber(Component camera, int* outCameraNumber);
-	PIXEON_API APIResult GetCamaeraUpVector(Component camera, Float3* outUp);
+	PIXEON_API APIResult GetCameraUpVector(Component camera, Float3* outUp);
+	PIXEON_API APIResult GetCameraRightVector(Component camera, Float3* outRight);
 	PIXEON_API APIResult GetCameraForwardVector(Component camera, Float3* outForward);
 
 	// light Component

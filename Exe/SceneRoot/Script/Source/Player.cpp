@@ -42,8 +42,8 @@ void Script_Player::Movement()
 	GetObjectTransform(headObject, &head_Transform);
 
 	// ƒ}ƒEƒX‚ÌˆÚ“®—Ê‚ÉŠî‚Ã‚¢‚Ä‰ñ“]‚ð’²®
-	head_Transform.rotation.x -= (float)Mouse_Y * 0.001f;
-	head_Transform.rotation.y += (float)Mouse_X * 0.001f;
+	head_Transform.rotation.x -= (float)Mouse_Y * 0.005f;
+	head_Transform.rotation.y += (float)Mouse_X * 0.005f;
 
 	// ã‰º‚Ì‰ñ“]‚ð§ŒÀ
 	if (head_Transform.rotation.x > 1.5f)
@@ -75,6 +75,17 @@ void Script_Player::Movement()
 		forward.z /= length;
 	}
 
+	Float3 right;
+	GetCameraRightVector(CameraComp, &right);
+	right.y = 0.0f;
+	length = sqrtf(right.x * right.x + right.y * right.y + right.z * right.z);
+	if (length > 0.0f)
+	{
+		right.x /= length;
+		right.y /= length;
+		right.z /= length;
+	}
+
 	if(KeyPressed('W'))
 	{
 		playerTransform.position.x += -forward.x * 0.1f;
@@ -93,6 +104,26 @@ void Script_Player::Movement()
 		playerTransform.position.z -= -forward.z * 0.1f;
 		GetObjectTransform(bodyObject, &bodyTransform);
 		bodyTransform.rotation.y = head_Transform.rotation.y + 3.14f;
+		SetObjectTransform(bodyObject, &bodyTransform);
+		SetObjectTransform(playerObject, &playerTransform);
+	}
+	if(KeyPressed('A'))
+	{
+		playerTransform.position.x += right.x * 0.05f;
+		playerTransform.position.y += right.y * 0.05f;
+		playerTransform.position.z += right.z * 0.05f;
+		GetObjectTransform(bodyObject, &bodyTransform);
+		bodyTransform.rotation.y = head_Transform.rotation.y - 1.57f;
+		SetObjectTransform(bodyObject, &bodyTransform);
+		SetObjectTransform(playerObject, &playerTransform);
+	}
+	if(KeyPressed('D'))
+	{
+		playerTransform.position.x -= right.x * 0.05f;
+		playerTransform.position.y -= right.y * 0.05f;
+		playerTransform.position.z -= right.z * 0.05f;
+		GetObjectTransform(bodyObject, &bodyTransform);
+		bodyTransform.rotation.y = head_Transform.rotation.y + 1.57f;
 		SetObjectTransform(bodyObject, &bodyTransform);
 		SetObjectTransform(playerObject, &playerTransform);
 	}

@@ -638,7 +638,7 @@ extern "C" {
 		*outCameraNumber = cameraComp->GetCameraNumber();
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult GetCamaraUpVector(Component camera, Float3* outUp)
+	PIXEON_API APIResult GetCameraUpVector(Component camera, Float3* outUp)
 	{
 		if (!outUp) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -652,6 +652,22 @@ extern "C" {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		*outUp = ToFloat3(cameraComp->GetUpVector());
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetCameraRightVector(Component camera, Float3* outRight)
+	{
+		if (!outRight) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+		if (!cameraComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outRight = ToFloat3(cameraComp->GetRightVector());
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult GetCameraForwardVector(Component camera, Float3* outForward)
