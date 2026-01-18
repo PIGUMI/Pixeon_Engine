@@ -110,184 +110,214 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	if (ImGui::BeginTable(SJ("KeyFrameEditor").c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		std::string msg;
 
-		/* 位置の設定GUI */
+		/* 位置設定 */
 		if (!selectedKeyFrame_->editorFlag.bPosition)
-			msg = "位置 ";
-		else
-			msg = "開始位置 ";
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始位置").c_str(), &selectedKeyFrame_->StartTransform.Position.x, 0.1f);
-		if (selectedKeyFrame_->editorFlag.bPosition)
 		{
-			ImGui::TableNextRow();/*終了位置*/
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了位置").c_str());
-			ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##終了位置").c_str(), &selectedKeyFrame_->EndTransform.Position.x, 0.1f);
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); 
+			ImGui::Text(SJ("位置").c_str());
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細縮小##位置").c_str()))
-			{
-				selectedKeyFrame_->editorFlag.bPosition = false;
-			}
-		}
-		else
-		{
+			ImGui::Text(SJ("X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Position").c_str(), &selectedKeyFrame_->StartTransform.Position.x);
+			selectedKeyFrame_->EndTransform.Position = selectedKeyFrame_->StartTransform.Position;
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細展開##位置").c_str()))
+			if(ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##pos").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bPosition = true;
 			}
-			// 終了位置を開始位置と同じにする
-			selectedKeyFrame_->EndTransform.Position = selectedKeyFrame_->StartTransform.Position;
 		}
-
-		/* 回転の設定GUI */
-		if (!selectedKeyFrame_->editorFlag.bRotation)
-			msg = "回転 ";
 		else
-			msg = "開始回転 ";
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始角度").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x, 0.1f);
-		if (selectedKeyFrame_->editorFlag.bRotation)
 		{
-			ImGui::TableNextRow();/*終了角度*/
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了回転").c_str());
-			ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##終了角度").c_str(), &selectedKeyFrame_->EndTransform.Rotation.x, 0.1f);
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("位置:Start X:Y").c_str());
+			ImGui::Text(SJ("位置:End X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartPosition").c_str(), &selectedKeyFrame_->StartTransform.Position.x);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndPosition").c_str(), &selectedKeyFrame_->EndTransform.Position.x);
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細縮小##回転").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##pos").c_str()))
 			{
-				selectedKeyFrame_->editorFlag.bRotation = false;
+				selectedKeyFrame_->editorFlag.bPosition = false;
+				selectedKeyFrame_->StartTransform.Position = selectedKeyFrame_->EndTransform.Position;
 			}
 		}
-		else
+
+		/* 回転 */
+		if (!selectedKeyFrame_->editorFlag.bRotation)
 		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("回転").c_str());
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細展開##回転").c_str()))
+			ImGui::Text(SJ("X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Rotation").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x);
+			selectedKeyFrame_->EndTransform.Rotation = selectedKeyFrame_->StartTransform.Rotation;
+			ImGui::SameLine();
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##rot").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bRotation = true;
 			}
-			// 終了角度を開始角度と同じにする
-			selectedKeyFrame_->EndTransform.Rotation = selectedKeyFrame_->StartTransform.Rotation;
 		}
-
-		/* スケールの設定GUI */
-		if (!selectedKeyFrame_->editorFlag.bScale)
-			msg = "スケール ";
 		else
-			msg = "開始スケール ";
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始スケール").c_str(), &selectedKeyFrame_->StartTransform.Scale.x, 0.1f, 0.0f);
-		if (selectedKeyFrame_->editorFlag.bScale)
 		{
-			ImGui::TableNextRow();/*終了スケール*/
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了スケール").c_str());
-			ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##終了スケール").c_str(), &selectedKeyFrame_->EndTransform.Scale.x, 0.1f, 0.0f);
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("回転:Start X:Y").c_str());
+			ImGui::Text(SJ("回転:End X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartRotation").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndRotation").c_str(), &selectedKeyFrame_->EndTransform.Rotation.x);
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細縮小##スケール").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##rot").c_str()))
 			{
-				selectedKeyFrame_->editorFlag.bScale = false;
+				selectedKeyFrame_->editorFlag.bRotation = false;
+				selectedKeyFrame_->StartTransform.Rotation = selectedKeyFrame_->EndTransform.Rotation;
 			}
 		}
-		else
+
+		/* サイズ */
+		if(!selectedKeyFrame_->editorFlag.bScale)
 		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("サイズ").c_str());
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細展開##スケール").c_str()))
+			ImGui::Text(SJ("X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Scale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x,0.01f);
+			selectedKeyFrame_->EndTransform.Scale = selectedKeyFrame_->StartTransform.Scale;
+			ImGui::SameLine();
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##scl").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bScale = true;
 			}
-			// 終了スケールを開始スケールと同じにする
-			selectedKeyFrame_->EndTransform.Scale = selectedKeyFrame_->StartTransform.Scale;
 		}
-
-		/* 色の設定GUI */
-		if (!selectedKeyFrame_->editorFlag.bColor)
-			msg = "色 ";
 		else
-			msg = "開始色 ";
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::ColorEdit4(SJ("##開始色").c_str(), &selectedKeyFrame_->StartTransform.Color.x);
-		if (selectedKeyFrame_->editorFlag.bColor)
 		{
-			ImGui::TableNextRow();/*終了色*/
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了色").c_str());
-			ImGui::TableSetColumnIndex(1); ImGui::ColorEdit4(SJ("##終了色").c_str(), &selectedKeyFrame_->EndTransform.Color.x);
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("サイズ:Start X:Y").c_str());
+			ImGui::Text(SJ("サイズ:End X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartScale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x,0.01f);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndScale").c_str(), &selectedKeyFrame_->EndTransform.Scale.x,0.01f);
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細縮小##色").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##scl").c_str()))
 			{
-				selectedKeyFrame_->editorFlag.bColor = false;
+				selectedKeyFrame_->editorFlag.bScale = false;
+				selectedKeyFrame_->StartTransform.Scale = selectedKeyFrame_->EndTransform.Scale;
 			}
 		}
-		else
+
+		/* vertex */
+		if (!selectedKeyFrame_->editorFlag.bVertexOffset)
 		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("頂点オフセット").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("上##VertexOffsetUp").c_str(), &selectedKeyFrame_->vertexOffset.Up,1.0f,-50.0f,50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("下##VertexOffsetDown").c_str(), &selectedKeyFrame_->vertexOffset.Down, 1.0f, -50.0f, 50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("左##VertexOffsetLeft").c_str(), &selectedKeyFrame_->vertexOffset.Left, 1.0f, -50.0f, 50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("右##VertexOffsetRight").c_str(), &selectedKeyFrame_->vertexOffset.Right, 1.0f, -50.0f, 50.0f);
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細展開##色").c_str()))
+		}
+
+		/* 色の設定 */
+		if (!selectedKeyFrame_->editorFlag.bColor)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("色").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("##Color").c_str(), &selectedKeyFrame_->StartTransform.Color.x);
+			selectedKeyFrame_->EndTransform.Color = selectedKeyFrame_->StartTransform.Color;
+			ImGui::SameLine();
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##color").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bColor = true;
 			}
-			// 終了色を開始色と同じにする
-			selectedKeyFrame_->EndTransform.Color = selectedKeyFrame_->StartTransform.Color;
-		}
-
-		/* UV位置の設定GUI */
-		if (!selectedKeyFrame_->editorFlag.bUVPosition)
-			msg = "UV位置 ";
-		else
-			msg = "開始UV位置 ";
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始UV位置").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f);
-		if (selectedKeyFrame_->editorFlag.bUVPosition)
-		{
-			ImGui::TableNextRow();/*終了UV位置*/
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了UV位置").c_str());
-			ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##終了UV位置").c_str(), &selectedKeyFrame_->EndTransform.UVPosition.x, 0.01f);
-			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細縮小##UV位置").c_str()))
-			{
-				selectedKeyFrame_->editorFlag.bUVPosition = false;
-			}
 		}
 		else
 		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("色:Start RGBA").c_str());
+			ImGui::Text(SJ("色:End RGBA").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("##StartColor").c_str(), &selectedKeyFrame_->StartTransform.Color.x);
+			ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("##EndColor").c_str(), &selectedKeyFrame_->EndTransform.Color.x);
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細展開##UV位置").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##color").c_str()))
 			{
-				selectedKeyFrame_->editorFlag.bUVPosition = true;
+				selectedKeyFrame_->editorFlag.bColor = false;
+				selectedKeyFrame_->StartTransform.Color = selectedKeyFrame_->EndTransform.Color;
 			}
-			// 終了UV位置を開始UV位置と同じにする
-			selectedKeyFrame_->EndTransform.UVPosition = selectedKeyFrame_->StartTransform.UVPosition;
 		}
 
-		/* UVスケールの設定GUI */
+		/* UV サイズ */
 		if (!selectedKeyFrame_->editorFlag.bUVScale)
-			msg = "UVスケール ";
-		else
-			msg = "開始UVスケール ";
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ(msg.c_str()).c_str());
-		ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##開始UVスケール").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f);
-		if (selectedKeyFrame_->editorFlag.bUVScale)
 		{
-			ImGui::TableNextRow();/*UVスケール*/
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("終了UVスケール").c_str());
-			ImGui::TableSetColumnIndex(1); ImGui::DragFloat2(SJ("##終了UVスケール").c_str(), &selectedKeyFrame_->EndTransform.UVScale.x, 0.01f, 0.0f);
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UVサイズ").c_str());
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細縮小##UVスケール").c_str()))
-			{
-				selectedKeyFrame_->editorFlag.bUVScale = false;
-			}
-		}
-		else
-		{
+			ImGui::Text(SJ("X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
+			selectedKeyFrame_->EndTransform.UVScale = selectedKeyFrame_->StartTransform.UVScale;
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("詳細展開##UVスケール").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##uvscl").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bUVScale = true;
 			}
-			// 終了UVスケールを開始UVスケールと同じにする
-			selectedKeyFrame_->EndTransform.UVScale = selectedKeyFrame_->StartTransform.UVScale;
+		}
+		else
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("UVサイズ:Start X:Y").c_str());
+			ImGui::Text(SJ("UVサイズ:End X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVScale").c_str(), &selectedKeyFrame_->EndTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
+			ImGui::SameLine();
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##uvscl").c_str()))
+			{
+				selectedKeyFrame_->editorFlag.bUVScale = false;
+				selectedKeyFrame_->StartTransform.UVScale = selectedKeyFrame_->EndTransform.UVScale;
+			}
+		}
+
+		/* UV位置 */ 
+		if (!selectedKeyFrame_->editorFlag.bUVPosition)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UV位置").c_str());
+			ImGui::SameLine();
+			ImGui::Text(SJ("X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x,0.01f, 0.0f, 1.0f);
+			selectedKeyFrame_->EndTransform.UVPosition = selectedKeyFrame_->StartTransform.UVPosition;
+			ImGui::SameLine();
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##uvpos").c_str()))
+			{
+				selectedKeyFrame_->editorFlag.bUVPosition = true;
+			}
+		}
+		else
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("UV位置:Start X:Y").c_str());
+			ImGui::Text(SJ("UV位置:End X:Y").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVPosition").c_str(), &selectedKeyFrame_->EndTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
+			ImGui::SameLine();
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##uvpos").c_str()))
+			{
+				selectedKeyFrame_->editorFlag.bUVPosition = false;
+				selectedKeyFrame_->StartTransform.UVPosition = selectedKeyFrame_->EndTransform.UVPosition;
+			}
 		}
 
 		/* テクスチャの設定GUI */

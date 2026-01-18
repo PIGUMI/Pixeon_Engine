@@ -266,6 +266,8 @@ void Animator2D::SaveFile()
 		kfJson["EditorFlag"]["bScale"] = kf.editorFlag.bScale;
 		kfJson["EditorFlag"]["bUVPosition"] = kf.editorFlag.bUVPosition;
 		kfJson["EditorFlag"]["bUVScale"] = kf.editorFlag.bUVScale;
+		kfJson["EditorFlag"]["bColor"] = kf.editorFlag.bColor;
+		kfJson["EditorFlag"]["bVertexOffset"] = kf.editorFlag.bVertexOffset;
 		kfJson["Texture"] = kf.Texture;
 		// VertexOffset
 		kfJson["VertexOffset"]["Up"] = kf.vertexOffset.Up;
@@ -361,6 +363,8 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.editorFlag.bScale = editorFlagJson["bScale"].get<bool>();
 			kf.editorFlag.bUVPosition = editorFlagJson["bUVPosition"].get<bool>();
 			kf.editorFlag.bUVScale = editorFlagJson["bUVScale"].get<bool>();
+			kf.editorFlag.bColor = editorFlagJson["bColor"].get<bool>();
+			kf.editorFlag.bVertexOffset = editorFlagJson["bVertexOffset"].get<bool>();
 			// Texture
 			kf.Texture = kfJson["Texture"].get<std::string>();
 			// VertexOffset

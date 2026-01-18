@@ -33,6 +33,7 @@ struct EditorFlag
 	bool bUVPosition = false;
 	bool bUVScale = false;
 	bool bColor = false;
+	bool bVertexOffset = false;
 };
 
 struct VertexOffset
