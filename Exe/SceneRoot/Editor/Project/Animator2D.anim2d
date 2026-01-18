@@ -1,7 +1,7 @@
 {
     "KeyFrames": [
         {
-            "Active": true,
+            "Active": false,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -25,11 +25,11 @@
                 "bPosition": false,
                 "bRotation": false,
                 "bScale": false,
-                "bUVPosition": true,
+                "bUVPosition": false,
                 "bUVScale": false,
                 "bVertexOffset": false
             },
-            "EndTime": 1.0,
+            "EndTime": 0.9999999403953552,
             "EndTransform": {
                 "Color": [
                     1.0,
@@ -46,15 +46,15 @@
                     0.0
                 ],
                 "Scale": [
-                    20.0,
-                    10.0
+                    1.0,
+                    1.0
                 ],
                 "UVPosition": [
-                    0.75,
+                    0.0,
                     0.0
                 ],
                 "UVScale": [
-                    0.25,
+                    1.0,
                     1.0
                 ]
             },
@@ -76,19 +76,19 @@
                     0.0
                 ],
                 "Scale": [
-                    20.0,
-                    10.0
+                    1.0,
+                    1.0
                 ],
                 "UVPosition": [
                     0.0,
                     0.0
                 ],
                 "UVScale": [
-                    0.25,
+                    1.0,
                     1.0
                 ]
             },
-            "Texture": "yougisya_1768554975135.jpg",
+            "Texture": "",
             "VertexOffset": {
                 "Down": 50.0,
                 "Left": 50.0,
@@ -97,8 +97,8 @@
             }
         }
     ],
-    "Loop": true,
+    "Loop": false,
     "ProjectName": "Animator2D",
-    "TotalDuration": 1.0,
+    "TotalDuration": 0.9999999403953552,
     "ViewMode": 0
 }

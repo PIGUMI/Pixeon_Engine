@@ -110,6 +110,17 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	if (ImGui::BeginTable(SJ("KeyFrameEditor").c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		std::string msg;
 
+		/* KeyFrame–¼Ý’è */
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("KeyFrame–¼").c_str());
+		ImGui::TableSetColumnIndex(1);
+		char nameBuffer[256];
+		strcpy_s(nameBuffer, selectedKeyFrame_->KeyFrameName.c_str());
+		if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("##KeyFrameName").c_str(), nameBuffer, sizeof(nameBuffer)))
+		{
+			selectedKeyFrame_->KeyFrameName = std::string(nameBuffer);
+		}
+
 		/* ˆÊ’uÝ’è */
 		if (!selectedKeyFrame_->editorFlag.bPosition)
 		{
