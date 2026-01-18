@@ -42,8 +42,8 @@ void Script_Player::Movement()
 	GetObjectTransform(headObject, &head_Transform);
 
 	// ƒ}ƒEƒX‚ÌˆÚ“®—Ê‚ÉŠî‚Ã‚¢‚Ä‰ñ“]‚ð’²®
-	head_Transform.rotation.x -= (float)Mouse_Y * 0.01f;
-	head_Transform.rotation.y += (float)Mouse_X * 0.01f;
+	head_Transform.rotation.x -= (float)Mouse_Y * 0.001f;
+	head_Transform.rotation.y += (float)Mouse_X * 0.001f;
 
 	// ã‰º‚Ì‰ñ“]‚ð§ŒÀ
 	if (head_Transform.rotation.x > 1.5f)
@@ -75,7 +75,7 @@ void Script_Player::Movement()
 		forward.z /= length;
 	}
 
-	if (KeyPressed('W'))
+	if(KeyPressed('W'))
 	{
 		playerTransform.position.x += -forward.x * 0.1f;
 		playerTransform.position.y += -forward.y * 0.1f;
