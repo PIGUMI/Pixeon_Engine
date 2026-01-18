@@ -22,6 +22,7 @@ typedef void* SceneHandle;
 typedef void* Object;
 typedef void* Component;
 typedef void* Animator2d;
+typedef void* Keyframe;
 
 #pragma pack(push, 1)
 
@@ -216,6 +217,11 @@ extern "C" {
 	PIXEON_API APIResult Animator2DPlay(Animator2d animator);
 	PIXEON_API APIResult Animator2DStop(Animator2d animator);
 	PIXEON_API APIResult Animator2DIsEnd(Animator2d animator,bool* End);
+	PIXEON_API APIResult FindKeyFrame(Animator2d animator, const char* keyname, Keyframe* outKeyframe);
+	PIXEON_API APIResult SetVertexOffsetUp(Keyframe keyframe,float offset);
+	PIXEON_API APIResult SetVertexOffsetDown(Keyframe keyframe, float offset);
+	PIXEON_API APIResult SetVertexOffsetLeft(Keyframe keyframe, float offset);
+	PIXEON_API APIResult SetVertexOffsetRight(Keyframe keyframe, float offset);
 
 };
 
