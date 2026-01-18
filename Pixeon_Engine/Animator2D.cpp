@@ -161,6 +161,10 @@ void Animator2D::Draw(int Layer)
 					kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
 					kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
 			}
+			PreviewImage->SetVertexOffsetDown(kf.vertexOffset.Down);
+			PreviewImage->SetVertexOffsetUp(kf.vertexOffset.Up);
+			PreviewImage->SetVertexOffsetLeft(kf.vertexOffset.Left);
+			PreviewImage->SetVertexOffsetRight(kf.vertexOffset.Right);
 			PreviewImage->SetLayerNumber(layer_);
 			PreviewImage->SetColor(kf.NowTransform.Color);
 			PreviewImage->SetTextureName(kf.Texture);
@@ -263,6 +267,11 @@ void Animator2D::SaveFile()
 		kfJson["EditorFlag"]["bUVPosition"] = kf.editorFlag.bUVPosition;
 		kfJson["EditorFlag"]["bUVScale"] = kf.editorFlag.bUVScale;
 		kfJson["Texture"] = kf.Texture;
+		// VertexOffset
+		kfJson["VertexOffset"]["Up"] = kf.vertexOffset.Up;
+		kfJson["VertexOffset"]["Down"] = kf.vertexOffset.Down;
+		kfJson["VertexOffset"]["Left"] = kf.vertexOffset.Left;
+		kfJson["VertexOffset"]["Right"] = kf.vertexOffset.Right;
 		KeyFramesJson.push_back(kfJson);
 	}
 	SaveJson["KeyFrames"] = KeyFramesJson;
@@ -354,6 +363,13 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.editorFlag.bUVScale = editorFlagJson["bUVScale"].get<bool>();
 			// Texture
 			kf.Texture = kfJson["Texture"].get<std::string>();
+			// VertexOffset
+			auto vertexOffsetJson = kfJson["VertexOffset"];
+			kf.vertexOffset.Up = vertexOffsetJson["Up"].get<float>();
+			kf.vertexOffset.Down = vertexOffsetJson["Down"].get<float>();
+			kf.vertexOffset.Left = vertexOffsetJson["Left"].get<float>();
+			kf.vertexOffset.Right = vertexOffsetJson["Right"].get<float>();
+			// キーフレームの追加
 			KeyFrames_.push_back(kf);
 		}
 	}

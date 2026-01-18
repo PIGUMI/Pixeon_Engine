@@ -35,6 +35,14 @@ struct EditorFlag
 	bool bColor = false;
 };
 
+struct VertexOffset
+{
+	float Up = 50.0f;
+	float Down = 50.0f;
+	float Left = 50.0f;
+	float Right = 50.0f;
+};
+
 enum ViewMode
 {
 	UI,
@@ -54,6 +62,7 @@ struct KeyFrame
 	UITransform NowTransform;
 	std::string Texture;
 	EditorFlag editorFlag;
+	VertexOffset vertexOffset;
 };
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }

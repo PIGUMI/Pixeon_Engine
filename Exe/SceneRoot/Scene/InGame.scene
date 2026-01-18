@@ -3041,7 +3041,7 @@
         {
             "Components": [
                 {
-                    "Data": "9\ncrosshair022.png\n3\nVS_ImgQuad_Lit\nPS_ImgQuad\n128 128\n100 100\n0 1\n0 0 0\n0 0 1 1\n1 1 1 1\n0 0 0\n",
+                    "Data": "9\ncrosshair022.png\n3\nVS_ImgQuad_Lit\nPS_ImgQuad\n128 128\n100 100\n0 1\n0 0 0\n0 0 1 1\n1 1 1 1\n0 0 0\n50 50 50 50\n",
                     "Name": "ImageRender",
                     "Type": 2
                 }
