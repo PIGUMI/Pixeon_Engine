@@ -205,7 +205,14 @@ void MainFrame::Draw()
 		_finalRenderTarget->Begin(dx11->GetContext());
 		dx11->ApplyToneMappingPass();
 		for (auto layerRT : _layerRenderTargets) {
-			ImageUtils::DrawSRV(layerRT->GetShaderResourceView(), 0.0f, 0.0, (float)_engineConfig.screenWidth, (float)_engineConfig.screenHeight);
+			ImageUtils::DrawSRVPixelated(
+				layerRT->GetShaderResourceView(),
+				0.0f, 0.0f,
+				(float)_engineConfig.screenWidth,
+				(float)_engineConfig.screenHeight,
+				8.0f,
+				1.0f
+			);
 		}
 		_finalRenderTarget->End();
 
