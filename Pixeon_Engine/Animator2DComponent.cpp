@@ -58,7 +58,7 @@ void Animator2DComponent::DrawInspector()
 	if (ImGui::BeginTable(("Animator2D" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("レイヤー番号:").c_str());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("レイヤー番号: ").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::InputInt(("##LayerNumber" + Ptr).c_str(), &_LayerNumber);
 		if (0 > _LayerNumber) _LayerNumber = 0;
@@ -97,7 +97,7 @@ void Animator2DComponent::DrawInspector()
 			ImGui::TableSetColumnIndex(0);
 			if (animator->GetViewMode() == ViewMode::Billboard)
 			{
-				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定:ビルボード").c_str());
+				ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ビュー設定: ビルボード").c_str());
 			}
 			else
 			{
@@ -178,6 +178,12 @@ void Animator2DComponent::DrawAnimator2DPopup()
 			if (ImGui::Selectable(projectFiles_[i].c_str(), selected)) {
 				selectedProjectIndex_ = i;
 				if (selectedProjectIndex_ < 0 && selectedProjectIndex_ >= projectFiles_.size())return;
+
+				// プリロードされていない場合は先にプリロード
+				if (!Animator2DManager::GetInstance()->IsLoaded(projectFiles_[selectedProjectIndex_])) {
+					Animator2DManager::GetInstance()->PreloadAnimator2D(projectFiles_[selectedProjectIndex_]);
+				}
+
 				Animator2D* newAnimator = Animator2DManager::GetInstance()->GetAnimator2D(projectFiles_[selectedProjectIndex_]);
 				newAnimator->SetOwner(_Parent);
 				_animators.push_back(newAnimator);
@@ -222,7 +228,14 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		in.read(reinterpret_cast<char*>(&nameLength), sizeof(int));
 		std::string projectName(nameLength, ' ');
 		in.read(&projectName[0], nameLength);
-		Animator2D* animator = Animator2DManager::GetInstance()->GetAnimator2D(projectName + ".anim2d");
+
+		// プリロードされていない場合は先にプリロード
+		std::string fullName = projectName + ".anim2d";
+		if (!Animator2DManager::GetInstance()->IsLoaded(fullName)) {
+			Animator2DManager::GetInstance()->PreloadAnimator2D(fullName);
+		}
+
+		Animator2D* animator = Animator2DManager::GetInstance()->GetAnimator2D(fullName);
 		animator->SetOwner(_Parent);
 		_animators.push_back(animator);
 		animatorNames_.push_back(projectName);

@@ -11,7 +11,10 @@ private:
     transform _EndTransform;
     float _transitionProgress = 0.0f;
     bool _isAiming = false;
-
+    Object Player;
+    Object Head;
+    SceneHandle scene;
+    Component CameraComp;
 	Object _ExplosionEffect = nullptr;
 };
 

@@ -47,6 +47,7 @@ void Animator2DManager::DestroyInstance()
 */
 Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 {
+	// キャッシュから検索
 	for (auto animator : _animator2Ds)
 	{
 		if (animator->GetProjectName() == name)
@@ -54,10 +55,53 @@ Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 			return animator->Copy();
 		}
 	}
+
+	// キャッシュにない場合は新規ロード
 	Animator2D* newAnimator = new Animator2D();
 	newAnimator->LoadFile(SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + name);
 	_animator2Ds.push_back(newAnimator);
 	return newAnimator->Copy();
+}
+
+/*
+* 関数名　PreloadAnimator2D
+* 引　数　プリロードするAnimator2D名
+* 戻り値　なし
+* 説　明　指定されたAnimator2Dを事前にロードしてキャッシュする
+*/
+void Animator2DManager::PreloadAnimator2D(const std::string& name)
+{
+	// 既にキャッシュされているか確認
+	for (auto animator : _animator2Ds)
+	{
+		if (animator->GetProjectName() == name)
+		{
+			return; // 既にロード済み
+		}
+	}
+
+	// 新規ロードしてキャッシュに追加
+	Animator2D* newAnimator = new Animator2D();
+	newAnimator->LoadFile(SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + name);
+	_animator2Ds.push_back(newAnimator);
+}
+
+/*
+* 関数名　IsLoaded
+* 引　数　確認するAnimator2D名
+* 戻り値　ロード済みならtrue
+* 説　明　指定されたAnimator2Dがキャッシュされているか確認する
+*/
+bool Animator2DManager::IsLoaded(const std::string& name)
+{
+	for (auto animator : _animator2Ds)
+	{
+		if (animator->GetProjectName() == name)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 /*

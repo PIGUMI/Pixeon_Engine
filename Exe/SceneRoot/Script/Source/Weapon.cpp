@@ -19,6 +19,10 @@ void Script_Weapon::BeginPlay() {
 	_transitionProgress = 0.0f;
 	_isAiming = false;
 	FindPrefabObjectByName("Expl", &_ExplosionEffect);
+	GetCurrentScene(&scene);
+	FindObjectByName(scene, "Player", &Player);
+	FindChildObjectByName(Player, "Head", &Head);
+	FindComponent(Head, "CameraComponent", &CameraComp);
 }
 
 void Script_Weapon::Update() {
@@ -56,15 +60,26 @@ void Script_Weapon::Update() {
 
 	SetObjectTransform(_parentObject, &currentTransform);
 
-	if (KeyPressed(VK_LBUTTON)) {
+	if (KeyTriggered(VK_LBUTTON)) {
 		transform explosionTransform;
-		GetObjectTransform(_parentObject, &explosionTransform);
-		explosionTransform.position.y += 0.5f;
-		explosionTransform.scale.x = 0.01f;
-		explosionTransform.scale.y = 0.01f;
+		GetObjectTransform(Player, &explosionTransform);
+
+		Float3 Forward;
+		GetCameraForwardVector(CameraComp, &Forward);
+	
+		float length = sqrtf(Forward.x * Forward.x + Forward.y * Forward.y + Forward.z * Forward.z);
+		if (length != 0.0f) {
+			Forward.x /= length;
+			Forward.y /= length;
+			Forward.z /= length;
+		}
+		explosionTransform.position.x -= Forward.x * 5.0f;
+		explosionTransform.position.z -= Forward.z * 5.0f;
+
+		explosionTransform.position.y += 1.0f;
+		explosionTransform.scale.x = 0.005f;
+		explosionTransform.scale.y = 0.005f;
 		APIResult result = SetObjectTransform(_ExplosionEffect, &explosionTransform);
-		SceneHandle scene;
-		GetCurrentScene(&scene);
 		AddObjectToScene(scene, _ExplosionEffect);
 	}
 }
