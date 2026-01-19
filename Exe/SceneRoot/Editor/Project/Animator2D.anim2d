@@ -1,0 +1,112 @@
+{
+    "KeyFrames": [
+        {
+            "Active": true,
+            "CurveInfo": {
+                "ControlPoint1": [
+                    0.0,
+                    0.0
+                ],
+                "ControlPoint2": [
+                    1.0,
+                    1.0
+                ],
+                "EndPoint": [
+                    1.0,
+                    1.0
+                ],
+                "StartPoint": [
+                    0.0,
+                    0.0
+                ]
+            },
+            "EditorFlag": {
+                "bColor": false,
+                "bPosition": false,
+                "bRotation": false,
+                "bScale": false,
+                "bUVPosition": false,
+                "bUVScale": false,
+                "bVertexOffset": false
+            },
+            "EndTime": 1.0,
+            "EndTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    100.0,
+                    100.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "KeyFrameName": "KeyFrame",
+            "Layer": 0,
+            "StartTime": 0.0,
+            "StartTransform": {
+                "Color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "Position": [
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    100.0,
+                    100.0
+                ],
+                "UVPosition": [
+                    0.0,
+                    0.0
+                ],
+                "UVScale": [
+                    1.0,
+                    1.0
+                ]
+            },
+            "Texture": "",
+            "UIShift": {
+                "Horizontal_Grid": 0,
+                "IsActive": false,
+                "Speed": 0.0,
+                "Vertical_Grid": 0,
+                "direction": false
+            },
+            "VertexOffset": {
+                "Down": 11.0,
+                "Left": 48.0,
+                "Right": 47.0,
+                "Up": 3.0
+            }
+        }
+    ],
+    "Loop": false,
+    "ProjectName": "Animator2D",
+    "TotalDuration": 1.0,
+    "ViewMode": 0
+}

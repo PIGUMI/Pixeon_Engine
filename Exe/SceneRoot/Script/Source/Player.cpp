@@ -1,7 +1,9 @@
 #include "Player.h"
+#include <DirectXMath.h>
+#include <cmath>
 
 void Script_Player::BeginPlay() {
-    SceneHandle scene;
+	SceneHandle scene;
 	GetCurrentScene(&scene);
 	FindObjectByName(scene, "Player", &playerObject);
 	FindChildObjectByName(playerObject, "Head", &headObject);
@@ -24,7 +26,7 @@ void Script_Player::Update() {
 	if (KeyPressed('Q'))
 	{
 		float fHP;
-		FindKeyFrame(HP, "HP", &hp);
+		FindKeyFrame(HP, "Hp", &hp);
 		GetVertexOffsetRight(hp, &fHP);
 		fHP -= 1.0f;
 		SetVertexOffsetRight(hp, fHP);
@@ -32,7 +34,7 @@ void Script_Player::Update() {
 	if (KeyPressed('E'))
 	{
 		float fHP;
-		FindKeyFrame(HP, "HP", &hp);
+		FindKeyFrame(HP, "Hp", &hp);
 		GetVertexOffsetRight(hp, &fHP);
 		fHP += 1.0f;
 		SetVertexOffsetRight(hp, fHP);
@@ -44,40 +46,42 @@ void Script_Player::EndPlay() {
 
 void Script_Player::Movement()
 {
-	// Ž‹ŠE‘€ì
 	int Mouse_X = 0;
 	int Mouse_Y = 0;
 
-	// ƒ}ƒEƒX‚ÌˆÚ“®—Ê‚ðŽæ“¾
 	Mouse_X = GetMouseMoveX();
 	Mouse_Y = GetMouseMoveY();
 
-	// “ª•”‚Ì‰ñ“]‚ðXV
 	transform head_Transform;
 	GetObjectTransform(headObject, &head_Transform);
+	transform body_Transform;
+	GetObjectTransform(bodyObject, &body_Transform);
 
-	// ƒ}ƒEƒX‚ÌˆÚ“®—Ê‚ÉŠî‚Ã‚¢‚Ä‰ñ“]‚ð’²®
 	head_Transform.rotation.x -= (float)Mouse_Y * 0.005f;
 	head_Transform.rotation.y += (float)Mouse_X * 0.005f;
 
-	// ã‰º‚Ì‰ñ“]‚ð§ŒÀ
-	if (head_Transform.rotation.x > 1.5f)
+	if (head_Transform.rotation.x > DirectX::XMConvertToRadians(70.0f))
 	{
-		head_Transform.rotation.x = 1.5f;
+		head_Transform.rotation.x = DirectX::XMConvertToRadians(70.0f);
 	}
-	if (head_Transform.rotation.x < -1.5f)
+	if (head_Transform.rotation.x < -DirectX::XMConvertToRadians(70.0f))
 	{
-		head_Transform.rotation.x = -1.5f;
+		head_Transform.rotation.x = -DirectX::XMConvertToRadians(70.0f);
+	}
+	// ‘Ì‚©‚ç+-80“x‚Ü‚Å
+	if (head_Transform.rotation.y - body_Transform.rotation.y > DirectX::XMConvertToRadians(70.0f))
+	{
+		head_Transform.rotation.y = body_Transform.rotation.y + DirectX::XMConvertToRadians(70.0f);
+	}
+	if (head_Transform.rotation.y - body_Transform.rotation.y < -DirectX::XMConvertToRadians(70.0f))
+	{
+		head_Transform.rotation.y = body_Transform.rotation.y - DirectX::XMConvertToRadians(70.0f);
 	}
 
-	// “ª•”‚Ì•ÏŠ·‚ðÝ’è
-	SetObjectTransform(headObject, &head_Transform);
 
-	// ˆÚ“®‘€ì
 	transform playerTransform;
 	GetObjectTransform(playerObject, &playerTransform);
 
-	// ³‹K‰»
 	transform bodyTransform;
 	Float3 forward;
 	GetCameraForwardVector(CameraComp, &forward);
@@ -101,7 +105,9 @@ void Script_Player::Movement()
 		right.z /= length;
 	}
 
-	if(KeyPressed('W'))
+	isMoving = false;
+
+	if (KeyPressed('W'))
 	{
 		playerTransform.position.x += -forward.x * 0.1f;
 		playerTransform.position.y += -forward.y * 0.1f;
@@ -111,35 +117,54 @@ void Script_Player::Movement()
 		bodyTransform.rotation.y = head_Transform.rotation.y;
 		SetObjectTransform(bodyObject, &bodyTransform);
 		SetObjectTransform(playerObject, &playerTransform);
+		isMoving = true;
 	}
-	if(KeyPressed('S'))
+	if (KeyPressed('S'))
 	{
 		playerTransform.position.x -= -forward.x * 0.1f;
 		playerTransform.position.y -= -forward.y * 0.1f;
 		playerTransform.position.z -= -forward.z * 0.1f;
 		GetObjectTransform(bodyObject, &bodyTransform);
-		bodyTransform.rotation.y = head_Transform.rotation.y + 3.14f;
+		bodyTransform.rotation.y = head_Transform.rotation.y;
 		SetObjectTransform(bodyObject, &bodyTransform);
 		SetObjectTransform(playerObject, &playerTransform);
+		isMoving = true;
 	}
-	if(KeyPressed('A'))
+	if (KeyPressed('A'))
 	{
 		playerTransform.position.x += right.x * 0.05f;
 		playerTransform.position.y += right.y * 0.05f;
 		playerTransform.position.z += right.z * 0.05f;
 		GetObjectTransform(bodyObject, &bodyTransform);
-		bodyTransform.rotation.y = head_Transform.rotation.y - 1.57f;
+		bodyTransform.rotation.y = head_Transform.rotation.y;
 		SetObjectTransform(bodyObject, &bodyTransform);
 		SetObjectTransform(playerObject, &playerTransform);
+		isMoving = true;
 	}
-	if(KeyPressed('D'))
+	if (KeyPressed('D'))
 	{
 		playerTransform.position.x -= right.x * 0.05f;
 		playerTransform.position.y -= right.y * 0.05f;
 		playerTransform.position.z -= right.z * 0.05f;
 		GetObjectTransform(bodyObject, &bodyTransform);
-		bodyTransform.rotation.y = head_Transform.rotation.y + 1.57f;
+		bodyTransform.rotation.y = head_Transform.rotation.y;
 		SetObjectTransform(bodyObject, &bodyTransform);
 		SetObjectTransform(playerObject, &playerTransform);
+		isMoving = true;
 	}
+
+	if (isMoving)
+	{
+		walkTimer += 0.15f;
+		float headBobAmount = cosf(walkTimer) * 0.05f;
+		head_Transform.position.y = headBobAmount;
+		head_Transform.position.y += 1.5f;
+	}
+	else
+	{
+		walkTimer = 0.0f;
+		head_Transform.position.y = 1.5f;
+	}
+
+	SetObjectTransform(headObject, &head_Transform);
 }

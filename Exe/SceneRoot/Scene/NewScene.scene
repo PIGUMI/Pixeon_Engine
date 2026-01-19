@@ -1,0 +1,74 @@
+{
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "-10.8058 4.06755 -3.77572 -1.98 0.22 7.62248e-39 -1.85256 1.88525 0.107173 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Arms.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n1\n0 0 0\n1 1 1\n0 0 0\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "0\n1\n1\n0\n",
+                    "Name": "Animation",
+                    "Type": 5
+                },
+                {
+                    "Data": "1 1 1 0 0 0 0 0 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                }
+            ],
+            "Name": "NewObject1",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "NewScene"
+    }
+}

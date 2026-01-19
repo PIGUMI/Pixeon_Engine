@@ -7,13 +7,15 @@ public:
     void Update() override;
     void EndPlay() override;
 private:
-	void Movement();
+    void Movement();
 private:
     int hitPoint = 50;
+    float walkTimer = 0.0f;
+    bool isMoving = false;
 private:
     Object playerObject;
-	Object headObject;
-	Object bodyObject;
+    Object headObject;
+    Object bodyObject;
     Object HitPointUI;
     Animator2d HP;
     Keyframe hp;
