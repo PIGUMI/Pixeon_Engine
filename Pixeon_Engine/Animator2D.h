@@ -44,6 +44,16 @@ struct VertexOffset
 	float Right = 50.0f;
 };
 
+struct UIShift
+{
+	bool IsActive = false;
+	bool direction = false; // false Horizontal true Vertical
+	int Horizontal_Grid = 0;
+	int Vertical_Grid = 0;
+	float Speed = 0.0f;
+	DirectX::XMFLOAT4 UVRect = { 0.0f,0.0f,1.0f,1.0f };
+};
+
 enum ViewMode
 {
 	UI,
@@ -64,6 +74,8 @@ struct KeyFrame
 	std::string Texture;
 	EditorFlag editorFlag;
 	VertexOffset vertexOffset;
+	UIShift uiShift;
+	UIShift NowUiShift;
 };
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }

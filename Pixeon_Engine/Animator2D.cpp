@@ -145,11 +145,18 @@ void Animator2D::Draw(int Layer)
 				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
 				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, kf.Layer));
 
-				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
-					kf.NowTransform.UVPosition.x,
-					kf.NowTransform.UVPosition.y,
-					kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
-					kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
+				if(kf.uiShift.IsActive)
+				{
+					PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
+				}
+				else
+				{
+					PreviewImage->SetUVRect(DirectX::XMFLOAT4(
+						kf.NowTransform.UVPosition.x,
+						kf.NowTransform.UVPosition.y,
+						kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
+						kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
+				}
 			}
 			else
 			{
@@ -163,11 +170,18 @@ void Animator2D::Draw(int Layer)
 					PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 					PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 
-					PreviewImage->SetUVRect(DirectX::XMFLOAT4(
-						kf.NowTransform.UVPosition.x,
-						kf.NowTransform.UVPosition.y,
-						kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
-						kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
+					if(kf.uiShift.IsActive)
+					{
+						PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
+					}
+					else
+					{
+						PreviewImage->SetUVRect(DirectX::XMFLOAT4(
+							kf.NowTransform.UVPosition.x,
+							kf.NowTransform.UVPosition.y,
+							kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
+							kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
+					}
 				}
 				else
 				{
@@ -178,11 +192,18 @@ void Animator2D::Draw(int Layer)
 					PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 					PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 
-					PreviewImage->SetUVRect(DirectX::XMFLOAT4(
-						kf.NowTransform.UVPosition.x,
-						kf.NowTransform.UVPosition.y,
-						kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
-						kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
+					if(kf.uiShift.IsActive)
+					{
+						PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
+					}
+					else
+					{
+						PreviewImage->SetUVRect(DirectX::XMFLOAT4(
+							kf.NowTransform.UVPosition.x,
+							kf.NowTransform.UVPosition.y,
+							kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
+							kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
+					}
 				}
 	
 			}
@@ -301,6 +322,11 @@ void Animator2D::SaveFile()
 		kfJson["VertexOffset"]["Down"] = kf.vertexOffset.Down;
 		kfJson["VertexOffset"]["Left"] = kf.vertexOffset.Left;
 		kfJson["VertexOffset"]["Right"] = kf.vertexOffset.Right;
+		kfJson["UIShift"]["IsActive"] = kf.uiShift.IsActive;
+		kfJson["UIShift"]["direction"] = kf.uiShift.direction;
+		kfJson["UIShift"]["Horizontal_Grid"] = kf.uiShift.Horizontal_Grid;
+		kfJson["UIShift"]["Vertical_Grid"] = kf.uiShift.Vertical_Grid;
+		kfJson["UIShift"]["Speed"] = kf.uiShift.Speed;
 		KeyFramesJson.push_back(kfJson);
 	}
 	SaveJson["KeyFrames"] = KeyFramesJson;
@@ -401,6 +427,13 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.vertexOffset.Down = vertexOffsetJson["Down"].get<float>();
 			kf.vertexOffset.Left = vertexOffsetJson["Left"].get<float>();
 			kf.vertexOffset.Right = vertexOffsetJson["Right"].get<float>();
+			// UIShift
+			auto uiShiftJson = kfJson["UIShift"];
+			kf.uiShift.IsActive = uiShiftJson["IsActive"].get<bool>();
+			kf.uiShift.direction = uiShiftJson["direction"].get<bool>();
+			kf.uiShift.Horizontal_Grid = uiShiftJson["Horizontal_Grid"].get<int>();
+			kf.uiShift.Vertical_Grid = uiShiftJson["Vertical_Grid"].get<int>();
+			kf.uiShift.Speed = uiShiftJson["Speed"].get<float>();
 			// キーフレームの追加
 			KeyFrames_.push_back(kf);
 		}
@@ -559,6 +592,52 @@ void Animator2D::KeyFrameUpdate()
 		DirectX::XMFLOAT2 NewColorRB = EaseByBezierCurve(obj.CurveInfo, ColorRB, EndColorRB, elapsed, duration);
 		DirectX::XMFLOAT2 NewColorGA = EaseByBezierCurve(obj.CurveInfo, ColorGA, EndColorGA, elapsed, duration);
 		obj.NowTransform.Color = DirectX::XMFLOAT4(NewColorRB.x, NewColorGA.x, NewColorRB.y, NewColorGA.y);
+
+		// UVシフト
+		if (obj.uiShift.IsActive)
+		{
+			// グリッド分割数から1グリッドあたりのUVサイズを計算
+			float uvWidth = 1.0f / static_cast<float>(obj.uiShift.Horizontal_Grid > 0 ? obj.uiShift.Horizontal_Grid : 1);
+			float uvHeight = 1.0f / static_cast<float>(obj.uiShift.Vertical_Grid > 0 ? obj.uiShift.Vertical_Grid : 1);
+
+			// 経過時間とスピードから現在のインデックスを計算
+			float totalElapsed = elapsed * obj.uiShift.Speed;
+			int currentIndex = static_cast<int>(totalElapsed);
+
+			// 方向によってUV座標を計算
+			int gridX = 0;
+			int gridY = 0;
+
+			if (obj.uiShift.direction) // Vertical（縦方向）
+			{
+				int totalGrids = obj.uiShift.Vertical_Grid * obj.uiShift.Horizontal_Grid;
+				if (totalGrids > 0)
+				{
+					currentIndex = currentIndex % totalGrids;
+					gridX = currentIndex % obj.uiShift.Horizontal_Grid;
+					gridY = currentIndex / obj.uiShift.Horizontal_Grid;
+				}
+			}
+			else // Horizontal（横方向）
+			{
+				int totalGrids = obj.uiShift.Horizontal_Grid * obj.uiShift.Vertical_Grid;
+				if (totalGrids > 0)
+				{
+					currentIndex = currentIndex % totalGrids;
+					gridY = currentIndex / obj.uiShift.Horizontal_Grid;
+					gridX = currentIndex % obj.uiShift.Horizontal_Grid;
+				}
+			}
+
+			// UVRect を計算
+			float uvLeft = static_cast<float>(gridX) * uvWidth;
+			float uvTop = static_cast<float>(gridY) * uvHeight;
+			float uvRight = uvLeft + uvWidth;
+			float uvBottom = uvTop + uvHeight;
+
+			// NowUiShift.UVRect に保存
+			obj.NowUiShift.UVRect = DirectX::XMFLOAT4(uvLeft, uvTop, uvRight, uvBottom);
+		}
 	}
 }
 

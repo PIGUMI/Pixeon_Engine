@@ -265,71 +265,128 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			}
 		}
 
-		/* UV サイズ */
-		if (!selectedKeyFrame_->editorFlag.bUVScale)
+		if (!selectedKeyFrame_->uiShift.IsActive)
 		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UVサイズ").c_str());
-			ImGui::SameLine();
-			ImGui::Text(SJ("X:Y").c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
-			selectedKeyFrame_->EndTransform.UVScale = selectedKeyFrame_->StartTransform.UVScale;
-			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##uvscl").c_str()))
+			/* UV サイズ */
+			if (!selectedKeyFrame_->editorFlag.bUVScale)
 			{
-				selectedKeyFrame_->editorFlag.bUVScale = true;
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UVサイズ").c_str());
+				ImGui::SameLine();
+				ImGui::Text(SJ("X:Y").c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
+				selectedKeyFrame_->EndTransform.UVScale = selectedKeyFrame_->StartTransform.UVScale;
+				ImGui::SameLine();
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##uvscl").c_str()))
+				{
+					selectedKeyFrame_->editorFlag.bUVScale = true;
+				}
+			}
+			else
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(SJ("UVサイズ:Start X:Y").c_str());
+				ImGui::Text(SJ("UVサイズ:End X:Y").c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVScale").c_str(), &selectedKeyFrame_->EndTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
+				ImGui::SameLine();
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##uvscl").c_str()))
+				{
+					selectedKeyFrame_->editorFlag.bUVScale = false;
+					selectedKeyFrame_->StartTransform.UVScale = selectedKeyFrame_->EndTransform.UVScale;
+				}
+			}
+
+			/* UV位置 */
+			if (!selectedKeyFrame_->editorFlag.bUVPosition)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UV位置").c_str());
+				ImGui::SameLine();
+				ImGui::Text(SJ("X:Y").c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
+				selectedKeyFrame_->EndTransform.UVPosition = selectedKeyFrame_->StartTransform.UVPosition;
+				ImGui::SameLine();
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##uvpos").c_str()))
+				{
+					selectedKeyFrame_->editorFlag.bUVPosition = true;
+				}
+			}
+			else
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(SJ("UV位置:Start X:Y").c_str());
+				ImGui::Text(SJ("UV位置:End X:Y").c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVPosition").c_str(), &selectedKeyFrame_->EndTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
+				ImGui::SameLine();
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##uvpos").c_str()))
+				{
+					selectedKeyFrame_->editorFlag.bUVPosition = false;
+					selectedKeyFrame_->StartTransform.UVPosition = selectedKeyFrame_->EndTransform.UVPosition;
+				}
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("UIシフト").c_str());
+			ImGui::TableSetColumnIndex(1);
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("展開##UIShift").c_str()))
+			{
+				selectedKeyFrame_->uiShift.IsActive = true;
 			}
 		}
 		else
 		{
+			/* UIシフト設定 */
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("UVサイズ:Start X:Y").c_str());
-			ImGui::Text(SJ("UVサイズ:End X:Y").c_str());
+			ImGui::Text(SJ("UIグリッド").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVScale").c_str(), &selectedKeyFrame_->EndTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
-			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##uvscl").c_str()))
+			ImGui::DragInt(GUI::GetInstance()->ShiftJISToUTF8("X##UIShiftGridX").c_str(), &selectedKeyFrame_->uiShift.Horizontal_Grid, 1, 0, 100);
+			ImGui::DragInt(GUI::GetInstance()->ShiftJISToUTF8("Y##UIShiftGridY").c_str(), &selectedKeyFrame_->uiShift.Vertical_Grid, 1, 0, 100);
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("UI移動向き").c_str());
+			ImGui::TableSetColumnIndex(1);
+			if(selectedKeyFrame_->uiShift.direction)
 			{
-				selectedKeyFrame_->editorFlag.bUVScale = false;
-				selectedKeyFrame_->StartTransform.UVScale = selectedKeyFrame_->EndTransform.UVScale;
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("垂直##UIShiftDirection").c_str()))
+				{
+					selectedKeyFrame_->uiShift.direction = false;
+				}
+			}
+			else
+			{
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("水平##UIShiftDirection").c_str()))
+				{
+					selectedKeyFrame_->uiShift.direction = true;
+				}
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("スピード").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("##UIShiftSpeed").c_str(), &selectedKeyFrame_->uiShift.Speed, 0.1f, 0.0f, 100.0f);
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(SJ("UIシフト").c_str());
+			ImGui::TableSetColumnIndex(1);
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("縮小##UIShift").c_str()))
+			{
+				selectedKeyFrame_->uiShift.IsActive = false;
 			}
 		}
 
-		/* UV位置 */ 
-		if (!selectedKeyFrame_->editorFlag.bUVPosition)
-		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UV位置").c_str());
-			ImGui::SameLine();
-			ImGui::Text(SJ("X:Y").c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x,0.01f, 0.0f, 1.0f);
-			selectedKeyFrame_->EndTransform.UVPosition = selectedKeyFrame_->StartTransform.UVPosition;
-			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##uvpos").c_str()))
-			{
-				selectedKeyFrame_->editorFlag.bUVPosition = true;
-			}
-		}
-		else
-		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("UV位置:Start X:Y").c_str());
-			ImGui::Text(SJ("UV位置:End X:Y").c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVPosition").c_str(), &selectedKeyFrame_->EndTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
-			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##uvpos").c_str()))
-			{
-				selectedKeyFrame_->editorFlag.bUVPosition = false;
-				selectedKeyFrame_->StartTransform.UVPosition = selectedKeyFrame_->EndTransform.UVPosition;
-			}
-		}
 
 		/* テクスチャの設定GUI */
 		ImGui::TableNextRow();
