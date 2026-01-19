@@ -33,6 +33,25 @@ struct EditorFlag
 	bool bUVPosition = false;
 	bool bUVScale = false;
 	bool bColor = false;
+	bool bVertexOffset = false;
+};
+
+struct VertexOffset
+{
+	float Up = 50.0f;
+	float Down = 50.0f;
+	float Left = 50.0f;
+	float Right = 50.0f;
+};
+
+struct UIShift
+{
+	bool IsActive = false;
+	bool direction = false; // false Horizontal true Vertical
+	int Horizontal_Grid = 0;
+	int Vertical_Grid = 0;
+	float Speed = 0.0f;
+	DirectX::XMFLOAT4 UVRect = { 0.0f,0.0f,1.0f,1.0f };
 };
 
 enum ViewMode
@@ -54,6 +73,9 @@ struct KeyFrame
 	UITransform NowTransform;
 	std::string Texture;
 	EditorFlag editorFlag;
+	VertexOffset vertexOffset;
+	UIShift uiShift;
+	UIShift NowUiShift;
 };
 
 inline float Length(const DirectX::XMFLOAT2& v) { return std::sqrt(v.x * v.x + v.y * v.y); }
@@ -116,6 +138,8 @@ public:
 
 	void Stop();
 	void Start();
+
+	KeyFrame* GetKeyFrameByName(const std::string& name);
 
 	Animator2D* Copy();
 private:

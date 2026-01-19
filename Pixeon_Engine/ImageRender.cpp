@@ -39,6 +39,7 @@ void ImageRender::SaveToFile(std::ostream& out) {
 	out << m_uvRect.x << " " << m_uvRect.y << " " << m_uvRect.z << " " << m_uvRect.w << std::endl;
 	out << m_color.x << " " << m_color.y << " " << m_color.z << " " << m_color.w << std::endl;
 	out << offset3DRot.x << " " << offset3DRot.y << " " << offset3DRot.z << std::endl;
+	out << m_vertexOffsetUp << " " << m_vertexOffsetDown << " " << m_vertexOffsetLeft << " " << m_vertexOffsetRight << std::endl;
 }
 
 void ImageRender::LoadFromFile(std::istream& in) {
@@ -55,6 +56,16 @@ void ImageRender::LoadFromFile(std::istream& in) {
 	in >> m_uvRect.x >> m_uvRect.y >> m_uvRect.z >> m_uvRect.w;
 	in >> m_color.x >> m_color.y >> m_color.z >> m_color.w;
 	in >> offset3DRot.x >> offset3DRot.y >> offset3DRot.z;
+
+	// 頂点オフセットの読み込み（古いファイルとの互換性のため）
+	if (in >> m_vertexOffsetUp >> m_vertexOffsetDown >> m_vertexOffsetLeft >> m_vertexOffsetRight) {
+		// 読み込み成功
+	}
+	else {
+		// 古いファイル形式の場合はデフォルト値を使用
+		m_vertexOffsetUp = m_vertexOffsetDown = m_vertexOffsetLeft = m_vertexOffsetRight = 50.0f;
+	}
+
 	if (!m_textureName.empty()) {
 		m_texture = ResourceService::Instance().GetTexture(m_textureName);
 	}
@@ -164,7 +175,7 @@ bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
 		vs = sm->GetVertexShader(m_vsName);
 		ps = sm->GetPixelShader(m_psName);
 		if (!vs || !ps) {
-			OutputDebugStringA(("[ImageRender] Shader missing: " + m_vsName + ", " + m_psName + "\n").c_str());
+			OutputDebugStringA(("[ImageRender] Shader missing:  " + m_vsName + ", " + m_psName + "\n").c_str());
 			return false;
 		}
 	}
@@ -248,7 +259,7 @@ bool ImageRender::EnsureDepthStencilState() {
 
 	desc.DepthEnable = TRUE;
 	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; 
+	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	desc.StencilEnable = FALSE;
 
 	auto dev = DirectX11::GetInstance()->GetDevice();
@@ -263,6 +274,42 @@ void ImageRender::UpdateVB(const Vertex v[4]) {
 		memcpy(mp.pData, v, sizeof(Vertex) * 4);
 		ctx->Unmap(m_vb.Get(), 0);
 	}
+}
+
+void ImageRender::ApplyVertexOffsets(Vertex outV[4]) {
+	// 頂点配置:  [0]=左上, [1]=右上, [2]=右下, [3]=左下
+
+	// 中心点を計算
+	float centerX = (outV[0].pos.x + outV[1].pos.x + outV[2].pos.x + outV[3].pos.x) * 0.25f;
+	float centerY = (outV[0].pos.y + outV[1].pos.y + outV[2].pos.y + outV[3].pos.y) * 0.25f;
+
+	// 各頂点の元の位置からの距離を計算
+	float leftDist = centerX - outV[0].pos.x;    // 左側の距離（正の値）
+	float rightDist = outV[1].pos.x - centerX;   // 右側の距離（正の値）
+	float topDist = outV[0].pos.y - centerY;     // 上側の距離（正の値）
+	float bottomDist = centerY - outV[3].pos.y;  // 下側の距離（正の値）
+
+	// オフセット値を倍率に変換（50=1.0倍, 0=0倍, -50=-1.0倍）
+	float leftScale = m_vertexOffsetLeft / 50.0f;
+	float rightScale = m_vertexOffsetRight / 50.0f;
+	float upScale = m_vertexOffsetUp / 50.0f;
+	float downScale = m_vertexOffsetDown / 50.0f;
+
+	// 左上 [0]
+	outV[0].pos.x = centerX - (leftDist * leftScale);
+	outV[0].pos.y = centerY + (topDist * upScale);
+
+	// 右上 [1]
+	outV[1].pos.x = centerX + (rightDist * rightScale);
+	outV[1].pos.y = centerY + (topDist * upScale);
+
+	// 右下 [2]
+	outV[2].pos.x = centerX + (rightDist * rightScale);
+	outV[2].pos.y = centerY - (bottomDist * downScale);
+
+	// 左下 [3]
+	outV[3].pos.x = centerX - (leftDist * leftScale);
+	outV[3].pos.y = centerY - (bottomDist * downScale);
 }
 
 void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
@@ -289,6 +336,9 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 		outV[1] = { {tr.x, tr.y, outZClip}, {m_uvRect.z, m_uvRect.y} };
 		outV[2] = { {br.x, br.y, outZClip}, {m_uvRect.z, m_uvRect.w} };
 		outV[3] = { {bl.x, bl.y, outZClip}, {m_uvRect.x, m_uvRect.w} };
+
+		// 頂点オフセットを適用
+		ApplyVertexOffsets(outV);
 		return;
 	}
 
@@ -331,10 +381,12 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 	outV[1] = { {tr.x, tr.y, outZClip}, {m_uvRect.z, m_uvRect.y} };
 	outV[2] = { {br.x, br.y, outZClip}, {m_uvRect.z, m_uvRect.w} };
 	outV[3] = { {bl.x, bl.y, outZClip}, {m_uvRect.x, m_uvRect.w} };
+
+	// 頂点オフセットを適用
+	ApplyVertexOffsets(outV);
 }
 
 void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
-	// ビルボードもローカル座標で生成
 	float hw = 0.5f;
 	float hh = 0.5f;
 
@@ -342,47 +394,45 @@ void ImageRender::UpdateVerticesBillboard(Vertex outV[4]) {
 	outV[1].pos = { hw,  hh, 0.0f }; outV[1].uv = { m_uvRect.z, m_uvRect.y };
 	outV[2].pos = { hw, -hh, 0.0f }; outV[2].uv = { m_uvRect.z, m_uvRect.w };
 	outV[3].pos = { -hw, -hh, 0.0f }; outV[3].uv = { m_uvRect.x, m_uvRect.w };
+
+	// 頂点オフセットを適用
+	ApplyVertexOffsets(outV);
 }
 
 void ImageRender::UpdateVerticesWorld3D(Vertex outV[4]) {
-	float hw = 0.5f;  // 半分の幅
-	float hh = 0.5f;  // 半分の高さ
+	float hw = 0.5f;
+	float hh = 0.5f;
 
-	// ローカル座標系でZ=0の平面に矩形を配置
 	outV[0].pos = { -hw,  hh, 0.0f }; outV[0].uv = { m_uvRect.x, m_uvRect.y };
 	outV[1].pos = { hw,  hh, 0.0f }; outV[1].uv = { m_uvRect.z, m_uvRect.y };
 	outV[2].pos = { hw, -hh, 0.0f }; outV[2].uv = { m_uvRect.z, m_uvRect.w };
 	outV[3].pos = { -hw, -hh, 0.0f }; outV[3].uv = { m_uvRect.x, m_uvRect.w };
+
+	// 頂点オフセットを適用
+	ApplyVertexOffsets(outV);
 }
 
-void ImageRender::UpdateVerticesUI(Vertex outV[4]) {
-	// UIは2D座標（NDC）で生成
-	// m_offset2D をピクセル単位のオフセットとして使用
-
+void ImageRender::UpdateVerticesUI(Vertex outV[4])
+{
 	if (!cam) {
-		// カメラがない場合は2Dと同じ
 		float dummyZ = 0.0f;
 		UpdateVertices2D(outV, dummyZ);
 		return;
 	}
 
-	// スクリーンサイズ取得
 	float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
 	float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
 
-	// UI要素のピクセルサイズ（m_sizeWorldをピクセルとして解釈）
 	Transform t = _Parent ? _Parent->GetWorldTransform() : Transform();
 	float pixelWidth = m_sizeWorld.x * t.scale.x;
 	float pixelHeight = m_sizeWorld.y * t.scale.y;
 
-	// 画面中央からのオフセット（ピクセル単位）
 	float cx = W * 0.5f + m_offset2D.x;
 	float cy = H * 0.5f + m_offset2D.y;
 
 	float hw = pixelWidth * 0.5f;
 	float hh = pixelHeight * 0.5f;
 
-	// ピクセル座標 → NDC変換
 	auto toNDC = [&](float x, float y) -> DirectX::XMFLOAT2 {
 		float ndcX = (x / W) * 2.0f - 1.0f;
 		float ndcY = 1.0f - (y / H) * 2.0f;
@@ -394,11 +444,13 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4]) {
 	DirectX::XMFLOAT2 br = toNDC(cx + hw, cy + hh);
 	DirectX::XMFLOAT2 bl = toNDC(cx - hw, cy + hh);
 
-	// NDC座標で頂点を生成（Z=0で固定）
 	outV[0].pos = { tl.x, tl.y, 0.0f }; outV[0].uv = { m_uvRect.x, m_uvRect.y };
 	outV[1].pos = { tr.x, tr.y, 0.0f }; outV[1].uv = { m_uvRect.z, m_uvRect.y };
 	outV[2].pos = { br.x, br.y, 0.0f }; outV[2].uv = { m_uvRect.z, m_uvRect.w };
 	outV[3].pos = { bl.x, bl.y, 0.0f }; outV[3].uv = { m_uvRect.x, m_uvRect.w };
+
+	// 頂点オフセットを適用
+	ApplyVertexOffsets(outV);
 }
 
 void ImageRender::Draw(int Layer) {
@@ -461,23 +513,18 @@ void ImageRender::Draw(int Layer) {
 		Transform t = _Parent->GetWorldTransform();
 
 		if (m_mode == PlacementMode::Billboard || m_mode == PlacementMode::UI) {
-			// ★ ビルボード/UIモード:  回転は無視、スケールとサイズのみ適用
 			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(
 				t.scale.x * m_sizeWorld.x,
 				t.scale.y * m_sizeWorld.y,
 				1.0f
 			);
 
-			// 回転は単位行列（回転なし）- ビルボードはシェーダー側で処理
 			DirectX::XMMATRIX R = DirectX::XMMatrixIdentity();
-
-			// 位置のみ適用（オフセットは無視 - ビルボードでは意味がない）
 			DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
 
 			cb.World = DirectX::XMMatrixTranspose(S * R * T);
 		}
 		else {
-			// ★ 3D配置/2D配置モード: 通常の変換
 			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(
 				t.scale.x * m_sizeWorld.x,
 				t.scale.y * m_sizeWorld.y,
@@ -566,11 +613,11 @@ void ImageRender::DrawInspector() {
 	ImGui::Text("%s", SJ("レイヤー").c_str());
 	ImGui::SameLine();
 	ImGui::InputInt("##layer", &_LayerNumber);
-	ImGui::Text("%s", SJ("テクスチャ名:").c_str());
+	ImGui::Text("%s", SJ("テクスチャ名: ").c_str());
 	ImGui::SameLine();
 	ImGui::Text("%s", m_textureName.empty() ? "(none)" : m_textureName.c_str());
 	ImGui::SameLine();
-	if (ImGui::Button(SJ("選択...").c_str())) {
+	if (ImGui::Button(SJ("選択... ").c_str())) {
 		ImGui::OpenPopup("ImgTexSelectPopup");
 	}
 	if (ImGui::BeginPopupModal("ImgTexSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -619,7 +666,7 @@ void ImageRender::DrawInspector() {
 	else {
 		ImGui::InputFloat3(SJ("3Dオフセット").c_str(), (float*)&m_offset3D);
 		ImGui::InputFloat2(SJ("サイズ(ワールド)").c_str(), (float*)&m_sizeWorld);
-		if(m_mode == PlacementMode::World3D)
+		if (m_mode == PlacementMode::World3D)
 		{
 			DirectX::XMFLOAT3 TempRot;
 			TempRot.x = DirectX::XMConvertToDegrees(offset3DRot.x);
@@ -639,6 +686,37 @@ void ImageRender::DrawInspector() {
 	m_uvRect.w = Clamp(m_uvRect.w, 0.0f, 1.0f);
 
 	ImGui::ColorEdit4(SJ("カラー").c_str(), (float*)&m_color);
+
+	// 頂点オフセット設定
+	if (ImGui::TreeNode(SJ("頂点オフセット設定").c_str())) {
+		ImGui::Text(SJ("範囲:  -50～50 (50=最大サイズ, 0=中心)").c_str());
+
+		float tempUp = m_vertexOffsetUp;
+		if (ImGui::SliderFloat(SJ("上").c_str(), &tempUp, -50.0f, 50.0f)) {
+			SetVertexOffsetUp(tempUp);
+		}
+
+		float tempDown = m_vertexOffsetDown;
+		if (ImGui::SliderFloat(SJ("下").c_str(), &tempDown, -50.0f, 50.0f)) {
+			SetVertexOffsetDown(tempDown);
+		}
+
+		float tempLeft = m_vertexOffsetLeft;
+		if (ImGui::SliderFloat(SJ("左").c_str(), &tempLeft, -50.0f, 50.0f)) {
+			SetVertexOffsetLeft(tempLeft);
+		}
+
+		float tempRight = m_vertexOffsetRight;
+		if (ImGui::SliderFloat(SJ("右").c_str(), &tempRight, -50.0f, 50.0f)) {
+			SetVertexOffsetRight(tempRight);
+		}
+
+		if (ImGui::Button(SJ("リセット").c_str())) {
+			m_vertexOffsetUp = m_vertexOffsetDown = m_vertexOffsetLeft = m_vertexOffsetRight = 50.0f;
+		}
+
+		ImGui::TreePop();
+	}
 
 	if (ImGui::TreeNode(SJ("シェーダ設定").c_str())) {
 		auto* sm = ShaderManager::GetInstance();

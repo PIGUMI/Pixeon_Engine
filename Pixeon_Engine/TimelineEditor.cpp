@@ -23,7 +23,6 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 	ImVec2 canvasPos = ImGui::GetCursorScreenPos();
 	ImVec2 canvasSize = ImGui::GetContentRegionAvail();
 
-	// ”wŒi•`‰æ
 	drawList->AddRectFilled(canvasPos,
 		ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y),
 		colorBackground_);
@@ -264,12 +263,10 @@ void TimelineEditor::DrawKeyFrame(KeyFrame* keyframe, int layerIndex)
 	drawList->AddRect(rectMin, rectMax, colorKeyFrameBorder_, 4.0f, 0, 2.0f);
 
 	// ŽžŠÔ•\Ž¦
-	char timeText[64];
-	snprintf(timeText, sizeof(timeText),"%.2f - %.2f", keyframe->StartTime, keyframe->EndTime);
 	drawList->AddText(
 		ImVec2(startX + 5, y + layerHeight_ / 2 - 7),
 		IM_COL32(255, 255, 255, 255),
-		timeText);
+		keyframe->KeyFrameName.c_str());
 
 	// ƒŠƒTƒCƒYƒnƒ“ƒhƒ‹
 	drawList->AddRectFilled(

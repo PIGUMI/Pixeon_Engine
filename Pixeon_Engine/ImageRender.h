@@ -62,6 +62,17 @@ public:
 	void SetOffset3D(const DirectX::XMFLOAT3& offset) { m_offset3D = offset; }
 	PlacementMode GetMode() const { return m_mode; }
 
+	// 頂点オフセット設定（-50～50）
+	void SetVertexOffsetUp(float value) { m_vertexOffsetUp = Clamp(value, -50.0f, 50.0f); }
+	void SetVertexOffsetDown(float value) { m_vertexOffsetDown = Clamp(value, -50.0f, 50.0f); }
+	void SetVertexOffsetLeft(float value) { m_vertexOffsetLeft = Clamp(value, -50.0f, 50.0f); }
+	void SetVertexOffsetRight(float value) { m_vertexOffsetRight = Clamp(value, -50.0f, 50.0f); }
+
+	float GetVertexOffsetUp() const { return m_vertexOffsetUp; }
+	float GetVertexOffsetDown() const { return m_vertexOffsetDown; }
+	float GetVertexOffsetLeft() const { return m_vertexOffsetLeft; }
+	float GetVertexOffsetRight() const { return m_vertexOffsetRight; }
+
 private:
 	struct Vertex {
 		DirectX::XMFLOAT3 pos;
@@ -92,6 +103,9 @@ private:
 
 	void UpdateVB(const Vertex v[4]);
 
+	// 頂点オフセットを適用
+	void ApplyVertexOffsets(Vertex outV[4]);
+
 	static bool EnsureFallbackTextures();
 	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_whiteTexSRV;
 	static Microsoft::WRL::ComPtr<ID3D11SamplerState> s_linearSmp;
@@ -113,6 +127,13 @@ private:
 	DirectX::XMFLOAT2 m_offset2D = { 0.0f, 0.0f };       // 2D用 (px)
 	DirectX::XMFLOAT3 m_offset3D = { 0.0f, 0.0f, 0.0f }; // 3D/Billboard用 (world)
 	DirectX::XMFLOAT3 offset3DRot = { 0.0f, 0.0f, 0.0f };
+
+	// 頂点オフセット（-50～50、デフォルト50で最大サイズ）
+	float m_vertexOffsetUp = 50.0f;
+	float m_vertexOffsetDown = 50.0f;
+	float m_vertexOffsetLeft = 50.0f;
+	float m_vertexOffsetRight = 50.0f;
+
 	// UV矩形 [0..1]
 	DirectX::XMFLOAT4 m_uvRect = { 0.0f, 0.0f, 1.0f, 1.0f }; // u0,v0,u1,v1
 

@@ -191,9 +191,11 @@ void EngineFrame::GameViewWindow()
 	}
 
 	ImGui::SameLine();
-	std::string msg = "NowCameraNumber" + std::to_string(SceneManger::GetInstance()->GetCurrentScene()->GetMainCameraNumber());
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str());
-
+	if (SceneManger::GetInstance()->GetCurrentScene())
+	{
+		std::string msg = "NowCameraNumber" + std::to_string(SceneManger::GetInstance()->GetCurrentScene()->GetMainCameraNumber());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str());
+	}
 	ImGui::PopStyleVar(2);
 
 	ImGui::Separator();
