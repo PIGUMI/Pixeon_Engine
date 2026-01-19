@@ -81,7 +81,7 @@
         {
             "Components": [],
             "Name": "Other",
-            "Parent": "Stage",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -109,7 +109,7 @@
                 }
             ],
             "Name": "Trash2",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -1.399999976158142,
@@ -147,7 +147,7 @@
                 }
             ],
             "Name": "Wheel",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     5.900000095367432,
@@ -185,7 +185,7 @@
                 }
             ],
             "Name": "MetalFence13",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -13.300000190734863,
@@ -223,7 +223,7 @@
                 }
             ],
             "Name": "MetalFence15",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -7.300000190734863,
@@ -251,7 +251,7 @@
                 }
             ],
             "Name": "Trash",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     19.399999618530273,
@@ -289,7 +289,7 @@
                 }
             ],
             "Name": "MetalFence12",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -34.849998474121094,
@@ -327,7 +327,7 @@
                 }
             ],
             "Name": "MetalFence1",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -37.599998474121094,
@@ -365,7 +365,7 @@
                 }
             ],
             "Name": "MetalFence11",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -34.849998474121094,
@@ -403,7 +403,7 @@
                 }
             ],
             "Name": "MetalFence21",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     15.699999809265137,
@@ -441,7 +441,7 @@
                 }
             ],
             "Name": "MetalFence3",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -37.400001525878906,
@@ -479,7 +479,7 @@
                 }
             ],
             "Name": "MetalFence8",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -35.5,
@@ -517,7 +517,7 @@
                 }
             ],
             "Name": "MetalFence10",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -35.099998474121094,
@@ -555,7 +555,7 @@
                 }
             ],
             "Name": "MetalFence9",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -35.5,
@@ -593,7 +593,7 @@
                 }
             ],
             "Name": "MetalFence5",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -36.099998474121094,
@@ -621,7 +621,7 @@
                 }
             ],
             "Name": "Trash5",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -13.100000381469727,
@@ -649,7 +649,7 @@
                 }
             ],
             "Name": "Trash4",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -7.099999904632568,
@@ -687,7 +687,7 @@
                 }
             ],
             "Name": "MetalFence7",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -35.79999923706055,
@@ -725,7 +725,7 @@
                 }
             ],
             "Name": "MetalFence16",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     2.200000047683716,
@@ -753,7 +753,7 @@
                 }
             ],
             "Name": "Trash1",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     9.199999809265137,
@@ -791,7 +791,7 @@
                 }
             ],
             "Name": "MetalFence19",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     9.0,
@@ -819,7 +819,7 @@
                 }
             ],
             "Name": "Trash3",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -16.299999237060547,
@@ -857,7 +857,7 @@
                 }
             ],
             "Name": "MetalFence22",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     27.600000381469727,
@@ -895,7 +895,7 @@
                 }
             ],
             "Name": "MetalFence2",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -38.0,
@@ -933,7 +933,7 @@
                 }
             ],
             "Name": "MetalFence14",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -10.300000190734863,
@@ -971,7 +971,7 @@
                 }
             ],
             "Name": "MetalFence20",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     12.399999618530273,
@@ -1009,7 +1009,7 @@
                 }
             ],
             "Name": "MetalFence4",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -36.70000076293945,
@@ -1047,7 +1047,7 @@
                 }
             ],
             "Name": "MetalFence17",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     5.400000095367432,
@@ -1085,7 +1085,7 @@
                 }
             ],
             "Name": "Ladder",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -3.0999999046325684,
@@ -1123,7 +1123,7 @@
                 }
             ],
             "Name": "MetalFence6",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -36.099998474121094,
@@ -1161,7 +1161,7 @@
                 }
             ],
             "Name": "MetalFence23",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     25.0,
@@ -1199,7 +1199,7 @@
                 }
             ],
             "Name": "MetalFence24",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     9.899999618530273,
@@ -1237,7 +1237,7 @@
                 }
             ],
             "Name": "MetalFence",
-            "Parent": "Other",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -36.79999923706055,
@@ -1259,7 +1259,7 @@
         {
             "Components": [],
             "Name": "Container",
-            "Parent": "Stage",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -1297,7 +1297,7 @@
                 }
             ],
             "Name": "ContainerA6",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -10.699999809265137,
@@ -1335,7 +1335,7 @@
                 }
             ],
             "Name": "ContainerB",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -4.599999904632568,
@@ -1373,7 +1373,7 @@
                 }
             ],
             "Name": "ContainerA3",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -8.699999809265137,
@@ -1411,7 +1411,7 @@
                 }
             ],
             "Name": "ContainerA5",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -11.0,
@@ -1449,7 +1449,7 @@
                 }
             ],
             "Name": "ContainerA12",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -13.100000381469727,
@@ -1487,7 +1487,7 @@
                 }
             ],
             "Name": "ContainerA141",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     6.400000095367432,
@@ -1525,7 +1525,7 @@
                 }
             ],
             "Name": "ContainerA10",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -11.0,
@@ -1563,7 +1563,7 @@
                 }
             ],
             "Name": "ContainerA1",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     2.5,
@@ -1601,7 +1601,7 @@
                 }
             ],
             "Name": "ContainerA13",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -20.600000381469727,
@@ -1639,7 +1639,7 @@
                 }
             ],
             "Name": "ContainerA2",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -2.5,
@@ -1677,7 +1677,7 @@
                 }
             ],
             "Name": "ContainerA7",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -11.0,
@@ -1715,7 +1715,7 @@
                 }
             ],
             "Name": "ContainerA4",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     10.0,
@@ -1753,7 +1753,7 @@
                 }
             ],
             "Name": "ContainerA",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -1791,7 +1791,7 @@
                 }
             ],
             "Name": "ContainerA9",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -11.0,
@@ -1829,7 +1829,7 @@
                 }
             ],
             "Name": "ContainerB1",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -16.799999237060547,
@@ -1867,7 +1867,7 @@
                 }
             ],
             "Name": "ContainerB2",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -37.29999923706055,
@@ -1905,7 +1905,7 @@
                 }
             ],
             "Name": "ContainerA8",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -11.0,
@@ -1943,7 +1943,7 @@
                 }
             ],
             "Name": "ContainerA11",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -20.700000762939453,
@@ -1981,7 +1981,7 @@
                 }
             ],
             "Name": "ContainerA14",
-            "Parent": "Container",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -2.9000000953674316,
@@ -2003,7 +2003,7 @@
         {
             "Components": [],
             "Name": "Bulings",
-            "Parent": "Stage",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -2041,7 +2041,7 @@
                 }
             ],
             "Name": "BulidingE1",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     40.20000076293945,
@@ -2079,7 +2079,7 @@
                 }
             ],
             "Name": "Fan1",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     4.599999904632568,
@@ -2117,7 +2117,7 @@
                 }
             ],
             "Name": "Fan",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     3.700000047683716,
@@ -2155,7 +2155,7 @@
                 }
             ],
             "Name": "BuildingD1",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     38.0,
@@ -2193,7 +2193,7 @@
                 }
             ],
             "Name": "BuildingB",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     25.0,
@@ -2231,7 +2231,7 @@
                 }
             ],
             "Name": "BuildingA",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     6.0,
@@ -2269,7 +2269,7 @@
                 }
             ],
             "Name": "BuildingC",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -30.0,
@@ -2307,7 +2307,7 @@
                 }
             ],
             "Name": "BuildingB1",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -2345,7 +2345,7 @@
                 }
             ],
             "Name": "BuildingD",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     18.0,
@@ -2383,7 +2383,7 @@
                 }
             ],
             "Name": "BulidingE",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -25.0,
@@ -2421,7 +2421,7 @@
                 }
             ],
             "Name": "BuildingB2",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     24.100000381469727,
@@ -2459,7 +2459,7 @@
                 }
             ],
             "Name": "ElectricBox",
-            "Parent": "Bulings",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     1.600000023841858,
@@ -2497,7 +2497,7 @@
                 }
             ],
             "Name": "Barrel",
-            "Parent": "Stage",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -5.300000190734863,
@@ -2519,7 +2519,7 @@
         {
             "Components": [],
             "Name": "StageObj",
-            "Parent": "Stage",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -2541,7 +2541,7 @@
         {
             "Components": [],
             "Name": "Grounds",
-            "Parent": "Stage",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -2579,7 +2579,7 @@
                 }
             ],
             "Name": "Ground9",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -30.0,
@@ -2617,7 +2617,7 @@
                 }
             ],
             "Name": "Ground1",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -30.0,
@@ -2655,7 +2655,7 @@
                 }
             ],
             "Name": "Ground2",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     30.0,
@@ -2693,7 +2693,7 @@
                 }
             ],
             "Name": "Ground5",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -2731,7 +2731,7 @@
                 }
             ],
             "Name": "Ground7",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     30.0,
@@ -2769,7 +2769,7 @@
                 }
             ],
             "Name": "Ground3",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -2807,7 +2807,7 @@
                 }
             ],
             "Name": "Ground8",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     -30.0,
@@ -2845,7 +2845,7 @@
                 }
             ],
             "Name": "Ground",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -2883,7 +2883,7 @@
                 }
             ],
             "Name": "Ground10",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     30.0,
@@ -2921,7 +2921,7 @@
                 }
             ],
             "Name": "Ground6",
-            "Parent": "Grounds",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     30.0,
@@ -2965,7 +2965,7 @@
         {
             "Components": [],
             "Name": "NetWrokManager",
-            "Parent": "Manager",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -3031,7 +3031,7 @@
                 }
             ],
             "Name": "Body",
-            "Parent": "Player",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -3058,7 +3058,7 @@
                     "Type": 7
                 },
                 {
-                    "Data": "0.01 -0.01 0 0 0 8.48014e-33 0.00999999 -0.00999999 -10 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 1 1 ",
+                    "Data": "0.01 -0.01 0 0 0 8.48014e-33 0.01 -0.00999999 -10 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 1 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 },
@@ -3069,7 +3069,7 @@
                 }
             ],
             "Name": "Head",
-            "Parent": "Player",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -3106,34 +3106,6 @@
                 "Scale": [
                     1.0,
                     1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "\u0001\u0000\u0000\u0000\u0002\u0000\u0000\u0000HP\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\t\u0000\u0000\u0000",
-                    "Name": "Animator2DComponent",
-                    "Type": 9
-                }
-            ],
-            "Name": "Hp",
-            "Parent": "UI",
-            "Transform": {
-                "Position": [
-                    -600.0,
-                    -450.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    0.5,
-                    0.5,
                     1.0
                 ]
             }
