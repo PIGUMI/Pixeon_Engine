@@ -9,9 +9,14 @@ public:
 private:
 	void Movement();
 private:
+    int hitPoint = 50;
+private:
     Object playerObject;
 	Object headObject;
 	Object bodyObject;
+    Object HitPointUI;
+    Animator2d HP;
+    Keyframe hp;
     Component CameraComp;
     Object Bullet;
 };

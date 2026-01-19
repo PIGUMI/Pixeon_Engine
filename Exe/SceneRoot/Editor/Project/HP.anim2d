@@ -29,12 +29,12 @@
                 "bUVScale": false,
                 "bVertexOffset": false
             },
-            "EndTime": 1.0,
+            "EndTime": 0.9999998807907104,
             "EndTransform": {
                 "Color": [
-                    0.01423501968383789,
                     1.0,
-                    0.0,
+                    1.0,
+                    1.0,
                     1.0
                 ],
                 "Position": [
@@ -46,8 +46,8 @@
                     0.0
                 ],
                 "Scale": [
-                    12.0,
-                    1.0
+                    122.0,
+                    12.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -58,13 +58,14 @@
                     1.0
                 ]
             },
-            "Layer": 1,
+            "KeyFrameName": "Bar",
+            "Layer": 0,
             "StartTime": 0.0,
             "StartTransform": {
                 "Color": [
-                    0.01423501968383789,
                     1.0,
-                    0.0,
+                    1.0,
+                    1.0,
                     1.0
                 ],
                 "Position": [
@@ -76,8 +77,8 @@
                     0.0
                 ],
                 "Scale": [
-                    12.0,
-                    1.0
+                    122.0,
+                    12.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -125,12 +126,12 @@
                 "bUVScale": false,
                 "bVertexOffset": false
             },
-            "EndTime": 1.0,
+            "EndTime": 0.9999998807907104,
             "EndTransform": {
                 "Color": [
+                    0.0782918930053711,
                     1.0,
-                    1.0,
-                    1.0,
+                    0.0,
                     1.0
                 ],
                 "Position": [
@@ -142,8 +143,8 @@
                     0.0
                 ],
                 "Scale": [
-                    12.199999809265137,
-                    1.2000000476837158
+                    120.0,
+                    10.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -154,13 +155,14 @@
                     1.0
                 ]
             },
-            "Layer": 0,
+            "KeyFrameName": "HP",
+            "Layer": 1,
             "StartTime": 0.0,
             "StartTransform": {
                 "Color": [
+                    0.0782918930053711,
                     1.0,
-                    1.0,
-                    1.0,
+                    0.0,
                     1.0
                 ],
                 "Position": [
@@ -172,8 +174,8 @@
                     0.0
                 ],
                 "Scale": [
-                    12.199999809265137,
-                    1.2000000476837158
+                    120.0,
+                    10.0
                 ],
                 "UVPosition": [
                     0.0,
@@ -193,8 +195,8 @@
             }
         }
     ],
-    "Loop": false,
+    "Loop": true,
     "ProjectName": "HP",
-    "TotalDuration": 1.0,
+    "TotalDuration": 0.9999998807907104,
     "ViewMode": 0
 }

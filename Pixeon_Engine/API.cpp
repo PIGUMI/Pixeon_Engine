@@ -1769,4 +1769,40 @@ extern "C" {
 		keyframePtr->vertexOffset.Right = offset;
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult GetVertexOffsetUp(Keyframe keyframe, float* outOffset)
+	{
+		if (!keyframe || !outOffset) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		KeyFrame* keyframePtr = reinterpret_cast<KeyFrame*>(keyframe);
+		*outOffset = keyframePtr->vertexOffset.Up;
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetVertexOffsetDown(Keyframe keyframe, float* outOffset)
+	{
+		if (!keyframe || !outOffset) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		KeyFrame* keyframePtr = reinterpret_cast<KeyFrame*>(keyframe);
+		*outOffset = keyframePtr->vertexOffset.Down;
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetVertexOffsetLeft(Keyframe keyframe, float* outOffset)
+	{
+		if (!keyframe || !outOffset) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		KeyFrame* keyframePtr = reinterpret_cast<KeyFrame*>(keyframe);
+		*outOffset = keyframePtr->vertexOffset.Left;
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetVertexOffsetRight(Keyframe keyframe, float* outOffset)
+	{
+		if (!keyframe || !outOffset) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		KeyFrame* keyframePtr = reinterpret_cast<KeyFrame*>(keyframe);
+		*outOffset = keyframePtr->vertexOffset.Right;
+		return PN_SUCCESS;
+	}
 };

@@ -8,6 +8,12 @@ void Script_Player::BeginPlay() {
 	FindChildObjectByName(playerObject, "Body", &bodyObject);
 	FindComponent(headObject, "CameraComponent", &CameraComp);
 	FindPrefabObjectByName("Bullet", &Bullet);
+	Object UI;
+	FindObjectByName(scene, "UI", &UI);
+	FindChildObjectByName(UI, "Hp", &HitPointUI);
+	Component AnimatorComp;
+	FindComponent(HitPointUI, "Animator2DComponent", &AnimatorComp);
+	GetAnimator2D(AnimatorComp, "HP", &HP);
 	FixedMouseCursor(true);
 	SetMainCamera(1);
 }
@@ -15,12 +21,21 @@ void Script_Player::BeginPlay() {
 void Script_Player::Update() {
 
 	Movement();
-
-	if(KeyTriggered('Q'))
+	if (KeyPressed('Q'))
 	{
-		SceneHandle scene;
-		GetCurrentScene(&scene);
-		AddObjectToScene(scene, Bullet);
+		float fHP;
+		FindKeyFrame(HP, "HP", &hp);
+		GetVertexOffsetRight(hp, &fHP);
+		fHP -= 1.0f;
+		SetVertexOffsetRight(hp, fHP);
+	}
+	if (KeyPressed('E'))
+	{
+		float fHP;
+		FindKeyFrame(HP, "HP", &hp);
+		GetVertexOffsetRight(hp, &fHP);
+		fHP += 1.0f;
+		SetVertexOffsetRight(hp, fHP);
 	}
 }
 

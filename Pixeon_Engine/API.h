@@ -222,7 +222,10 @@ extern "C" {
 	PIXEON_API APIResult SetVertexOffsetDown(Keyframe keyframe, float offset);
 	PIXEON_API APIResult SetVertexOffsetLeft(Keyframe keyframe, float offset);
 	PIXEON_API APIResult SetVertexOffsetRight(Keyframe keyframe, float offset);
-
+	PIXEON_API APIResult GetVertexOffsetUp(Keyframe keyframe, float* outOffset);
+	PIXEON_API APIResult GetVertexOffsetDown(Keyframe keyframe, float* outOffset);
+	PIXEON_API APIResult GetVertexOffsetLeft(Keyframe keyframe, float* outOffset);
+	PIXEON_API APIResult GetVertexOffsetRight(Keyframe keyframe, float* outOffset);
 };
 
 #endif// API.h

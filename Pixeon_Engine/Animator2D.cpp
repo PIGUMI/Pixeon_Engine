@@ -268,6 +268,7 @@ void Animator2D::SaveFile()
 		kfJson["Layer"] = kf.Layer;
 		kfJson["StartTime"] = kf.StartTime;
 		kfJson["EndTime"] = kf.EndTime;
+		kfJson["KeyFrameName"] = kf.KeyFrameName;
 		// CurveInfo
 		kfJson["CurveInfo"]["StartPoint"] = { kf.CurveInfo.StartPoint.x, kf.CurveInfo.StartPoint.y };
 		kfJson["CurveInfo"]["ControlPoint1"] = { kf.CurveInfo.ControlPoint1.x, kf.CurveInfo.ControlPoint1.y };
@@ -352,6 +353,7 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.Layer = kfJson["Layer"].get<int>();
 			kf.StartTime = kfJson["StartTime"].get<float>();
 			kf.EndTime = kfJson["EndTime"].get<float>();
+			kf.KeyFrameName = kfJson["KeyFrameName"].get<std::string>();
 			// CurveInfo
 			auto curveJson = kfJson["CurveInfo"];
 			kf.CurveInfo.StartPoint = { curveJson["StartPoint"][0].get<float>(), curveJson["StartPoint"][1].get<float>() };
