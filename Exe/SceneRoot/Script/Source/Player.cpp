@@ -68,7 +68,6 @@ void Script_Player::Movement()
 	{
 		head_Transform.rotation.x = -DirectX::XMConvertToRadians(70.0f);
 	}
-	// ‘Ì‚©‚ç+-80“x‚Ü‚Å
 	if (head_Transform.rotation.y - body_Transform.rotation.y > DirectX::XMConvertToRadians(70.0f))
 	{
 		head_Transform.rotation.y = body_Transform.rotation.y + DirectX::XMConvertToRadians(70.0f);
