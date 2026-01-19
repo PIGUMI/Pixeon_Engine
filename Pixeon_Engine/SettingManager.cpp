@@ -1,4 +1,5 @@
 #include "SettingManager.h"
+#include "MainFrame.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 
@@ -56,12 +57,16 @@ void SettingManager::LoadConfig() {
 		BackgroundColor.z = configJson["BackgroundColor"][2].get<float>();
 		BackgroundColor.w = configJson["BackgroundColor"][3].get<float>();
 	}
+	if (configJson.contains("PixelPostEffect")) {
+		MainFrame::GetInstance()->setPixelated(configJson["PixelPostEffect"].get<bool>());
+	}
 	if (configJson.contains("ExternelTool")) {
 		ExternelTool = configJson["ExternelTool"].get<std::string>();
 	}
 	if (configJson.contains("MouseSensitivity")) {
 		MouseSensitivity = configJson["MouseSensitivity"].get<float>();
 	}
+
 }
 
 void SettingManager::SaveConfig() {
@@ -74,6 +79,7 @@ void SettingManager::SaveConfig() {
 	configJson["AutoSaveInterval"] = AutoSaveInterval;
 	configJson["BackgroundColor"] = { BackgroundColor.x, BackgroundColor.y, BackgroundColor.z, BackgroundColor.w };
 	configJson["ExternelTool"] = ExternelTool;
+	configJson["PixelPostEffect"] = MainFrame::GetInstance()->isPixelated();
 	configJson["MouseSensitivity"] = MouseSensitivity;
 
 	// JSONÉtÉ@ÉCÉãÇ…èëÇ´çûÇﬁ

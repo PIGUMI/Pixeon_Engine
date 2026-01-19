@@ -334,7 +334,6 @@ namespace ImageUtils {
 			ctx->Unmap(s_vb.Get(), 0);
 		}
 
-		// VS定数バッファ更新
 		{
 			struct CBVS { DirectX::XMMATRIX View; DirectX::XMMATRIX Proj; DirectX::XMFLOAT4 Color; int mode2D; float pad[3]; };
 			CBVS cb{};
@@ -345,7 +344,6 @@ namespace ImageUtils {
 			ctx->UpdateSubresource(s_cbVS.Get(), 0, nullptr, &cb, 0, 0);
 		}
 
-		// PS定数バッファ更新
 		{
 			struct CBPS { float pixelSize; float screenWidth; float screenHeight; float intensity; };
 			CBPS cbps{};

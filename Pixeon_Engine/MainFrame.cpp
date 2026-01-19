@@ -200,21 +200,40 @@ void MainFrame::Draw()
 			Layer_Index++;
 		}
 
-		// トーンマッピング＆最終合成
-		_finalRenderTarget->SetRenderZBuffer(false);
-		_finalRenderTarget->Begin(dx11->GetContext());
-		dx11->ApplyToneMappingPass();
-		for (auto layerRT : _layerRenderTargets) {
-			ImageUtils::DrawSRVPixelated(
-				layerRT->GetShaderResourceView(),
-				0.0f, 0.0f,
-				(float)_engineConfig.screenWidth,
-				(float)_engineConfig.screenHeight,
-				8.0f,
-				1.0f
-			);
+
+		if (_PixelatedFlag)
+		{
+			// トーンマッピング＆最終合成
+			_finalRenderTarget->SetRenderZBuffer(false);
+			_finalRenderTarget->Begin(dx11->GetContext());
+			dx11->ApplyToneMappingPass();
+			for (auto layerRT : _layerRenderTargets) {
+				ImageUtils::DrawSRVPixelated(
+					layerRT->GetShaderResourceView(),
+					0.0f, 0.0f,
+					(float)_engineConfig.screenWidth,
+					(float)_engineConfig.screenHeight,
+					8.0f,
+					1.0f
+				);
+			}
+			_finalRenderTarget->End();
 		}
-		_finalRenderTarget->End();
+		else
+		{
+			_finalRenderTarget->SetRenderZBuffer(false);
+			_finalRenderTarget->Begin(dx11->GetContext());
+			dx11->ApplyToneMappingPass();
+			for (auto layerRT : _layerRenderTargets) {
+				ImageUtils::DrawSRV(
+					layerRT->GetShaderResourceView(),
+					0.0f, 0.0f,
+					(float)_engineConfig.screenWidth,
+					(float)_engineConfig.screenHeight
+				);
+			}
+			_finalRenderTarget->End();
+		}
 
 		// メイン描画
 		DirectX11::GetInstance()->BeginDraw();

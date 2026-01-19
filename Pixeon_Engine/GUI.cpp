@@ -376,6 +376,12 @@ void GUI::SettingWindow()
 			SettingManager::GetInstance()->SetBackgroundColor(DirectX::XMFLOAT4(color[0], color[1], color[2], color[3]));
 		}
 
+		ImGui::Text(ShiftJISToUTF8("ピクセルポストエフェクト設定").c_str());
+		ImGui::Separator();
+		bool bPixelPostEffect = MainFrame::GetInstance()->isPixelated();
+		ImGui::Checkbox(ShiftJISToUTF8("ピクセルポストエフェクトを有効にする").c_str(), &bPixelPostEffect);
+		MainFrame::GetInstance()->setPixelated(bPixelPostEffect);
+
 		ImGui::Text(ShiftJISToUTF8("マウス感度設定").c_str());
 		float mouseSensitivity = SettingManager::GetInstance()->GetMouseSensitivity();
 		if (ImGui::SliderFloat(ShiftJISToUTF8("マウス感度:").c_str(), &mouseSensitivity, 0.01f, 1.0f))SettingManager::GetInstance()->SetMouseSensitivity(mouseSensitivity);

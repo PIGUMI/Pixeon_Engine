@@ -46,6 +46,8 @@ public:
 	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
 	SoftWareMode GetSoftwareMode() const { return _softwareMode; }
 	void fixedMouseCursor(bool fixedCursor) { _fixedMouseCursorFlag = fixedCursor; }
+	bool isPixelated() const { return _PixelatedFlag; }
+	void setPixelated(bool pixelated) { _PixelatedFlag = pixelated; }
 private:
 	DWORD _lastUpdateTime;
 	bool _updateDraw;
@@ -60,6 +62,8 @@ private:
 	EngineConfig _engineConfig;
 
 	bool _fixedMouseCursorFlag = false;
+
+	bool _PixelatedFlag = false;
 private:
 	MainFrame() = default;
 	~MainFrame() = default;
