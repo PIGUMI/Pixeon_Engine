@@ -1,22 +1,17 @@
 #pragma once
 #include "Include/IScript.h"
 
-class Script_Weapon : public IScript {
+class Script_Expl : public IScript {
 public:
     void BeginPlay() override;
     void Update() override;
     void EndPlay() override;
 private:
-    transform _StartTransform;
-    transform _EndTransform;
-    float _transitionProgress = 0.0f;
-    bool _isAiming = false;
-
-	Object _ExplosionEffect = nullptr;
+	Animator2d _animator;
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
-    return new Script_Weapon();
+    return new Script_Expl();
 }
 
 extern "C" __declspec(dllexport) void DestroyScriptInstance(IScript* script) {

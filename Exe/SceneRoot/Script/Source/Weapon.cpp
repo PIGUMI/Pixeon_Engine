@@ -18,6 +18,7 @@ void Script_Weapon::BeginPlay() {
 
 	_transitionProgress = 0.0f;
 	_isAiming = false;
+	FindPrefabObjectByName("Expl", &_ExplosionEffect);
 }
 
 void Script_Weapon::Update() {
@@ -54,6 +55,18 @@ void Script_Weapon::Update() {
 	currentTransform.scale.z = _StartTransform.scale.z + (_EndTransform.scale.z - _StartTransform.scale.z) * t;
 
 	SetObjectTransform(_parentObject, &currentTransform);
+
+	if (KeyPressed(VK_LBUTTON)) {
+		transform explosionTransform;
+		GetObjectTransform(_parentObject, &explosionTransform);
+		explosionTransform.position.y += 0.5f;
+		explosionTransform.scale.x = 0.01f;
+		explosionTransform.scale.y = 0.01f;
+		APIResult result = SetObjectTransform(_ExplosionEffect, &explosionTransform);
+		SceneHandle scene;
+		GetCurrentScene(&scene);
+		AddObjectToScene(scene, _ExplosionEffect);
+	}
 }
 
 void Script_Weapon::EndPlay() {
