@@ -20,7 +20,9 @@ void Script_Weapon::BeginPlay() {
 	GetCurrentScene(&scene);
 	FindObjectByName(scene, "Player", &Player);
 	FindChildObjectByName(Player, "Head", &Head);
-	FindComponent(Head, "CameraComponent", &CameraComp);
+	Object Body;
+	FindChildObjectByName(Player, "Body", &Body);
+	FindComponent(Body, "CameraComponent", &CameraComp);
 	FindPrefabObjectByName("Expl", &ExplosionEffect);
 }
 
@@ -45,15 +47,8 @@ void Script_Weapon::Update() {
 
 	Animation();
 
-	if (KeyTriggered(VK_LBUTTON)) {
+	if (KeyTriggered(VK_LBUTTON) && _isAiming) {
 		Effect();
-	}
-	if (KeyTriggered('T'))
-	{
-		for(int i = 0 ; i < 10; i++)
-		{
-			Effect();
-		}
 	}
 }
 
