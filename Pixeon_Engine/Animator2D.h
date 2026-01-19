@@ -144,13 +144,14 @@ public:
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
+	void EnsurePreviewImage();  // í«â¡:  íxâÑèâä˙âªóp
 
 	DirectX::XMFLOAT2 EaseByBezierCurve(const CurveData& curve, const DirectX::XMFLOAT2& startvalue, const DirectX::XMFLOAT2& endvalue, float elapsed, float duration = 1.0f);
 
 public:
 	std::string Name_ = "Animator2D";
 	bool bLoop_ = false;
-	bool bFirst_ = true; 
+	bool bFirst_ = true;
 	bool bEnded_ = false;
 	float fStartTime_ = 0.0f;
 	float fNowTime_ = 0.0f;

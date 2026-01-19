@@ -229,7 +229,6 @@ void Animator2DComponent::LoadFromFile(std::istream& in)
 		std::string projectName(nameLength, ' ');
 		in.read(&projectName[0], nameLength);
 
-		// プリロードされていない場合は先にプリロード
 		std::string fullName = projectName + ".anim2d";
 		if (!Animator2DManager::GetInstance()->IsLoaded(fullName)) {
 			Animator2DManager::GetInstance()->PreloadAnimator2D(fullName);

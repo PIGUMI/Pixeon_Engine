@@ -5,9 +5,8 @@
 
 void Script_Weapon::BeginPlay() {
 	GetObjectTransform(_parentObject, &_StartTransform);
-
 	_EndTransform.position.x = -0.3f;
-	_EndTransform.position.y = 1.1f;
+	_EndTransform.position.y = 0.9f;
 	_EndTransform.position.z = 0.0f;
 	_EndTransform.rotation.x = DirectX::XMConvertToRadians(16.0f);
 	_EndTransform.rotation.y = DirectX::XMConvertToRadians(90.0f);
@@ -15,19 +14,20 @@ void Script_Weapon::BeginPlay() {
 	_EndTransform.scale.x	 = 0.5f;
 	_EndTransform.scale.y    = 0.5f;
 	_EndTransform.scale.z    = 0.5f;
-
 	_transitionProgress = 0.0f;
 	_isAiming = false;
-	FindPrefabObjectByName("Expl", &_ExplosionEffect);
+
 	GetCurrentScene(&scene);
 	FindObjectByName(scene, "Player", &Player);
 	FindChildObjectByName(Player, "Head", &Head);
 	FindComponent(Head, "CameraComponent", &CameraComp);
+	FindPrefabObjectByName("Expl", &ExplosionEffect);
 }
 
 void Script_Weapon::Update() {
 	float transitionSpeed = 0.1f;
 
+	// Aiming
 	if (KeyPressed(VK_RBUTTON)) {
 		_isAiming = true;
 		_transitionProgress += transitionSpeed;
@@ -43,6 +43,15 @@ void Script_Weapon::Update() {
 		}
 	}
 
+	Animation();
+
+	if (KeyTriggered(VK_LBUTTON)) {
+		Effect();
+	}
+}
+
+void Script_Weapon::Animation() 
+{
 	transform currentTransform;
 	float t = _transitionProgress;
 
@@ -59,29 +68,31 @@ void Script_Weapon::Update() {
 	currentTransform.scale.z = _StartTransform.scale.z + (_EndTransform.scale.z - _StartTransform.scale.z) * t;
 
 	SetObjectTransform(_parentObject, &currentTransform);
+}
 
-	if (KeyTriggered(VK_LBUTTON)) {
-		transform explosionTransform;
-		GetObjectTransform(Player, &explosionTransform);
+void Script_Weapon::Effect() 
+{
+	transform explosionTransform;
+	Float3 Forward;
 
-		Float3 Forward;
-		GetCameraForwardVector(CameraComp, &Forward);
-	
-		float length = sqrtf(Forward.x * Forward.x + Forward.y * Forward.y + Forward.z * Forward.z);
-		if (length != 0.0f) {
-			Forward.x /= length;
-			Forward.y /= length;
-			Forward.z /= length;
-		}
-		explosionTransform.position.x -= Forward.x * 5.0f;
-		explosionTransform.position.z -= Forward.z * 5.0f;
+	GetObjectTransform(Player, &explosionTransform);
+	GetCameraForwardVector(CameraComp, &Forward);
 
-		explosionTransform.position.y += 1.0f;
-		explosionTransform.scale.x = 0.005f;
-		explosionTransform.scale.y = 0.005f;
-		APIResult result = SetObjectTransform(_ExplosionEffect, &explosionTransform);
-		AddObjectToScene(scene, _ExplosionEffect);
+	float length = sqrtf(Forward.x * Forward.x + Forward.y * Forward.y + Forward.z * Forward.z);
+	if (length != 0.0f) {
+		Forward.x /= length;
+		Forward.y /= length;
+		Forward.z /= length;
 	}
+	explosionTransform.position.x -= Forward.x * 5.0f;
+	explosionTransform.position.z -= Forward.z * 5.0f;
+
+	explosionTransform.position.y += 1.0f;
+	explosionTransform.scale.x = 0.0025f;
+	explosionTransform.scale.y = 0.0025f;
+
+	SetObjectTransform(ExplosionEffect, &explosionTransform);
+	AddObjectToScene(scene, ExplosionEffect);
 }
 
 void Script_Weapon::EndPlay() {

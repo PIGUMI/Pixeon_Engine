@@ -26,27 +26,27 @@ static double GetTimeSeconds()
 }
 
 /*
-* 関数名　: Animator2D
-* 引　数　: なし
-* 戻り値　: なし
-* 説　明　: コンストラクタ
+* 関数名:  Animator2D
+* 引　数: なし
+* 戻り値: なし
+* 説　明:  コンストラクタ
 */
 Animator2D::Animator2D()
-	:bLoop_(false),
+	: bLoop_(false),
 	bFirst_(true),
 	fStartTime_(0.0f),
 	fNowTime_(0.0f),
 	fTotalDuration_(0.0f)
 {
-	PreviewImage = new ImageRender();
-	PreviewImage->Init(owner_);
+	// PreviewImageの初期化は遅延させる
+	PreviewImage = nullptr;
 }
 
 /*
-* 関数名　: ~Animator2D
-* 引　数　: なし
-* 戻り値　: なし
-* 説　明　: デストラクタ
+* 関数名: ~Animator2D
+* 引　数:  なし
+* 戻り値: なし
+* 説　明: デストラクタ
 */
 Animator2D::~Animator2D()
 {
@@ -58,10 +58,25 @@ Animator2D::~Animator2D()
 }
 
 /*
-* 関数名　: Update
-* 引　数　: なし
-* 戻り値　: なし
-* 説　明　: アニメーションの更新
+* 関数名: EnsurePreviewImage
+* 引　数: なし
+* 戻り値: なし
+* 説　明:  PreviewImageを遅延初期化する
+*/
+void Animator2D::EnsurePreviewImage()
+{
+	if (!PreviewImage)
+	{
+		PreviewImage = new ImageRender();
+		PreviewImage->Init(owner_);
+	}
+}
+
+/*
+* 関数名: Update
+* 引　数: なし
+* 戻り値: なし
+* 説　明: アニメーションの更新
 */
 void Animator2D::Update()
 {
@@ -93,10 +108,10 @@ void Animator2D::Update()
 }
 
 /*
-* 関数名　: EditorUpdate
-* 引　数　: なし
-* 戻り値　: なし
-* 説　明　: エディターモード時のアニメーション更新
+* 関数名: EditorUpdate
+* 引　数: なし
+* 戻り値: なし
+* 説　明: エディターモード時のアニメーション更新
 */
 void Animator2D::EditorUpdate()
 {
@@ -104,13 +119,16 @@ void Animator2D::EditorUpdate()
 }
 
 /*
-* 関数名　: Draw
-* 引　数　: Layer 描画レイヤー
-* 戻り値　: なし
-* 説　明　: アニメーションの描画
+* 関数名: Draw
+* 引　数: Layer 描画レイヤー
+* 戻り値: なし
+* 説　明: アニメーションの描画
 */
 void Animator2D::Draw(int Layer)
 {
+	// PreviewImageを遅延初期化
+	EnsurePreviewImage();
+
 	std::vector<KeyFrame> SortedKeyFrames = KeyFrames_;
 
 	std::sort(SortedKeyFrames.begin(), SortedKeyFrames.end(),
@@ -145,7 +163,7 @@ void Animator2D::Draw(int Layer)
 				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
 				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, kf.Layer));
 
-				if(kf.uiShift.IsActive)
+				if (kf.uiShift.IsActive)
 				{
 					PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
 				}
@@ -170,7 +188,7 @@ void Animator2D::Draw(int Layer)
 					PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 					PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 
-					if(kf.uiShift.IsActive)
+					if (kf.uiShift.IsActive)
 					{
 						PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
 					}
@@ -192,7 +210,7 @@ void Animator2D::Draw(int Layer)
 					PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 					PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
 
-					if(kf.uiShift.IsActive)
+					if (kf.uiShift.IsActive)
 					{
 						PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
 					}
@@ -205,7 +223,7 @@ void Animator2D::Draw(int Layer)
 							kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
 					}
 				}
-	
+
 			}
 
 			PreviewImage->SetVertexOffsetDown(kf.vertexOffset.Down);
@@ -226,10 +244,10 @@ void Animator2D::Draw(int Layer)
 }
 
 /*
-* 関数名　: Debug
-* 引　数　: なし
-* 戻り値　: なし
-* 説　明　: デバッグ情報の表示
+* 関数名: Debug
+* 引　数: なし
+* 戻り値: なし
+* 説　明: デバッグ情報の表示
 */
 void Animator2D::Debug()
 {
@@ -512,25 +530,28 @@ void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 void Animator2D::SetOwner(AbstractObject* owner)
 {
 	owner_ = owner;
-	PreviewImage->SetParent(owner);
 }
 
 /*
-* 関数名　: PreviewUpdate
-* 引　数　: なし
-* 戻り値　: なし
-* 説　明　: プレビュー用の更新処理
+* 関数名:  PreviewUpdate
+* 引　数: なし
+* 戻り値: なし
+* 説　明: プレビュー用の更新処理
 */
 void Animator2D::PreviewUpdate()
 {
-	PreviewImage->Update();
+	EnsurePreviewImage();
+	if (PreviewImage)
+	{
+		PreviewImage->Update();
+	}
 }
 
 /*
-* 関数名　: Copy
-* 引　数　: なし
-* 戻り値　: Animator2D* コピーされたアニメーター
-* 説　明　: アニメーターをコピーする
+* 関数名: Copy
+* 引　数: なし
+* 戻り値:  Animator2D* コピーされたアニメーター
+* 説　明: アニメーターをコピーする
 */
 Animator2D* Animator2D::Copy()
 {
@@ -538,11 +559,11 @@ Animator2D* Animator2D::Copy()
 	newAnimator->Name_ = this->Name_;
 	newAnimator->bLoop_ = this->bLoop_;
 	newAnimator->fTotalDuration_ = this->fTotalDuration_;
-	for (const auto& kf : this->KeyFrames_)
-	{
-		KeyFrame newKf = kf;
-		newAnimator->KeyFrames_.push_back(newKf);
-	}
+	newAnimator->viewMode_ = this->viewMode_;
+
+	newAnimator->KeyFrames_.reserve(this->KeyFrames_.size());
+	newAnimator->KeyFrames_ = this->KeyFrames_;
+
 	return newAnimator;
 }
 

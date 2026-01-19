@@ -6,6 +6,8 @@ public:
     void BeginPlay() override;
     void Update() override;
     void EndPlay() override;
+    void Animation();
+    void Effect();
 private:
     transform _StartTransform;
     transform _EndTransform;
@@ -15,7 +17,8 @@ private:
     Object Head;
     SceneHandle scene;
     Component CameraComp;
-	Object _ExplosionEffect = nullptr;
+
+	Object ExplosionEffect;
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {

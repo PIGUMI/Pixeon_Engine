@@ -1726,11 +1726,11 @@ extern "C" {
 		if (!animatorPtr) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		Keyframe keyframe = animatorPtr->GetKeyFrameByName(std::string(keyname));
-		if (!keyframe) {
-			return PN_ERROR_INVALID_PARAMETER;
+		KeyFrame* keyframePtr = animatorPtr->GetKeyFrameByName(std::string(keyname));
+		if (!keyframePtr) {
+			return PN_ERROR_NOT_FOUND;
 		}
-		*outKeyframe = keyframe;
+		*outKeyframe = reinterpret_cast<Keyframe>(keyframePtr);
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult SetVertexOffsetUp(Keyframe keyframe, float offset)
