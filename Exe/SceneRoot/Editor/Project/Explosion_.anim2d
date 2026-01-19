@@ -105,8 +105,8 @@
             }
         }
     ],
-    "Loop": false,
-    "ProjectName": "Explosion",
+    "Loop": true,
+    "ProjectName": "Explosion_",
     "TotalDuration": 0.4000000059604645,
     "ViewMode": 0
 }

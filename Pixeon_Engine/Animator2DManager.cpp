@@ -71,19 +71,30 @@ Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 */
 void Animator2DManager::PreloadAnimator2D(const std::string& name)
 {
-	// 既にキャッシュされているか確認
+	auto start = std::chrono::high_resolution_clock::now();
+
 	for (auto animator : _animator2Ds)
 	{
 		if (animator->GetProjectName() == name)
 		{
-			return; // 既にロード済み
+			auto end = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+			std::string msg = "[PreloadAnimator2D] Cache hit for " + name + " (" + std::to_string(duration.count()) + "us)\n";
+			OutputDebugStringA(msg.c_str());
+
+			return;
 		}
 	}
-
-	// 新規ロードしてキャッシュに追加
 	Animator2D* newAnimator = new Animator2D();
 	newAnimator->LoadFile(SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + name);
 	_animator2Ds.push_back(newAnimator);
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+	std::string msg = "[PreloadAnimator2D] NEW LOAD for " + name + " took " + std::to_string(duration.count()) + "ms\n";
+	OutputDebugStringA(msg.c_str());
 }
 
 /*

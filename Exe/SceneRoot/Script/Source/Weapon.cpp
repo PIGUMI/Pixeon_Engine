@@ -48,6 +48,13 @@ void Script_Weapon::Update() {
 	if (KeyTriggered(VK_LBUTTON)) {
 		Effect();
 	}
+	if (KeyTriggered('T'))
+	{
+		for(int i = 0 ; i < 10; i++)
+		{
+			Effect();
+		}
+	}
 }
 
 void Script_Weapon::Animation() 

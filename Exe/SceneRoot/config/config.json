@@ -10,7 +10,7 @@
     ],
     "ExternelTool": "SceneRoot/Tool/IN/",
     "MouseSensitivity": 0.009999999776482582,
-    "PixelPostEffect": false,
+    "PixelPostEffect": true,
     "SceneFilePath": "SceneRoot/Scene/",
     "bZBuffer": true
 }
