@@ -4,6 +4,8 @@
 #include "ImageUtils.h"
 #include <algorithm>
 
+#include "PixelateEffect.h"
+
 Layer::Layer() {
 }
 
@@ -140,11 +142,13 @@ void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
     }
 
     if (activeEffects.empty()) {
-        // エフェクトがない場合は入力をそのまま出力にコピー
-        ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
-            DirectX::XMFLOAT4(1, 1, 1, opacity));
-        return;
+        return; // エフェクトがない場合は何もしない
     }
+
+    // 古いレンダーターゲット状態を保存
+    ID3D11RenderTargetView* oldRTV = nullptr;
+    ID3D11DepthStencilView* oldDSV = nullptr;
+    ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
 
     // Ping-Pongバッファリングでエフェクトを順次適用
     ID3D11ShaderResourceView* currentInput = input;
@@ -155,7 +159,7 @@ void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
         bool isLastEffect = (i == activeEffects.size() - 1);
 
         if (isLastEffect) {
-            // 最後のエフェクトは最終出力に描画
+            // 最後のエフェクトは元のレンダーターゲットに描画
             currentOutput = output;
         }
         else {
@@ -167,10 +171,13 @@ void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
         // レンダーターゲットをクリア
         float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
         ctx->ClearRenderTargetView(currentOutput, clearColor);
-        ctx->OMSetRenderTargets(1, &currentOutput, nullptr);
 
         // エフェクトを適用
         activeEffects[i]->Apply(currentInput, currentOutput, width, height);
+
+        // SRVのバインドを解除（重要！）
+        ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+        ctx->PSSetShaderResources(0, 1, nullSRV);
 
         // 次のループの入力を設定
         if (!isLastEffect) {
@@ -178,9 +185,11 @@ void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
         }
     }
 
-    // レンダーターゲットをリセット
-    ID3D11RenderTargetView* nullRTV = nullptr;
-    ctx->OMSetRenderTargets(1, &nullRTV, nullptr);
+    // レンダーターゲット状態を復元
+    ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
+
+    if (oldRTV) oldRTV->Release();
+    if (oldDSV) oldDSV->Release();
 }
 
 // Inspector用のGUIを描画
@@ -343,6 +352,8 @@ void Layer::LoadFromJson(const nlohmann::json& j) {
 // ポストエフェクトを生成
 std::shared_ptr<PostEffectBase> Layer::CreatePostEffect(PostEffectType type) {
     switch (type) {
+        case PostEffectType::PIXELATE:
+			return std::make_shared<PixelateEffect>();
     default:
         return nullptr;
     }

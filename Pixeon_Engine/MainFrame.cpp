@@ -208,8 +208,9 @@ void MainFrame::Draw()
 
 			layerRT->End();
 
-			// ポストエフェクト適用
+			// ポストエフェクト適用（重要:  同じレンダーターゲットに適用）
 			if (layerSettings && !layerSettings->postEffects.empty()) {
+				// エフェクトを適用（入力と出力は別のバッファを使用）
 				layerSettings->ApplyPostEffects(
 					layerRT->GetShaderResourceView(),
 					layerRT->GetRenderTargetView(),
@@ -222,6 +223,8 @@ void MainFrame::Draw()
 		// 最終合成
 		_finalRenderTarget->SetRenderZBuffer(false);
 		_finalRenderTarget->Begin(dx11->GetContext());
+
+		// トーンマッピング適用
 		dx11->ApplyToneMappingPass();
 
 		// 全レイヤーを合成
@@ -242,7 +245,7 @@ void MainFrame::Draw()
 				continue;
 			}
 
-			// 不透明度を適用して描画
+			// 不透明度を適用して描画（エフェクト適用済みのテクスチャを描画）
 			float opacity = layerSettings ? layerSettings->opacity : 1.0f;
 
 			ImageUtils::DrawSRV(
