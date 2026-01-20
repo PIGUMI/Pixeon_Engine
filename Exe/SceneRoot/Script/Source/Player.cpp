@@ -17,7 +17,7 @@ void Script_Player::BeginPlay() {
 	FindComponent(HitPointUI, "Animator2DComponent", &AnimatorComp);
 	GetAnimator2D(AnimatorComp, "HP", &HP);
 	FixedMouseCursor(true);
-	SetMainCamera(1);
+	SetMainCamera(2);
 }
 
 void Script_Player::Update() {

@@ -89,9 +89,9 @@ void Script_Weapon::Effect()
 	explosionTransform.position.x -= Forward.x * 5.0f;
 	explosionTransform.position.z -= Forward.z * 5.0f;
 
-	explosionTransform.position.y += 1.0f;
-	explosionTransform.scale.x = 0.0025f;
-	explosionTransform.scale.y = 0.0025f;
+	explosionTransform.position.y += 1.25f;
+	explosionTransform.scale.x = 0.002f;
+	explosionTransform.scale.y = 0.002f;
 
 	SetObjectTransform(ExplosionEffect, &explosionTransform);
 	AddObjectToScene(scene, ExplosionEffect);
