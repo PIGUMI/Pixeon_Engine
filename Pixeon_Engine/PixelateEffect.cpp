@@ -32,8 +32,6 @@ void PixelateEffect::Apply(ID3D11ShaderResourceView* input,
     vp.TopLeftX = 0;
     vp.TopLeftY = 0;
     ctx->RSSetViewports(1, &vp);
-
-    // ImageUtilsを使用してピクセレート描画
     ImageUtils::DrawSRVPixelated(
         input,
         0.0f, 0.0f,
@@ -42,8 +40,6 @@ void PixelateEffect::Apply(ID3D11ShaderResourceView* input,
         intensity,
         color
     );
-
-    // SRVバインド解除（重要！）
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
     ctx->PSSetShaderResources(0, 1, nullSRV);
 
