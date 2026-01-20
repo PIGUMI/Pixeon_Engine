@@ -28,6 +28,88 @@ void Layer::AddPostEffect(PostEffectType type) {
     }
 }
 
+void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
+    int width, int height,
+    float opacity) {
+    if (!input) return;
+
+    auto* dx = DirectX11::GetInstance();
+    if (!dx) return;
+
+    ID3D11DeviceContext* ctx = dx->GetContext();
+    if (!ctx) return;
+
+    // 有効なエフェクトを抽出
+    std::vector<std::shared_ptr<PostEffectBase>> activeEffects;
+    for (auto& effect : postEffects) {
+        if (effect && effect->enabled) {
+            activeEffects.push_back(effect);
+        }
+    }
+
+    if (activeEffects.empty()) {
+        // エフェクトなし: 通常描画
+        ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
+            DirectX::XMFLOAT4(1, 1, 1, 1),
+            DirectX::XMFLOAT4(0, 0, 1, 1),
+            true, opacity);
+        return;
+    }
+
+    // 中間バッファを準備
+    CreateTempBuffers(width, height);
+
+    if (!tempRTV1_ || !tempSRV1_) {
+        // バッファ作成失敗:  通常描画にフォールバック
+        ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
+            DirectX::XMFLOAT4(1, 1, 1, 1),
+            DirectX::XMFLOAT4(0, 0, 1, 1),
+            true, opacity);
+        return;
+    }
+
+    // 現在のレンダーターゲットを保存
+    ID3D11RenderTargetView* oldRTV = nullptr;
+    ID3D11DepthStencilView* oldDSV = nullptr;
+    ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
+
+    // 入力ソース
+    ID3D11ShaderResourceView* currentInput = input;
+
+    // エフェクトを順次適用
+    for (size_t i = 0; i < activeEffects.size(); i++) {
+        bool isLastEffect = (i == activeEffects.size() - 1);
+
+        if (isLastEffect) {
+            // 最後のエフェクトは現在のレンダーターゲット（画面）に直接描画
+            activeEffects[i]->Apply(currentInput, oldRTV, width, height);
+        }
+        else {
+            // 中間バッファに描画
+            ID3D11RenderTargetView* tempTarget = (i % 2 == 0) ? tempRTV1_ : tempRTV2_;
+            ID3D11ShaderResourceView* tempSource = (i % 2 == 0) ? tempSRV1_ : tempSRV2_;
+
+            float clearColor[4] = { 0, 0, 0, 0 };
+            ctx->ClearRenderTargetView(tempTarget, clearColor);
+
+            activeEffects[i]->Apply(currentInput, tempTarget, width, height);
+
+            // SRVバインド解除
+            ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+            ctx->PSSetShaderResources(0, 1, nullSRV);
+
+            // 次の入力を設定
+            currentInput = tempSource;
+        }
+    }
+
+    // レンダーターゲットを復元
+    ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
+
+    if (oldRTV) oldRTV->Release();
+    if (oldDSV) oldDSV->Release();
+}
+
 // ポストエフェクトを削除
 void Layer::RemovePostEffect(int index) {
     if (index >= 0 && index < postEffects.size()) {

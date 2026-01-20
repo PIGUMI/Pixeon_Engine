@@ -157,42 +157,40 @@ void MainFrame::Update()
 * 戻り値　なし
 * 説　明　MainFrameの描画処理を行う関数
 */
-// MainFrame.cpp の Draw() 関数を修正
 void MainFrame::Draw()
 {
 	if (_updateDraw) {
 		auto* dx11 = DirectX11::GetInstance();
+		ID3D11DeviceContext* ctx = dx11->GetContext();
 
 		ID3D11RenderTargetView* hdrRTV = dx11->GetHDRRTV();
 		ID3D11DepthStencilView* dsv = dx11->GetDefaultDSV()->GetView();
 
 		// HDRバッファクリア
 		float clear_Color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		dx11->GetContext()->ClearRenderTargetView(hdrRTV, clear_Color);
-		dx11->GetContext()->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		ctx->ClearRenderTargetView(hdrRTV, clear_Color);
+		ctx->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-		// レイヤーごとの描画
+		// レイヤーごとの描画（エフェクトなし）
 		int Layer_Index = 0;
 		auto layerRTIt = _layerRenderTargets.begin();
 
 		for (; layerRTIt != _layerRenderTargets.end() && Layer_Index < MAX_LAYER_COUNT; ++layerRTIt, ++Layer_Index) {
 			auto layerRT = *layerRTIt;
 
-			// レイヤー設定取得
 			Layer* layerSettings = nullptr;
 			if (_softwareMode == SoftWareMode::ENGINE) {
 				layerSettings = EngineFrame::GetInstance()->GetLayer(Layer_Index);
 			}
 
-			// 非表示レイヤーはスキップ
 			if (layerSettings && !layerSettings->visible) {
 				continue;
 			}
 
-			// レイヤーへの通常描画
+			// 通常描画
 			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
-			layerRT->Begin(dx11->GetContext());
+			layerRT->Begin(ctx);
 
 			switch (_softwareMode)
 			{
@@ -202,62 +200,57 @@ void MainFrame::Draw()
 			case SoftWareMode::ANIMTOR2D:
 				Animator2DFrame::GetInstance()->Draw();
 				break;
-			default:
-				break;
 			}
 
 			layerRT->End();
-
-			// ポストエフェクト適用（重要:  同じレンダーターゲットに適用）
-			if (layerSettings && !layerSettings->postEffects.empty()) {
-				// エフェクトを適用（入力と出力は別のバッファを使用）
-				layerSettings->ApplyPostEffects(
-					layerRT->GetShaderResourceView(),
-					layerRT->GetRenderTargetView(),
-					_engineConfig.screenWidth,
-					_engineConfig.screenHeight
-				);
-			}
 		}
 
-		// 最終合成
+		// 最終合成バッファへ描画
 		_finalRenderTarget->SetRenderZBuffer(false);
-		_finalRenderTarget->Begin(dx11->GetContext());
-
-		// トーンマッピング適用
+		_finalRenderTarget->Begin(ctx);
 		dx11->ApplyToneMappingPass();
 
-		// 全レイヤーを合成
+		// レイヤーを順番に合成
 		Layer_Index = 0;
 		layerRTIt = _layerRenderTargets.begin();
 
 		for (; layerRTIt != _layerRenderTargets.end() && Layer_Index < MAX_LAYER_COUNT; ++layerRTIt, ++Layer_Index) {
 			auto layerRT = *layerRTIt;
 
-			// レイヤー設定取得
 			Layer* layerSettings = nullptr;
 			if (_softwareMode == SoftWareMode::ENGINE) {
 				layerSettings = EngineFrame::GetInstance()->GetLayer(Layer_Index);
 			}
 
-			// 非表示レイヤーはスキップ
 			if (layerSettings && !layerSettings->visible) {
 				continue;
 			}
 
-			// 不透明度を適用して描画（エフェクト適用済みのテクスチャを描画）
 			float opacity = layerSettings ? layerSettings->opacity : 1.0f;
 
-			ImageUtils::DrawSRV(
-				layerRT->GetShaderResourceView(),
-				0.0f, 0.0f,
-				(float)_engineConfig.screenWidth,
-				(float)_engineConfig.screenHeight,
-				DirectX::XMFLOAT4(1, 1, 1, 1),
-				DirectX::XMFLOAT4(0, 0, 1, 1),
-				true,
-				opacity
-			);
+			// ポストエフェクト適用判定
+			if (layerSettings && !layerSettings->postEffects.empty()) {
+				// ポストエフェクトを最終出力に直接適用
+				layerSettings->ApplyPostEffectsToScreen(
+					layerRT->GetShaderResourceView(),
+					_engineConfig.screenWidth,
+					_engineConfig.screenHeight,
+					opacity
+				);
+			}
+			else {
+				// エフェクトなし:  通常描画
+				ImageUtils::DrawSRV(
+					layerRT->GetShaderResourceView(),
+					0.0f, 0.0f,
+					(float)_engineConfig.screenWidth,
+					(float)_engineConfig.screenHeight,
+					DirectX::XMFLOAT4(1, 1, 1, 1),
+					DirectX::XMFLOAT4(0, 0, 1, 1),
+					true,
+					opacity
+				);
+			}
 		}
 
 		_finalRenderTarget->End();
@@ -273,8 +266,6 @@ void MainFrame::Draw()
 			break;
 		case SoftWareMode::ANIMTOR2D:
 			Animator2DFrame::GetInstance()->DrawGUI();
-			break;
-		default:
 			break;
 		}
 

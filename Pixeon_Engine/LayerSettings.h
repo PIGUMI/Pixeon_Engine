@@ -52,6 +52,9 @@ public:
 
     // ä÷êî
     void AddPostEffect(PostEffectType type);
+    void ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
+        int width, int height,
+        float opacity);
     void RemovePostEffect(int index);
     void MovePostEffect(int fromIndex, int toIndex);
     void ApplyPostEffects(ID3D11ShaderResourceView* input,
