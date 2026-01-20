@@ -405,8 +405,11 @@ void EngineFrame::LoadPrefabs()
 
 		if (sceneData.contains("Layers") && sceneData["Layers"].is_array()) {
 			auto& layersArray = sceneData["Layers"];
-			for (size_t i = 0; i < layersArray.size() && i < layers_.size(); i++) {
-				layers_[i].LoadFromJson(layersArray[i]);
+			layers_.clear();
+			for (const auto& layerJson : layersArray) {
+				Layer layer;
+				layer.LoadFromJson(layerJson);
+				layers_.push_back(layer);
 			}
 		}
 	}

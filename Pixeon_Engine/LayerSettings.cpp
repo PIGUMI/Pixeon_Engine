@@ -411,7 +411,6 @@ void Layer::LoadFromJson(const nlohmann::json& j) {
     opacity = j.value("opacity", 1.0f);
 
     postEffects.clear();
-
     if (j.contains("postEffects") && j["postEffects"].is_array()) {
         for (const auto& effectJson : j["postEffects"]) {
             PostEffectType type = (PostEffectType)effectJson.value("type", 0);
