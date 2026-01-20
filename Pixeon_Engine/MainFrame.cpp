@@ -22,7 +22,7 @@
 #include "EngineFrame.h"
 #include "Animator2DFrame.h"
 #include "ImageUtils.h"
-
+#include "LayerSettings.h"
 #include <crtdbg.h>
 
 MainFrame* MainFrame::instance_ = nullptr;
@@ -157,6 +157,7 @@ void MainFrame::Update()
 * 戻り値　なし
 * 説　明　MainFrameの描画処理を行う関数
 */
+// MainFrame.cpp の Draw() 関数を修正
 void MainFrame::Draw()
 {
 	if (_updateDraw) {
@@ -165,18 +166,34 @@ void MainFrame::Draw()
 		ID3D11RenderTargetView* hdrRTV = dx11->GetHDRRTV();
 		ID3D11DepthStencilView* dsv = dx11->GetDefaultDSV()->GetView();
 
-		// レイヤーごとの描画
-		float clear_Color[4] = { 0.0f,0.0f,0.0f,0.0f };
+		// HDRバッファクリア
+		float clear_Color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		dx11->GetContext()->ClearRenderTargetView(hdrRTV, clear_Color);
 		dx11->GetContext()->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-		dx11->GetContext()->OMSetRenderTargets(1, &hdrRTV, dsv);
-
+		// レイヤーごとの描画
 		int Layer_Index = 0;
-		for (auto layerRT : _layerRenderTargets) {
+		auto layerRTIt = _layerRenderTargets.begin();
+
+		for (; layerRTIt != _layerRenderTargets.end() && Layer_Index < MAX_LAYER_COUNT; ++layerRTIt, ++Layer_Index) {
+			auto layerRT = *layerRTIt;
+
+			// レイヤー設定取得
+			Layer* layerSettings = nullptr;
+			if (_softwareMode == SoftWareMode::ENGINE) {
+				layerSettings = EngineFrame::GetInstance()->GetLayer(Layer_Index);
+			}
+
+			// 非表示レイヤーはスキップ
+			if (layerSettings && !layerSettings->visible) {
+				continue;
+			}
+
+			// レイヤーへの通常描画
 			layerRT->SetBlend(true);
 			layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 			layerRT->Begin(dx11->GetContext());
+
 			switch (_softwareMode)
 			{
 			case SoftWareMode::ENGINE:
@@ -188,56 +205,64 @@ void MainFrame::Draw()
 			default:
 				break;
 			}
+
 			layerRT->End();
 
-			dx11->GetContext()->OMSetRenderTargets(1, &hdrRTV, dsv);
+			// ポストエフェクト適用
+			if (layerSettings && !layerSettings->postEffects.empty()) {
+				layerSettings->ApplyPostEffects(
+					layerRT->GetShaderResourceView(),
+					layerRT->GetRenderTargetView(),
+					_engineConfig.screenWidth,
+					_engineConfig.screenHeight
+				);
+			}
+		}
+
+		// 最終合成
+		_finalRenderTarget->SetRenderZBuffer(false);
+		_finalRenderTarget->Begin(dx11->GetContext());
+		dx11->ApplyToneMappingPass();
+
+		// 全レイヤーを合成
+		Layer_Index = 0;
+		layerRTIt = _layerRenderTargets.begin();
+
+		for (; layerRTIt != _layerRenderTargets.end() && Layer_Index < MAX_LAYER_COUNT; ++layerRTIt, ++Layer_Index) {
+			auto layerRT = *layerRTIt;
+
+			// レイヤー設定取得
+			Layer* layerSettings = nullptr;
+			if (_softwareMode == SoftWareMode::ENGINE) {
+				layerSettings = EngineFrame::GetInstance()->GetLayer(Layer_Index);
+			}
+
+			// 非表示レイヤーはスキップ
+			if (layerSettings && !layerSettings->visible) {
+				continue;
+			}
+
+			// 不透明度を適用して描画
+			float opacity = layerSettings ? layerSettings->opacity : 1.0f;
+
 			ImageUtils::DrawSRV(
 				layerRT->GetShaderResourceView(),
 				0.0f, 0.0f,
 				(float)_engineConfig.screenWidth,
-				(float)_engineConfig.screenHeight
+				(float)_engineConfig.screenHeight,
+				DirectX::XMFLOAT4(1, 1, 1, 1),
+				DirectX::XMFLOAT4(0, 0, 1, 1),
+				true,
+				opacity
 			);
-			Layer_Index++;
 		}
 
+		_finalRenderTarget->End();
 
-		if (_PixelatedFlag)
-		{
-			// トーンマッピング＆最終合成
-			_finalRenderTarget->SetRenderZBuffer(false);
-			_finalRenderTarget->Begin(dx11->GetContext());
-			dx11->ApplyToneMappingPass();
-			for (auto layerRT : _layerRenderTargets) {
-				ImageUtils::DrawSRVPixelated(
-					layerRT->GetShaderResourceView(),
-					0.0f, 0.0f,
-					(float)_engineConfig.screenWidth,
-					(float)_engineConfig.screenHeight,
-					8.0f,
-					1.0f
-				);
-			}
-			_finalRenderTarget->End();
-		}
-		else
-		{
-			_finalRenderTarget->SetRenderZBuffer(false);
-			_finalRenderTarget->Begin(dx11->GetContext());
-			dx11->ApplyToneMappingPass();
-			for (auto layerRT : _layerRenderTargets) {
-				ImageUtils::DrawSRV(
-					layerRT->GetShaderResourceView(),
-					0.0f, 0.0f,
-					(float)_engineConfig.screenWidth,
-					(float)_engineConfig.screenHeight
-				);
-			}
-			_finalRenderTarget->End();
-		}
-
-		// メイン描画
+		// GUI描画
 		DirectX11::GetInstance()->BeginDraw();
 		GUI::GetInstance()->BeginDraw();
+
 		switch (_softwareMode)
 		{
 		case SoftWareMode::ENGINE:
@@ -249,8 +274,8 @@ void MainFrame::Draw()
 		default:
 			break;
 		}
-		GUI::GetInstance()->EndDraw();
 
+		GUI::GetInstance()->EndDraw();
 		DirectX11::GetInstance()->EndDraw();
 
 		_updateDraw = false;

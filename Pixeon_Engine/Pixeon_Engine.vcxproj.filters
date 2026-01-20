@@ -239,6 +239,9 @@
     <ClCompile Include="CapsuleCollision.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClCompile>
+    <ClCompile Include="LayerSettings.cpp">
+      <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -420,6 +423,9 @@
     </ClInclude>
     <ClInclude Include="CapsuleCollision.h">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerSettings.h">
+      <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

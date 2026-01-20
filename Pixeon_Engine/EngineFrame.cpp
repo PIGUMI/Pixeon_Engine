@@ -52,6 +52,16 @@ void EngineFrame::Init()
 	ObjectIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Object.png", DirectX11::GetInstance()->GetDevice());
 	FbxIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/fbx.png", DirectX11::GetInstance()->GetDevice());
 	SceneIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Scene.png", DirectX11::GetInstance()->GetDevice());
+
+	// ‰ŠúƒŒƒCƒ„[İ’è
+	for (int i = 0; i < MAX_LAYER_COUNT; i++)
+	{
+		// Layer‚Ì’Ç‰Á
+		Layer layer;
+		layer.layerIndex = i;
+		layer.name = "Layer " + std::to_string(i);
+		layers_.push_back(layer);
+	}
 }
 
 void EngineFrame::Update()
@@ -206,6 +216,12 @@ void EngineFrame::RemovePrefab(AbstractObject* ptr)
 	{
 		MessageBox(nullptr, "Prefab‚Ìíœ‚É¸”s‚µ‚Ü‚µ‚½", "Error", MB_OK);
 	}
+}
+
+Layer* EngineFrame::GetLayer(int index)
+{
+	if (index < 0 || index >= layers_.size()) return nullptr;
+	return &layers_[index];
 }
 
 void EngineFrame::SavePrefabs()

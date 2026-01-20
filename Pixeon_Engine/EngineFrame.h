@@ -5,6 +5,7 @@
 // PrefabÇ‡ä«óù
 
 #include "GUI.h"
+#include "LayerSettings.h"
 #include <vector>
 #include <string>
 #include <filesystem>
@@ -31,7 +32,7 @@ public: // Prefabä«óù
 	std::vector<AbstractObject*> GetPrefabs() { return prefabs_; }
 	AbstractObject* GetPrefabByName(const std::string& name);
 	void RemovePrefab(AbstractObject* ptr);
-
+	Layer* GetLayer(int index);
 	void LoadPrefabs();
 	void SavePrefabs();
 public: // Getter / Setter
@@ -45,6 +46,8 @@ private:
 	void InspectorWindow();
 	void ContentWindow();
 	void PrefabWindow();
+	void LayerWindow();
+	void LayerInspectorWindow();
 	void HandleAssetClick(const std::filesystem::path& path);
 	void SceneRenameWindow();
 	void HandleAssetContextMenu(const std::filesystem::path& path);
@@ -73,6 +76,8 @@ private:
 	ID3D11ShaderResourceView* ArchiveIcon_;
 	ID3D11ShaderResourceView* ExeIcon_;
 	ID3D11ShaderResourceView* ObjectIcon_;
+	std::vector<Layer> layers_;
+	Layer* selectedLayer_ = nullptr;
 private:
 	EngineFrame() = default;
 	~EngineFrame() = default;

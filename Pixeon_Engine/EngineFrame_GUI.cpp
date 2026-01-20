@@ -151,6 +151,8 @@ void EngineFrame::DrawGUI()
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("コンテンツドロワー").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("コンテンツドロワー").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ヒエラルキー").c_str(), dock_id_left);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("レイヤー").c_str(), dock_id_left);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("レイヤー設定").c_str(), dock_id_right);
 
 		ImGui::DockBuilderFinish(DockSpace);
 	}
@@ -165,6 +167,8 @@ void EngineFrame::DrawGUI()
 	ContentWindow();
 	PrefabWindow();
 	SceneRenameWindow();
+	LayerWindow();
+	LayerInspectorWindow();
 }
 
 void EngineFrame::GameViewWindow()
@@ -791,6 +795,102 @@ void EngineFrame::PrefabWindow() {
 
 	ImGui::Columns(1);
 	ImGui::EndChild();
+	ImGui::End();
+}
+
+void EngineFrame::LayerWindow()
+{
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("レイヤー").c_str());
+
+	for (int i = 0; i < MAX_LAYER_COUNT; i++) {
+		auto& layer = layers_[i];
+
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow |
+			ImGuiTreeNodeFlags_SpanAvailWidth;
+		if (&layer == selectedLayer_) {
+			flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
+		std::string label = layer.name + " [" + std::to_string(i) + "]";
+		bool nodeOpen = ImGui::TreeNodeEx(&layer, flags,
+			GUI::GetInstance()->ShiftJISToUTF8(label).c_str());
+
+		if (ImGui::IsItemClicked()) {
+			selectedLayer_ = &layer;
+		}
+
+		ImGui::SameLine();
+		ImGui::Checkbox(("##visible" + std::to_string(i)).c_str(), &layer.visible);
+
+		if (nodeOpen) {
+			for (size_t j = 0; j < layer.postEffects.size(); j++) {
+				auto& effect = layer.postEffects[j];
+				ImGui::BulletText("%s %s",
+					effect->GetName().c_str(),
+					effect->enabled ? "" : "(Disabled)");
+			}
+			ImGui::TreePop();
+		}
+	}
+
+	ImGui::End();
+}
+
+void EngineFrame::LayerInspectorWindow()
+{
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("レイヤー設定").c_str());
+
+	if (selectedLayer_) {
+		// 基本設定
+		char nameBuf[128];
+		strcpy_s(nameBuf, selectedLayer_->name.c_str());
+		if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
+			selectedLayer_->name = nameBuf;
+		}
+
+		ImGui::DragFloat("Opacity", &selectedLayer_->opacity, 0.01f, 0.0f, 1.0f);
+		ImGui::Checkbox("Visible", &selectedLayer_->visible);
+
+		ImGui::Separator();
+		ImGui::Text("Post Effects:");
+
+		// ポストエフェクト一覧
+		for (size_t i = 0; i < selectedLayer_->postEffects.size(); i++) {
+			auto& effect = selectedLayer_->postEffects[i];
+
+			std::string header = effect->GetName() + "##" + std::to_string(i);
+			if (ImGui::CollapsingHeader(header.c_str())) {
+				effect->DrawInspector();
+
+				if (ImGui::Button(("Remove##" + std::to_string(i)).c_str())) {
+					selectedLayer_->postEffects.erase(
+						selectedLayer_->postEffects.begin() + i);
+					break;
+				}
+			}
+		}
+
+		ImGui::Separator();
+
+		// エフェクト追加UI
+		static int currentEffect = 0;
+		const char* effectNames[] = {
+			"Bloom", "Blur", "Pixelate", "Color Grading",
+			"Vignette", "Chromatic Aberration"
+		};
+
+		ImGui::Combo("##EffectType", &currentEffect, effectNames,
+			IM_ARRAYSIZE(effectNames));
+		ImGui::SameLine();
+		if (ImGui::Button("Add Effect")) {
+			selectedLayer_->AddPostEffect((PostEffectType)(currentEffect + 1));
+		}
+	}
+	else {
+		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+			GUI::GetInstance()->ShiftJISToUTF8("レイヤーを選択してください").c_str());
+	}
+
 	ImGui::End();
 }
 

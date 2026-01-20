@@ -160,6 +160,7 @@
     <ClInclude Include="EngineFrame.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="ImageUtils.h" />
+    <ClInclude Include="LayerSettings.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GameRenderTarget.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="EngineFrame_GUI.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="ImageUtils.cpp" />
+    <ClCompile Include="LayerSettings.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameRenderTarget.cpp" />
