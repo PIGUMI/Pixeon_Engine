@@ -4,6 +4,8 @@
 #include "ImageUtils.h"
 #include <algorithm>
 
+#include "PixelateEffect.h"
+
 Layer::Layer() {
 }
 
@@ -343,6 +345,8 @@ void Layer::LoadFromJson(const nlohmann::json& j) {
 // ポストエフェクトを生成
 std::shared_ptr<PostEffectBase> Layer::CreatePostEffect(PostEffectType type) {
     switch (type) {
+        case PostEffectType::PIXELATE:
+			return std::make_shared<PixelateEffect>();
     default:
         return nullptr;
     }

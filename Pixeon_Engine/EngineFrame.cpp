@@ -303,6 +303,13 @@ void EngineFrame::SavePrefabs()
 		}
 	}
 	SceneData["Objects"] = ObjectArray;
+	nlohmann::json layersData = nlohmann::json::array();
+	for (auto& layer : layers_) {
+		nlohmann::json layerJson;
+		layer.SaveToJson(layerJson);
+		layersData.push_back(layerJson);
+	}
+	SceneData["Layers"] = layersData;
 
 	std::string File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab.meta";
 	std::ofstream outFile(File);
@@ -392,6 +399,13 @@ void EngineFrame::LoadPrefabs()
 			AbstractObject* obj = pair.second;
 			if (obj && !obj->GetParent()) {
 				prefabs_.push_back(obj);
+			}
+		}
+
+		if (sceneData.contains("Layers") && sceneData["Layers"].is_array()) {
+			auto& layersArray = sceneData["Layers"];
+			for (size_t i = 0; i < layersArray.size() && i < layers_.size(); i++) {
+				layers_[i].LoadFromJson(layersArray[i]);
 			}
 		}
 	}
