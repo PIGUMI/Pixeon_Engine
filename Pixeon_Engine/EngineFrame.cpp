@@ -303,6 +303,7 @@ void EngineFrame::SavePrefabs()
 		}
 	}
 	SceneData["Objects"] = ObjectArray;
+
 	nlohmann::json layersData = nlohmann::json::array();
 	for (auto& layer : layers_) {
 		nlohmann::json layerJson;
