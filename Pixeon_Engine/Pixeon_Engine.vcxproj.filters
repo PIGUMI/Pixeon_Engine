@@ -78,6 +78,9 @@
     <Filter Include="ソース ファイル\1_MainFrame\API">
       <UniqueIdentifier>{fcd8345f-cb8a-4536-bc09-eaa90da3203b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\PostEffect">
+      <UniqueIdentifier>{ea3205c7-7486-4cab-9a5d-da28742d90c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -238,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="CapsuleCollision.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerSettings.cpp">
+      <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelateEffect.cpp">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -420,6 +429,12 @@
     </ClInclude>
     <ClInclude Include="CapsuleCollision.h">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerSettings.h">
+      <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelateEffect.h">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

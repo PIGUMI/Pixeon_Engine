@@ -417,6 +417,21 @@ extern "C" {
 
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult GetObjectWorldTransform(Object object, transform* outTransform)
+	{
+		if (!outTransform) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		Transform transform = objPtr->GetWorldTransform();
+		outTransform->position = ToFloat3(transform.position);
+		outTransform->rotation = ToFloat3(transform.rotation);
+		outTransform->scale = ToFloat3(transform.scale);
+		return PN_SUCCESS;
+	}
 	PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform)
 	{
 		if (!inTransform) {

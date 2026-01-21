@@ -248,7 +248,7 @@ extern "C" {
 		scenePtr->RemoveObject(objPtr);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult SetMainCamera(int inCameraNumber)
+	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber)
 	{
 		Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (!currentScene) {
@@ -267,6 +267,23 @@ extern "C" {
 			return PN_ERROR_NOT_FOUND;
 		}
 		*outCameraNumber = currentScene->GetMainCameraNumber();
+	}
+	PIXEON_API APIResult SetMainCameraByPtr(Component camera)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(camera, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		CameraComponent* cameraComp = dynamic_cast<CameraComponent*>(compPtr);
+		if (!cameraComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+		if (!currentScene) {
+			return PN_ERROR_NOT_FOUND;
+		}
+		currentScene->SetMainCamera(cameraComp);
+		return PN_SUCCESS;
 	}
 };
 
@@ -398,6 +415,21 @@ extern "C" {
 		outTransform->rotation = ToFloat3(transform.rotation);
 		outTransform->scale = ToFloat3(transform.scale);
 
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetObjectWorldTransform(Object object, transform* outTransform)
+	{
+		if (!outTransform) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		Transform transform = objPtr->GetWorldTransform();
+		outTransform->position = ToFloat3(transform.position);
+		outTransform->rotation = ToFloat3(transform.rotation);
+		outTransform->scale = ToFloat3(transform.scale);
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform)

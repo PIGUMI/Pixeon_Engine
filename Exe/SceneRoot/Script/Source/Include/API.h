@@ -89,7 +89,8 @@ extern "C" {
 	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject);
 	PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object);
 	PIXEON_API APIResult RemoveObjectFromScene(SceneHandle scene, Object object);
-	PIXEON_API APIResult SetMainCamera(int inCameraNumber);
+	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber);
+	PIXEON_API APIResult SetMainCameraByPtr(Component camera);
 	PIXEON_API APIResult GetMainCamera(int* outCameraNumber);
 };
 
@@ -104,6 +105,7 @@ extern "C" {
 	PIXEON_API APIResult SetObjectScale(Object object, Float3 scale);
 	PIXEON_API APIResult GetObjectScale(Object object, Float3* outScale);
 	PIXEON_API APIResult GetObjectTransform(Object object, transform* outTransform);
+	PIXEON_API APIResult GetObjectWorldTransform(Object object, transform* outTransform);
 	PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform);
 	PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent);
 };

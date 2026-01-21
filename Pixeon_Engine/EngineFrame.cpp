@@ -52,6 +52,16 @@ void EngineFrame::Init()
 	ObjectIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Object.png", DirectX11::GetInstance()->GetDevice());
 	FbxIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/fbx.png", DirectX11::GetInstance()->GetDevice());
 	SceneIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Scene.png", DirectX11::GetInstance()->GetDevice());
+
+	// ‰ŠúƒŒƒCƒ„[İ’è
+	for (int i = 0; i < MAX_LAYER_COUNT; i++)
+	{
+		// Layer‚Ì’Ç‰Á
+		Layer layer;
+		layer.layerIndex = i;
+		layer.name = "Layer " + std::to_string(i);
+		layers_.push_back(layer);
+	}
 }
 
 void EngineFrame::Update()
@@ -208,6 +218,12 @@ void EngineFrame::RemovePrefab(AbstractObject* ptr)
 	}
 }
 
+Layer* EngineFrame::GetLayer(int index)
+{
+	if (index < 0 || index >= layers_.size()) return nullptr;
+	return &layers_[index];
+}
+
 void EngineFrame::SavePrefabs()
 {
 	std::vector<AbstractObject*> SaveObjects;
@@ -287,6 +303,14 @@ void EngineFrame::SavePrefabs()
 		}
 	}
 	SceneData["Objects"] = ObjectArray;
+
+	nlohmann::json layersData = nlohmann::json::array();
+	for (auto& layer : layers_) {
+		nlohmann::json layerJson;
+		layer.SaveToJson(layerJson);
+		layersData.push_back(layerJson);
+	}
+	SceneData["Layers"] = layersData;
 
 	std::string File = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab.meta";
 	std::ofstream outFile(File);
@@ -376,6 +400,16 @@ void EngineFrame::LoadPrefabs()
 			AbstractObject* obj = pair.second;
 			if (obj && !obj->GetParent()) {
 				prefabs_.push_back(obj);
+			}
+		}
+
+		if (sceneData.contains("Layers") && sceneData["Layers"].is_array()) {
+			auto& layersArray = sceneData["Layers"];
+			layers_.clear();
+			for (const auto& layerJson : layersArray) {
+				Layer layer;
+				layer.LoadFromJson(layerJson);
+				layers_.push_back(layer);
 			}
 		}
 	}
