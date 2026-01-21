@@ -6,7 +6,11 @@ public:
     void BeginPlay() override;
     void Update() override;
     void EndPlay() override;
+
 private:
+    int         LifeTime = 10;
+    SceneHandle _scene = nullptr;
+    Component   _rigidBody = nullptr;
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {

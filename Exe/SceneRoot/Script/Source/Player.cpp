@@ -1,21 +1,22 @@
 #include "Player.h"
 #include <DirectXMath.h>
 #include <cmath>
+#include <Windows.h>
 
 void Script_Player::BeginPlay() {
 	SceneHandle scene;
 	GetCurrentScene(&scene);
-	FindObjectByName(scene, "Player", &playerObject);
-	FindChildObjectByName(playerObject, "Head", &headObject);
-	FindChildObjectByName(playerObject, "Body", &bodyObject);
-	FindComponent(headObject, "CameraComponent", &CameraComp);
-	FindPrefabObjectByName("Bullet", &Bullet);
+	FindObjectByName(scene,"Player",&playerObject);
+	FindChildObjectByName(playerObject,"Head",&headObject);
+	FindChildObjectByName(playerObject,"Body",&bodyObject);
+	FindComponent(headObject,"CameraComponent",&CameraComp);
+	FindPrefabObjectByName("Bullet",&Bullet);
 	Object UI;
 	FindObjectByName(scene, "UI", &UI);
 	FindChildObjectByName(UI, "Hp", &HitPointUI);
 	Component AnimatorComp;
-	FindComponent(HitPointUI, "Animator2DComponent", &AnimatorComp);
-	GetAnimator2D(AnimatorComp, "HP", &HP);
+	FindComponent(HitPointUI,"Animator2DComponent",&AnimatorComp);
+	GetAnimator2D(AnimatorComp,"HP",&HP);
 	FixedMouseCursor(true);
 	
 	Component cameraComp;
@@ -153,6 +154,12 @@ void Script_Player::Movement()
 		SetObjectTransform(bodyObject, &bodyTransform);
 		SetObjectTransform(playerObject, &playerTransform);
 		isMoving = true;
+	}
+	if (KeyPressed(VK_RBUTTON))
+	{
+		GetObjectTransform(bodyObject, &bodyTransform);
+		bodyTransform.rotation.y = head_Transform.rotation.y;
+		SetObjectTransform(bodyObject, &bodyTransform);
 	}
 
 	if (isMoving)

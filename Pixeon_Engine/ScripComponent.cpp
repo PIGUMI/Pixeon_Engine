@@ -25,12 +25,28 @@ void ScripComponent::BeginPlay() {
 	{
 		Object parentObj = static_cast<Object>(_Parent);
 		_scriptInstance->SetParentObject(parentObj);
-		_scriptInstance->BeginPlay();
+		try
+		{
+			_scriptInstance->BeginPlay();
+		}
+		catch (const std::exception& e)
+		{
+			_StopOnError = true;
+			std::cerr << "[ScripComponent] Exception in BeginPlay of script " << _scriptName << ": " << e.what() << std::endl;
+		}
 	}
 }
 
 void ScripComponent::InGameUpdate() {
-	if (_scriptInstance) _scriptInstance->Update();
+	try
+	{
+		if (_scriptInstance&&!_StopOnError) _scriptInstance->Update();
+	}
+	catch (const std::exception&)
+	{
+		_StopOnError = true;
+		std::cerr << "[ScripComponent] Exception in Update of script " << _scriptName << std::endl;
+	}
 }
 
 void ScripComponent::UInit() {

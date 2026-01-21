@@ -105,6 +105,7 @@ extern "C" {
 	PIXEON_API APIResult SetObjectScale(Object object, Float3 scale);
 	PIXEON_API APIResult GetObjectScale(Object object, Float3* outScale);
 	PIXEON_API APIResult GetObjectTransform(Object object, transform* outTransform);
+	PIXEON_API APIResult GetObjectWorldTransform(Object object, transform* outTransform);
 	PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform);
 	PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent);
 };

@@ -17,6 +17,7 @@ private:
     Object Head;
     SceneHandle scene;
     Component CameraComp;
+    Object Bullet;
 
 	Object ExplosionEffect;
 };

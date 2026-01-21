@@ -24,6 +24,7 @@ void Script_Weapon::BeginPlay() {
 	FindChildObjectByName(Player, "Body", &Body);
 	FindComponent(Body, "CameraComponent", &CameraComp);
 	FindPrefabObjectByName("Expl", &ExplosionEffect);
+	FindPrefabObjectByName("Bullet", &Bullet);
 }
 
 void Script_Weapon::Update() {
@@ -49,6 +50,7 @@ void Script_Weapon::Update() {
 
 	if (KeyTriggered(VK_LBUTTON) && _isAiming) {
 		Effect();
+		AddObjectToScene(scene, Bullet);
 	}
 }
 

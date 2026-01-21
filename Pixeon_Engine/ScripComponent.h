@@ -55,6 +55,7 @@ private:
 	std::string _buildLog;
 	bool _showBuildLog = false;
 	bool _buildSuccess = false;
+	bool _StopOnError = false;
 };
 
 #endif // !SCRIPT_COMPONENT_H
