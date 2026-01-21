@@ -81,6 +81,9 @@
     <Filter Include="ソース ファイル\1_MainFrame\PostEffect">
       <UniqueIdentifier>{ea3205c7-7486-4cab-9a5d-da28742d90c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\RayCast">
+      <UniqueIdentifier>{30f508ff-b1d9-4198-8020-168a8ce2bf64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -247,6 +250,9 @@
     </ClCompile>
     <ClCompile Include="PixelateEffect.cpp">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsRaycast.cpp">
+      <Filter>ソース ファイル\1_MainFrame\RayCast</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -435,6 +441,12 @@
     </ClInclude>
     <ClInclude Include="PixelateEffect.h">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="RaycastHit.h">
+      <Filter>ソース ファイル\1_MainFrame\RayCast</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsRaycast.h">
+      <Filter>ソース ファイル\1_MainFrame\RayCast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

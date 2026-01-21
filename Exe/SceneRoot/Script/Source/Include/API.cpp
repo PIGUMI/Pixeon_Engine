@@ -22,12 +22,14 @@
 #include "BoxCollision.h"
 #include "Animator2DComponent.h"
 #include "Animator2D.h"
-
+#include "BulletPhysics/btBulletDynamicsCommon.h"
 #include "Input.h"
 
 #include <string>
 #include <cstring>
 #include <DirectXMath.h>
+
+
 
 // Utility Functions
 extern "C" {
@@ -286,6 +288,442 @@ extern "C" {
 		return PN_SUCCESS;
 	}
 };
+
+extern "C" {
+	PIXEON_API APIResult Raycast(
+		SceneHandle sceneHandle,
+		Float3 origin,
+		Float3 direction,
+		float maxDistance,
+		RayHit* outHit)
+	{
+		if (!sceneHandle || !outHit) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Scene* scene = nullptr;
+		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+
+		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		if (!physicsWorld) {
+			return PN_ERROR_NOT_FOUND;
+		}
+
+		// 方向ベクトルを正規化
+		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+		if (length < 0.0001f) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Float3 normalizedDir = {
+			direction.x / length,
+			direction.y / length,
+			direction.z / length
+		};
+
+		// レイの開始位置と終了位置を計算
+		btVector3 rayFrom(origin.x, origin.y, origin.z);
+		btVector3 rayTo(
+			origin.x + normalizedDir.x * maxDistance,
+			origin.y + normalizedDir.y * maxDistance,
+			origin.z + normalizedDir.z * maxDistance
+		);
+
+		// レイキャストを実行
+		btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
+		physicsWorld->rayTest(rayFrom, rayTo, rayCallback);
+
+		if (rayCallback.hasHit()) {
+			outHit->bHit = true;
+
+			// ヒット位置
+			outHit->point = CreateFloat3(
+				rayCallback.m_hitPointWorld.getX(),
+				rayCallback.m_hitPointWorld.getY(),
+				rayCallback.m_hitPointWorld.getZ()
+			);
+
+			// 法線
+			outHit->normal = CreateFloat3(
+				rayCallback.m_hitNormalWorld.getX(),
+				rayCallback.m_hitNormalWorld.getY(),
+				rayCallback.m_hitNormalWorld.getZ()
+			);
+
+			// 距離
+			Float3 diff = {
+				outHit->point.x - origin.x,
+				outHit->point.y - origin.y,
+				outHit->point.z - origin.z
+			};
+			outHit->distance = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+
+			// ヒットしたオブジェクトを取得
+			const btCollisionObject* collisionObject = rayCallback.m_collisionObject;
+			if (collisionObject) {
+				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
+				if (rigidBody && rigidBody->getUserPointer()) {
+					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					if (rbComponent) {
+						AbstractObject* hitObj = rbComponent->GetParent();
+						outHit->hitObject = reinterpret_cast<Object>(hitObj);
+
+						// オブジェクト名を取得
+						std::string objName = hitObj->GetObjectName();
+						strncpy_s(outHit->hitObjectName, sizeof(outHit->hitObjectName), objName.c_str(), _TRUNCATE);
+					}
+				}
+			}
+			else {
+				outHit->hitObject = nullptr;
+				outHit->hitObjectName[0] = '\0';
+			}
+
+			return PN_SUCCESS;
+		}
+
+		outHit->bHit = false;
+		outHit->hitObject = nullptr;
+		outHit->hitObjectName[0] = '\0';
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RaycastIgnoreTriggers(
+		SceneHandle sceneHandle,
+		Float3 origin,
+		Float3 direction,
+		float maxDistance,
+		RayHit* outHit)
+	{
+		if (!sceneHandle || !outHit) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Scene* scene = nullptr;
+		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+
+		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		if (!physicsWorld) {
+			return PN_ERROR_NOT_FOUND;
+		}
+
+		// 方向ベクトルを正規化
+		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+		if (length < 0.0001f) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Float3 normalizedDir = {
+			direction.x / length,
+			direction.y / length,
+			direction.z / length
+		};
+
+		btVector3 rayFrom(origin.x, origin.y, origin.z);
+		btVector3 rayTo(
+			origin.x + normalizedDir.x * maxDistance,
+			origin.y + normalizedDir.y * maxDistance,
+			origin.z + normalizedDir.z * maxDistance
+		);
+
+		// カスタムコールバックでトリガーを無視
+		struct ClosestNotTrigger : public btCollisionWorld::ClosestRayResultCallback {
+			ClosestNotTrigger(const btVector3& from, const btVector3& to)
+				: btCollisionWorld::ClosestRayResultCallback(from, to) {}
+
+			btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace) override {
+				// トリガー（CF_NO_CONTACT_RESPONSE）を持つオブジェクトを無視
+				if (rayResult.m_collisionObject->getCollisionFlags() & btCollisionObject::CF_NO_CONTACT_RESPONSE) {
+					return 1.0f; // このヒットを無視
+				}
+				return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
+			}
+		};
+
+		ClosestNotTrigger rayCallback(rayFrom, rayTo);
+		physicsWorld->rayTest(rayFrom, rayTo, rayCallback);
+
+		if (rayCallback.hasHit()) {
+			outHit->bHit = true;
+
+			outHit->point = CreateFloat3(
+				rayCallback.m_hitPointWorld.getX(),
+				rayCallback.m_hitPointWorld.getY(),
+				rayCallback.m_hitPointWorld.getZ()
+			);
+
+			outHit->normal = CreateFloat3(
+				rayCallback.m_hitNormalWorld.getX(),
+				rayCallback.m_hitNormalWorld.getY(),
+				rayCallback.m_hitNormalWorld.getZ()
+			);
+
+			Float3 diff = {
+				outHit->point.x - origin.x,
+				outHit->point.y - origin.y,
+				outHit->point.z - origin.z
+			};
+			outHit->distance = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+
+			const btCollisionObject* collisionObject = rayCallback.m_collisionObject;
+			if (collisionObject) {
+				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
+				if (rigidBody && rigidBody->getUserPointer()) {
+					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					if (rbComponent) {
+						AbstractObject* hitObj = rbComponent->GetParent();
+						outHit->hitObject = reinterpret_cast<Object>(hitObj);
+
+						std::string objName = hitObj->GetObjectName();
+						strncpy_s(outHit->hitObjectName, sizeof(outHit->hitObjectName), objName.c_str(), _TRUNCATE);
+					}
+				}
+			}
+			else {
+				outHit->hitObject = nullptr;
+				outHit->hitObjectName[0] = '\0';
+			}
+
+			return PN_SUCCESS;
+		}
+
+		outHit->bHit = false;
+		outHit->hitObject = nullptr;
+		outHit->hitObjectName[0] = '\0';
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult SphereCast(
+		SceneHandle sceneHandle,
+		Float3 origin,
+		Float3 direction,
+		float radius,
+		float maxDistance,
+		RayHit* outHit)
+	{
+		if (!sceneHandle || !outHit) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Scene* scene = nullptr;
+		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+
+		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		if (!physicsWorld) {
+			return PN_ERROR_NOT_FOUND;
+		}
+
+		// 方向ベクトルを正規化
+		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+		if (length < 0.0001f) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Float3 normalizedDir = {
+			direction.x / length,
+			direction.y / length,
+			direction.z / length
+		};
+
+		// 球体の形状を作成
+		btSphereShape sphereShape(radius);
+
+		// 開始と終了のトランスフォーム
+		btTransform transformFrom;
+		transformFrom.setIdentity();
+		transformFrom.setOrigin(btVector3(origin.x, origin.y, origin.z));
+
+		btTransform transformTo;
+		transformTo.setIdentity();
+		transformTo.setOrigin(btVector3(
+			origin.x + normalizedDir.x * maxDistance,
+			origin.y + normalizedDir.y * maxDistance,
+			origin.z + normalizedDir.z * maxDistance
+		));
+
+		// ConvexCastを実行
+		btCollisionWorld::ClosestConvexResultCallback convexCallback(
+			transformFrom.getOrigin(),
+			transformTo.getOrigin()
+		);
+
+		physicsWorld->convexSweepTest(&sphereShape, transformFrom, transformTo, convexCallback);
+
+		if (convexCallback.hasHit()) {
+			outHit->bHit = true;
+
+			outHit->point = CreateFloat3(
+				convexCallback.m_hitPointWorld.getX(),
+				convexCallback.m_hitPointWorld.getY(),
+				convexCallback.m_hitPointWorld.getZ()
+			);
+
+			outHit->normal = CreateFloat3(
+				convexCallback.m_hitNormalWorld.getX(),
+				convexCallback.m_hitNormalWorld.getY(),
+				convexCallback.m_hitNormalWorld.getZ()
+			);
+
+			Float3 diff = {
+				outHit->point.x - origin.x,
+				outHit->point.y - origin.y,
+				outHit->point.z - origin.z
+			};
+			outHit->distance = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+
+			const btCollisionObject* collisionObject = convexCallback.m_hitCollisionObject;
+			if (collisionObject) {
+				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
+				if (rigidBody && rigidBody->getUserPointer()) {
+					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					if (rbComponent) {
+						AbstractObject* hitObj = rbComponent->GetParent();
+						outHit->hitObject = reinterpret_cast<Object>(hitObj);
+
+						std::string objName = hitObj->GetObjectName();
+						strncpy_s(outHit->hitObjectName, sizeof(outHit->hitObjectName), objName.c_str(), _TRUNCATE);
+					}
+				}
+			}
+			else {
+				outHit->hitObject = nullptr;
+				outHit->hitObjectName[0] = '\0';
+			}
+
+			return PN_SUCCESS;
+		}
+
+		outHit->bHit = false;
+		outHit->hitObject = nullptr;
+		outHit->hitObjectName[0] = '\0';
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult RaycastIgnoreObject(
+		SceneHandle sceneHandle,
+		Float3 origin,
+		Float3 direction,
+		float maxDistance,
+		Object ignoreObject,
+		RayHit* outHit)
+	{
+		if (!sceneHandle || !outHit) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Scene* scene = nullptr;
+		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+
+		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		if (!physicsWorld) {
+			return PN_ERROR_NOT_FOUND;
+		}
+
+		// 方向ベクトルを正規化
+		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+		if (length < 0.0001f) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+
+		Float3 normalizedDir = {
+			direction.x / length,
+			direction.y / length,
+			direction.z / length
+		};
+
+		btVector3 rayFrom(origin.x, origin.y, origin.z);
+		btVector3 rayTo(
+			origin.x + normalizedDir.x * maxDistance,
+			origin.y + normalizedDir.y * maxDistance,
+			origin.z + normalizedDir.z * maxDistance
+		);
+
+		AbstractObject* ignoreObjPtr = reinterpret_cast<AbstractObject*>(ignoreObject);
+
+		// カスタムコールバックで特定のオブジェクトを無視
+		struct ClosestNotIgnored : public btCollisionWorld::ClosestRayResultCallback {
+			AbstractObject* ignoreObj;
+
+			ClosestNotIgnored(const btVector3& from, const btVector3& to, AbstractObject* ignore)
+				: btCollisionWorld::ClosestRayResultCallback(from, to), ignoreObj(ignore) {}
+
+			btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace) override {
+				const btCollisionObject* collisionObject = rayResult.m_collisionObject;
+				if (collisionObject) {
+					const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
+					if (rigidBody && rigidBody->getUserPointer()) {
+						RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+						if (rbComponent && rbComponent->GetParent() == ignoreObj) {
+							return 1.0f; // このヒットを無視
+						}
+					}
+				}
+				return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
+			}
+		};
+
+		ClosestNotIgnored rayCallback(rayFrom, rayTo, ignoreObjPtr);
+		physicsWorld->rayTest(rayFrom, rayTo, rayCallback);
+
+		if (rayCallback.hasHit()) {
+			outHit->bHit = true;
+
+			outHit->point = CreateFloat3(
+				rayCallback.m_hitPointWorld.getX(),
+				rayCallback.m_hitPointWorld.getY(),
+				rayCallback.m_hitPointWorld.getZ()
+			);
+
+			outHit->normal = CreateFloat3(
+				rayCallback.m_hitNormalWorld.getX(),
+				rayCallback.m_hitNormalWorld.getY(),
+				rayCallback.m_hitNormalWorld.getZ()
+			);
+
+			Float3 diff = {
+				outHit->point.x - origin.x,
+				outHit->point.y - origin.y,
+				outHit->point.z - origin.z
+			};
+			outHit->distance = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+
+			const btCollisionObject* collisionObject = rayCallback.m_collisionObject;
+			if (collisionObject) {
+				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
+				if (rigidBody && rigidBody->getUserPointer()) {
+					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					if (rbComponent) {
+						AbstractObject* hitObj = rbComponent->GetParent();
+						outHit->hitObject = reinterpret_cast<Object>(hitObj);
+
+						std::string objName = hitObj->GetObjectName();
+						strncpy_s(outHit->hitObjectName, sizeof(outHit->hitObjectName), objName.c_str(), _TRUNCATE);
+					}
+				}
+			}
+			else {
+				outHit->hitObject = nullptr;
+				outHit->hitObjectName[0] = '\0';
+			}
+
+			return PN_SUCCESS;
+		}
+
+		outHit->bHit = false;
+		outHit->hitObject = nullptr;
+		outHit->hitObjectName[0] = '\0';
+		return PN_SUCCESS;
+	}
+};
+
 
 // Object Functions
 extern "C" {

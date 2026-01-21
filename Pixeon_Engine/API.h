@@ -7,7 +7,6 @@
 #define PIXEON_API __declspec(dllimport)
 #endif
 
-/* ErrorCodes */
 typedef enum {
 	PN_SUCCESS = 0,
 	PN_ERROR_NULL_POINTER = -1,
@@ -17,7 +16,6 @@ typedef enum {
 	PN_ERROR_INVALID_PARAMETER = -5,
 }APIResult;
 
-// Handle Types
 typedef void* SceneHandle;
 typedef void* Object;
 typedef void* Component;
@@ -64,6 +62,15 @@ typedef struct {
 	float Distance;
 } APICollisionInfo;
 
+typedef struct {
+	bool bHit;
+	Float3 point;
+	Float3 normal;
+	float distance;
+	Object hitObject;
+	char hitObjectName[64];
+} RayHit;
+
 #pragma pack(pop)
 
 typedef void (*BoxCollisionEnterCallback)(Component box, const APICollisionInfo* info);
@@ -94,7 +101,42 @@ extern "C" {
 	PIXEON_API APIResult GetMainCamera(int* outCameraNumber);
 };
 
-// Object
+extern "C" {
+	PIXEON_API APIResult Raycast(
+		SceneHandle scene,
+		Float3 origin,
+		Float3 direction,
+		float maxDistance,
+		RayHit* outHit
+	);
+
+	PIXEON_API APIResult RaycastIgnoreTriggers(
+		SceneHandle scene,
+		Float3 origin,
+		Float3 direction,
+		float maxDistance,
+		RayHit* outHit
+	);
+
+	PIXEON_API APIResult SphereCast(
+		SceneHandle scene,
+		Float3 origin,
+		Float3 direction,
+		float radius,
+		float maxDistance,
+		RayHit* outHit
+	);
+
+	PIXEON_API APIResult RaycastIgnoreObject(
+		SceneHandle scene,
+		Float3 origin,
+		Float3 direction,
+		float maxDistance,
+		Object ignoreObject,
+		RayHit* outHit
+	);
+};
+
 extern "C" {
 	PIXEON_API APIResult GetObjectName(Object object, char* outName, int bufferSize);
 	PIXEON_API APIResult SetObjectName(Object object, const char* name);
@@ -215,12 +257,12 @@ extern "C" {
 	PIXEON_API APIResult BoxCollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback);
 
 	// Animator2D Component
-	PIXEON_API APIResult GetAnimator2D(Component animatorComp,const char* animatorName,Animator2d* outHandel);
+	PIXEON_API APIResult GetAnimator2D(Component animatorComp, const char* animatorName, Animator2d* outHandel);
 	PIXEON_API APIResult Animator2DPlay(Animator2d animator);
 	PIXEON_API APIResult Animator2DStop(Animator2d animator);
-	PIXEON_API APIResult Animator2DIsEnd(Animator2d animator,bool* End);
+	PIXEON_API APIResult Animator2DIsEnd(Animator2d animator, bool* End);
 	PIXEON_API APIResult FindKeyFrame(Animator2d animator, const char* keyname, Keyframe* outKeyframe);
-	PIXEON_API APIResult SetVertexOffsetUp(Keyframe keyframe,float offset);
+	PIXEON_API APIResult SetVertexOffsetUp(Keyframe keyframe, float offset);
 	PIXEON_API APIResult SetVertexOffsetDown(Keyframe keyframe, float offset);
 	PIXEON_API APIResult SetVertexOffsetLeft(Keyframe keyframe, float offset);
 	PIXEON_API APIResult SetVertexOffsetRight(Keyframe keyframe, float offset);
@@ -230,4 +272,4 @@ extern "C" {
 	PIXEON_API APIResult GetVertexOffsetRight(Keyframe keyframe, float* outOffset);
 };
 
-#endif// API.h
+#endif// API. h
