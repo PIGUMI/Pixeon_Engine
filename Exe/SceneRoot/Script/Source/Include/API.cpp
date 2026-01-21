@@ -12,6 +12,7 @@
 #include "Component.h"
 #include "Scene.h"
 #include "Object.h"
+#include "BaseCollision.h"
 
 #include "CameraComponent.h"
 #include "LightComponent.h"
@@ -2093,9 +2094,9 @@ extern "C" {
 		*outIsTrigger = boxComp->IsTrigger();
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult BoxCollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback)
+	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback)
 	{
-		BoxCollision* box;
+		BaseCollision* box;
 		if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
 		box->SetOnCollisionEnter([component, callback](const CollisionInfo& info)
 			{
@@ -2107,9 +2108,9 @@ extern "C" {
 		);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult BoxCollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback)
+	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback)
 	{
-		BoxCollision* box;
+		BaseCollision* box;
 		if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
 		box->SetOnCollisionStay([component, callback](const CollisionInfo& info)
 			{
@@ -2121,9 +2122,9 @@ extern "C" {
 		);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult BoxCollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback)
+	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback)
 	{
-		BoxCollision* box;
+		BaseCollision* box;
 		if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
 		box->SetOnCollisionExit([component, callback](const CollisionInfo& info)
 			{

@@ -252,9 +252,9 @@ extern "C" {
 	PIXEON_API APIResult BoxCollisionSetIsTrigger(Component component, bool isTrigger);
 	PIXEON_API APIResult BoxCollisionGetIsTrigger(Component component, bool* outIsTrigger);
 
-	PIXEON_API APIResult BoxCollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback);
-	PIXEON_API APIResult BoxCollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback);
-	PIXEON_API APIResult BoxCollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback);
 
 	// Animator2D Component
 	PIXEON_API APIResult GetAnimator2D(Component animatorComp, const char* animatorName, Animator2d* outHandel);

@@ -1,5 +1,15 @@
 #include "AI.h"
 #include <cmath>
+#include <Windows.h>
+bool IsDead = false;
+
+void BoxCollisionEnter(Component box, const APICollisionInfo* info) {
+	std::string hitName(info->HitObjectName);
+    if (hitName == "Bullet") {
+        IsDead = true;
+    }
+	MessageBox(nullptr, "Hit by Bullet!", "AI", MB_OK);
+}
 
 void Script_AI::BeginPlay() {
     GetCurrentScene(&currentScene);
@@ -10,7 +20,7 @@ void Script_AI::BeginPlay() {
 
     // パラメータ初期化
     detectionRange = 50.0f;
-    moveSpeed = 5.0f;
+    moveSpeed = 2.5f;
     avoidanceDistance = 3.5f;
     rotationSpeed = 5.0f;
     stuckTimer = 0.0f;
@@ -21,17 +31,21 @@ void Script_AI::BeginPlay() {
     currentState = AIState::Idle;
     lastPosition = GetCurrentPosition();
     currentAvoidanceDirection = CreateFloat3(0, 0, 0);
+    
+	Component boxCollider;
+	FindComponent(aiObject, "CapsuleCollision", &boxCollider);
+	CollisionSetCollisionEnterCallback(boxCollider, BoxCollisionEnter);
 }
 
 void Script_AI::Update() {
     if (!playerObject || !rigidBody) return;
-
+    if(IsDead)RemoveObjectFromScene(currentScene, _parentObject);
     Float3 aiPos = GetCurrentPosition();
     Float3 playerPos;
     GetObjectPosition(playerObject, &playerPos);
-
+	// プレイヤーとの距離を計算
     float distanceToPlayer = GetDistance(aiPos, playerPos);
-
+    // 検出範囲内ならプレイヤーを追跡
     if (distanceToPlayer <= detectionRange) {
         MoveTowardsPlayer();
 
