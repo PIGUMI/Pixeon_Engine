@@ -15,15 +15,12 @@ void PixelateEffect::Apply(ID3D11ShaderResourceView* input,
     ID3D11DeviceContext* ctx = dx->GetContext();
     if (!ctx) return;
 
-    // 古い状態を保存
     ID3D11RenderTargetView* oldRTV = nullptr;
     ID3D11DepthStencilView* oldDSV = nullptr;
     ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
 
-    // 出力先を設定
     ctx->OMSetRenderTargets(1, &output, nullptr);
 
-    // ビューポート設定
     D3D11_VIEWPORT vp = {};
     vp.Width = (FLOAT)width;
     vp.Height = (FLOAT)height;
@@ -43,7 +40,6 @@ void PixelateEffect::Apply(ID3D11ShaderResourceView* input,
     ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
     ctx->PSSetShaderResources(0, 1, nullSRV);
 
-    // 状態を復元
     ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
 
     if (oldRTV) oldRTV->Release();
