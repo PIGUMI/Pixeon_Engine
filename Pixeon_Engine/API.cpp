@@ -113,9 +113,9 @@ namespace {
 		return DirectX::XMFLOAT2(float2.x, float2.y);
 	}
 
-	BoxCollisionEnterCallback g_BoxCollisionEnterCallback = nullptr;
-	BoxCollisionStayCallback  g_BoxCollisionStayCallback = nullptr;
-	BoxCollisionExitCallback  g_BoxCollisionExitCallback = nullptr;
+	CollisionEnterCallback g_BoxCollisionEnterCallback = nullptr;
+	CollisionStayCallback  g_BoxCollisionStayCallback = nullptr;
+	CollisionExitCallback  g_BoxCollisionExitCallback = nullptr;
 
 	// CollisionInfo‚©‚çAPICollisionInfo‚Ö•ÏŠ·
 	APICollisionInfo ToAPICollisionInfo(const CollisionInfo& info) {
@@ -2094,7 +2094,7 @@ extern "C" {
 		*outIsTrigger = boxComp->IsTrigger();
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback)
+	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component, CollisionEnterCallback callback)
 	{
 		BaseCollision* box;
 		if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
@@ -2108,7 +2108,7 @@ extern "C" {
 		);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback)
+	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, CollisionStayCallback callback)
 	{
 		BaseCollision* box;
 		if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;
@@ -2122,7 +2122,7 @@ extern "C" {
 		);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback)
+	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, CollisionExitCallback callback)
 	{
 		BaseCollision* box;
 		if (!ValidateHandle(component, &box))return PN_ERROR_INVALID_HANDLE;

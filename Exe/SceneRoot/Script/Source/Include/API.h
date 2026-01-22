@@ -73,9 +73,10 @@ typedef struct {
 
 #pragma pack(pop)
 
-typedef void (*BoxCollisionEnterCallback)(Component box, const APICollisionInfo* info);
-typedef void (*BoxCollisionStayCallback)(Component box, const APICollisionInfo* info);
-typedef void (*BoxCollisionExitCallback)(Component box, const APICollisionInfo* info);
+// API.h
+typedef void (*CollisionEnterCallback)(Component collision, const APICollisionInfo* info);
+typedef void (*CollisionStayCallback)(Component collision, const APICollisionInfo* info);
+typedef void (*CollisionExitCallback)(Component collision, const APICollisionInfo* info);
 
 // Utility Functions
 extern "C" {
@@ -252,9 +253,9 @@ extern "C" {
 	PIXEON_API APIResult BoxCollisionSetIsTrigger(Component component, bool isTrigger);
 	PIXEON_API APIResult BoxCollisionGetIsTrigger(Component component, bool* outIsTrigger);
 
-	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component, BoxCollisionEnterCallback callback);
-	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, BoxCollisionStayCallback callback);
-	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, BoxCollisionExitCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component,CollisionEnterCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, CollisionStayCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, CollisionExitCallback callback);
 
 	// Animator2D Component
 	PIXEON_API APIResult GetAnimator2D(Component animatorComp, const char* animatorName, Animator2d* outHandel);
