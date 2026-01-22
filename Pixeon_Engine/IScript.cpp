@@ -57,3 +57,16 @@ void IScript::EndPlay() {
 void IScript::CallCustom(const std::string& functionName)
 {
 }
+
+
+void IScript::OnCollisionEnter(const APICollisionInfo* info)
+{
+}
+
+void IScript::OnCollisionStay(const APICollisionInfo* info)
+{
+}
+
+void IScript::OnCollisionExit(const APICollisionInfo* info)
+{
+}

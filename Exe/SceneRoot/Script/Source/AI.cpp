@@ -2,10 +2,6 @@
 #include <cmath>
 #include <Windows.h>
 
-void OnEnterCallback(Component collision, const APICollisionInfo* info) {
-
-	MessageBox(nullptr, "Collision Enter detected!", "Info", MB_OK);
-}
 
 void Script_AI::BeginPlay() {
     GetCurrentScene(&currentScene);
@@ -27,14 +23,9 @@ void Script_AI::BeginPlay() {
     currentState = AIState::Idle;
     lastPosition = GetCurrentPosition();
     currentAvoidanceDirection = CreateFloat3(0, 0, 0);
-
-    Component collisionComp;
-    if (FindComponent(aiObject, "CapsuleCollision", &collisionComp) == PN_SUCCESS && collisionComp) {
-        CollisionSetCollisionEnterCallback(collisionComp, OnEnterCallback);
-	}
 }
 
-void Script_AI::Update() {
+void Script_AI::Update(float DeltaTime) {
     if (!playerObject || !rigidBody) return;
     //if(IsDead)RemoveObjectFromScene(currentScene, _parentObject);
     Float3 aiPos = GetCurrentPosition();
@@ -65,6 +56,11 @@ void Script_AI::Update() {
 }
 
 void Script_AI::EndPlay() {
+}
+
+void Script_AI::OnCollisionEnter(const APICollisionInfo* info)
+{
+	MessageBox(NULL, "Collision Detected!", "Collision", MB_OK);
 }
 
 void Script_AI::MoveTowardsPlayer() {
