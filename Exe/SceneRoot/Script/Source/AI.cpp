@@ -2,6 +2,11 @@
 #include <cmath>
 #include <Windows.h>
 
+void OnEnterCallback(Component collision, const APICollisionInfo* info) {
+
+	MessageBox(nullptr, "Collision Enter detected!", "Info", MB_OK);
+}
+
 void Script_AI::BeginPlay() {
     GetCurrentScene(&currentScene);
     aiObject = _parentObject;
@@ -22,6 +27,11 @@ void Script_AI::BeginPlay() {
     currentState = AIState::Idle;
     lastPosition = GetCurrentPosition();
     currentAvoidanceDirection = CreateFloat3(0, 0, 0);
+
+    Component collisionComp;
+    if (FindComponent(aiObject, "CapsuleCollision", &collisionComp) == PN_SUCCESS && collisionComp) {
+        CollisionSetCollisionEnterCallback(collisionComp, OnEnterCallback);
+	}
 }
 
 void Script_AI::Update() {
