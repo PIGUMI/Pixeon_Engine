@@ -1,17 +1,6 @@
 #ifndef SCRIPT_COMPONENT_H
 #define SCRIPT_COMPONENT_H
 
-/*  TODO
-*   ScriptComponent及び、ScriptManagerのリファクタリング
-*   SettingMangerからファイルパスを取得するようにする
-*/
-
-/*　実装概要
-* 動的スクリプト用コンポーネント
-* 前回のスクリプト用コンポーネントはファイルを複製し読み込んでいたが、i/o負荷が高いため
-* 読み込んだスクリプトをメモリ上に保存し、動的にコンパイル・実行する方式に変更
-*/
-
 #include "Component.h"
 #include <Windows.h>
 #include <string>
@@ -25,6 +14,7 @@ public:
 	void Init(AbstractObject* owner) override;
 	void BeginPlay() override;
 	void InGameUpdate() override;
+	void EditUpdate() override;
 	void UInit() override;
 	void DrawInspector() override;
 
@@ -56,6 +46,7 @@ private:
 	bool _showBuildLog = false;
 	bool _buildSuccess = false;
 	bool _StopOnError = false;
+	bool _InGamePlay = false;
 };
 
 #endif // !SCRIPT_COMPONENT_H

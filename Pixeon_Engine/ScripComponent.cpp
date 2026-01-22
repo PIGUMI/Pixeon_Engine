@@ -4,6 +4,7 @@
 #include "GUI.h"
 #include "IMGUI/imgui.h"
 #include "SettingManager.h"
+#include "MainFrame.h"
 
 #include <filesystem>
 #include <fstream>
@@ -40,12 +41,33 @@ void ScripComponent::BeginPlay() {
 void ScripComponent::InGameUpdate() {
 	try
 	{
-		if (_scriptInstance&&!_StopOnError) _scriptInstance->Update();
+		if (_scriptInstance && !_StopOnError)
+		{
+			_scriptInstance->Update(MainFrame::GetInstance()->GetDeltaTime());
+			_InGamePlay = true;
+		}
 	}
 	catch (const std::exception&)
 	{
 		_StopOnError = true;
 		std::cerr << "[ScripComponent] Exception in Update of script " << _scriptName << std::endl;
+	}
+}
+
+void ScripComponent::EditUpdate()
+{
+	try
+	{
+		if (_InGamePlay)
+		{
+			if(_scriptInstance)
+				_scriptInstance->EndPlay();
+			_InGamePlay = false;
+		}
+	}
+	catch (const std::exception&)
+	{
+
 	}
 }
 
@@ -108,7 +130,7 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
 			"class " << className << " : public IScript {\n"
 			"public:\n"
 			"    void BeginPlay() override;\n"
-			"    void Update() override;\n"
+			"    void Update(float DeltaTime) override;\n"
 			"    void EndPlay() override;\n"
 			"};\n\n"
 			"extern \"C\" __declspec(dllexport) IScript* CreateScriptInstance() {\n"
@@ -120,9 +142,9 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
 
 		std::ostringstream cpp;
 		cpp << "#include \"" << scriptName << ".h\"\n\n";
-		cpp << "void " << className << "::BeginPlay() {\n    // BeginPlay\n}\n\n";
-		cpp << "void " << className << ":: Update() {\n    // Update\n}\n\n";
-		cpp << "void " << className << "::EndPlay() {\n    // EndPlay\n}\n";
+		cpp << "void " << className << "::BeginPlay() {\n    IScript::BeginPlay(); // BeginPlay\n}\n\n";
+		cpp << "void " << className << ":: Update(float DeltaTime) {\n    IScript::Update();// Update\n}\n\n";
+		cpp << "void " << className << "::EndPlay() {\n    IScript::EndPlay();// EndPlay\n}\n";
 
 		if (!fs::exists(headerPath)) {
 			std::ofstream h(headerPath);

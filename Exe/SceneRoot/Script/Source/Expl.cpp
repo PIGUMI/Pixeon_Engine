@@ -1,6 +1,7 @@
 #include "Expl.h"
 
 void Script_Expl::BeginPlay() {
+	IScript::BeginPlay();
     Component comp;
 	FindComponent(_parentObject, "Animator2DComponent", &comp);
 	GetAnimator2D(comp,"Explosion",& _animator);
