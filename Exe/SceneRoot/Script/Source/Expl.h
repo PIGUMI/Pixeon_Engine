@@ -4,7 +4,7 @@
 class Script_Expl : public IScript {
 public:
     void BeginPlay() override;
-    void Update() override;
+    void Update(float DeltaTime) override;
     void EndPlay() override;
 private:
 	Animator2d _animator;

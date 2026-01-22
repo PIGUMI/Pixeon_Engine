@@ -56,7 +56,7 @@ void Script_Bullet::BeginPlay()
     RigidBodyAddImpulse(_rigidBody, &impulse);
 }
 
-void Script_Bullet::Update()
+void Script_Bullet::Update(float DeltaTime)
 {
     // ƒV[ƒ“æ“¾‚É¸”s‚µ‚Ä‚¢‚½ê‡ERigidBody ‚ªæ‚ê‚Ä‚¢‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
     if (!_scene || !_rigidBody) {

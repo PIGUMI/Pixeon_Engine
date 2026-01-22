@@ -27,7 +27,7 @@ void Script_Weapon::BeginPlay() {
 	FindPrefabObjectByName("Bullet", &Bullet);
 }
 
-void Script_Weapon::Update() {
+void Script_Weapon::Update(float DeltaTime) {
 	float transitionSpeed = 0.1f;
 
 	// Aiming

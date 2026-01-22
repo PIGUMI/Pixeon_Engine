@@ -24,7 +24,7 @@ void Script_Player::BeginPlay() {
 	SetMainCameraByPtr(cameraComp);
 }
 
-void Script_Player::Update() {
+void Script_Player::Update(float DeltaTime) {
 
 	Movement();
 	if (KeyPressed('Q'))

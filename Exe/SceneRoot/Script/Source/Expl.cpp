@@ -7,7 +7,7 @@ void Script_Expl::BeginPlay() {
 	GetAnimator2D(comp,"Explosion",& _animator);
 }
 
-void Script_Expl:: Update() {
+void Script_Expl:: Update(float DeltaTime) {
 	bool isEnd = false;
 	Animator2DIsEnd(_animator, &isEnd);
 	if (isEnd) {

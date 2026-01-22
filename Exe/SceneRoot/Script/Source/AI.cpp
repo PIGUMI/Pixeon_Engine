@@ -4,12 +4,12 @@
 
 
 void Script_AI::BeginPlay() {
+	IScript::BeginPlay();
     GetCurrentScene(&currentScene);
     aiObject = _parentObject;
 
     FindObjectByName(currentScene, "Player", &playerObject);
     FindComponent(aiObject, "RigidBody", &rigidBody);
-
     // ÉpÉâÉÅÅ[É^èâä˙âª
     detectionRange = 50.0f;
     moveSpeed = 2.5f;
@@ -27,7 +27,6 @@ void Script_AI::BeginPlay() {
 
 void Script_AI::Update(float DeltaTime) {
     if (!playerObject || !rigidBody) return;
-    //if(IsDead)RemoveObjectFromScene(currentScene, _parentObject);
     Float3 aiPos = GetCurrentPosition();
     Float3 playerPos;
     GetObjectPosition(playerObject, &playerPos);
@@ -56,11 +55,6 @@ void Script_AI::Update(float DeltaTime) {
 }
 
 void Script_AI::EndPlay() {
-}
-
-void Script_AI::OnCollisionEnter(const APICollisionInfo* info)
-{
-	MessageBox(NULL, "Collision Detected!", "Collision", MB_OK);
 }
 
 void Script_AI::MoveTowardsPlayer() {

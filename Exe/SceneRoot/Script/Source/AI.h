@@ -32,7 +32,6 @@ public:
     void BeginPlay() override;
     void Update(float DeltaTime) override;
     void EndPlay() override;
-	void OnCollisionEnter(const APICollisionInfo* info) override;
 
 private:
     void MoveTowardsPlayer();

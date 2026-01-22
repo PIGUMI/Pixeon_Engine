@@ -4,7 +4,7 @@
 class Script_Weapon : public IScript {
 public:
     void BeginPlay() override;
-    void Update() override;
+    void Update(float DeltaTime) override;
     void EndPlay() override;
     void Animation();
     void Effect();

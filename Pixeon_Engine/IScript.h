@@ -1,27 +1,33 @@
+// IScript.h
 #ifndef _ISCRIPT_H_
 #define _ISCRIPT_H_
 
-//　Scriptのインターフェースクラス
 #include <string>
+#include <vector>
 #include "API.h"
 
 class IScript
 {
 public:
-	virtual ~IScript() = default;
-	virtual void BeginPlay();
-	virtual void Update(float DeltaTime);
-	virtual void EndPlay();
+    virtual ~IScript();
+    virtual void BeginPlay();
+    virtual void Update(float DeltaTime);
+    virtual void EndPlay();
 
-	virtual void CallCustom(const std::string& functionName);
-	void SetParentObject(Object obj) { _parentObject = obj; }
+    virtual void CallCustom(const std::string& functionName);
+    void SetParentObject(Object obj) { _parentObject = obj; }
 
-public :
-	virtual void OnCollisionEnter(const APICollisionInfo* info);
-	virtual void OnCollisionStay(const APICollisionInfo* info);
-	virtual void OnCollisionExit(const APICollisionInfo* info);
+public:
+    virtual void OnCollisionEnter(const APICollisionInfo* info);
+    virtual void OnCollisionStay(const APICollisionInfo* info);
+    virtual void OnCollisionExit(const APICollisionInfo* info);
+
 protected:
-	Object _parentObject = nullptr;
+    Object _parentObject = nullptr;
+private:
+    std::vector<Component> _registeredCollisions;
+    void RegisterCollisionComponent(Component collision);
+    void UnregisterAllCollisions();
 };
 
 #endif // _ISCRIPT_H_
