@@ -140,7 +140,7 @@ namespace {
 
 // AbstractScene Functions
 extern "C" {
-	PIXEON_API APIResult GetCurrentScene(SceneHandle* outScene)
+	PIXEON_API APIResult GetCurrentScene(Scene* outScene)
 	{
 		if (!outScene) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -150,7 +150,7 @@ extern "C" {
 			*outScene = nullptr;
 			return PN_ERROR_NOT_FOUND;
 		}
-		*outScene = reinterpret_cast<SceneHandle>(currentScene);
+		*outScene = reinterpret_cast<Scene>(currentScene);
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult ChangeScene(const char* sceneName)
@@ -161,7 +161,7 @@ extern "C" {
 		SceneManger::GetInstance()->ChangeScene(std::string(sceneName));
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult SceneGetObjectCount(SceneHandle InScene, int* outCount)
+	PIXEON_API APIResult SceneGetObjectCount(Scene InScene, int* outCount)
 	{
 		if (!outCount) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -172,7 +172,7 @@ extern "C" {
 		}
 		*outCount = static_cast<int>(scenePtr->GetObjects().size());
 	}
-	PIXEON_API APIResult FindObjectByName(SceneHandle InScene, const char* name, Object* outObject)
+	PIXEON_API APIResult FindObjectByName(Scene InScene, const char* name, Object* outObject)
 	{
 		if (!name || !outObject) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -219,7 +219,7 @@ extern "C" {
 		*outObject = reinterpret_cast<Object>(childObj);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult AddObjectToScene(SceneHandle InScene, Object object)
+	PIXEON_API APIResult AddObjectToScene(Scene InScene, Object object)
 	{
 		if (!object) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -235,7 +235,7 @@ extern "C" {
 		scenePtr->AddObject(objPtr);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult RemoveObjectFromScene(SceneHandle InScene, Object object)
+	PIXEON_API APIResult RemoveObjectFromScene(Scene InScene, Object object)
 	{
 		if (!object) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -292,18 +292,18 @@ extern "C" {
 
 extern "C" {
 	PIXEON_API APIResult Raycast(
-		SceneHandle sceneHandle,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
 		RayHit* outHit)
 	{
-		if (!sceneHandle || !outHit) {
+		if (!InScene || !outHit) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
 		AbstractScene* Scene = nullptr;
-		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
+		if (!ValidateHandle<AbstractScene>(InScene, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
@@ -392,18 +392,18 @@ extern "C" {
 	}
 
 	PIXEON_API APIResult RaycastIgnoreTriggers(
-		SceneHandle sceneHandle,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
 		RayHit* outHit)
 	{
-		if (!sceneHandle || !outHit) {
+		if (!InScene || !outHit) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
 		AbstractScene* Scene = nullptr;
-		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
+		if (!ValidateHandle<AbstractScene>(InScene, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
@@ -499,19 +499,19 @@ extern "C" {
 	}
 
 	PIXEON_API APIResult SphereCast(
-		SceneHandle sceneHandle,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float radius,
 		float maxDistance,
 		RayHit* outHit)
 	{
-		if (!sceneHandle || !outHit) {
+		if (!InScene || !outHit) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
 		AbstractScene* Scene = nullptr;
-		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
+		if (!ValidateHandle<AbstractScene>(InScene, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
@@ -607,19 +607,19 @@ extern "C" {
 	}
 
 	PIXEON_API APIResult RaycastIgnoreObject(
-		SceneHandle sceneHandle,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
 		Object ignoreObject,
 		RayHit* outHit)
 	{
-		if (!sceneHandle || !outHit) {
+		if (!InScene || !outHit) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
 		AbstractScene* Scene = nullptr;
-		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
+		if (!ValidateHandle<AbstractScene>(InScene, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
