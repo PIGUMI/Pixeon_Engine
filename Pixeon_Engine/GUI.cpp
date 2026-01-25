@@ -219,7 +219,7 @@ void GUI::SceneCreateWindow()
 		ImGui::Separator();
 		ImGui::Text(ShiftJISToUTF8("現在のシーン:").c_str());
 		ImGui::SameLine();
-		Scene* current = SceneManger::GetInstance()->GetCurrentScene();
+		AbstractScene* current = SceneManger::GetInstance()->GetCurrentScene();
 		if (current) {
 			std::string currentScene = SceneManger::GetInstance()->GetCurrentScene()->GetName();
 			ImGui::Text(ShiftJISToUTF8(("現在のシーン: " + currentScene).c_str()).c_str());
@@ -235,7 +235,7 @@ void GUI::SceneCreateWindow()
 		ImGui::Text(ShiftJISToUTF8("シーン一覧").c_str());
 		auto sceneList = SceneManger::GetInstance()->GetSceneList();
 		ImGui::BeginChild("SceneListChild###EditerGUI___", ImVec2(0, 0), true);
-		for (const auto& scene : sceneList) { ImGui::Text(ShiftJISToUTF8(scene).c_str()); };
+		for (const auto& AbstractScene : sceneList) { ImGui::Text(ShiftJISToUTF8(AbstractScene).c_str()); };
 		ImGui::EndChild();
 	}
 	ImGui::End();

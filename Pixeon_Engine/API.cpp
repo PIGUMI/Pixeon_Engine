@@ -138,14 +138,14 @@ namespace {
 	}
 }
 
-// Scene Functions
+// AbstractScene Functions
 extern "C" {
 	PIXEON_API APIResult GetCurrentScene(SceneHandle* outScene)
 	{
 		if (!outScene) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
-		Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+		AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (!currentScene) {
 			*outScene = nullptr;
 			return PN_ERROR_NOT_FOUND;
@@ -161,24 +161,24 @@ extern "C" {
 		SceneManger::GetInstance()->ChangeScene(std::string(sceneName));
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult SceneGetObjectCount(SceneHandle scene, int* outCount)
+	PIXEON_API APIResult SceneGetObjectCount(SceneHandle InScene, int* outCount)
 	{
 		if (!outCount) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
-		Scene* scenePtr = nullptr;
-		if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+		AbstractScene* scenePtr = nullptr;
+		if (!ValidateHandle<AbstractScene>(InScene, &scenePtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		*outCount = static_cast<int>(scenePtr->GetObjects().size());
 	}
-	PIXEON_API APIResult FindObjectByName(SceneHandle scene, const char* name, Object* outObject)
+	PIXEON_API APIResult FindObjectByName(SceneHandle InScene, const char* name, Object* outObject)
 	{
 		if (!name || !outObject) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
-		Scene* scenePtr = nullptr;
-		if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+		AbstractScene* scenePtr = nullptr;
+		if (!ValidateHandle<AbstractScene>(InScene, &scenePtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		AbstractObject* obj = scenePtr->FindObjectByName(name);
@@ -219,13 +219,13 @@ extern "C" {
 		*outObject = reinterpret_cast<Object>(childObj);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object)
+	PIXEON_API APIResult AddObjectToScene(SceneHandle InScene, Object object)
 	{
 		if (!object) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
-		Scene* scenePtr = nullptr;
-		if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+		AbstractScene* scenePtr = nullptr;
+		if (!ValidateHandle<AbstractScene>(InScene, &scenePtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		AbstractObject* objPtr = nullptr;
@@ -235,13 +235,13 @@ extern "C" {
 		scenePtr->AddObject(objPtr);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult RemoveObjectFromScene(SceneHandle scene, Object object)
+	PIXEON_API APIResult RemoveObjectFromScene(SceneHandle InScene, Object object)
 	{
 		if (!object) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
-		Scene* scenePtr = nullptr;
-		if (!ValidateHandle<Scene>(scene, &scenePtr)) {
+		AbstractScene* scenePtr = nullptr;
+		if (!ValidateHandle<AbstractScene>(InScene, &scenePtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		AbstractObject* objPtr = nullptr;
@@ -253,7 +253,7 @@ extern "C" {
 	}
 	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber)
 	{
-		Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+		AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (!currentScene) {
 			return PN_ERROR_NOT_FOUND;
 		}
@@ -265,7 +265,7 @@ extern "C" {
 		if (!outCameraNumber) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
-		Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+		AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (!currentScene) {
 			return PN_ERROR_NOT_FOUND;
 		}
@@ -281,7 +281,7 @@ extern "C" {
 		if (!cameraComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+		AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 		if (!currentScene) {
 			return PN_ERROR_NOT_FOUND;
 		}
@@ -302,12 +302,12 @@ extern "C" {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
-		Scene* scene = nullptr;
-		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+		AbstractScene* Scene = nullptr;
+		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
-		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		btDiscreteDynamicsWorld* physicsWorld = Scene->GetPhysicsWorld();
 		if (!physicsWorld) {
 			return PN_ERROR_NOT_FOUND;
 		}
@@ -402,12 +402,12 @@ extern "C" {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
-		Scene* scene = nullptr;
-		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+		AbstractScene* Scene = nullptr;
+		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
-		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		btDiscreteDynamicsWorld* physicsWorld = Scene->GetPhysicsWorld();
 		if (!physicsWorld) {
 			return PN_ERROR_NOT_FOUND;
 		}
@@ -510,12 +510,12 @@ extern "C" {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
-		Scene* scene = nullptr;
-		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+		AbstractScene* Scene = nullptr;
+		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
-		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		btDiscreteDynamicsWorld* physicsWorld = Scene->GetPhysicsWorld();
 		if (!physicsWorld) {
 			return PN_ERROR_NOT_FOUND;
 		}
@@ -618,12 +618,12 @@ extern "C" {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
 
-		Scene* scene = nullptr;
-		if (!ValidateHandle<Scene>(sceneHandle, &scene)) {
+		AbstractScene* Scene = nullptr;
+		if (!ValidateHandle<AbstractScene>(sceneHandle, &Scene)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 
-		btDiscreteDynamicsWorld* physicsWorld = scene->GetPhysicsWorld();
+		btDiscreteDynamicsWorld* physicsWorld = Scene->GetPhysicsWorld();
 		if (!physicsWorld) {
 			return PN_ERROR_NOT_FOUND;
 		}

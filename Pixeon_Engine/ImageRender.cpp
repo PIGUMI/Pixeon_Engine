@@ -104,10 +104,10 @@ void ImageRender::EditUpdate()
 
 void ImageRender::Update()
 {
-	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
-	if (scene)
+	AbstractScene* AbstractScene = _Parent ? _Parent->GetParentScene() : nullptr;
+	if (AbstractScene)
 	{
-		cam = scene ? scene->GetMainCamera() : nullptr;
+		cam = AbstractScene ? AbstractScene->GetMainCamera() : nullptr;
 	}
 }
 
@@ -480,9 +480,9 @@ void ImageRender::Draw(int Layer) {
 	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
 	ctx->OMSetDepthStencilState(s_depthStencilState.Get(), 0);
 
-	Scene* scene = _Parent ? _Parent->GetParentScene() : nullptr;
+	AbstractScene* AbstractScene = _Parent ? _Parent->GetParentScene() : nullptr;
 
-	cam = scene ? scene->GetMainCamera() : nullptr;
+	cam = AbstractScene ? AbstractScene->GetMainCamera() : nullptr;
 
 	Vertex v[4]{};
 	int mode2DFlag = 0;

@@ -29,7 +29,7 @@ static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
 static ID3D11Buffer* gLightCountCB = nullptr;
 
-Scene::~Scene()
+AbstractScene::~AbstractScene()
 {
 	SaveToFile();
 
@@ -77,7 +77,7 @@ Scene::~Scene()
 	_lights.clear();
 }
 
-void Scene::Init() {
+void AbstractScene::Init() {
 	_objects.clear();
 	_ToBeAdded.clear();
 	_ToBeRemoved.clear();
@@ -88,7 +88,7 @@ void Scene::Init() {
 	_collisionManager->Initialize(pPhysicsWorld);
 }
 
-void Scene::BeginPlay() {
+void AbstractScene::BeginPlay() {
 	for (auto& obj : _objects) {
 		if (obj && obj->GetParent() == nullptr) {
 			AbstractObject* cloneObj = obj->Clone();
@@ -129,7 +129,7 @@ void Scene::BeginPlay() {
 	UploadLightsToGPU();
 }
 
-void Scene::EditUpdate() {
+void AbstractScene::EditUpdate() {
 	InGame = false;
 	if (!EndPlayCalled) {
 		EndPlayCalled = true;
@@ -246,7 +246,7 @@ void Scene::EditUpdate() {
 	}
 }
 
-void Scene::PlayUpdate() {
+void AbstractScene::PlayUpdate() {
 	InGame = true;
 	ProcessThreadSafeAdditions();
 	for (auto& obj : _ToBeAdded) {
@@ -379,7 +379,7 @@ void Scene::PlayUpdate() {
 	}
 }
 
-void Scene::Draw(int Layer) {
+void AbstractScene::Draw(int Layer) {
 	UploadLightsToGPU();
 
 	std::vector<AbstractObject*> sortedList;
@@ -413,11 +413,11 @@ void Scene::Draw(int Layer) {
 	}
 }
 
-void Scene::DrawUI()
+void AbstractScene::DrawUI()
 {
 }
 
-void Scene::SaveToFile() {
+void AbstractScene::SaveToFile() {
 	std::vector<AbstractObject*> SaveObjects;
 
 	if (InGame) {
@@ -493,7 +493,7 @@ void Scene::SaveToFile() {
 		outFile << SceneData.dump(4);
 		outFile.close();
 
-		std::string msg = "[Scene] Saved " + std::to_string(SaveObjects.size()) + " objects to " + File + "\n";
+		std::string msg = "[AbstractScene] Saved " + std::to_string(SaveObjects.size()) + " objects to " + File + "\n";
 		OutputDebugStringA(msg.c_str());
 	}
 	else {
@@ -501,11 +501,11 @@ void Scene::SaveToFile() {
 	}
 }
 
-void Scene::LoadToFile() {
+void AbstractScene::LoadToFile() {
 	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + _name + ".scene";
 	std::ifstream inFile(filePath);
 	if (!inFile.is_open()) {
-		OutputDebugStringA(("[Scene] Failed to open:  " + filePath + "\n").c_str());
+		OutputDebugStringA(("[AbstractScene] Failed to open:  " + filePath + "\n").c_str());
 		return;
 	}
 
@@ -569,11 +569,11 @@ void Scene::LoadToFile() {
 				child->SetParent(it->second);
 			}
 			else {
-				OutputDebugStringA(("[Scene] Warning: Parent not found: " + parentName + "\n").c_str());
+				OutputDebugStringA(("[AbstractScene] Warning: Parent not found: " + parentName + "\n").c_str());
 			}
 		}
 
-		std::string msg = "[Scene] Loaded " + std::to_string(objectCount) + " objects from " + filePath + "\n";
+		std::string msg = "[AbstractScene] Loaded " + std::to_string(objectCount) + " objects from " + filePath + "\n";
 		OutputDebugStringA(msg.c_str());
 
 		for (auto& obj : _ToBeAdded) {
@@ -597,7 +597,7 @@ void Scene::LoadToFile() {
 	}
 }
 
-void Scene::SetMainCamera(CameraComponent* camera){
+void AbstractScene::SetMainCamera(CameraComponent* camera){
 	_MainCamera = camera;
 	if (_MainCamera)
 		_MainCameraNumber = _MainCamera->GetCameraNumber();
@@ -605,7 +605,7 @@ void Scene::SetMainCamera(CameraComponent* camera){
 		_MainCameraNumber = -1;
 }
 
-void Scene::SetMainCameraNumber(int num)
+void AbstractScene::SetMainCameraNumber(int num)
 {
 	_MainCameraNumber = num;
 	for (auto& obj : _objects) {
@@ -623,7 +623,7 @@ void Scene::SetMainCameraNumber(int num)
 	}
 }
 
-AbstractObject* Scene::FindObjectByName(const char* name)
+AbstractObject* AbstractScene::FindObjectByName(const char* name)
 {
 	std::string strName(name);
 	if (_objects.empty())return nullptr;
@@ -637,18 +637,18 @@ AbstractObject* Scene::FindObjectByName(const char* name)
 	return nullptr;
 }
 
-void Scene::RegisterLight(LightComponent* l) {
+void AbstractScene::RegisterLight(LightComponent* l) {
 	if (!l) return;
 	if (std::find(_lights.begin(), _lights.end(), l) == _lights.end())
 		_lights.push_back(l);
 }
 
-void Scene::UnregisterLight(LightComponent* l) {
+void AbstractScene::UnregisterLight(LightComponent* l) {
 	auto it = std::remove(_lights.begin(), _lights.end(), l);
 	if (it != _lights.end()) _lights.erase(it, _lights.end());
 }
 
-void Scene::ProcessThreadSafeAdditions() {
+void AbstractScene::ProcessThreadSafeAdditions() {
 	std::lock_guard<std::mutex> lock(_mtx);
 	for (auto& obj : _ToBeAddedBuffer) {
 		if (obj)_ToBeAdded.push_back(obj);
@@ -656,7 +656,7 @@ void Scene::ProcessThreadSafeAdditions() {
 	_ToBeAddedBuffer.clear();
 }
 
-void Scene::UploadLightsToGPU() {
+void AbstractScene::UploadLightsToGPU() {
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	auto ctx = DirectX11::GetInstance()->GetContext();
 	if (!dev || !ctx) return;
@@ -743,7 +743,7 @@ void Scene::UploadLightsToGPU() {
 	ctx->PSSetConstantBuffers(2, 1, cbs2);
 }
 
-void Scene::InitPhysics()
+void AbstractScene::InitPhysics()
 {
 	pCollisionConfig = new btDefaultCollisionConfiguration();
 	pDispatcher = new btCollisionDispatcher(pCollisionConfig);
@@ -770,7 +770,7 @@ void Scene::InitPhysics()
 	pPhysicsWorld->getSolverInfo().m_timeStep = 1.0f / 240.0f;
 }
 
-void Scene::CleanupPhysics()
+void AbstractScene::CleanupPhysics()
 {
 	if (pPhysicsWorld)
 	{
@@ -806,7 +806,7 @@ void Scene::CleanupPhysics()
 	}
 }
 
-void Scene::CleanupAndReinitializePhysics()
+void AbstractScene::CleanupAndReinitializePhysics()
 {
 	CleanupPhysics();
 	InitPhysics();
@@ -824,7 +824,7 @@ void Scene::CleanupAndReinitializePhysics()
 	}
 }
 
-void Scene::AddObjectLocal(AbstractObject* obj) {
+void AbstractScene::AddObjectLocal(AbstractObject* obj) {
 	if (!obj) return;
 
 	auto it = std::find(_ToBeAdded.begin(), _ToBeAdded.end(), obj);
@@ -836,7 +836,7 @@ void Scene::AddObjectLocal(AbstractObject* obj) {
 	_ToBeAdded.push_back(obj);
 }
 
-void Scene::RemoveObject(AbstractObject* obj) {
+void AbstractScene::RemoveObject(AbstractObject* obj) {
 	if (!obj) return;
 
 	if (obj->GetParent()) {
@@ -862,7 +862,7 @@ void Scene::RemoveObject(AbstractObject* obj) {
 	}
 }
 
-bool Scene::AddObject(AbstractObject* obj)
+bool AbstractScene::AddObject(AbstractObject* obj)
 {
 	if (!obj) return false;
 	std::thread([this, obj]() {
