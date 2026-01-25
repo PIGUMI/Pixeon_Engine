@@ -26,6 +26,8 @@ void ScripComponent::BeginPlay() {
 	{
 		Object parentObj = static_cast<Object>(_Parent);
 		_scriptInstance->SetParentObject(parentObj);
+		Scene parentScene = static_cast<Scene>(_Parent->GetParentScene());
+		_scriptInstance->SetParentScene(parentScene);
 		try
 		{
 			_scriptInstance->BeginPlay();

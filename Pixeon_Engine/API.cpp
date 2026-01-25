@@ -725,7 +725,6 @@ extern "C" {
 	}
 };
 
-
 // Object Functions
 extern "C" {
 	PIXEON_API APIResult GetObjectName(Object object, char* outName, int bufferSize)
