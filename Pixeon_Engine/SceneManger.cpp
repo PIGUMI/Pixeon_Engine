@@ -102,17 +102,17 @@ bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
 		}
 	}
 
-	RegisterScene(SceneName, [SceneName]() -> Scene* {
-		Scene* newScene = new Scene();
+	RegisterScene(SceneName, [SceneName]() -> AbstractScene* {
+		AbstractScene* newScene = new AbstractScene();
 		newScene->SetName(SceneName);
 		return newScene;
 		});
 
-	Scene* scene = new Scene();
-	scene->SetName(SceneName);
-	scene->SaveToFile();
-	delete scene;
-	scene = nullptr;
+	AbstractScene* Scene = new AbstractScene();
+	Scene->SetName(SceneName);
+	Scene->SaveToFile();
+	delete Scene;
+	Scene = nullptr;
 
 	return true;
 }
@@ -125,8 +125,8 @@ bool SceneManger::CreateAndRegisterDefaultScene(std::string SceneName)
 		}
 	}
 
-	RegisterScene(SceneName, [SceneName]() -> Scene* {
-		Scene* newScene = new Scene();
+	RegisterScene(SceneName, [SceneName]() -> AbstractScene* {
+		AbstractScene* newScene = new AbstractScene();
 		newScene->SetName(SceneName);
 		return newScene;
 		});
@@ -135,7 +135,7 @@ bool SceneManger::CreateAndRegisterDefaultScene(std::string SceneName)
 }
 
 // ÉVÅ[ÉìÇÃìoò^
-void SceneManger::RegisterScene(std::string Name, std::function<Scene* ()> creator) {
+void SceneManger::RegisterScene(std::string Name, std::function<AbstractScene* ()> creator) {
 	_SceneCreators[Name] = creator;
 }
 
@@ -143,7 +143,7 @@ void SceneManger::RegisterScene(std::string Name, std::function<Scene* ()> creat
 std::vector<std::string> SceneManger::ListSceneFiles() {
 	std::vector<std::string> sceneFiles;
 	std::string sceneDir = SettingManager::GetInstance()->GetSceneFilePath();
-	std::string searchPath = sceneDir + "\\*.scene";
+	std::string searchPath = sceneDir + "\\*.Scene";
 	WIN32_FIND_DATAA findData;
 	HANDLE hFind = FindFirstFileA(searchPath.c_str(), &findData);
 
@@ -181,8 +181,8 @@ SceneManger::~SceneManger() {
 bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::string& newName) {
 	std::string oldPath = SettingManager::GetInstance()->GetSceneFilePath() + oldName;
 	std::string newPath = SettingManager::GetInstance()->GetSceneFilePath() + newName;
-	oldPath += ".scene";
-	newPath += ".scene";
+	oldPath += ".Scene";
+	newPath += ".Scene";
 	if (std::rename(oldPath.c_str(), newPath.c_str()) != 0) {
 		return false;
 	}

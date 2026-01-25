@@ -8,7 +8,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-class Scene;
+class AbstractScene;
 
 class SceneManger
 {
@@ -34,12 +34,12 @@ public:
 	void Save();
 	void Load();
 
-	Scene* GetCurrentScene() { return _currentScene; }
+	AbstractScene* GetCurrentScene() { return _currentScene; }
 	bool CreateAndRegisterScene(std::string SceneName);
 
 private:
 	bool CreateAndRegisterDefaultScene(std::string SceneName);
-	void RegisterScene(std::string Name, std::function<Scene* ()> creator);
+	void RegisterScene(std::string Name, std::function<AbstractScene* ()> creator);
 	std::vector<std::string> ListSceneFiles();
 
 private:
@@ -49,10 +49,10 @@ private:
 private:
 	// シーンリスト
 	std::vector<std::string> _sceneList;
-	std::map<std::string, std::function<Scene* ()>> _SceneCreators;
+	std::map<std::string, std::function<AbstractScene* ()>> _SceneCreators;
 
-	Scene* _currentScene = nullptr;
-	Scene* _nextScene = nullptr;
+	AbstractScene* _currentScene = nullptr;
+	AbstractScene* _nextScene = nullptr;
 
 	std::string _StartSceneName;
 

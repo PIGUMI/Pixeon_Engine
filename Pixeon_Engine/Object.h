@@ -8,7 +8,7 @@
 #include <map>
 
 class AbstractComponent;
-class Scene;
+class AbstractScene;
 
 class AbstractObject
 {
@@ -116,8 +116,8 @@ public:
 		return newComp;
 	}
 
-	void SetParentScene(Scene* scene) { _ParentScene = scene; }
-	Scene* GetParentScene() const { return _ParentScene; }
+	void SetParentScene(AbstractScene* AbstractScene) { _ParentScene = AbstractScene; }
+	AbstractScene* GetParentScene() const { return _ParentScene; }
 
 public:
 	// variable Setter And Getter
@@ -131,7 +131,7 @@ protected:
 	std::string _ObjectName;
 	Transform _transform;
 	std::vector<AbstractComponent*> _components;
-	Scene* _ParentScene = nullptr;
+	AbstractScene* _ParentScene = nullptr;
 
 	// êeéqä÷åW
 	AbstractObject* _parentObject = nullptr;
@@ -141,7 +141,7 @@ protected:
 	std::map<std::string, float> _floatValues;
 	std::map<std::string, bool> _boolValues;
 
-	friend class Scene;
+	friend class AbstractScene;
 };
 
 #endif // !_OBJECT_H_

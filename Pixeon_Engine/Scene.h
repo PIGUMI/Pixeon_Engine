@@ -12,11 +12,11 @@
 class AbstractObject;
 class LightComponent;
 
-class Scene
+class AbstractScene
 {
 public:
-	Scene() {}
-	virtual ~Scene();
+	AbstractScene() {}
+	virtual ~AbstractScene();
 	virtual void Init();
 	virtual void BeginPlay();
 	virtual void EditUpdate();

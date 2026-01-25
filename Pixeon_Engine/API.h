@@ -16,7 +16,7 @@ typedef enum {
 	PN_ERROR_INVALID_PARAMETER = -5,
 }APIResult;
 
-typedef void* SceneHandle;
+typedef void* Scene;
 typedef void* Object;
 typedef void* Component;
 typedef void* Animator2d;
@@ -89,14 +89,14 @@ extern "C" {
 
 // Scene
 extern "C" {
-	PIXEON_API APIResult GetCurrentScene(SceneHandle* outScene);
+	PIXEON_API APIResult GetCurrentScene(Scene* outScene);
 	PIXEON_API APIResult ChangeScene(const char* sceneName);
-	PIXEON_API APIResult SceneGetObjectCount(SceneHandle scene, int* outCount);
-	PIXEON_API APIResult FindObjectByName(SceneHandle scene, const char* name, Object* outObject);
+	PIXEON_API APIResult SceneGetObjectCount(Scene scene, int* outCount);
+	PIXEON_API APIResult FindObjectByName(Scene scene, const char* name, Object* outObject);
 	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject);
 	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject);
-	PIXEON_API APIResult AddObjectToScene(SceneHandle scene, Object object);
-	PIXEON_API APIResult RemoveObjectFromScene(SceneHandle scene, Object object);
+	PIXEON_API APIResult AddObjectToScene(Scene scene, Object object);
+	PIXEON_API APIResult RemoveObjectFromScene(Scene scene, Object object);
 	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber);
 	PIXEON_API APIResult SetMainCameraByPtr(Component camera);
 	PIXEON_API APIResult GetMainCamera(int* outCameraNumber);
@@ -104,7 +104,7 @@ extern "C" {
 
 extern "C" {
 	PIXEON_API APIResult Raycast(
-		SceneHandle scene,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
@@ -112,7 +112,7 @@ extern "C" {
 	);
 
 	PIXEON_API APIResult RaycastIgnoreTriggers(
-		SceneHandle scene,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
@@ -120,7 +120,7 @@ extern "C" {
 	);
 
 	PIXEON_API APIResult SphereCast(
-		SceneHandle scene,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float radius,
@@ -129,7 +129,7 @@ extern "C" {
 	);
 
 	PIXEON_API APIResult RaycastIgnoreObject(
-		SceneHandle scene,
+		Scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,

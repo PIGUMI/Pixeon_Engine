@@ -35,7 +35,6 @@ void OnExitCallback(Component collision, const APICollisionInfo* info)
     }
 }
 
-// デストラクタで確実にクリーンアップ
 IScript::~IScript()
 {
     UnregisterAllCollisions();
@@ -44,16 +43,12 @@ IScript::~IScript()
 void IScript::BeginPlay()
 {
     if (_parentObject == nullptr) {
-        return; // 親オブジェクトが設定されていない場合は何もしない
+        return;
     }
 
-    // 複数のコリジョンタイプに対応
     const char* collisionTypes[] = {
         "BoxCollision",
         "CapsuleCollision",
-        "SphereCollision",
-        "MeshCollision"
-        // 必要に応じて追加
     };
 
     for (const char* typeName : collisionTypes) {
@@ -70,11 +65,9 @@ void IScript::RegisterCollisionComponent(Component collision)
         return;
     }
 
-    // コールバックを登録
     APIResult result;
     result = CollisionSetCollisionEnterCallback(collision, OnEnterCallback);
     if (result != PN_SUCCESS) {
-        // エラーログ出力（実装に応じて）
         return;
     }
 
@@ -88,13 +81,11 @@ void IScript::RegisterCollisionComponent(Component collision)
         return;
     }
 
-    // マップに登録
-    {
-        std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
-        g_scriptInstances[collision] = this;
-    }
+    
+    std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
+    g_scriptInstances[collision] = this;
+    
 
-    // 登録したコンポーネントを記録
     _registeredCollisions.push_back(collision);
 }
 

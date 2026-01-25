@@ -16,6 +16,7 @@ public:
 
     virtual void CallCustom(const std::string& functionName);
     void SetParentObject(Object obj) { _parentObject = obj; }
+    void SetParentScene(Scene scene) { _parentScene = scene; }
 
 public:
     virtual void OnCollisionEnter(const APICollisionInfo* info);
@@ -24,6 +25,7 @@ public:
 
 protected:
     Object _parentObject = nullptr;
+	Scene _parentScene = nullptr;
 private:
     std::vector<Component> _registeredCollisions;
     void RegisterCollisionComponent(Component collision);

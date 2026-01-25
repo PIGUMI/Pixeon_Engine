@@ -6,20 +6,19 @@ public:
     void BeginPlay() override;
     void Update(float DeltaTime) override;
     void EndPlay() override;
-    void Animation();
-    void Effect();
-private:
-    transform _StartTransform;
-    transform _EndTransform;
-    float _transitionProgress = 0.0f;
-    bool _isAiming = false;
-    Object Player;
-    Object Head;
-    SceneHandle scene;
-    Component CameraComp;
-    Object Bullet;
 
-	Object ExplosionEffect;
+private:
+    void Animation();
+private:
+    transform _idleTransform;
+    transform _ReadyTransform;
+    float _transitionProgress;
+    bool _isAiming = false;
+    int _coolTime;
+
+    Object _ExplosionEffect;
+    Object _Body;
+
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {

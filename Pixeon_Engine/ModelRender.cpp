@@ -429,9 +429,9 @@ void ModelRenderComponent::EnsureDefaultBoneMatrices()
 void ModelRenderComponent::Draw(int Layer) {
 	if (Layer != _LayerNumber) return;
 	if (!m_ready || !m_model) return;
-	Scene* scene = _Parent->GetParentScene();
-	if (!scene) return;
-	CameraComponent* cam = scene->GetMainCamera();
+	AbstractScene* AbstractScene = _Parent->GetParentScene();
+	if (!AbstractScene) return;
+	CameraComponent* cam = AbstractScene->GetMainCamera();
 	if (!cam) return;
 
 	if (!m_vs || !m_ps) {

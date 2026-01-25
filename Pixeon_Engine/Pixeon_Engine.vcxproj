@@ -182,9 +182,7 @@
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelRender.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="PhysicsRaycast.h" />
     <ClInclude Include="PixelateEffect.h" />
-    <ClInclude Include="RaycastHit.h" />
     <ClInclude Include="ResourceService.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
@@ -243,7 +241,6 @@
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelRender.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="PhysicsRaycast.cpp" />
     <ClCompile Include="PixelateEffect.cpp" />
     <ClCompile Include="ResourceService.cpp" />
     <ClCompile Include="RigidBody.cpp" />

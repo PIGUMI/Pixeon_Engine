@@ -19,7 +19,7 @@ void EngineFrame::HandleAssetContextMenu(const std::filesystem::path& path)
 	std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
 	std::string fullPath = path.string();
 
-	if (ext == ".scene") {
+	if (ext == ".AbstractScene") {
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("名前変更").c_str())) {
 			SceneRenameNewName_ = path.stem().string();
 			ShowSceneRename = true;
@@ -229,7 +229,7 @@ void EngineFrame::GameViewWindow()
 	if (active)
 	{
 		if (!bShowGUI_)return;
-		Scene* Temp = nullptr;
+		AbstractScene* Temp = nullptr;
 		Temp = SceneManger::GetInstance()->GetCurrentScene();
 		if (Temp)
 		{
@@ -305,10 +305,10 @@ void EngineFrame::HierarchyWindow()
 {
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ヒエラルキー").c_str());
 
-	Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+	AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("シーン:  ").c_str());
 	ImGui::SameLine();
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(currentScene ? currentScene->GetName() : "No Scene").c_str());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(currentScene ? currentScene->GetName() : "No AbstractScene").c_str());
 	ImGui::Separator();
 
 	// 右クリックでコンテキストメニュー表示
@@ -458,7 +458,7 @@ void  EngineFrame::ContentWindow()
 	}
 
 	// 拡張子フィルター
-	static const char* filterExts[] = { "", ".png", ".jpg", ".obj", ".txt", ".fbx", ".wav", ".mp3", ".ogg", ".hlsl", ".scene", ".cpp", ".h", ".cs" };
+	static const char* filterExts[] = { "", ".png", ".jpg", ".obj", ".txt", ".fbx", ".wav", ".mp3", ".ogg", ".hlsl", ".AbstractScene", ".cpp", ".h", ".cs" };
 	static int filterIndex = 0;
 	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("フィルター:").c_str());
 	ImGui::SameLine();
@@ -699,7 +699,7 @@ void EngineFrame::PrefabWindow() {
 			ImGui::Separator();
 
 			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("シーンに追加").c_str())) {
-				Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+				AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 				if (currentScene) {
 					AbstractObject* newObj = prefab->Clone();
 
@@ -751,7 +751,7 @@ void EngineFrame::PrefabWindow() {
 			selectedPrefab = prefab;
 
 			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-				Scene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
+				AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 				if (currentScene) {
 					AbstractObject* newObj = prefab->Clone();
 
@@ -998,11 +998,11 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 			std::string baseName = obj->GetObjectName();
 			std::string newName = baseName;
 			// 名前の重複チェック
-			Scene* scene = SceneManger::GetInstance()->GetCurrentScene();
+			AbstractScene* AbstractScene = SceneManger::GetInstance()->GetCurrentScene();
 			bool nameExists = true;
 			while (nameExists) {
 				nameExists = false;
-				for (const auto& sceneObj : scene->GetObjects()) {
+				for (const auto& sceneObj : AbstractScene->GetObjects()) {
 					if (sceneObj->GetObjectName() == newName) {
 						nameExists = true;
 						break;
@@ -1019,7 +1019,7 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 				obj->GetParent()->AddChild(newObj);
 			}
 			newObj->SetObjectName(newName);
-			scene->AddObjectLocal(newObj);
+			AbstractScene->AddObjectLocal(newObj);
 		}
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("子オブジェクトを作成").c_str())) {
 			AbstractObject* newChild = new AbstractObject();
@@ -1028,11 +1028,11 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 			std::string newName = baseName;
 
 			// 名前の重複チェック
-			Scene* scene = SceneManger::GetInstance()->GetCurrentScene();
+			AbstractScene* AbstractScene = SceneManger::GetInstance()->GetCurrentScene();
 			bool nameExists = true;
 			while (nameExists) {
 				nameExists = false;
-				for (const auto& sceneObj : scene->GetObjects()) {
+				for (const auto& sceneObj : AbstractScene->GetObjects()) {
 					if (sceneObj->GetObjectName() == newName) {
 						nameExists = true;
 						break;
@@ -1046,7 +1046,7 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 
 			newChild->SetObjectName(newName);
 			newChild->SetParent(obj);
-			scene->AddObjectLocal(newChild);
+			AbstractScene->AddObjectLocal(newChild);
 		}
 
 		if (obj->GetParent() && ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("親から切り離す").c_str())) {
