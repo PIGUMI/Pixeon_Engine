@@ -73,7 +73,7 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
     CreateTempBuffer(width, height);
     if (!tempRTV_ || !tempSRV_) return;
 
-    // 現在の状態を保存
+    // ★ 現在の状態を保存（深度ステートも含む）
     ID3D11RenderTargetView* oldRTV = nullptr;
     ID3D11DepthStencilView* oldDSV = nullptr;
     ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
@@ -82,6 +82,10 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
     FLOAT oldBlendFactor[4] = { 0, 0, 0, 0 };
     UINT oldSampleMask = 0;
     ctx->OMGetBlendState(&oldBlendState, oldBlendFactor, &oldSampleMask);
+
+    ID3D11DepthStencilState* oldDSS = nullptr;
+    UINT oldStencilRef = 0;
+    ctx->OMGetDepthStencilState(&oldDSS, &oldStencilRef);
 
     // ビューポート設定
     D3D11_VIEWPORT vp = {};
@@ -93,10 +97,11 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
     vp.TopLeftY = 0;
 
     // ========================================
-    // Pass 1: 輝度抽出 + ブラー
+    // Pass 1: 輝度抽出 + ブラー（深度テスト無効）
     // ========================================
-    ctx->OMSetRenderTargets(1, &tempRTV_, nullptr);
+    ctx->OMSetRenderTargets(1, &tempRTV_, nullptr);  // 深度バッファなし
     ctx->RSSetViewports(1, &vp);
+    ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // 深度テスト無効
 
     float clearColor[4] = { 0, 0, 0, 0 };
     ctx->ClearRenderTargetView(tempRTV_, clearColor);
@@ -130,10 +135,11 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
     ctx->PSSetShaderResources(0, 1, nullSRV);
 
     // ========================================
-    // Pass 2: 元画像とブルームを合成
+    // Pass 2: 元画像とブルームを合成（深度テスト無効）
     // ========================================
-    ctx->OMSetRenderTargets(1, &output, nullptr);
+    ctx->OMSetRenderTargets(1, &output, nullptr);  // 深度バッファなし
     ctx->RSSetViewports(1, &vp);
+    ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // 深度テスト無効
 
     // 2-1: 元画像を描画
     ctx->OMSetBlendState(s_blendAlpha.Get(), oldBlendFactor, 0xFFFFFFFF);
@@ -148,12 +154,17 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
     params.passType = 2; // 合成パス
     ctx->UpdateSubresource(s_cbPS.Get(), 0, nullptr, &params, 0, 0);
 
-    DrawQuad(ctx, vs, ps, tempSRV_, 0.0f, 0.0f, (float)width, (float)height, 
-             width, height, tint, intensity);
+    DrawQuad(ctx, vs, ps, tempSRV_, 0.0f, 0.0f, (float)width, (float)height,
+        width, height, tint, intensity);
 
     ctx->PSSetShaderResources(0, 1, nullSRV);
 
-    // 状態を復元
+    // ========================================
+    // ★ 状態を完全に復元
+    // ========================================
+    ctx->OMSetDepthStencilState(oldDSS, oldStencilRef);
+    if (oldDSS) oldDSS->Release();
+
     ctx->OMSetBlendState(oldBlendState, oldBlendFactor, oldSampleMask);
     if (oldBlendState) oldBlendState->Release();
 
@@ -241,12 +252,12 @@ void BloomEffect::DrawQuad(ID3D11DeviceContext* ctx, ID3D11VertexShader* vs, ID3
     ID3D11ShaderResourceView* srv, float x, float y, float width, float height,
     int screenWidth, int screenHeight,
     const DirectX::XMFLOAT4& color, float opacity) {
-    
+
     auto toNDC = [&](float px, float py)->DirectX::XMFLOAT3 {
         float ndcX = (px / screenWidth) * 2.0f - 1.0f;
         float ndcY = 1.0f - (py / screenHeight) * 2.0f;
         return DirectX::XMFLOAT3(ndcX, ndcY, 0.0f);
-    };
+        };
 
     DirectX::XMFLOAT3 tl = toNDC(x, y);
     DirectX::XMFLOAT3 tr = toNDC(x + width, y);
@@ -293,7 +304,8 @@ void BloomEffect::DrawQuad(ID3D11DeviceContext* ctx, ID3D11VertexShader* vs, ID3
     ctx->PSSetConstantBuffers(1, 1, cbsPS);
 
     ctx->PSSetShaderResources(0, 1, &srv);
-    ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);
+
+    // ★ 深度ステートは Apply() 内で設定するため、ここでは設定しない
 
     auto* dx = DirectX11::GetInstance();
     dx->SetSamplerState(SAMPLER_LINEAR);
