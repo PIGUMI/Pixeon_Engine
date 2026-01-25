@@ -192,7 +192,6 @@ namespace ImageUtils {
 		if (oldBlend) oldBlend->Release();
 	}
 
-	// ピクセル化エフェクト付き描画
 	void DrawSRVPixelated(ID3D11ShaderResourceView* srv,
 		float x, float y, float width, float height,
 		float pixelSize,
