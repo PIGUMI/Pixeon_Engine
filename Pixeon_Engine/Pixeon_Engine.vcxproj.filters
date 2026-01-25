@@ -445,7 +445,4 @@
       <Filter>ソース ファイル\リソース ファイル</Filter>
     </Text>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
-  </ItemGroup>
 </Project>
