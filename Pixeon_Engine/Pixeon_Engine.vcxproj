@@ -148,6 +148,7 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
     <ClInclude Include="BaseCollision.h" />
+    <ClInclude Include="BloomEffect.h" />
     <ClInclude Include="BoneNodeMapping.h" />
     <ClInclude Include="BoxCollision.h" />
     <ClInclude Include="Builder.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="Animator2DManager.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="BloomEffect.cpp" />
     <ClCompile Include="BoxCollision.cpp" />
     <ClCompile Include="Builder.cpp" />
     <ClCompile Include="CameraComponent.cpp" />

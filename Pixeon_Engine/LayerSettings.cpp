@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "PixelateEffect.h"
+#include "BloomEffect.h"
 
 Layer::Layer() {
 }
@@ -435,6 +436,9 @@ std::shared_ptr<PostEffectBase> Layer::CreatePostEffect(PostEffectType type) {
     switch (type) {
         case PostEffectType::PIXELATE:
 			return std::make_shared<PixelateEffect>();
+        case PostEffectType::BLOOM:
+            return std::make_shared<BloomEffect>();
+		
     default:
         return nullptr;
     }

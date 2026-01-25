@@ -248,6 +248,9 @@
     <ClCompile Include="PixelateEffect.cpp">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClCompile>
+    <ClCompile Include="BloomEffect.cpp">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -434,6 +437,9 @@
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
     </ClInclude>
     <ClInclude Include="PixelateEffect.h">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="BloomEffect.h">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
   </ItemGroup>
