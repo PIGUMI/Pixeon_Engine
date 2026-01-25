@@ -16,7 +16,7 @@ public:
 
     virtual void CallCustom(const std::string& functionName);
     void SetParentObject(Object obj) { _parentObject = obj; }
-	void SetParentScene(Scene scene) { _parentScene = scene; }
+    void SetParentScene(Scene scene) { _parentScene = scene; }
 
 public:
     virtual void OnCollisionEnter(const APICollisionInfo* info);
