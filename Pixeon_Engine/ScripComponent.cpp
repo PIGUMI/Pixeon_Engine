@@ -145,7 +145,7 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
 		std::ostringstream cpp;
 		cpp << "#include \"" << scriptName << ".h\"\n\n";
 		cpp << "void " << className << "::BeginPlay() {\n    IScript::BeginPlay(); // BeginPlay\n}\n\n";
-		cpp << "void " << className << ":: Update(float DeltaTime) {\n    IScript::Update();// Update\n}\n\n";
+		cpp << "void " << className << ":: Update(float DeltaTime) {\n    IScript::Update(DeltaTime);// Update\n}\n\n";
 		cpp << "void " << className << "::EndPlay() {\n    IScript::EndPlay();// EndPlay\n}\n";
 
 		if (!fs::exists(headerPath)) {

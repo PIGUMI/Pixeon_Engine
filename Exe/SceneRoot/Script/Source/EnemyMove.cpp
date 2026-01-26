@@ -14,13 +14,13 @@ void Script_EnemyMove::BeginPlay() {
     detectionRange = 50.0f;
     moveSpeed = 2.5f;
     avoidanceDistance = 3.5f;
-    rotationSpeed = 5.0f;
+    rotationSpeed = 3.0f;
 
     stuckTimer = 0.0f;
-    stuckThreshold = 1.0f;
+    stuckThreshold = 1.5f;
 
     avoidanceTimer = 0.0f;
-    avoidanceDuration = 0.5f;
+    avoidanceDuration = 1.5f;
     currentAvoidanceDirection = CreateFloat3(0, 0, 0);
 
     wanderTimer = 0.0f;
@@ -30,7 +30,20 @@ void Script_EnemyMove::BeginPlay() {
     idleTimer = 0.0f;
     idleDuration = 2.0f;
 
+    desiredDirection = CreateFloat3(0, 0, 1);
+    smoothedDirection = CreateFloat3(0, 0, 1);
+    directionSmoothSpeed = 2.0f;
+
+    directionLockTimer = 0.0f;
+    directionLockDuration = 0.5f;
+    lockedDirection = CreateFloat3(0, 0, 1);
+
+    obstacleCheckTimer = 0.0f;
+    obstacleCheckInterval = 0.3f;
+    lastObstacleCheck = false;
+
     currentState = AIState::Wandering;
+    previousState = AIState::Wandering;
     lastPosition = GetCurrentPosition();
 
     srand(static_cast<unsigned int>(time(nullptr)));
@@ -53,6 +66,10 @@ void Script_EnemyMove::Update(float DeltaTime) {
         playerDetected = (distanceToPlayer <= detectionRange);
     }
 
+    if (directionLockTimer > 0.0f) {
+        directionLockTimer -= DeltaTime;
+    }
+
     if (playerDetected) {
         UpdateChasing(DeltaTime);
     }
@@ -60,7 +77,6 @@ void Script_EnemyMove::Update(float DeltaTime) {
         UpdateWandering(DeltaTime);
     }
 
-    // スタック検出
     float movedDistance = GetDistance(aiPos, lastPosition);
     if (movedDistance < 0.05f && (currentState == AIState::Chasing || currentState == AIState::Wandering)) {
         stuckTimer += DeltaTime;
@@ -74,6 +90,9 @@ void Script_EnemyMove::Update(float DeltaTime) {
         avoidanceTimer = avoidanceDuration;
         currentState = AIState::Avoiding;
         stuckTimer = 0.0f;
+
+        lockedDirection = currentAvoidanceDirection;
+        directionLockTimer = directionLockDuration;
     }
 
     lastPosition = aiPos;
@@ -81,91 +100,119 @@ void Script_EnemyMove::Update(float DeltaTime) {
 
 void Script_EnemyMove::UpdateWandering(float deltaTime) {
     if (avoidanceTimer > 0.0f) {
-        MoveInDirection(currentAvoidanceDirection);
+
+        desiredDirection = lockedDirection;
         avoidanceTimer -= deltaTime;
         currentState = AIState::Avoiding;
-        return;
     }
-
-    if (currentState == AIState::Idle) {
+    else if (currentState == AIState::Idle) {
         idleTimer += deltaTime;
         if (idleTimer >= idleDuration) {
             currentState = AIState::Wandering;
             wanderDirection = GetRandomDirection();
             wanderTimer = 0.0f;
             idleTimer = 0.0f;
+
+            lockedDirection = wanderDirection;
+            directionLockTimer = directionLockDuration;
         }
         return;
     }
+    else {
+        previousState = currentState;
+        currentState = AIState::Wandering;
+        wanderTimer += deltaTime;
 
-    currentState = AIState::Wandering;
-    wanderTimer += deltaTime;
+        if (wanderTimer >= wanderDuration) {
+            if (RandomFloat(0.0f, 1.0f) < 0.3f) {
+                currentState = AIState::Idle;
+                idleTimer = 0.0f;
+                idleDuration = RandomFloat(1.0f, 3.0f);
+            }
+            else {
+                wanderDirection = GetRandomDirection();
+                wanderTimer = 0.0f;
+                wanderDuration = RandomFloat(2.0f, 5.0f);
 
-    if (wanderTimer >= wanderDuration) {
-
-        if (RandomFloat(0.0f, 1.0f) < 0.3f) {
-            currentState = AIState::Idle;
-            idleTimer = 0.0f;
-            idleDuration = RandomFloat(1.0f, 3.0f);
+                lockedDirection = wanderDirection;
+                directionLockTimer = directionLockDuration;
+            }
+            return;
         }
-        else {
-            wanderDirection = GetRandomDirection();
-            wanderTimer = 0.0f;
-            wanderDuration = RandomFloat(2.0f, 5.0f);
+
+        if (directionLockTimer <= 0.0f) {
+            obstacleCheckTimer += deltaTime;
+            if (obstacleCheckTimer >= obstacleCheckInterval) {
+                lastObstacleCheck = CheckObstacle(wanderDirection, avoidanceDistance);
+                obstacleCheckTimer = 0.0f;
+            }
+
+            if (lastObstacleCheck && avoidanceTimer <= 0.0f) {
+                currentAvoidanceDirection = FindAvoidanceDirection();
+                avoidanceTimer = avoidanceDuration;
+                currentState = AIState::Avoiding;
+
+                lockedDirection = currentAvoidanceDirection;
+                directionLockTimer = directionLockDuration;
+                return;
+            }
         }
-        return;
+
+        desiredDirection = wanderDirection;
     }
 
-    if (CheckObstacle(wanderDirection, avoidanceDistance)) {
-        currentAvoidanceDirection = FindAvoidanceDirection();
-        avoidanceTimer = avoidanceDuration;
-        currentState = AIState::Avoiding;
-        return;
-    }
-
-    MoveInDirection(wanderDirection);
+    smoothedDirection = SmoothDamp(smoothedDirection, desiredDirection, deltaTime);
+    MoveInDirection(smoothedDirection);
 }
 
 void Script_EnemyMove::UpdateChasing(float deltaTime) {
     if (avoidanceTimer > 0.0f) {
-        MoveInDirection(currentAvoidanceDirection);
+        desiredDirection = lockedDirection;
         avoidanceTimer -= deltaTime;
         currentState = AIState::Avoiding;
-        return;
+    }
+    else {
+        previousState = currentState;
+        currentState = AIState::Chasing;
+
+        Float3 directionToPlayer = GetDirectionToPlayer();
+        float distanceToPlayer = sqrtf(
+            directionToPlayer.x * directionToPlayer.x +
+            directionToPlayer.z * directionToPlayer.z
+        );
+
+        if (distanceToPlayer < 1.5f) {
+            currentState = AIState::Idle;
+            return;
+        }
+
+        if (directionLockTimer <= 0.0f) {
+            obstacleCheckTimer += deltaTime;
+            if (obstacleCheckTimer >= obstacleCheckInterval) {
+                lastObstacleCheck = CheckObstacle(directionToPlayer, avoidanceDistance);
+                obstacleCheckTimer = 0.0f;
+            }
+
+            if (lastObstacleCheck && avoidanceTimer <= 0.0f) {
+                currentAvoidanceDirection = FindAvoidanceDirection();
+                avoidanceTimer = avoidanceDuration;
+                currentState = AIState::Avoiding;
+
+                lockedDirection = currentAvoidanceDirection;
+                directionLockTimer = directionLockDuration;
+                return;
+            }
+        }
+
+        desiredDirection = directionToPlayer;
     }
 
-    currentState = AIState::Chasing;
-    MoveTowardsPlayer();
+    smoothedDirection = SmoothDamp(smoothedDirection, desiredDirection, deltaTime);
+    MoveInDirection(smoothedDirection);
 }
 
 void Script_EnemyMove::MoveTowardsPlayer() {
-    if (!playerObject) return;
 
-    transform currentTransform;
-    GetObjectTransform(aiObject, &currentTransform);
-
-    Float3 directionToPlayer = GetDirectionToPlayer();
-
-    float distanceToPlayer = sqrtf(
-        directionToPlayer.x * directionToPlayer.x +
-        directionToPlayer.z * directionToPlayer.z
-    );
-
-    if (distanceToPlayer < 1.5f) {
-        currentState = AIState::Idle;
-        return;
-    }
-
-    Float3 moveDirection = directionToPlayer;
-
-    if (CheckObstacle(directionToPlayer, avoidanceDistance)) {
-        currentAvoidanceDirection = FindAvoidanceDirection();
-        avoidanceTimer = avoidanceDuration;
-        currentState = AIState::Avoiding;
-        return;
-    }
-
-    MoveInDirection(moveDirection);
 }
 
 void Script_EnemyMove::MoveInDirection(Float3 direction) {
@@ -174,35 +221,33 @@ void Script_EnemyMove::MoveInDirection(Float3 direction) {
 
     direction = NormalizeVector(direction);
 
+    float dirLength = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    if (dirLength < 0.01f) {
+        return;
+    }
+
     Float3 newPos = CreateFloat3(
         currentTransform.position.x + direction.x * moveSpeed * 0.016f,
         currentTransform.position.y,
         currentTransform.position.z + direction.z * moveSpeed * 0.016f
     );
 
-    Float3 moveVec = CreateFloat3(
-        newPos.x - currentTransform.position.x,
-        0,
-        newPos.z - currentTransform.position.z
-    );
-
-    if (CheckObstacle(moveVec, 1.0f)) {
-        if (avoidanceTimer <= 0.0f) {
-            currentAvoidanceDirection = FindAvoidanceDirection();
-            avoidanceTimer = avoidanceDuration;
-        }
-        return;
-    }
-
     float targetRotationY = atan2f(direction.x, direction.z);
-
     float currentRotationY = currentTransform.rotation.y;
 
     float rotationDiff = targetRotationY - currentRotationY;
     while (rotationDiff > 3.14159f) rotationDiff -= 6.28318f;
     while (rotationDiff < -3.14159f) rotationDiff += 6.28318f;
 
-    float rotationStep = rotationSpeed * 0.016f;
+    float actualRotationSpeed = rotationSpeed;
+    if (currentState == AIState::Avoiding) {
+        actualRotationSpeed *= 0.5f;
+    }
+    else if (currentState == AIState::Chasing) {
+        actualRotationSpeed *= 0.8f;
+    }
+
+    float rotationStep = actualRotationSpeed * 0.016f;
     float newRotationY;
 
     if (fabsf(rotationDiff) < rotationStep) {
@@ -263,15 +308,16 @@ Float3 Script_EnemyMove::FindAvoidanceDirection() {
         ? GetDirectionToPlayer()
         : wanderDirection;
 
-    const int numDirections = 8;
+    const int numDirections = 12;
     float angleStep = 3.14159f * 2.0f / numDirections;
 
     struct DirectionCandidate {
         Float3 direction;
         float score;
+        float clearDistance;
     };
 
-    DirectionCandidate candidates[16];
+    DirectionCandidate candidates[24];
     int candidateCount = 0;
 
     for (int i = 1; i <= numDirections / 2; i++) {
@@ -287,19 +333,25 @@ Float3 Script_EnemyMove::FindAvoidanceDirection() {
                 currentDir.x * sinAngle + currentDir.z * cosAngle
             );
 
-            if (!CheckObstacle(testDirection, avoidanceDistance)) {
+            float checkDistance = avoidanceDistance * 2.0f;
+
+            if (!CheckObstacle(testDirection, checkDistance)) {
                 Float3 normTest = NormalizeVector(testDirection);
                 Float3 normCurrent = NormalizeVector(currentDir);
                 float dotProduct = normTest.x * normCurrent.x + normTest.z * normCurrent.z;
 
+                float angleScore = dotProduct * 2.0f;
+                float proximityScore = 1.0f / (float)(i + 1);
+
                 candidates[candidateCount].direction = testDirection;
-                candidates[candidateCount].score = dotProduct;
+                candidates[candidateCount].score = angleScore + proximityScore;
+                candidates[candidateCount].clearDistance = checkDistance;
                 candidateCount++;
 
-                if (candidateCount >= 16) break;
+                if (candidateCount >= 24) break;
             }
         }
-        if (candidateCount >= 16) break;
+        if (candidateCount >= 24) break;
     }
 
     if (candidateCount > 0) {
@@ -312,7 +364,34 @@ Float3 Script_EnemyMove::FindAvoidanceDirection() {
         return candidates[bestIndex].direction;
     }
 
-    return GetRandomDirection();
+    Float3 normCurrent = NormalizeVector(currentDir);
+    return CreateFloat3(-normCurrent.x, 0, -normCurrent.z);
+}
+
+Float3 Script_EnemyMove::LerpDirection(Float3 from, Float3 to, float t) {
+    if (t >= 1.0f) return to;
+    if (t <= 0.0f) return from;
+
+    Float3 result = CreateFloat3(
+        from.x + (to.x - from.x) * t,
+        from.y + (to.y - from.y) * t,
+        from.z + (to.z - from.z) * t
+    );
+
+    return NormalizeVector(result);
+}
+
+Float3 Script_EnemyMove::SmoothDamp(Float3 current, Float3 target, float deltaTime) {
+    // Exponential smoothing を使用
+    float smoothFactor = 1.0f - expf(-directionSmoothSpeed * deltaTime);
+
+    Float3 result = CreateFloat3(
+        current.x + (target.x - current.x) * smoothFactor,
+        current.y + (target.y - current.y) * smoothFactor,
+        current.z + (target.z - current.z) * smoothFactor
+    );
+
+    return NormalizeVector(result);
 }
 
 Float3 Script_EnemyMove::GetRandomDirection() {

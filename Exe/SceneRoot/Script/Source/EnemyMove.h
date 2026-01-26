@@ -27,23 +27,39 @@ private:
     float rotationSpeed;         // 回転速度
 
     // スタック検出用
-    float stuckTimer;            // スタック判定タイマー
+    float stuckTimer;            // スタック検出タイマー
     float stuckThreshold;        // スタック判定時間
     Float3 lastPosition;         // 前フレームの位置
 
     // 回避システム用
-    float avoidanceTimer;        // 回避継続タイマー
+    float avoidanceTimer;        // 回避中タイマー
     float avoidanceDuration;     // 回避を継続する時間
     Float3 currentAvoidanceDirection;  // 現在の回避方向
 
+    // 経路平滑化用
+    Float3 desiredDirection;     // 目標方向
+    Float3 smoothedDirection;    // 平滑化された方向
+    float directionSmoothSpeed;  // 方向補間速度
+
+    // 方向ロック機能
+    float directionLockTimer;    // 方向固定タイマー
+    float directionLockDuration; // 方向を固定する時間
+    Float3 lockedDirection;      // ロックされた方向
+
+    // 障害物チェック間隔
+    float obstacleCheckTimer;    // 障害物チェックタイマー
+    float obstacleCheckInterval; // チェック間隔
+    bool lastObstacleCheck;      // 前回のチェック結果
+
     // ランダム徘徊用
     float wanderTimer;           // 徘徊方向変更タイマー
-    float wanderDuration;        // 同じ方向に歩く時間
+    float wanderDuration;        // 一つの方向に徘徊する時間
     Float3 wanderDirection;      // 現在の徘徊方向
     float idleTimer;             // 待機タイマー
     float idleDuration;          // 待機時間
 
     AIState currentState;
+    AIState previousState;       // ★新規追加: 前の状態を記録
 
     void UpdateWandering(float deltaTime);
     void UpdateChasing(float deltaTime);
@@ -59,6 +75,8 @@ private:
     float GetDistance(Float3 a, Float3 b);
     Float3 NormalizeVector(Float3 v);
     float RandomFloat(float min, float max);
+    Float3 LerpDirection(Float3 from, Float3 to, float t);
+    Float3 SmoothDamp(Float3 current, Float3 target, float deltaTime); // ★新規追加
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {

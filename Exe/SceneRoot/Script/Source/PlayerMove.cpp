@@ -2,6 +2,8 @@
 #include <DirectXMath.h>
 #include <cmath>
 #include <Windows.h>
+#include <string>
+
 
 void Script_PlayerMove::BeginPlay() {
     IScript::BeginPlay();
@@ -19,15 +21,44 @@ void Script_PlayerMove::BeginPlay() {
 	SetMainCameraByPtr(_Camera);
 	// マウスカーソルを固定
 	FixedMouseCursor(true);
+
+	SetVariableInt(_parentObject, "HP", 100);
 }
 
 void Script_PlayerMove:: Update(float DeltaTime) {
     IScript::Update(DeltaTime);
 	Movement(DeltaTime);
+
+	if (KeyPressed('Q'))
+	{
+		int currentHP;
+		GetVariableInt(_parentObject, "HP", &currentHP);
+		currentHP -= 1;
+		SetVariableInt(_parentObject, "HP", currentHP);
+	}
+	if (KeyPressed('E'))
+	{
+		int currentHP;
+		GetVariableInt(_parentObject, "HP", &currentHP);
+		currentHP += 1;
+		SetVariableInt(_parentObject, "HP", currentHP);
+	}
 }
 
 void Script_PlayerMove::EndPlay() {
     IScript::EndPlay();
+}
+
+void Script_PlayerMove::OnCollisionEnter(const APICollisionInfo* info)
+{
+	std::string hitObjectName(info->HitObjectName);
+	if (hitObjectName == "Entity")
+	{
+		int currentHP;
+		GetVariableInt(_parentObject, "HP", &currentHP);
+		currentHP -= 10;
+		SetVariableInt(_parentObject, "HP", currentHP);
+	};
 }
 
 void Script_PlayerMove::Movement(float DeltaTime) {

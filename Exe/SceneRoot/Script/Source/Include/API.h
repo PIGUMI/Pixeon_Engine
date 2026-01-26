@@ -95,7 +95,7 @@ extern "C" {
 	PIXEON_API APIResult FindObjectByName(Scene scene, const char* name, Object* outObject);
 	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject);
 	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject);
-	PIXEON_API APIResult AddObjectToScene(Scene scene, Object object);
+	PIXEON_API APIResult AddObjectToScene(Scene scene, Object object,Object *CloneObject = nullptr);
 	PIXEON_API APIResult RemoveObjectFromScene(Scene scene, Object object);
 	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber);
 	PIXEON_API APIResult SetMainCameraByPtr(Component camera);
@@ -151,6 +151,15 @@ extern "C" {
 	PIXEON_API APIResult GetObjectWorldTransform(Object object, transform* outTransform);
 	PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform);
 	PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent);
+};
+
+extern "C" {
+	PIXEON_API APIResult GetVariableInt(Object InObj, const char* InVarName, int* OutValue);
+	PIXEON_API APIResult SetVariableInt(Object InObj, const char* InVarName, int InValue);
+	PIXEON_API APIResult GetVariableFloat(Object InObj, const char* InVarName, float* OutValue);
+	PIXEON_API APIResult SetVariableFloat(Object InObj, const char* InVarName, float InValue);
+	PIXEON_API APIResult GetVariableBool(Object InObj, const char* InVarName, bool* OutValue);
+	PIXEON_API APIResult SetVariableBool(Object InObj, const char* InVarName, bool InValue);
 };
 
 // InputKey
@@ -273,4 +282,4 @@ extern "C" {
 	PIXEON_API APIResult GetVertexOffsetRight(Keyframe keyframe, float* outOffset);
 };
 
-#endif// API. h
+#endif// API.h

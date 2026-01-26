@@ -219,7 +219,7 @@ extern "C" {
 		*outObject = reinterpret_cast<Object>(childObj);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult AddObjectToScene(Scene InScene, Object object)
+	PIXEON_API APIResult AddObjectToScene(Scene InScene, Object object,Object* CloneObject)
 	{
 		if (!object) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -232,7 +232,11 @@ extern "C" {
 		if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		scenePtr->AddObject(objPtr);
+		AbstractObject* CloneObj = objPtr->Clone();
+		scenePtr->AddObjectLocal(CloneObj);
+		if(CloneObject) {
+			*CloneObject = reinterpret_cast<Object>(CloneObj);
+		}
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult RemoveObjectFromScene(Scene InScene, Object object)
@@ -910,6 +914,81 @@ extern "C" {
 			return PN_ERROR_NOT_FOUND;
 		}
 		*outComponent = reinterpret_cast<Component>(comp);
+		return PN_SUCCESS;
+	}
+};
+
+extern "C" {
+	PIXEON_API APIResult GetVariableInt(Object InObj, const char* InVarName, int* OutValue)
+	{
+		if (!InVarName || !OutValue) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(InObj, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*OutValue = objPtr->GetInt(std::string(InVarName));
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult SetVariableInt(Object InObj, const char* InVarName, int InValue)
+	{
+		if (!InVarName) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(InObj, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		objPtr->SetInt(std::string(InVarName), InValue);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetVariableFloat(Object InObj, const char* InVarName, float* OutValue)
+	{
+		if (!InVarName || !OutValue) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(InObj, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*OutValue = objPtr->GetFloat(std::string(InVarName));
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult SetVariableFloat(Object InObj, const char* InVarName, float InValue)
+	{
+		if (!InVarName) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(InObj, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		objPtr->SetFloat(std::string(InVarName), InValue);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetVariableBool(Object InObj, const char* InVarName, bool* OutValue)
+	{
+		if (!InVarName || !OutValue) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(InObj, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*OutValue = objPtr->GetBool(std::string(InVarName));
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult SetVariableBool(Object InObj, const char* InVarName, bool InValue)
+	{
+		if (!InVarName) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(InObj, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		objPtr->SetBool(std::string(InVarName), InValue);
 		return PN_SUCCESS;
 	}
 };
