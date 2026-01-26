@@ -1640,6 +1640,103 @@ extern "C" {
 		modelRenderComp->SetMaterialTexture(materialIndex, std::string(texLogicalPath));
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult GetOffsetPosition(Component modelRender, Float3* outPosition)
+	{
+		if (!outPosition) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outPosition = ToFloat3(modelRenderComp->GetGlobalOffset());
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult SetOffsetPosition(Component modelRender, const Float3* inPosition)
+	{
+		if (!inPosition) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		modelRenderComp->SetGlobalOffset(ToXMFloat3(*inPosition));
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetOffsetRotation(Component modelRender, Float3* outRotation)
+	{
+		if (!outRotation) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outRotation = ToFloat3(modelRenderComp->GetGlobalRotation());
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult SetOffsetRotation(Component modelRender, const Float3* inRotation)
+	{
+		if (!inRotation) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		modelRenderComp->SetGlobalRotation(ToXMFloat3(*inRotation));
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetOffsetScale(Component modelRender, Float3* outScale)
+	{
+		if (!outScale) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outScale = ToFloat3(modelRenderComp->GetGlobalScale());
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult SetOffsetScale(Component modelRender, const Float3* inScale)
+	{
+		if (!inScale) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		modelRenderComp->SetGlobalScale(ToXMFloat3(*inScale));
+		return PN_SUCCESS;
+	}
+	
 
 	// Animation Component
 	PIXEON_API APIResult PlayAnimation(Component animationComp)

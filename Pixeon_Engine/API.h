@@ -218,6 +218,12 @@ extern "C" {
 	PIXEON_API APIResult GetModelColor(Component modelRender, Float4* outColor);
 	PIXEON_API APIResult SetModelColor(Component modelRender, const Float4* inColor);
 	PIXEON_API APIResult SetMaterialTexture(Component modelRender, int materialIndex, const char* texLogicalPath);
+	PIXEON_API APIResult GetOffsetPosition(Component modelRender, Float3* outPosition);
+	PIXEON_API APIResult SetOffsetPosition(Component modelRender, const Float3* inPosition);
+	PIXEON_API APIResult GetOffsetRotation(Component modelRender, Float3* outRotation);
+	PIXEON_API APIResult SetOffsetRotation(Component modelRender, const Float3* inRotation);
+	PIXEON_API APIResult GetOffsetScale(Component modelRender, Float3* outScale);
+	PIXEON_API APIResult SetOffsetScale(Component modelRender, const Float3* inScale);
 
 	// Animation Component
 	PIXEON_API APIResult PlayAnimation(Component animationComp);

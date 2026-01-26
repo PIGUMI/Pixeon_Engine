@@ -17,7 +17,7 @@ void Script_Weapon::BeginPlay() {
     // 構えトランスフォーム設定
     {
         _ReadyTransform.position.x = -0.3f;
-        _ReadyTransform.position.y = 0.9f;
+        _ReadyTransform.position.y = -0.5f;
         _ReadyTransform.position.z = 0.0f;
         _ReadyTransform.rotation.x = DirectX::XMConvertToRadians(16.0f);
         _ReadyTransform.rotation.y = DirectX::XMConvertToRadians(90.0f);
@@ -33,11 +33,11 @@ void Script_Weapon::BeginPlay() {
         _coolTime = 0.0f;
         _fireRate = 0.8f;
 
-        _pelletCount = 4;
+        _pelletCount = 8;
         _spreadAngle = 5.0f;
-        _maxRange = 25.0f;
+        _maxRange = 15.0f;
         _damagePerPellet = 12.0f;
-        _knockbackForce = 10.0f;
+        _knockbackForce = 5.0f;
     }
 
     // 乱数初期化
@@ -57,7 +57,7 @@ void Script_Weapon::BeginPlay() {
             _playerObject = nullptr;
             MessageBox(nullptr, "Playerオブジェクトが見つかりません。", "Error", MB_OK);
         }
-        if (FindChildObjectByName(_playerObject, "Body", &_Body) != PN_SUCCESS)
+        if (FindChildObjectByName(_playerObject, "Head", &_Body) != PN_SUCCESS)
         {
             _Body = nullptr;
             MessageBox(nullptr, "WeaponのBodyオブジェクトが見つかりません。", "Error", MB_OK);
@@ -92,7 +92,7 @@ void Script_Weapon::Update(float DeltaTime) {
         if (_transitionProgress < 0.0f) _transitionProgress = 0.0f;
     }
 
-    if (KeyTriggered(VK_LBUTTON) && _coolTime <= 0.0f)
+    if (KeyTriggered(VK_LBUTTON) && _coolTime <= 0.0f && _isAiming)
     {
         Fire();
         _coolTime = _fireRate;
@@ -144,7 +144,7 @@ void Script_Weapon::Fire() {
 
     forward.x = -forward.x;
     forward.z = -forward.z;
-    origin.y += 1.5f;
+	forward.y = -forward.y;
 
     CreateMuzzleFlash();
 

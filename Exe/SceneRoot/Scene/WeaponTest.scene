@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-0.764638 2.98514 -2.34116 0.250001 0.179999 0 -3.19872 1.19486 -11.8737 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
+                    "Data": "10.342 6.97254 1.87021 1.99 0.259999 0 1.51487 4.40174 5.80374 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -116,8 +116,41 @@
             "Parent": "",
             "Transform": {
                 "Position": [
-                    -3.4000000953674316,
+                    -4.300000190734863,
                     0.800000011920929,
+                    8.600000381469727
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0.6 1.2 0.6 0 0.6 0 0 2 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "-1.19768 1.6199 -3.07615 -2.45 0.25 0 4.9817 -0.85414 4.38672 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 1 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Body",
+            "Parent": "Player",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -145,7 +178,7 @@
                     "Type": 1
                 },
                 {
-                    "Data": "0 0 0 0 0 0 0 0 -10 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 1 0 ",
+                    "Data": "0 0 0 0 0 0 0 0 -10 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 2 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -156,44 +189,6 @@
                 "Position": [
                     0.0,
                     1.5,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0.6 1.2 0.6 0 0.6 0 0 2 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "4\nimage0.png\n2\nVS_ImgQuad_Lit\nPS_ImgQuad\n128 128\n0.04 0.04\n0 0\n0 1.2 5\n0 0 1 1\n1 1 1 1\n0 3.14159 0\n50 50 50 50\n",
-                    "Name": "ImageRender",
-                    "Type": 2
-                },
-                {
-                    "Data": "0.01 0 0 0 0 0 0.00999999 0 -10 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 2 0 ",
-                    "Name": "CameraComponent",
-                    "Type": 0
-                }
-            ],
-            "Name": "Body",
-            "Parent": "Player",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -222,11 +217,11 @@
                 }
             ],
             "Name": "Weapon",
-            "Parent": "Body",
+            "Parent": "Head",
             "Transform": {
                 "Position": [
                     0.0,
-                    1.100000023841858,
+                    -0.6000000238418579,
                     -0.6000000238418579
                 ],
                 "Rotation": [
@@ -272,7 +267,7 @@
         {
             "Components": [
                 {
-                    "Data": "\u0001\u0000\u0000\u0000\t\u0000\u0000\u0000Explosion\u0001\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0003\u0000\u0000\u0000",
+                    "Data": "\u0001\u0000\u0000\u0000\t\u0000\u0000\u0000Explosion\u0001\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0002\u0000\u0000\u0000",
                     "Name": "Animator2DComponent",
                     "Type": 9
                 },
@@ -301,10 +296,65 @@
                     1.0
                 ]
             }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1 1 1 0 0 0 0 4 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "NewObject3",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    -2.4000000953674316,
+                    0.0,
+                    5.800000190734863
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "NewObject4",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
         }
     ],
     "SceneSettings": {
-        "MainCameraNumber": 0,
+        "MainCameraNumber": 2,
         "Name": "WeaponTest"
     }
 }
