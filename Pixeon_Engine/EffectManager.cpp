@@ -1,31 +1,58 @@
 /*
 * ファイル名 EffectManager.cpp
-* 概要      Effekseerエフェクト管理クラス実装
+* 概要      Effekseerエフェクト管理クラス (EffekseerForCpp 1.7.2.0 / DX11)
 */
 #include "EffectManager.h"
 #include "AssetManager.h"
 #include "IMGUI/imgui.h"
-#include <vector>
+
+#include <Windows.h>
+#include <algorithm>
+
+// DirectXTex
+#include "DirectXTex/TextureLoad.h"
 
 EffectManager* EffectManager::_instance = nullptr;
 
-// ========================================
-// カスタムローダー群 (AssetManager利用)
-// ========================================
+//============================================================
+// UTF変換
+//============================================================
+std::u16string EffectManager::Utf8ToUtf16(const std::string& s)
+{
+    if (s.empty()) return {};
+    int wlen = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, nullptr, 0);
+    if (wlen <= 0) return {};
+    std::wstring ws((size_t)wlen - 1, L'\0');
+    MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, ws.data(), wlen);
+
+    std::u16string out;
+    out.resize(ws.size());
+    for (size_t i = 0; i < ws.size(); i++) out[i] = (char16_t)ws[i];
+    return out;
+}
+
+std::string EffectManager::Utf16ToUtf8(const char16_t* s)
+{
+    if (!s) return {};
+    // Effekseerのヘルパもあるが、Windows APIで確実にUTF-8へ
+    auto ws = reinterpret_cast<const wchar_t*>(s);
+    int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
+    if (len <= 0) return {};
+    std::string out((size_t)len - 1, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, ws, -1, out.data(), len, nullptr, nullptr);
+    return out;
+}
+
+//============================================================
+// ローダー
+//============================================================
 
 class EffectManager::EffectLoader : public Effekseer::EffectLoader
 {
 public:
     bool Load(const char16_t* path, void*& data, int32_t& size) override
     {
-        // UTF-16 から UTF-8 へ変換
-        std::string utf8Path;
-        const char16_t* p = path;
-        while (*p) {
-            if (*p < 0x80) utf8Path.push_back((char)*p);
-            else utf8Path.push_back('?'); // 簡易変換
-            p++;
-        }
+        std::string utf8Path = EffectManager::Utf16ToUtf8(path);
 
         std::vector<uint8_t> fileData;
         if (!AssetManager::Instance()->LoadAsset(utf8Path, fileData)) {
@@ -34,72 +61,24 @@ public:
 
         size = (int32_t)fileData.size();
         data = malloc(size);
-        if (data == nullptr) return false;
+        if (!data) return false;
 
         memcpy(data, fileData.data(), size);
         return true;
     }
 
-    void Unload(void* data, int32_t size) override
+    void Unload(void* data, int32_t /*size*/) override
     {
         if (data) free(data);
-    }
-};
-
-class EffectManager::TextureLoader : public Effekseer::TextureLoader
-{
-public:
-    TextureLoader() {}
-
-    Effekseer::TextureRef Load(const char16_t* path, Effekseer::TextureType textureType) override
-    {
-        // UTF-16 から UTF-8 へ変換
-        std::string utf8Path;
-        const char16_t* p = path;
-        while (*p) {
-            if (*p < 0x80) utf8Path.push_back((char)*p);
-            else utf8Path.push_back('?');
-            p++;
-        }
-
-        std::vector<uint8_t> fileData;
-        if (!AssetManager::Instance()->LoadAsset(utf8Path, fileData)) {
-            return nullptr;
-        }
-
-        // メモリから直接読み込む
-        return Load(fileData.data(), (int32_t)fileData.size(), textureType, true);
-    }
-
-    Effekseer::TextureRef Load(const void* data, int32_t size, Effekseer::TextureType textureType, bool isMipMapEnabled) override
-    {
-        // 実際にはここでテクスチャを生成する必要がありますが、
-        // Effekseer 1.7では独自実装が必要です
-        // 簡易実装として、Effekseerのデフォルト処理に委譲
-        return nullptr; // TODO: 実装が必要
-    }
-
-    void Unload(Effekseer::TextureRef data) override
-    {
-        // RefPtrは自動的に解放されるため何もしない
     }
 };
 
 class EffectManager::ModelLoader : public Effekseer::ModelLoader
 {
 public:
-    ModelLoader() {}
-
     Effekseer::ModelRef Load(const char16_t* path) override
     {
-        // UTF-16 から UTF-8 へ変換
-        std::string utf8Path;
-        const char16_t* p = path;
-        while (*p) {
-            if (*p < 0x80) utf8Path.push_back((char)*p);
-            else utf8Path.push_back('?');
-            p++;
-        }
+        std::string utf8Path = EffectManager::Utf16ToUtf8(path);
 
         std::vector<uint8_t> fileData;
         if (!AssetManager::Instance()->LoadAsset(utf8Path, fileData)) {
@@ -111,20 +90,190 @@ public:
 
     Effekseer::ModelRef Load(const void* data, int32_t size) override
     {
-        // メモリからモデルを作成
         return Effekseer::MakeRefPtr<Effekseer::Model>(data, size);
     }
 
-    void Unload(Effekseer::ModelRef data) override
+    void Unload(Effekseer::ModelRef /*data*/) override
     {
-        // RefPtrは自動的に解放されるため何もしない
+        // RefPtrなので不要
     }
 };
 
-// ========================================
-// シングルトン管理
-// ========================================
+class EffectManager::TextureLoader : public Effekseer::TextureLoader
+{
+public:
+    explicit TextureLoader(EffectManager* owner) : _owner(owner) {}
 
+    Effekseer::TextureRef Load(const char16_t* path, Effekseer::TextureType /*textureType*/) override
+    {
+        if (!_owner || !_owner->_initialized) return nullptr;
+
+        std::string utf8Path = EffectManager::Utf16ToUtf8(path);
+
+        // Effekseerは "_NoMip" でミップ無効などの運用がある（Effekseer::TextureLoaderHelper参照）
+        const bool mipEnabled = Effekseer::TextureLoaderHelper::GetIsMipmapEnabled(std::u16string(path));
+
+        // キャッシュ
+        auto it = _owner->_textureCache.find(utf8Path);
+        if (it != _owner->_textureCache.end()) {
+            return it->second.tex;
+        }
+
+        std::vector<uint8_t> fileData;
+        if (!AssetManager::Instance()->LoadAsset(utf8Path, fileData)) {
+            return nullptr;
+        }
+
+        int w = 0, h = 0;
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+        if (!CreateSRVFromMemory(fileData.data(), (int32_t)fileData.size(), mipEnabled, srv, w, h)) {
+            return nullptr;
+        }
+
+        // ---- ここが EffekseerForCpp 1.7.2.0 / DX11 の正解 ----
+        // SRV -> Effekseer::Backend::TextureRef を生成
+        auto gd = _owner->_renderer->GetGraphicsDevice();
+        Effekseer::Backend::TextureRef backendTex =
+            EffekseerRendererDX11::CreateTexture(gd, srv.Get(), nullptr, nullptr);
+
+        if (backendTex == nullptr) {
+            return nullptr;
+        }
+
+        // Backend::Texture を Effekseer::Texture に包む
+        Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
+        effTex->SetBackend(backendTex);
+
+        // キャッシュ登録（SRVも保持しておくと安全）
+        EffectManager::TextureCacheEntry e;
+        e.tex = effTex;
+        e.srv = srv;
+        e.w = w;
+        e.h = h;
+        e.bytes = (uint64_t)w * (uint64_t)h * 4; // 目安
+
+        _owner->_textureCache.emplace(utf8Path, std::move(e));
+        return effTex;
+    }
+
+    Effekseer::TextureRef Load(const void* data, int32_t size, Effekseer::TextureType /*textureType*/, bool isMipMapEnabled) override
+    {
+        // パス無しロードはキャッシュできないので都度生成
+        if (!_owner || !_owner->_initialized) return nullptr;
+
+        int w = 0, h = 0;
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+        if (!CreateSRVFromMemory(data, size, isMipMapEnabled, srv, w, h)) {
+            return nullptr;
+        }
+
+        auto gd = _owner->_renderer->GetGraphicsDevice();
+        Effekseer::Backend::TextureRef backendTex =
+            EffekseerRendererDX11::CreateTexture(gd, srv.Get(), nullptr, nullptr);
+
+        if (backendTex == nullptr) return nullptr;
+
+        Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
+        effTex->SetBackend(backendTex);
+
+        // srvの寿命はここで終わるが、backendTexが内部で参照保持する実装が通常
+        // 不安ならここもキャッシュ構造に入れる設計にする
+        return effTex;
+    }
+
+    void Unload(Effekseer::TextureRef /*data*/) override
+    {
+        // Effekseer側からのUnload呼びは基本は参照カウント任せ
+        // キャッシュ解放はEffectManager側で行う
+    }
+
+private:
+    bool CreateSRVFromMemory(const void* data, int32_t size, bool mipEnabled,
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& outSRV,
+        int& outW, int& outH)
+    {
+        if (!_owner || !_owner->_device || !data || size <= 0) return false;
+
+        DirectX::ScratchImage scratch;
+        DirectX::TexMetadata meta{};
+
+        // DDS優先、失敗したらWIC
+        HRESULT hr = DirectX::LoadFromDDSMemory(data, (size_t)size, DirectX::DDS_FLAGS_NONE, &meta, scratch);
+        if (FAILED(hr))
+        {
+            // WIC_FLAGS_FORCE_RGBA32 が無い環境があるため WIC_FLAGS_NONE を使用
+            hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_NONE, &meta, scratch);
+            if (FAILED(hr)) return false;
+
+            // WIC読み込み後、Effekseer向けにRGBA8へ寄せる（必要な場合のみ）
+            const DXGI_FORMAT targetFmt = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+            if (meta.format != targetFmt)
+            {
+                DirectX::ScratchImage converted;
+                hr = DirectX::Convert(
+                    scratch.GetImages(),
+                    scratch.GetImageCount(),
+                    scratch.GetMetadata(),
+                    targetFmt,
+                    DirectX::TEX_FILTER_DEFAULT,
+                    DirectX::TEX_THRESHOLD_DEFAULT,
+                    converted);
+
+                if (FAILED(hr)) return false;
+
+                scratch = std::move(converted);
+                meta = scratch.GetMetadata();
+            }
+        }
+
+        // ミップ生成（必要なら）
+        if (mipEnabled)
+        {
+            if (meta.mipLevels <= 1)
+            {
+                DirectX::ScratchImage mipChain;
+                hr = DirectX::GenerateMipMaps(
+                    scratch.GetImages(),
+                    scratch.GetImageCount(),
+                    scratch.GetMetadata(),
+                    DirectX::TEX_FILTER_DEFAULT,
+                    0,
+                    mipChain);
+
+                if (SUCCEEDED(hr))
+                {
+                    scratch = std::move(mipChain);
+                    meta = scratch.GetMetadata();
+                }
+                // 失敗してもフォールバック（ミップ無しで続行）
+            }
+        }
+
+        outW = (int)meta.width;
+        outH = (int)meta.height;
+
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+        hr = DirectX::CreateShaderResourceView(
+            _owner->_device,
+            scratch.GetImages(),
+            scratch.GetImageCount(),
+            meta,
+            srv.GetAddressOf());
+
+        if (FAILED(hr) || !srv) return false;
+
+        outSRV = srv;
+        return true;
+    }
+
+private:
+    EffectManager* _owner = nullptr;
+};
+
+//============================================================
+// シングルトン
+//============================================================
 EffectManager* EffectManager::Instance()
 {
     if (_instance == nullptr) {
@@ -147,39 +296,37 @@ EffectManager::~EffectManager()
     UnInit();
 }
 
-// ========================================
-// 初期化・終了処理
-// ========================================
-
+//============================================================
+// 初期化・終了
+//============================================================
 bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int maxParticles)
 {
     if (_initialized) return true;
+    if (!device || !context) return false;
 
     _device = device;
     _context = context;
     _maxParticles = maxParticles;
 
-    // Effekseer Manager 作成
     _manager = Effekseer::Manager::Create(maxParticles);
     if (_manager == nullptr) return false;
 
-    // Renderer 作成
+    // 既存コードと同じCreateでOK（内部でGraphicsDeviceも作られる）
     _renderer = EffekseerRendererDX11::Renderer::Create(device, context, maxParticles);
     if (_renderer == nullptr) return false;
 
-    // カスタムローダー設定
+    // ローダ設定（AssetManager経由）
     _manager->GetSetting()->SetEffectLoader(Effekseer::MakeRefPtr<EffectLoader>());
-    _manager->GetSetting()->SetTextureLoader(Effekseer::MakeRefPtr<TextureLoader>());
+    _manager->GetSetting()->SetTextureLoader(Effekseer::MakeRefPtr<TextureLoader>(this));
     _manager->GetSetting()->SetModelLoader(Effekseer::MakeRefPtr<ModelLoader>());
 
-    // レンダラー設定
+    // レンダラ設定
     _manager->SetSpriteRenderer(_renderer->CreateSpriteRenderer());
     _manager->SetRibbonRenderer(_renderer->CreateRibbonRenderer());
     _manager->SetRingRenderer(_renderer->CreateRingRenderer());
     _manager->SetTrackRenderer(_renderer->CreateTrackRenderer());
     _manager->SetModelRenderer(_renderer->CreateModelRenderer());
 
-    // 座標系設定 (左手座標系)
     _manager->SetCoordinateSystem(Effekseer::CoordinateSystem::LH);
 
     _initialized = true;
@@ -193,56 +340,48 @@ void EffectManager::UnInit()
     StopAllEffects();
     ClearAllEffects();
 
-    if (_manager != nullptr) {
-        _manager.Reset();
-    }
-    if (_renderer != nullptr) {
-        _renderer.Reset();
-    }
+    _textureCache.clear();
+
+    if (_manager != nullptr) _manager.Reset();
+    if (_renderer != nullptr) _renderer.Reset();
 
     _device = nullptr;
     _context = nullptr;
     _initialized = false;
 }
 
-// ========================================
-// エフェクトリソース管理
-// ========================================
-
+//============================================================
+// エフェクト管理
+//============================================================
 Effekseer::EffectRef EffectManager::LoadEffect(const std::string& path)
 {
     if (!_initialized) return nullptr;
 
-    // キャッシュ確認
     auto it = _effectCache.find(path);
-    if (it != _effectCache.end()) {
-        return it->second;
-    }
+    if (it != _effectCache.end()) return it->second;
 
-    // AssetManager経由でロード
     std::vector<uint8_t> data;
     if (!AssetManager::Instance()->LoadAsset(path, data)) {
         return nullptr;
     }
 
-    // UTF-8 から UTF-16 へ変換
-    std::u16string path16;
-    for (char c : path) {
-        path16.push_back((char16_t)(unsigned char)c);
-    }
+    std::string baseDir = path;
+    auto pos = baseDir.find_last_of("/\\");
+    if (pos != std::string::npos) baseDir = baseDir.substr(0, pos + 1);
+    else baseDir.clear();
+
+    std::u16string baseDir16 = Utf8ToUtf16(baseDir);
 
     Effekseer::EffectRef effect = Effekseer::Effect::Create(
         _manager,
-        (void*)data.data(),
+        data.data(),
         (int32_t)data.size(),
         1.0f,
-        path16.c_str()
-    );
+        baseDir16.empty() ? nullptr : baseDir16.c_str());
 
     if (effect != nullptr) {
         _effectCache[path] = effect;
     }
-
     return effect;
 }
 
@@ -259,19 +398,17 @@ void EffectManager::ClearAllEffects()
     _effectCache.clear();
 }
 
-// ========================================
-// エフェクト再生制御
-// ========================================
-
+//============================================================
+// 再生
+//============================================================
 Effekseer::Handle EffectManager::PlayEffect(const std::string& path, const DirectX::XMFLOAT3& position)
 {
     if (!_initialized) return -1;
 
-    Effekseer::EffectRef effect = LoadEffect(path);
+    auto effect = LoadEffect(path);
     if (effect == nullptr) return -1;
 
-    Effekseer::Handle handle = _manager->Play(effect, position.x, position.y, position.z);
-    return handle;
+    return _manager->Play(effect, position.x, position.y, position.z);
 }
 
 void EffectManager::StopEffect(Effekseer::Handle handle)
@@ -292,10 +429,9 @@ bool EffectManager::IsPlaying(Effekseer::Handle handle)
     return _manager->Exists(handle);
 }
 
-// ========================================
-// エフェクトパラメータ設定
-// ========================================
-
+//============================================================
+// パラメータ
+//============================================================
 void EffectManager::SetEffectPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position)
 {
     if (!_initialized || handle < 0) return;
@@ -320,15 +456,13 @@ void EffectManager::SetEffectSpeed(Effekseer::Handle handle, float speed)
     _manager->SetSpeed(handle, speed);
 }
 
-// ========================================
-// カメラ設定
-// ========================================
-
+//============================================================
+// カメラ
+//============================================================
 void EffectManager::SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
 {
     if (!_initialized) return;
 
-    // DirectXMath行列からEffekseer行列へ変換
     Effekseer::Matrix44 effView, effProj;
     DirectX::XMFLOAT4X4 viewF, projF;
     DirectX::XMStoreFloat4x4(&viewF, view);
@@ -345,17 +479,15 @@ void EffectManager::SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMA
     _renderer->SetProjectionMatrix(effProj);
 }
 
-// ========================================
+//============================================================
 // 更新・描画
-// ========================================
-
+//============================================================
 void EffectManager::Update(float deltaTime)
 {
     if (!_initialized) return;
 
-    // Effekseerは60FPSで更新回数を指定
-    float updateCount = deltaTime * 60.0f;
-    _manager->Update(updateCount);
+    // EffekseerのUpdateは「1.0 = 1/60秒」基準
+    _manager->Update(deltaTime * 60.0f);
 }
 
 void EffectManager::Draw()
@@ -367,10 +499,9 @@ void EffectManager::Draw()
     _renderer->EndRendering();
 }
 
-// ========================================
-// デバッグ用
-// ========================================
-
+//============================================================
+// デバッグ
+//============================================================
 int EffectManager::GetPlayingEffectsCount() const
 {
     if (!_initialized) return 0;
@@ -379,27 +510,28 @@ int EffectManager::GetPlayingEffectsCount() const
 
 void EffectManager::DrawDebugGUI()
 {
-    ImGui::TextUnformatted("EffectManager (Effekseer)");
+    ImGui::TextUnformatted("EffectManager (EffekseerForCpp 1.7.2.0 / DX11)");
     ImGui::Separator();
+
     ImGui::Text("Initialized: %s", _initialized ? "Yes" : "No");
     ImGui::Text("Max Particles: %d", _maxParticles);
-    ImGui::Text("Playing Effects: %d", GetPlayingEffectsCount());
     ImGui::Text("Loaded Effects: %zu", _effectCache.size());
+    ImGui::Text("Loaded Textures: %zu", _textureCache.size());
+
+    uint64_t texBytes = 0;
+    for (auto& kv : _textureCache) texBytes += kv.second.bytes;
+    ImGui::Text("Texture Memory (approx): %.2f MB", (double)texBytes / (1024.0 * 1024.0));
 
     ImGui::Separator();
     if (ImGui::Button("Stop All Effects")) {
         StopAllEffects();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Clear Cache")) {
+    if (ImGui::Button("Clear Effect Cache")) {
         ClearAllEffects();
     }
-
-    ImGui::Separator();
-    ImGui::TextUnformatted("Loaded Effects:");
-    ImGui::BeginChild("EffectList", ImVec2(0, 120), true);
-    for (auto& kv : _effectCache) {
-        ImGui::Text("%s", kv.first.c_str());
+    ImGui::SameLine();
+    if (ImGui::Button("Clear Texture Cache")) {
+        _textureCache.clear();
     }
-    ImGui::EndChild();
 }
