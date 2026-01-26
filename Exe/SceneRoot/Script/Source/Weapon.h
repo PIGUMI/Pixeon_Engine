@@ -21,9 +21,6 @@ private:
 
 private:
     // トランスフォーム
-    transform _idleTransform;
-    transform _ReadyTransform;
-
 	Float3 _idlePosition;
 	Float3 _idleRotation;
 	Float3 _readyPosition;
@@ -31,11 +28,6 @@ private:
 
     float _transitionProgress;
     bool _isAiming;
-
-    // リコイル
-    transform _recoilOffset;
-    float _recoilProgress;
-    float _recoilRecoverySpeed;
 
     // クールタイム
     float _coolTime;
