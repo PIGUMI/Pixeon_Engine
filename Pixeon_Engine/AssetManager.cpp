@@ -445,3 +445,33 @@ std::vector<std::string> AssetManager::GetCachedTextureNames() const {
 	std::sort(result.begin(), result.end());
 	return result;
 }
+
+/*
+* 関数名　GetCachedEffectNames
+* 引　数　なし
+* 戻り値　キャッシュされているエフェクトアセット名のリスト
+* 説　明　キャッシュされているエフェクトアセット名のリストを取得する
+*/
+std::vector<std::string> AssetManager::GetCachedEffectNames() const
+{
+	static const char* exts[] = { ".efkefc", ".efk" };
+	std::vector<std::string> result;
+	{
+		std::lock_guard<std::mutex> lk(_mtx);
+		result.reserve(_cache.size());
+		for (auto& kv : _cache) {
+			std::string lower = kv.first;
+			for (auto& c : lower) c = (char)tolower(c);
+			auto hasExt = [&](const char* ext)->bool {
+				size_t Ls = lower.size(), Le = std::strlen(ext);
+				if (Ls < Le) return false;
+				return lower.compare(Ls - Le, Le, ext) == 0;
+				};
+			for (auto* e : exts) {
+				if (hasExt(e)) { result.push_back(kv.first); break; }
+			}
+		}
+	}
+	std::sort(result.begin(), result.end());
+	return result;
+}

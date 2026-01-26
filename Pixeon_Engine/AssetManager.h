@@ -41,6 +41,7 @@ public:
 
 	std::vector<std::string> GetCachedAssetNames(bool onlyModelExt = false) const;
 	std::vector<std::string> GetCachedTextureNames() const;
+	std::vector<std::string> GetCachedEffectNames() const;
 private:
 	AssetManager() = default;
 	~AssetManager();

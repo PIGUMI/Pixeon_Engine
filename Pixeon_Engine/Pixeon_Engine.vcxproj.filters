@@ -251,6 +251,9 @@
     <ClCompile Include="BloomEffect.cpp">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -441,6 +444,9 @@
     </ClInclude>
     <ClInclude Include="BloomEffect.h">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
