@@ -10,6 +10,7 @@
 #include "BoxCollision.h"
 #include "CapsuleCollision.h"
 #include "Animator2DComponent.h"
+#include "EffectComponent.h"
 #include <Windows.h>
 
 ComponentManager* ComponentManager::_instance;
@@ -39,6 +40,7 @@ void ComponentManager::Init() {
 	_ComponentName[(int)COMPONENT_TYPE::BOX_COLLISION] = "BoxCollision";
 	_ComponentName[(int)COMPONENT_TYPE::CAPSULE_COLLISION] = "CapsuleCollision";
 	_ComponentName[(int)COMPONENT_TYPE::ANIMATOR2D] = "Animator2D";
+	_ComponentName[(int)COMPONENT_TYPE::EFFECT] = "Effect";
 }
 
 AbstractComponent* ComponentManager::AddComponent(AbstractObject* owner, COMPONENT_TYPE type) {
@@ -77,6 +79,9 @@ AbstractComponent* ComponentManager::AddComponent(AbstractObject* owner, COMPONE
 		break;
 	case ComponentManager::COMPONENT_TYPE::ANIMATOR2D:
 		component = owner->AddComponent<Animator2DComponent>();
+		break;
+	case ComponentManager::COMPONENT_TYPE::EFFECT:
+		component = owner->AddComponent<EffectComponent>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::MAX:
 		MessageBox(nullptr, "—áŠO‚È’l‚Å‚·\nCode : CMMAX", "Error", MB_OK);

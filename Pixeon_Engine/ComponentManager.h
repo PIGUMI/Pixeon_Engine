@@ -21,6 +21,7 @@ public:
 		BOX_COLLISION,
 		CAPSULE_COLLISION,
 		ANIMATOR2D,
+		EFFECT,
 		MAX,
 	};
 

@@ -158,6 +158,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="EasingGraph.h" />
+    <ClInclude Include="EffectComponent.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EngineFrame.h" />
     <ClInclude Include="GUI.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="EasingGraph.cpp" />
+    <ClCompile Include="EffectComponent.cpp" />
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EngineFrame.cpp" />
     <ClCompile Include="EngineFrame_GUI.cpp" />

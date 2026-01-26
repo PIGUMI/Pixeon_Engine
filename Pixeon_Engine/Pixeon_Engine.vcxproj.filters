@@ -254,6 +254,9 @@
     <ClCompile Include="EffectManager.cpp">
       <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
     </ClCompile>
+    <ClCompile Include="EffectComponent.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -447,6 +450,9 @@
     </ClInclude>
     <ClInclude Include="EffectManager.h">
       <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectComponent.h">
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
