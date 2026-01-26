@@ -14,6 +14,7 @@
 #include "SettingManager.h"
 #include "ShaderManager.h"
 #include "SoundManager.h"
+#include "EffectManager.h"
 #include "ComponentManager.h"
 #include "ScriptManager.h"
 #include "ResourceService.h"
@@ -84,6 +85,9 @@ int MainFrame::Init(const EngineConfig& InPut)
 	AssetManager::Instance()->SetLoadMode(AssetManager::LoadMode::FromSource);
 	// AssetManager の自動同期開始
 	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
+	/* EffectManagerの初期化*/
+	EffectManager::Instance()->Init(DirectX11::GetInstance()->GetDevice(), DirectX11::GetInstance()->GetContext());
+
 	// レイヤーレンダーテクスチャ初期化
 	for (int layer = 0; layer < MAX_LAYER_COUNT; layer++)
 	{

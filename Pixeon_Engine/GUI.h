@@ -30,6 +30,7 @@ private:
 	void TextureManagerWindow();
 	void ModelManagerWindow();
 	void SoundManagerWindow();
+	void EffectManagerWindow();
 	void SettingWindow();
 	void InputDebugWindow();
 	void ShaderEditorWindow();
@@ -43,6 +44,7 @@ public:
 	bool bSettingWindow_;
 	bool bInputDebugWindow_;
 	bool bShaderEditorWindow_;
+	bool bEffectManagerWindow_;
 private:
 	GUI() = default;
 	~GUI() = default;

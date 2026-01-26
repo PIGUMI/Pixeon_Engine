@@ -1,6 +1,6 @@
 /*
-* ファイル名　EffectManager.h
-* 説　　　明　Effekseerエフェクト管理クラス
+* ファイル名 EffectManager.h
+* 概要      Effekseerエフェクト管理クラス
 */
 #ifndef EFFECTMANAGER_H
 #define EFFECTMANAGER_H
@@ -46,7 +46,7 @@ public:
     void Update(float deltaTime = 1.0f / 60.0f);
     void Draw();
 
-    // デバッグ情報
+    // デバッグ用
     void DrawDebugGUI();
 
     // ゲッター
@@ -58,9 +58,9 @@ private:
     ~EffectManager();
 
     // Effekseerカスタムローダー (AssetManager経由でロード)
-    class CustomEffectLoader;
-    class CustomTextureLoader;
-    class CustomModelLoader;
+    class EffectLoader;
+    class TextureLoader;
+    class ModelLoader;
 
     static EffectManager* _instance;
 

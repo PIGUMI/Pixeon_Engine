@@ -10,6 +10,7 @@
 #include "ModelManager.h"
 #include "SoundManager.h"
 #include "SettingManager.h"
+#include "EffectManager.h"
 
 #include "SceneManger.h"
 #include "Scene.h"
@@ -109,6 +110,7 @@ void GUI::BeginDraw()
 	SettingWindow();
 	InputDebugWindow();
 	ShaderEditorWindow();
+	EffectManagerWindow();
 }
 
 void GUI::EndDraw()
@@ -162,6 +164,7 @@ void GUI::MainMenuBar()
 			if (ImGui::MenuItem(ShiftJISToUTF8("テクスチャマネージャー").c_str())) bTextureManagerWindow_ = true;
 			if (ImGui::MenuItem(ShiftJISToUTF8("モデルマネージャー").c_str())) bModelManagerWindow_ = true;
 			if (ImGui::MenuItem(ShiftJISToUTF8("サウンドマネージャー").c_str())) bSoundManagerWindow_ = true;
+			if (ImGui::MenuItem(ShiftJISToUTF8("エフェクトマネージャー").c_str())) bEffectManagerWindow_ = true;
 			ImGui::Separator();
 
 			if (ImGui::MenuItem(ShiftJISToUTF8("環境設定").c_str())) bSettingWindow_ = true;
@@ -304,6 +307,17 @@ void GUI::SoundManagerWindow()
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 	if (ImGui::Begin(ShiftJISToUTF8("サウンドマネージャー").c_str(), &bSoundManagerWindow_, flags)) {
 		SoundManager::Instance()->DrawDebugGUI();
+		ImGui::End();
+	}
+}
+
+void GUI::EffectManagerWindow()
+{
+	if (!bEffectManagerWindow_)return;
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+	if (ImGui::Begin(ShiftJISToUTF8("エフェクトマネージャー").c_str(), &bEffectManagerWindow_, flags)) {
+		EffectManager::Instance()->DrawDebugGUI();
 		ImGui::End();
 	}
 }
