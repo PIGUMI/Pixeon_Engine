@@ -23,6 +23,12 @@ private:
     // トランスフォーム
     transform _idleTransform;
     transform _ReadyTransform;
+
+	Float3 _idlePosition;
+	Float3 _idleRotation;
+	Float3 _readyPosition;
+	Float3 _readyRotation;
+
     float _transitionProgress;
     bool _isAiming;
 
@@ -51,6 +57,7 @@ private:
 
     // カメラ・シーン
     Component _cameraComponent;
+	Component _ModelComponent;
     Object _playerObject;
 };
 

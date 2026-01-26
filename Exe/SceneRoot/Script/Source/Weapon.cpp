@@ -12,17 +12,25 @@
 void Script_Weapon::BeginPlay() {
     IScript::BeginPlay();
 
-    GetObjectTransform(_parentObject, &_idleTransform);
-
-    // 構えトランスフォーム設定
+    if (FindComponent(_parentObject, "ModelRender", &_ModelComponent) != PN_SUCCESS)
     {
-        _ReadyTransform.position.x = -0.3f;
-        _ReadyTransform.position.y = -0.5f;
-        _ReadyTransform.position.z = 0.0f;
-        _ReadyTransform.rotation.x = DirectX::XMConvertToRadians(16.0f);
-        _ReadyTransform.rotation.y = DirectX::XMConvertToRadians(90.0f);
-        _ReadyTransform.rotation.z = DirectX::XMConvertToRadians(9.5f);
-        _ReadyTransform.scale.x = _ReadyTransform.scale.y = _ReadyTransform.scale.z = 0.5f;
+        _ModelComponent = nullptr;
+		MessageBox(nullptr, "WeaponのModelRenderコンポーネントが見つかりません。", "Error", MB_OK);
+    }
+
+    if (_ModelComponent)
+    {
+		GetOffsetPosition(_ModelComponent, &_idlePosition);
+		GetOffsetRotation(_ModelComponent, &_idleRotation);
+    }
+
+    {
+        _readyPosition.x = -0.5f;
+		_readyPosition.y = -0.6f;
+		_readyPosition.z = -0.5f;
+		_readyRotation.x = DirectX::XMConvertToRadians(16.0f);
+		_readyRotation.y = DirectX::XMConvertToRadians(90.0f);
+		_readyRotation.z = DirectX::XMConvertToRadians(0.0f);
 
         _transitionProgress = 0.0f;
         _isAiming = false;
@@ -106,30 +114,20 @@ void Script_Weapon::EndPlay() {
 }
 
 void Script_Weapon::Animation() {
-    transform current_Transform;
+	Float3 current_Position;
+	Float3 current_Rotation;
     float t = _transitionProgress;
 
-    current_Transform.position.x = _idleTransform.position.x + (_ReadyTransform.position.x - _idleTransform.position.x) * t;
-    current_Transform.position.y = _idleTransform.position.y + (_ReadyTransform.position.y - _idleTransform.position.y) * t;
-    current_Transform.position.z = _idleTransform.position.z + (_ReadyTransform.position.z - _idleTransform.position.z) * t;
+    current_Position.x = _idlePosition.x + (_readyPosition.x - _idlePosition.x) * t;
+    current_Position.y = _idlePosition.y + (_readyPosition.y - _idlePosition.y) * t;
+    current_Position.z = _idlePosition.z + (_readyPosition.z - _idlePosition.z) * t;
+    
+    current_Rotation.x = _idleRotation.x + (_readyRotation.x - _idleRotation.x) * t;  
+    current_Rotation.y = _idleRotation.y + (_readyRotation.y - _idleRotation.y) * t;  
+    current_Rotation.z = _idleRotation.z + (_readyRotation.z - _idleRotation.z) * t;
 
-    current_Transform.rotation.x = _idleTransform.rotation.x + (_ReadyTransform.rotation.x - _idleTransform.rotation.x) * t;
-    current_Transform.rotation.y = _idleTransform.rotation.y + (_ReadyTransform.rotation.y - _idleTransform.rotation.y) * t;
-    current_Transform.rotation.z = _idleTransform.rotation.z + (_ReadyTransform.rotation.z - _idleTransform.rotation.z) * t;
-
-    current_Transform.scale.x = _idleTransform.scale.x + (_ReadyTransform.scale.x - _idleTransform.scale.x) * t;
-    current_Transform.scale.y = _idleTransform.scale.y + (_ReadyTransform.scale.y - _idleTransform.scale.y) * t;
-    current_Transform.scale.z = _idleTransform.scale.z + (_ReadyTransform.scale.z - _idleTransform.scale.z) * t;
-
-    current_Transform.position.x += _recoilOffset.position.x;
-    current_Transform.position.y += _recoilOffset.position.y;
-    current_Transform.position.z += _recoilOffset.position.z;
-
-    current_Transform.rotation.x += _recoilOffset.rotation.x;
-    current_Transform.rotation.y += _recoilOffset.rotation.y;
-    current_Transform.rotation.z += _recoilOffset.rotation.z;
-
-    SetObjectTransform(_parentObject, &current_Transform);
+    SetOffsetPosition(_ModelComponent, &current_Position);
+    SetOffsetRotation(_ModelComponent, &current_Rotation);
 }
 
 void Script_Weapon::Fire() {
