@@ -87,7 +87,7 @@ void Script_Weapon::Update(float DeltaTime) {
 
     // ƒGƒCƒ€ˆ—
     float transitionSpeed = 10.0f * DeltaTime;
-    if (KeyPressed(VK_RBUTTON) || true)
+    if (KeyPressed(VK_RBUTTON))
     {
         _isAiming = true;
         _transitionProgress += transitionSpeed;
