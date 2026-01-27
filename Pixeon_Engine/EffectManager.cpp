@@ -314,6 +314,7 @@ bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int
     // 既存コードと同じCreateでOK（内部でGraphicsDeviceも作られる）
     _renderer = EffekseerRendererDX11::Renderer::Create(device, context, maxParticles);
     if (_renderer == nullptr) return false;
+    //_renderer->SetDistortionMode(Effekseer::DistortionMode::Current);
 
     // ローダ設定（AssetManager経由）
     _manager->GetSetting()->SetEffectLoader(Effekseer::MakeRefPtr<EffectLoader>());
@@ -494,9 +495,17 @@ void EffectManager::Draw()
 {
     if (!_initialized) return;
 
+    ID3D11BlendState* prevBlendState = nullptr;
+    FLOAT prevBlendFactor[4];
+    UINT prevSampleMask;
+    _context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
+
     _renderer->BeginRendering();
     _manager->Draw();
     _renderer->EndRendering();
+
+    _context->OMSetBlendState(prevBlendState, prevBlendFactor, prevSampleMask);
+    if (prevBlendState) prevBlendState->Release();
 }
 
 //============================================================
