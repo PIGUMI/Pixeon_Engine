@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-17.8155 3.6877 -2.27042 4.98 0.119999 7.62248e-39 -8.24077 2.49059 -4.89569 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-17.6645 5.3501 -3.17375 4.89 0.289999 7.62248e-39 -8.23284 2.49059 -4.86676 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -31,9 +31,14 @@
         {
             "Components": [
                 {
-                    "Data": "09.efkefc 1 0 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 2\n",
+                    "Data": "09.efkefc 1 0 0 0 0 0 0 0 0.01 0.01 0.01 1 1 1 0 0 0 0 0 2\n",
                     "Name": "EffectComponent",
                     "Type": 10
+                },
+                {
+                    "Data": "ScriptName MuzzleFlash\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
                 }
             ],
             "Name": "MuzzleFlash",

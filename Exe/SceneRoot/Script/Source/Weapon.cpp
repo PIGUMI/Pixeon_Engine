@@ -313,10 +313,11 @@ void Script_Weapon::CreateMuzzleFlash() {
     Float3 forward = CalculateForwardVector(bodyTransform.rotation);
 
     Float3 muzzlePosition = CreateFloat3(
-        bodyTransform.position.x + forward.x * 0.5f,
-        bodyTransform.position.y + forward.y * 0.5f,
-        bodyTransform.position.z + forward.z * 0.5f
+        bodyTransform.position.x - forward.x * 0.2f,
+        bodyTransform.position.y,
+        bodyTransform.position.z - forward.z * 0.2f
     );
+	Float3 Rotation = bodyTransform.rotation;
 
     Object clonedFlash = nullptr;
     APIResult result = AddObjectToScene(_parentScene, _MuzzleFlash, &clonedFlash);
@@ -324,5 +325,6 @@ void Script_Weapon::CreateMuzzleFlash() {
     if (result == PN_SUCCESS && clonedFlash != nullptr)
     {
         SetObjectPosition(clonedFlash, muzzlePosition);
+		SetObjectRotation(clonedFlash, Rotation);
     }
 }
