@@ -25,6 +25,7 @@
 #include "Animator2D.h"
 #include "BulletPhysics/btBulletDynamicsCommon.h"
 #include "Input.h"
+#include "EffectComponent.h"
 
 #include <string>
 #include <cstring>
@@ -2449,6 +2450,48 @@ extern "C" {
 		}
 		KeyFrame* keyframePtr = reinterpret_cast<KeyFrame*>(keyframe);
 		*outOffset = keyframePtr->vertexOffset.Right;
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult EffectPlay(Component effectComp)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(effectComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		EffectComponent* effectComponent = dynamic_cast<EffectComponent*>(compPtr);
+		if (!effectComponent) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		effectComponent->Play();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult EffectStop(Component effectComp)
+	{
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(effectComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		EffectComponent* effectComponent = dynamic_cast<EffectComponent*>(compPtr);
+		if (!effectComponent) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		effectComponent->Stop();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult EffectIsPlaying(Component effectComp, bool* outIsPlaying)
+	{
+		if (!outIsPlaying) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(effectComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		EffectComponent* effectComponent = dynamic_cast<EffectComponent*>(compPtr);
+		if (!effectComponent) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outIsPlaying =  effectComponent->IsPlaying();
 		return PN_SUCCESS;
 	}
 };
