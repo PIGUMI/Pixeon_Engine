@@ -197,15 +197,12 @@ private:
         DirectX::ScratchImage scratch;
         DirectX::TexMetadata meta{};
 
-        // DDS優先、失敗したらWIC
         HRESULT hr = DirectX::LoadFromDDSMemory(data, (size_t)size, DirectX::DDS_FLAGS_NONE, &meta, scratch);
         if (FAILED(hr))
         {
-            // WIC_FLAGS_FORCE_RGBA32 が無い環境があるため WIC_FLAGS_NONE を使用
             hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_NONE, &meta, scratch);
             if (FAILED(hr)) return false;
 
-            // WIC読み込み後、Effekseer向けにRGBA8へ寄せる（必要な場合のみ）
             const DXGI_FORMAT targetFmt = DXGI_FORMAT_R8G8B8A8_UNORM;
 
             if (meta.format != targetFmt)
@@ -224,6 +221,23 @@ private:
 
                 scratch = std::move(converted);
                 meta = scratch.GetMetadata();
+            }
+
+            if (DirectX::HasAlpha(meta.format))
+            {
+                DirectX::ScratchImage premultiplied;
+                hr = DirectX::PremultiplyAlpha(
+                    scratch.GetImages(),
+                    scratch.GetImageCount(),
+                    meta,
+                    DirectX::TEX_PMALPHA_DEFAULT,
+                    premultiplied);
+
+                if (SUCCEEDED(hr))
+                {
+                    scratch = std::move(premultiplied);
+                    meta = scratch.GetMetadata();
+                }
             }
         }
 
@@ -246,7 +260,6 @@ private:
                     scratch = std::move(mipChain);
                     meta = scratch.GetMetadata();
                 }
-                // 失敗してもフォールバック（ミップ無しで続行）
             }
         }
 
@@ -314,7 +327,7 @@ bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int
     // 既存コードと同じCreateでOK（内部でGraphicsDeviceも作られる）
     _renderer = EffekseerRendererDX11::Renderer::Create(device, context, maxParticles);
     if (_renderer == nullptr) return false;
-    //_renderer->SetDistortionMode(Effekseer::DistortionMode::Current);
+	
 
     // ローダ設定（AssetManager経由）
     _manager->GetSetting()->SetEffectLoader(Effekseer::MakeRefPtr<EffectLoader>());
@@ -487,7 +500,6 @@ void EffectManager::Update(float deltaTime)
 {
     if (!_initialized) return;
 
-    // EffekseerのUpdateは「1.0 = 1/60秒」基準
     _manager->Update(deltaTime * 60.0f);
 }
 
@@ -500,11 +512,35 @@ void EffectManager::Draw()
     UINT prevSampleMask;
     _context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
 
+    // **修正: Effekseer用のアルファブレンドを明示的に設定**
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;          // 修正
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;     // 修正
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;           // 修正
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;// 修正
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    ID3D11BlendState* effekseerBlend = nullptr;
+    _device->CreateBlendState(&blendDesc, &effekseerBlend);
+
+    FLOAT blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    _context->OMSetBlendState(effekseerBlend, blendFactor, 0xffffffff);
+
+    // Effekseer描画
     _renderer->BeginRendering();
     _manager->Draw();
     _renderer->EndRendering();
 
+    // ブレンドステートを復元
     _context->OMSetBlendState(prevBlendState, prevBlendFactor, prevSampleMask);
+
+    // リソース解放
+    if (effekseerBlend) effekseerBlend->Release();
     if (prevBlendState) prevBlendState->Release();
 }
 
