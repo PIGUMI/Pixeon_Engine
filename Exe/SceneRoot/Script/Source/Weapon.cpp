@@ -87,7 +87,7 @@ void Script_Weapon::Update(float DeltaTime) {
 
     // ÉGÉCÉÄèàóù
     float transitionSpeed = 10.0f * DeltaTime;
-    if (KeyPressed(VK_RBUTTON))
+    if (KeyPressed(VK_RBUTTON) || true)
     {
         _isAiming = true;
         _transitionProgress += transitionSpeed;
@@ -322,9 +322,5 @@ void Script_Weapon::CreateMuzzleFlash() {
     Object clonedFlash = nullptr;
     APIResult result = AddObjectToScene(_parentScene, _MuzzleFlash, &clonedFlash);
 
-    if (result == PN_SUCCESS && clonedFlash != nullptr)
-    {
-        SetObjectPosition(clonedFlash, muzzlePosition);
-		SetObjectRotation(clonedFlash, Rotation);
-    }
+    ObjectParenthood(clonedFlash, _parentObject);
 }
