@@ -200,7 +200,7 @@ private:
         HRESULT hr = DirectX::LoadFromDDSMemory(data, (size_t)size, DirectX::DDS_FLAGS_NONE, &meta, scratch);
         if (FAILED(hr))
         {
-            hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_NONE, &meta, scratch);
+            hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_IGNORE_SRGB, &meta, scratch);
             if (FAILED(hr)) return false;
 
             const DXGI_FORMAT targetFmt = DXGI_FORMAT_R8G8B8A8_UNORM;
