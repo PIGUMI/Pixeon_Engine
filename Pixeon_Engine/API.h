@@ -286,6 +286,10 @@ extern "C" {
 	PIXEON_API APIResult GetVertexOffsetDown(Keyframe keyframe, float* outOffset);
 	PIXEON_API APIResult GetVertexOffsetLeft(Keyframe keyframe, float* outOffset);
 	PIXEON_API APIResult GetVertexOffsetRight(Keyframe keyframe, float* outOffset);
+
+	PIXEON_API APIResult EffectPlay(Component effectComp);
+	PIXEON_API APIResult EffectStop(Component effectComp);
+	PIXEON_API APIResult EffectIsPlaying(Component effectComp, bool* outIsPlaying);
 };
 
 #endif// API.h
