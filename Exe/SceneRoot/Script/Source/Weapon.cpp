@@ -53,9 +53,9 @@ void Script_Weapon::BeginPlay() {
 
     // エフェクトプレハブを取得
     FindPrefabObjectByName("Expl", &_ExplosionEffect);
+	FindPrefabObjectByName("MuzzleFlash", &_MuzzleFlash);
     _BulletTrailPrefab = nullptr;
     _ImpactEffectPrefab = nullptr;
-    _MuzzleFlash = nullptr;
 
     // Playerオブジェクトを取得
     if (_parentScene != nullptr)

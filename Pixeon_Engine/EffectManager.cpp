@@ -197,12 +197,15 @@ private:
         DirectX::ScratchImage scratch;
         DirectX::TexMetadata meta{};
 
+        // DDSフォーマットを優先的に試す
         HRESULT hr = DirectX::LoadFromDDSMemory(data, (size_t)size, DirectX::DDS_FLAGS_NONE, &meta, scratch);
         if (FAILED(hr))
         {
+            // WICで読み込む(sRGBを無視)
             hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_IGNORE_SRGB, &meta, scratch);
             if (FAILED(hr)) return false;
 
+            // R8G8B8A8_UNORMに変換
             const DXGI_FORMAT targetFmt = DXGI_FORMAT_R8G8B8A8_UNORM;
 
             if (meta.format != targetFmt)
@@ -222,26 +225,7 @@ private:
                 scratch = std::move(converted);
                 meta = scratch.GetMetadata();
             }
-
-            if (DirectX::HasAlpha(meta.format))
-            {
-                DirectX::ScratchImage premultiplied;
-                hr = DirectX::PremultiplyAlpha(
-                    scratch.GetImages(),
-                    scratch.GetImageCount(),
-                    meta,
-                    DirectX::TEX_PMALPHA_DEFAULT,
-                    premultiplied);
-
-                if (SUCCEEDED(hr))
-                {
-                    scratch = std::move(premultiplied);
-                    meta = scratch.GetMetadata();
-                }
-            }
         }
-
-        // ミップ生成（必要なら）
         if (mipEnabled)
         {
             if (meta.mipLevels <= 1)
@@ -507,21 +491,24 @@ void EffectManager::Draw()
 {
     if (!_initialized) return;
 
+    // 現在のブレンドステートを保存
     ID3D11BlendState* prevBlendState = nullptr;
     FLOAT prevBlendFactor[4];
     UINT prevSampleMask;
     _context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
 
-    // **修正: Effekseer用のアルファブレンドを明示的に設定**
+    // Effekseer用のアルファブレンド設定
     D3D11_BLEND_DESC blendDesc = {};
     blendDesc.AlphaToCoverageEnable = FALSE;
     blendDesc.IndependentBlendEnable = FALSE;
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
-    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;          // 修正
-    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;     // 修正
+
+    // ストレートアルファ用のブレンド設定
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
     blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;           // 修正
-    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;// 修正
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
     blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
