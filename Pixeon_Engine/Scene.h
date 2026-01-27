@@ -11,6 +11,7 @@
 
 class AbstractObject;
 class LightComponent;
+class EffectComponent;
 
 class AbstractScene
 {
@@ -23,6 +24,9 @@ public:
 	virtual void PlayUpdate();
 	virtual void Draw(int Layer);
 	virtual void DrawUI();
+
+	void UpdateEffects(float deltaTime);
+	void DrawEffects(int Layer, CameraComponent* camera);
 public:
 	bool AddObject(AbstractObject* obj);
 public:
@@ -56,6 +60,8 @@ private:
 	void InitPhysics();
 	void CleanupPhysics();
 	void CleanupAndReinitializePhysics();
+
+	std::vector<EffectComponent*> CollectEffectComponents(int layer);
 private:
 	std::string _name = "DefaultScene";
 

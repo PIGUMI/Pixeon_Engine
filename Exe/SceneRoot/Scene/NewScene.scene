@@ -3,7 +3,7 @@
         {
             "Components": [
                 {
-                    "Data": "-10.8058 4.06755 -3.77572 -1.98 0.22 7.62248e-39 -1.85256 1.88525 0.107173 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-5.54097 8.19829 4.36198 -1.37 0.9 7.62248e-39 0.550242 0.365027 3.12219 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -31,17 +31,12 @@
         {
             "Components": [
                 {
-                    "Data": "Arms.fbx\n1 1 1 1\nVS_Animator\nPS_ModelBasic\n1\n0 0 0\n1 1 1\n0 0 0\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
+                    "Data": "Effekseer01/Test.efkefc 1 1 0 0 0 1 4 0 1 1 1 1 0 0 0 0 0 0 0 4\n",
+                    "Name": "EffectComponent",
+                    "Type": 10
                 },
                 {
-                    "Data": "0\n1\n1\n0\n",
-                    "Name": "Animation",
-                    "Type": 5
-                },
-                {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
+                    "Data": "1 1 1 0 0 0 0 4 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 }

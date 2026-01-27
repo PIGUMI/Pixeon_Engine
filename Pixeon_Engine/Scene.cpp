@@ -3,8 +3,10 @@
 #include "Object.h"
 #include "ComponentManager.h"
 #include "SettingManager.h"
+#include "EffectManager.h"
 #include "Component.h"
 #include "LightComponent.h"
+#include "EffectComponent.h"
 #include "RigidBody.h"
 #include <thread>
 #include <mutex>
@@ -417,6 +419,25 @@ void AbstractScene::DrawUI()
 {
 }
 
+void AbstractScene::UpdateEffects(float deltaTime)
+{
+	EffectManager::Instance()->Update(deltaTime);
+}
+
+void AbstractScene::DrawEffects(int Layer, CameraComponent* camera)
+{
+	if (!camera) return;
+
+	auto effects = CollectEffectComponents(Layer);
+	if (effects.empty()) return;
+
+	auto view = camera->GetView();
+	auto proj = camera->GetProjection();
+	EffectManager::Instance()->SetCamera(view, proj);
+
+	EffectManager::Instance()->Draw();
+}
+
 void AbstractScene::SaveToFile() {
 	std::vector<AbstractObject*> SaveObjects;
 
@@ -822,6 +843,30 @@ void AbstractScene::CleanupAndReinitializePhysics()
 			}
 		}
 	}
+}
+
+std::vector<EffectComponent*> AbstractScene::CollectEffectComponents(int layer)
+{
+	std::vector<EffectComponent*> effects;
+
+	for (auto& obj : _objects)
+	{
+		if (!obj) continue;
+
+		bool isSaveObject = std::find(_SaveObjects.begin(), _SaveObjects.end(), obj) != _SaveObjects.end();
+		if (isSaveObject) continue;
+
+		auto comps = obj->GetComponentsByType<EffectComponent>();
+		for (auto* comp : comps)
+		{
+			if (comp && comp->GetLayerNumber() == layer)
+			{
+				effects.push_back(comp);
+			}
+		}
+	}
+
+	return effects;
 }
 
 void AbstractScene::AddObjectLocal(AbstractObject* obj) {

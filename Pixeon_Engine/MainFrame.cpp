@@ -19,6 +19,7 @@
 #include "ScriptManager.h"
 #include "ResourceService.h"
 #include "Animator2DManager.h"
+#include "SceneManger.h"
 #include "Input.h"
 #include "EngineFrame.h"
 #include "Animator2DFrame.h"
@@ -139,6 +140,13 @@ void MainFrame::Update()
 		{
 		case SoftWareMode::ENGINE:
 			EngineFrame::GetInstance()->Update();
+			if (SceneManger::GetInstance())
+			{
+				if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
+				{
+					scene->UpdateEffects(_deltaTime);
+				}
+			}
 			break;
 		case SoftWareMode::ANIMTOR2D:
 			Animator2DFrame::GetInstance()->Update();
@@ -146,7 +154,6 @@ void MainFrame::Update()
 		default:
 			break;
 		}
-
 		SetMouseFreeze(_fixedMouseCursorFlag);
 
 		// 更新時間記録
@@ -200,6 +207,16 @@ void MainFrame::Draw()
 			{
 			case SoftWareMode::ENGINE:
 				EngineFrame::GetInstance()->Draw(Layer_Index);
+				if(SceneManger::GetInstance())
+				{
+					if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
+					{
+						if (auto camera = scene->GetMainCamera())
+						{
+							scene->DrawEffects(Layer_Index, camera);
+						}
+					}
+				}
 				break;
 			case SoftWareMode::ANIMTOR2D:
 				Animator2DFrame::GetInstance()->Draw();
