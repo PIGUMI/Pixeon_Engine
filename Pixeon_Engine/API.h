@@ -100,6 +100,7 @@ extern "C" {
 	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber);
 	PIXEON_API APIResult SetMainCameraByPtr(Component camera);
 	PIXEON_API APIResult GetMainCamera(int* outCameraNumber);
+	PIXEON_API APIResult ObjectParenthood(Object childObject, Object parentObject);
 };
 
 extern "C" {

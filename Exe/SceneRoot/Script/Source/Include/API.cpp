@@ -276,6 +276,22 @@ extern "C" {
 		}
 		*outCameraNumber = currentScene->GetMainCameraNumber();
 	}
+	PIXEON_API APIResult ObjectParenthood(Object childObject, Object parentObject)
+	{
+		if (!childObject || !parentObject) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* childObjPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(childObject, &childObjPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		AbstractObject* parentObjPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(parentObject, &parentObjPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		childObjPtr->SetParent(parentObjPtr);
+		return PN_SUCCESS;
+	}
 	PIXEON_API APIResult SetMainCameraByPtr(Component camera)
 	{
 		AbstractComponent* compPtr = nullptr;
