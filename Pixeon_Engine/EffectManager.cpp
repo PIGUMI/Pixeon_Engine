@@ -1,6 +1,6 @@
 /*
-* ƒtƒ@ƒCƒ‹–¼ EffectManager.cpp
-* ŠT—v      EffekseerƒGƒtƒFƒNƒgŠÇ—ƒNƒ‰ƒX (EffekseerForCpp 1.7.2.0 / DX11)
+* ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ EffectManager.cpp
+* ï¿½Tï¿½v      Effekseerï¿½Gï¿½tï¿½Fï¿½Nï¿½gï¿½Ç—ï¿½ï¿½Nï¿½ï¿½ï¿½X (EffekseerForCpp 1.7.2.0 / DX11)
 */
 #include "EffectManager.h"
 #include "AssetManager.h"
@@ -15,7 +15,7 @@
 EffectManager* EffectManager::_instance = nullptr;
 
 //============================================================
-// UTF•ÏŠ·
+// UTFï¿½ÏŠï¿½
 //============================================================
 std::u16string EffectManager::Utf8ToUtf16(const std::string& s)
 {
@@ -34,7 +34,7 @@ std::u16string EffectManager::Utf8ToUtf16(const std::string& s)
 std::string EffectManager::Utf16ToUtf8(const char16_t* s)
 {
     if (!s) return {};
-    // Effekseer‚Ìƒwƒ‹ƒp‚à‚ ‚é‚ªAWindows API‚ÅŠmÀ‚ÉUTF-8‚Ö
+    // Effekseerï¿½Ìƒwï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½é‚ªï¿½AWindows APIï¿½ÅŠmï¿½ï¿½ï¿½ï¿½UTF-8ï¿½ï¿½
     auto ws = reinterpret_cast<const wchar_t*>(s);
     int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
     if (len <= 0) return {};
@@ -44,7 +44,7 @@ std::string EffectManager::Utf16ToUtf8(const char16_t* s)
 }
 
 //============================================================
-// ƒ[ƒ_[
+// ï¿½ï¿½ï¿½[ï¿½_ï¿½[
 //============================================================
 
 class EffectManager::EffectLoader : public Effekseer::EffectLoader
@@ -95,7 +95,7 @@ public:
 
     void Unload(Effekseer::ModelRef /*data*/) override
     {
-        // RefPtr‚È‚Ì‚Å•s—v
+        // RefPtrï¿½È‚Ì‚Å•sï¿½v
     }
 };
 
@@ -110,10 +110,10 @@ public:
 
         std::string utf8Path = EffectManager::Utf16ToUtf8(path);
 
-        // Effekseer‚Í "_NoMip" ‚Åƒ~ƒbƒv–³Œø‚È‚Ç‚Ì‰^—p‚ª‚ ‚éiEffekseer::TextureLoaderHelperQÆj
+        // Effekseerï¿½ï¿½ "_NoMip" ï¿½Åƒ~ï¿½bï¿½vï¿½ï¿½ï¿½ï¿½ï¿½È‚Ç‚Ì‰^ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iEffekseer::TextureLoaderHelperï¿½Qï¿½Æj
         const bool mipEnabled = Effekseer::TextureLoaderHelper::GetIsMipmapEnabled(std::u16string(path));
 
-        // ƒLƒƒƒbƒVƒ…
+        // ï¿½Lï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½
         auto it = _owner->_textureCache.find(utf8Path);
         if (it != _owner->_textureCache.end()) {
             return it->second.tex;
@@ -130,8 +130,8 @@ public:
             return nullptr;
         }
 
-        // ---- ‚±‚±‚ª EffekseerForCpp 1.7.2.0 / DX11 ‚Ì³‰ğ ----
-        // SRV -> Effekseer::Backend::TextureRef ‚ğ¶¬
+        // ---- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ EffekseerForCpp 1.7.2.0 / DX11 ï¿½Ìï¿½ï¿½ï¿½ ----
+        // SRV -> Effekseer::Backend::TextureRef ï¿½ğ¶ï¿½
         auto gd = _owner->_renderer->GetGraphicsDevice();
         Effekseer::Backend::TextureRef backendTex =
             EffekseerRendererDX11::CreateTexture(gd, srv.Get(), nullptr, nullptr);
@@ -140,17 +140,17 @@ public:
             return nullptr;
         }
 
-        // Backend::Texture ‚ğ Effekseer::Texture ‚É•ï‚Ş
+        // Backend::Texture ï¿½ï¿½ Effekseer::Texture ï¿½É•ï¿½ï¿½
         Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
         effTex->SetBackend(backendTex);
 
-        // ƒLƒƒƒbƒVƒ…“o˜^iSRV‚à•Û‚µ‚Ä‚¨‚­‚ÆˆÀ‘Sj
+        // ï¿½Lï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½oï¿½^ï¿½iSRVï¿½ï¿½ï¿½Ûï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½Æˆï¿½ï¿½Sï¿½j
         EffectManager::TextureCacheEntry e;
         e.tex = effTex;
         e.srv = srv;
         e.w = w;
         e.h = h;
-        e.bytes = (uint64_t)w * (uint64_t)h * 4; // –ÚˆÀ
+        e.bytes = (uint64_t)w * (uint64_t)h * 4; // ï¿½Úˆï¿½
 
         _owner->_textureCache.emplace(utf8Path, std::move(e));
         return effTex;
@@ -158,7 +158,7 @@ public:
 
     Effekseer::TextureRef Load(const void* data, int32_t size, Effekseer::TextureType /*textureType*/, bool isMipMapEnabled) override
     {
-        // ƒpƒX–³‚µƒ[ƒh‚ÍƒLƒƒƒbƒVƒ…‚Å‚«‚È‚¢‚Ì‚Å“s“x¶¬
+        // ï¿½pï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ÍƒLï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½Å‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚Å“sï¿½xï¿½ï¿½ï¿½ï¿½
         if (!_owner || !_owner->_initialized) return nullptr;
 
         int w = 0, h = 0;
@@ -176,15 +176,15 @@ public:
         Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
         effTex->SetBackend(backendTex);
 
-        // srv‚Ìõ–½‚Í‚±‚±‚ÅI‚í‚é‚ªAbackendTex‚ª“à•”‚ÅQÆ•Û‚·‚éÀ‘•‚ª’Êí
-        // •sˆÀ‚È‚ç‚±‚±‚àƒLƒƒƒbƒVƒ…\‘¢‚É“ü‚ê‚éİŒv‚É‚·‚é
+        // srvï¿½Ìï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ÅIï¿½ï¿½é‚ªï¿½AbackendTexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅQï¿½Æ•Ûï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êï¿½
+        // ï¿½sï¿½ï¿½ï¿½È‚ç‚±ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½İŒvï¿½É‚ï¿½ï¿½ï¿½
         return effTex;
     }
 
     void Unload(Effekseer::TextureRef /*data*/) override
     {
-        // Effekseer‘¤‚©‚ç‚ÌUnloadŒÄ‚Ñ‚ÍŠî–{‚ÍQÆƒJƒEƒ“ƒg”C‚¹
-        // ƒLƒƒƒbƒVƒ…‰ğ•ú‚ÍEffectManager‘¤‚Ås‚¤
+        // Effekseerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Unloadï¿½Ä‚Ñ‚ÍŠï¿½{ï¿½ÍQï¿½ÆƒJï¿½Eï¿½ï¿½ï¿½gï¿½Cï¿½ï¿½
+        // ï¿½Lï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½EffectManagerï¿½ï¿½ï¿½Åsï¿½ï¿½
     }
 
 private:
@@ -197,15 +197,15 @@ private:
         DirectX::ScratchImage scratch;
         DirectX::TexMetadata meta{};
 
-        // DDS—DæA¸”s‚µ‚½‚çWIC
+        // DDSï¿½Dï¿½ï¿½Aï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½WIC
         HRESULT hr = DirectX::LoadFromDDSMemory(data, (size_t)size, DirectX::DDS_FLAGS_NONE, &meta, scratch);
         if (FAILED(hr))
         {
-            // WIC_FLAGS_FORCE_RGBA32 ‚ª–³‚¢ŠÂ‹«‚ª‚ ‚é‚½‚ß WIC_FLAGS_NONE ‚ğg—p
-            hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_NONE, &meta, scratch);
+            // WIC_FLAGS_IGNORE_SRGB ã‚’ä½¿ç”¨ã—ã¦ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«ã‚’é©åˆ‡ã«ä¿æŒ
+            hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_IGNORE_SRGB, &meta, scratch);
             if (FAILED(hr)) return false;
 
-            // WIC“Ç‚İ‚İŒãAEffekseerŒü‚¯‚ÉRGBA8‚ÖŠñ‚¹‚éi•K—v‚Èê‡‚Ì‚İj
+            // WICï¿½Ç‚İï¿½ï¿½İŒï¿½AEffekseerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RGBA8ï¿½ÖŠñ‚¹‚ï¿½iï¿½Kï¿½vï¿½Èê‡ï¿½Ì‚İj
             const DXGI_FORMAT targetFmt = DXGI_FORMAT_R8G8B8A8_UNORM;
 
             if (meta.format != targetFmt)
@@ -227,7 +227,7 @@ private:
             }
         }
 
-        // ƒ~ƒbƒv¶¬i•K—v‚È‚çj
+        // ï¿½~ï¿½bï¿½vï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Kï¿½vï¿½È‚ï¿½j
         if (mipEnabled)
         {
             if (meta.mipLevels <= 1)
@@ -246,7 +246,7 @@ private:
                     scratch = std::move(mipChain);
                     meta = scratch.GetMetadata();
                 }
-                // ¸”s‚µ‚Ä‚àƒtƒH[ƒ‹ƒoƒbƒNiƒ~ƒbƒv–³‚µ‚Å‘±sj
+                // ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ä‚ï¿½ï¿½tï¿½Hï¿½[ï¿½ï¿½ï¿½oï¿½bï¿½Nï¿½iï¿½~ï¿½bï¿½vï¿½ï¿½ï¿½ï¿½ï¿½Å‘ï¿½ï¿½sï¿½j
             }
         }
 
@@ -272,7 +272,7 @@ private:
 };
 
 //============================================================
-// ƒVƒ“ƒOƒ‹ƒgƒ“
+// ï¿½Vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½gï¿½ï¿½
 //============================================================
 EffectManager* EffectManager::Instance()
 {
@@ -297,7 +297,7 @@ EffectManager::~EffectManager()
 }
 
 //============================================================
-// ‰Šú‰»EI—¹
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½Iï¿½ï¿½
 //============================================================
 bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int maxParticles)
 {
@@ -311,17 +311,17 @@ bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int
     _manager = Effekseer::Manager::Create(maxParticles);
     if (_manager == nullptr) return false;
 
-    // Šù‘¶ƒR[ƒh‚Æ“¯‚¶Create‚ÅOKi“à•”‚ÅGraphicsDevice‚àì‚ç‚ê‚éj
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½Æ“ï¿½ï¿½ï¿½Createï¿½ï¿½OKï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½GraphicsDeviceï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
     _renderer = EffekseerRendererDX11::Renderer::Create(device, context, maxParticles);
     if (_renderer == nullptr) return false;
     //_renderer->SetDistortionMode(Effekseer::DistortionMode::Current);
 
-    // ƒ[ƒ_İ’èiAssetManagerŒo—Rj
+    // ï¿½ï¿½ï¿½[ï¿½_ï¿½İ’ï¿½iAssetManagerï¿½oï¿½Rï¿½j
     _manager->GetSetting()->SetEffectLoader(Effekseer::MakeRefPtr<EffectLoader>());
     _manager->GetSetting()->SetTextureLoader(Effekseer::MakeRefPtr<TextureLoader>(this));
     _manager->GetSetting()->SetModelLoader(Effekseer::MakeRefPtr<ModelLoader>());
 
-    // ƒŒƒ“ƒ_ƒ‰İ’è
+    // ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½İ’ï¿½
     _manager->SetSpriteRenderer(_renderer->CreateSpriteRenderer());
     _manager->SetRibbonRenderer(_renderer->CreateRibbonRenderer());
     _manager->SetRingRenderer(_renderer->CreateRingRenderer());
@@ -352,7 +352,7 @@ void EffectManager::UnInit()
 }
 
 //============================================================
-// ƒGƒtƒFƒNƒgŠÇ—
+// ï¿½Gï¿½tï¿½Fï¿½Nï¿½gï¿½Ç—ï¿½
 //============================================================
 Effekseer::EffectRef EffectManager::LoadEffect(const std::string& path)
 {
@@ -400,7 +400,7 @@ void EffectManager::ClearAllEffects()
 }
 
 //============================================================
-// Ä¶
+// ï¿½Äï¿½
 //============================================================
 Effekseer::Handle EffectManager::PlayEffect(const std::string& path, const DirectX::XMFLOAT3& position)
 {
@@ -431,7 +431,7 @@ bool EffectManager::IsPlaying(Effekseer::Handle handle)
 }
 
 //============================================================
-// ƒpƒ‰ƒ[ƒ^
+// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^
 //============================================================
 void EffectManager::SetEffectPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position)
 {
@@ -458,7 +458,7 @@ void EffectManager::SetEffectSpeed(Effekseer::Handle handle, float speed)
 }
 
 //============================================================
-// ƒJƒƒ‰
+// ï¿½Jï¿½ï¿½ï¿½ï¿½
 //============================================================
 void EffectManager::SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
 {
@@ -481,13 +481,13 @@ void EffectManager::SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMA
 }
 
 //============================================================
-// XVE•`‰æ
+// ï¿½Xï¿½Vï¿½Eï¿½`ï¿½ï¿½
 //============================================================
 void EffectManager::Update(float deltaTime)
 {
     if (!_initialized) return;
 
-    // Effekseer‚ÌUpdate‚Íu1.0 = 1/60•bvŠî€
+    // Effekseerï¿½ï¿½Updateï¿½Íu1.0 = 1/60ï¿½bï¿½vï¿½î€
     _manager->Update(deltaTime * 60.0f);
 }
 
@@ -509,7 +509,7 @@ void EffectManager::Draw()
 }
 
 //============================================================
-// ƒfƒoƒbƒO
+// ï¿½fï¿½oï¿½bï¿½O
 //============================================================
 int EffectManager::GetPlayingEffectsCount() const
 {
