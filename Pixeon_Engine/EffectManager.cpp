@@ -1,7 +1,3 @@
-/*
-* ファイル名 EffectManager.cpp
-* 概要      Effekseerエフェクト管理クラス (EffekseerForCpp 1.7.2.0 / DX11)
-*/
 #include "EffectManager.h"
 #include "AssetManager.h"
 #include "IMGUI/imgui.h"
@@ -9,14 +5,10 @@
 #include <Windows.h>
 #include <algorithm>
 
-// DirectXTex
 #include "DirectXTex/TextureLoad.h"
 
 EffectManager* EffectManager::_instance = nullptr;
 
-//============================================================
-// UTF変換
-//============================================================
 std::u16string EffectManager::Utf8ToUtf16(const std::string& s)
 {
     if (s.empty()) return {};
@@ -34,7 +26,6 @@ std::u16string EffectManager::Utf8ToUtf16(const std::string& s)
 std::string EffectManager::Utf16ToUtf8(const char16_t* s)
 {
     if (!s) return {};
-    // Effekseerのヘルパもあるが、Windows APIで確実にUTF-8へ
     auto ws = reinterpret_cast<const wchar_t*>(s);
     int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
     if (len <= 0) return {};
@@ -42,10 +33,6 @@ std::string EffectManager::Utf16ToUtf8(const char16_t* s)
     WideCharToMultiByte(CP_UTF8, 0, ws, -1, out.data(), len, nullptr, nullptr);
     return out;
 }
-
-//============================================================
-// ローダー
-//============================================================
 
 class EffectManager::EffectLoader : public Effekseer::EffectLoader
 {
@@ -95,7 +82,6 @@ public:
 
     void Unload(Effekseer::ModelRef /*data*/) override
     {
-        // RefPtrなので不要
     }
 };
 
@@ -110,10 +96,8 @@ public:
 
         std::string utf8Path = EffectManager::Utf16ToUtf8(path);
 
-        // Effekseerは "_NoMip" でミップ無効などの運用がある（Effekseer::TextureLoaderHelper参照）
         const bool mipEnabled = Effekseer::TextureLoaderHelper::GetIsMipmapEnabled(std::u16string(path));
 
-        // キャッシュ
         auto it = _owner->_textureCache.find(utf8Path);
         if (it != _owner->_textureCache.end()) {
             return it->second.tex;
@@ -130,8 +114,6 @@ public:
             return nullptr;
         }
 
-        // ---- ここが EffekseerForCpp 1.7.2.0 / DX11 の正解 ----
-        // SRV -> Effekseer::Backend::TextureRef を生成
         auto gd = _owner->_renderer->GetGraphicsDevice();
         Effekseer::Backend::TextureRef backendTex =
             EffekseerRendererDX11::CreateTexture(gd, srv.Get(), nullptr, nullptr);
@@ -140,17 +122,15 @@ public:
             return nullptr;
         }
 
-        // Backend::Texture を Effekseer::Texture に包む
         Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
         effTex->SetBackend(backendTex);
 
-        // キャッシュ登録（SRVも保持しておくと安全）
         EffectManager::TextureCacheEntry e;
         e.tex = effTex;
         e.srv = srv;
         e.w = w;
         e.h = h;
-        e.bytes = (uint64_t)w * (uint64_t)h * 4; // 目安
+        e.bytes = (uint64_t)w * (uint64_t)h * 4;
 
         _owner->_textureCache.emplace(utf8Path, std::move(e));
         return effTex;
@@ -158,7 +138,6 @@ public:
 
     Effekseer::TextureRef Load(const void* data, int32_t size, Effekseer::TextureType /*textureType*/, bool isMipMapEnabled) override
     {
-        // パス無しロードはキャッシュできないので都度生成
         if (!_owner || !_owner->_initialized) return nullptr;
 
         int w = 0, h = 0;
@@ -176,15 +155,11 @@ public:
         Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
         effTex->SetBackend(backendTex);
 
-        // srvの寿命はここで終わるが、backendTexが内部で参照保持する実装が通常
-        // 不安ならここもキャッシュ構造に入れる設計にする
         return effTex;
     }
 
     void Unload(Effekseer::TextureRef /*data*/) override
     {
-        // Effekseer側からのUnload呼びは基本は参照カウント任せ
-        // キャッシュ解放はEffectManager側で行う
     }
 
 private:
@@ -268,9 +243,6 @@ private:
     EffectManager* _owner = nullptr;
 };
 
-//============================================================
-// シングルトン
-//============================================================
 EffectManager* EffectManager::Instance()
 {
     if (_instance == nullptr) {
@@ -293,9 +265,6 @@ EffectManager::~EffectManager()
     UnInit();
 }
 
-//============================================================
-// 初期化・終了
-//============================================================
 bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int maxParticles)
 {
     if (_initialized) return true;
@@ -308,17 +277,13 @@ bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int
     _manager = Effekseer::Manager::Create(maxParticles);
     if (_manager == nullptr) return false;
 
-    // 既存コードと同じCreateでOK（内部でGraphicsDeviceも作られる）
     _renderer = EffekseerRendererDX11::Renderer::Create(device, context, maxParticles);
     if (_renderer == nullptr) return false;
 	
-
-    // ローダ設定（AssetManager経由）
     _manager->GetSetting()->SetEffectLoader(Effekseer::MakeRefPtr<EffectLoader>());
     _manager->GetSetting()->SetTextureLoader(Effekseer::MakeRefPtr<TextureLoader>(this));
     _manager->GetSetting()->SetModelLoader(Effekseer::MakeRefPtr<ModelLoader>());
 
-    // レンダラ設定
     _manager->SetSpriteRenderer(_renderer->CreateSpriteRenderer());
     _manager->SetRibbonRenderer(_renderer->CreateRibbonRenderer());
     _manager->SetRingRenderer(_renderer->CreateRingRenderer());
@@ -348,9 +313,6 @@ void EffectManager::UnInit()
     _initialized = false;
 }
 
-//============================================================
-// エフェクト管理
-//============================================================
 Effekseer::EffectRef EffectManager::LoadEffect(const std::string& path)
 {
     if (!_initialized) return nullptr;
@@ -396,9 +358,6 @@ void EffectManager::ClearAllEffects()
     _effectCache.clear();
 }
 
-//============================================================
-// 再生
-//============================================================
 Effekseer::Handle EffectManager::PlayEffect(const std::string& path, const DirectX::XMFLOAT3& position)
 {
     if (!_initialized) return -1;
@@ -427,9 +386,6 @@ bool EffectManager::IsPlaying(Effekseer::Handle handle)
     return _manager->Exists(handle);
 }
 
-//============================================================
-// パラメータ
-//============================================================
 void EffectManager::SetEffectPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position)
 {
     if (!_initialized || handle < 0) return;
@@ -454,9 +410,6 @@ void EffectManager::SetEffectSpeed(Effekseer::Handle handle, float speed)
     _manager->SetSpeed(handle, speed);
 }
 
-//============================================================
-// カメラ
-//============================================================
 void EffectManager::SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
 {
     if (!_initialized) return;
@@ -477,9 +430,6 @@ void EffectManager::SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMA
     _renderer->SetProjectionMatrix(effProj);
 }
 
-//============================================================
-// 更新・描画
-//============================================================
 void EffectManager::Update(float deltaTime)
 {
     if (!_initialized) return;
@@ -491,19 +441,16 @@ void EffectManager::Draw()
 {
     if (!_initialized) return;
 
-    // 現在のブレンドステートを保存
     ID3D11BlendState* prevBlendState = nullptr;
     FLOAT prevBlendFactor[4];
     UINT prevSampleMask;
     _context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
 
-    // Effekseer用のアルファブレンド設定
     D3D11_BLEND_DESC blendDesc = {};
     blendDesc.AlphaToCoverageEnable = FALSE;
     blendDesc.IndependentBlendEnable = FALSE;
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
 
-    // ストレートアルファ用のブレンド設定
     blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
     blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
     blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
@@ -518,22 +465,16 @@ void EffectManager::Draw()
     FLOAT blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
     _context->OMSetBlendState(effekseerBlend, blendFactor, 0xffffffff);
 
-    // Effekseer描画
     _renderer->BeginRendering();
     _manager->Draw();
     _renderer->EndRendering();
 
-    // ブレンドステートを復元
     _context->OMSetBlendState(prevBlendState, prevBlendFactor, prevSampleMask);
 
-    // リソース解放
     if (effekseerBlend) effekseerBlend->Release();
     if (prevBlendState) prevBlendState->Release();
 }
 
-//============================================================
-// デバッグ
-//============================================================
 int EffectManager::GetPlayingEffectsCount() const
 {
     if (!_initialized) return 0;
