@@ -205,22 +205,26 @@ void EngineFrame::GameViewWindow()
 	ImGui::Separator();
 
 	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
-	ImVec2 size = ImGui::GetContentRegionAvail();
-	float aspect = 16.0f / 9.0f;
-	if (size.x / size.y > aspect) {
-		size.x = size.y * aspect;
+	ImVec2 avail = ImGui::GetContentRegionAvail();
+	float targetAspect = 1920.0f / 1080.0f;
+
+	ImVec2 imageSize = avail;
+	if (avail.x / avail.y > targetAspect) {
+		// 横長：高さフィット
+		imageSize.x = avail.y * targetAspect;
 	}
 	else {
-		size.y = size.x / aspect;
+		// 縦長：幅フィット
+		imageSize.y = avail.x / targetAspect;
 	}
 
-	ImVec2 pos = ImGui::GetCursorPos();
-	pos.x += (ImGui::GetContentRegionAvail().x - size.x) * 0.5f;
-	ImGui::SetCursorPosX(pos.x);
-	if (srv)
-		ImGui::Image((ImTextureID)srv, size);
-	else
-		ImGui::Text("SRVがNullです");
+	// 中央に配置
+	ImVec2 cursorPos = ImGui::GetCursorPos();
+	ImGui::SetCursorPos(ImVec2(
+		cursorPos.x + (avail.x - imageSize.x) * 0.5f,
+		cursorPos.y + (avail.y - imageSize.y) * 0.5f
+	));
+	ImGui::Image((ImTextureID)srv, imageSize);
 
 	bool active = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 

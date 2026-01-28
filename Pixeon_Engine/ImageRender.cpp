@@ -420,8 +420,8 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 		return;
 	}
 
-	float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
-	float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
+	float W = 1920.0f;
+	float H = 1080.0f;
 
 	Transform t = _Parent ? _Parent->GetWorldTransform() : Transform();
 	float pixelWidth = m_sizeWorld.x * t.scale.x;
