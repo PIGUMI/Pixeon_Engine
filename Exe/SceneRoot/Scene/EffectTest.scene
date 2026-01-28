@@ -1,0 +1,64 @@
+{
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "-0.469074 6.37134 10.7897 -6.54001 0.340001 7.62248e-39 1.92562 3.03646 1.67133 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Camera",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Effekseer01/test.efk 1 0 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 9\n",
+                    "Name": "EffectComponent",
+                    "Type": 10
+                }
+            ],
+            "Name": "Effect",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "EffectTest"
+    }
+}

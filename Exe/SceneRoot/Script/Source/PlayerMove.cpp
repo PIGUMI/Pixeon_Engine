@@ -11,7 +11,7 @@ void Script_PlayerMove::BeginPlay() {
 	FindChildObjectByName(_parentObject, "Body", &_Body);
 	FindComponent(_Head, "CameraComponent", &_Camera);
 	
-	_Sensitivity = 0.005;
+	_Sensitivity = 0.001;
 	_LimitAngle = 70.0f;
 	_MoveSpeed = 0.1f;
 	_walkTimer = 0.0f;

@@ -55,7 +55,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int width = rect->right - rect->left;
         int height = rect->bottom - rect->top;
 
-        // アスペクト比調整
         switch (wParam)
         {
         case WMSZ_LEFT:
@@ -68,7 +67,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             width = static_cast<int>(height * ASPECT_RATIO);
             rect->right = rect->left + width;
             break;
-            // 他のケースも同様...
         }
     }
     break;

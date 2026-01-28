@@ -1,0 +1,120 @@
+{
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "4.73172 0.451337 1.71578 1.54 0.0999997 6.33678e-39 -5.2136 -0.546994 1.4094 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/Barrel.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n5\n0 0 0\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "NewObject1",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "PSX/Barrel.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n5\n0 0 0\n1 1 1\n-1.5708 0 0\n1\nPSX/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "NewObject11",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    -0.10000000149011612,
+                    0.0,
+                    2.200000047683716
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0 0 1 0.00711727 1 10 20 35 1 1 0 0 0 0 0 0 ",
+                    "Name": "Light",
+                    "Type": 1
+                }
+            ],
+            "Name": "NewObject2",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.10000000149011612,
+                    -1.100000023841858,
+                    1.0
+                ],
+                "Rotation": [
+                    0.005235987715423107,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "Shader"
+    }
+}
