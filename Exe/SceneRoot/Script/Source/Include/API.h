@@ -291,6 +291,8 @@ extern "C" {
 	PIXEON_API APIResult EffectPlay(Component effectComp);
 	PIXEON_API APIResult EffectStop(Component effectComp);
 	PIXEON_API APIResult EffectIsPlaying(Component effectComp, bool* outIsPlaying);
+
+	PIXEON_API APIResult CallScriptFunction(Component Script, const char* functionName);
 };
 
 #endif// API.h
