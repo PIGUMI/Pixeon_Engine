@@ -26,6 +26,7 @@
 #include "BulletPhysics/btBulletDynamicsCommon.h"
 #include "Input.h"
 #include "EffectComponent.h"
+#include "ScripComponent.h"
 
 #include <string>
 #include <cstring>
@@ -2508,6 +2509,22 @@ extern "C" {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		*outIsPlaying =  effectComponent->IsPlaying();
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult CallScriptFunction(Component Script, const char* functionName)
+	{
+		if (!functionName) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(Script, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ScripComponent* scriptComp = dynamic_cast<ScripComponent*>(compPtr);
+		if (!scriptComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		scriptComp->CallFunction(std::string(functionName));
 		return PN_SUCCESS;
 	}
 };

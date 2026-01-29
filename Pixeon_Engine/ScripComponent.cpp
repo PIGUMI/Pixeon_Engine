@@ -116,6 +116,22 @@ void ScripComponent::RefreshScriptList() {
 	else if (_selectedIndex < 0) _selectedIndex = 0;
 }
 
+void ScripComponent::CallFunction(const std::string& functionName)
+{
+	if (_scriptInstance && !_StopOnError)
+	{
+		try
+		{
+			_scriptInstance->CallCustom(functionName);
+		}
+		catch (const std::exception&)
+		{
+			_StopOnError = true;
+			std::cerr << "[ScripComponent] Exception in CallCustom of script " << _scriptName << ": " << functionName << std::endl;
+		}
+	}
+}
+
 bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
 	if (scriptName.empty()) return false;
 	try {

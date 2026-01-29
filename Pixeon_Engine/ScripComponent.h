@@ -30,6 +30,8 @@ public:
 	bool CreateScriptFiles(const std::string& scriptName);
 	void RefreshScriptList();
 
+	void CallFunction(const std::string& functionName);
+
 	IScript* GetScriptInstance() const { return _scriptInstance; }
 	std::string GetScriptName() const { return _scriptName; }
 
