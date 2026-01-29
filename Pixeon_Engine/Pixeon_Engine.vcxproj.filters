@@ -257,6 +257,9 @@
     <ClCompile Include="EffectComponent.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Pixeon2_API.cpp">
+      <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -453,6 +456,9 @@
     </ClInclude>
     <ClInclude Include="EffectComponent.h">
       <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Pixeon2_API.h">
+      <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
