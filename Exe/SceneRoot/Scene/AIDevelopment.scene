@@ -18,7 +18,23 @@
             "layerIndex": 2,
             "name": "Layer 2",
             "opacity": 1.0,
-            "postEffects": [],
+            "postEffects": [
+                {
+                    "enabled": true,
+                    "params": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "intensity": 1.0,
+                        "pixelSize": 8.0
+                    },
+                    "priority": 0,
+                    "type": 3
+                }
+            ],
             "visible": true
         },
         {
@@ -75,7 +91,7 @@
         {
             "Components": [
                 {
-                    "Data": "-21.9759 17.1551 4.00466 17.29 0.69 6.33678e-39 -14.2639 10.7897 3.91796 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-12.5768 28.3536 17.8799 17.29 0.69 6.33678e-39 -4.86481 21.9882 17.7932 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }

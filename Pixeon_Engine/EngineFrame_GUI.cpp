@@ -23,6 +23,7 @@ void EngineFrame::HandleAssetContextMenu(const std::filesystem::path& path)
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("名前変更").c_str())) {
 			SceneRenameNewName_ = path.stem().string();
 			ShowSceneRename = true;
+			selectedLayer_ = nullptr;
 		}
 	}
 }
@@ -513,7 +514,7 @@ void  EngineFrame::ContentWindow()
 		ImTextureID icon = isDir ? (ImTextureID)FolderIcon_ : EngineFrame::GetInstance()->GetAssetIcon(fileName);
 
 		// 表示文字列と ID を分離
-		std::string displayName = AbbreviateName(fileName, 12);        // 画面に表示する略称
+		std::string displayName = AbbreviateName(fileName, 12);
 		std::string idName = fileName + "##" + std::to_string(index++); // ImGui ID
 
 		float groupX = ImGui::GetCursorPosX();
@@ -806,6 +807,7 @@ void EngineFrame::LayerWindow()
 		if (SceneManger::GetInstance()->GetCurrentScene() == nullptr) return;
 		auto layer = SceneManger::GetInstance()->GetCurrentScene()->GetLayer(i);
 
+		ImGui::PushID(i);
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow |
 			ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -833,6 +835,7 @@ void EngineFrame::LayerWindow()
 			}
 			ImGui::TreePop();
 		}
+		ImGui::PopID();
 	}
 
 	ImGui::End();
