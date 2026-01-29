@@ -934,6 +934,18 @@ extern "C" {
 		*outComponent = reinterpret_cast<Component>(comp);
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult CountChildObjects(Object object, int* outCount)
+	{
+		if (!outCount) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outCount = static_cast<int>(objPtr->GetChildren().size());
+		return PN_SUCCESS;
+	}
 };
 
 extern "C" {
