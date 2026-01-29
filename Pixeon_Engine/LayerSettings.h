@@ -8,6 +8,8 @@
 #include "GUI.h"
 #include <nlohmann/json.hpp>
 
+#define MAX_LAYER_COUNT (10)
+
 enum class PostEffectType {
 	NONE,
 	BLOOM,

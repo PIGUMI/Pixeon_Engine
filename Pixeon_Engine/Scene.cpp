@@ -88,6 +88,14 @@ void AbstractScene::Init() {
 	InitPhysics();
 	_collisionManager = new CollisionManager;
 	_collisionManager->Initialize(pPhysicsWorld);
+
+	for(int i = 0 ; i < MAX_LAYER_COUNT; i++)
+	{
+		Layer* layer = new Layer;
+		layer->layerIndex = i;
+		layer->name = "Layer " + std::to_string(i);
+		_layers.push_back(layer);
+	}
 }
 
 void AbstractScene::BeginPlay() {
@@ -515,6 +523,14 @@ void AbstractScene::SaveToFile() {
 	}
 	SceneData["Objects"] = ObjectArray;
 
+	nlohmann::json layersData = nlohmann::json::array();
+	for (auto& layer : _layers) {
+		nlohmann::json layerJson;
+		layer->SaveToJson(layerJson);
+		layersData.push_back(layerJson);
+	}
+	SceneData["Layers"] = layersData;
+
 	std::string File = SettingManager::GetInstance()->GetSceneFilePath() + _name + ".scene";
 	std::ofstream outFile(File);
 	if (outFile.is_open()) {
@@ -617,6 +633,16 @@ void AbstractScene::LoadToFile() {
 				}
 			}
 			if (_MainCamera) break;
+		}
+
+		if (sceneData.contains("Layers") && sceneData["Layers"].is_array()) {
+			auto& layersArray = sceneData["Layers"];
+			_layers.clear();
+			for (const auto& layerJson : layersArray) {
+				Layer* layer = new Layer();
+				layer->LoadFromJson(layerJson);
+				_layers.push_back(layer);
+			}
 		}
 	}
 	catch (const std::exception& e) {
@@ -931,4 +957,10 @@ bool AbstractScene::AddObject(AbstractObject* obj)
 		}
 		}).detach();
 	return true;
+}
+
+Layer* AbstractScene::GetLayer(int index)
+{
+	if (index < 0 || index >= MAX_LAYER_COUNT) return nullptr;
+	return _layers[index];
 }

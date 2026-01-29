@@ -3,7 +3,6 @@
 
 #define PIXEON_ENGINE_VERSION (400.0f)
 #define PIXEON_ENGINE_INEDITOR true
-#define MAX_LAYER_COUNT (10)
 
 #include <Windows.h>
 #include <string>

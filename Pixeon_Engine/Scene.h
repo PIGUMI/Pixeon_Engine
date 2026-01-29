@@ -5,6 +5,7 @@
 #include "ComponentManager.h"
 #include "CameraComponent.h"
 #include "CollisionManager.h"
+#include "LayerSettings.h"
 #include <string>
 #include <vector>
 #include <mutex>
@@ -53,6 +54,9 @@ public:
 
 	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }
 	CollisionManager* GetCollisionManager() { return _collisionManager; }
+
+	std::vector<Layer*> GetLayers() { return _layers; }
+	Layer* GetLayer(int index);
 private:
 	void ProcessThreadSafeAdditions();
 	void UploadLightsToGPU();
@@ -71,6 +75,7 @@ private:
 	std::vector<AbstractObject*> _ToBeAdded;
 	std::vector<AbstractObject*> _ToBeAddedBuffer;
 	std::vector<LightComponent*> _lights;
+	std::vector<Layer*> _layers;
 	std::mutex _mtx;
 	CameraComponent* _MainCamera = nullptr;
 	CollisionManager* _collisionManager = nullptr;
