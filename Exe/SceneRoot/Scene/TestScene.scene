@@ -27,34 +27,6 @@
                     1.0
                 ]
             }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "9\nBottles/Bottles.png\n3\nVS_ImgQuad_Lit\nPS_ImgQuad\n128 128\n100 100\n0 0\n0 0 0\n0 0 1 1\n1 1 1 1\n0 0 0\n50 50 50 50\n",
-                    "Name": "ImageRender",
-                    "Type": 2
-                }
-            ],
-            "Name": "NewObject",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    14.800000190734863,
-                    5.300000190734863,
-                    -10.399999618530273
-                ],
-                "Rotation": [
-                    0.0,
-                    -0.18325957655906677,
-                    -0.5829399824142456
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
         }
     ],
     "SceneSettings": {
