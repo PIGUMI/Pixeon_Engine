@@ -303,11 +303,11 @@ void AbstractScene::PlayUpdate() {
 
 					int maxSubSteps = 10;
 					if (numObjects > 20) maxSubSteps = 15;
-					if (numObjects > 50) maxSubSteps = 30;
-					if (numObjects > 100) maxSubSteps = 40;
-					if (numObjects > 200) maxSubSteps = 50;
+					if (numObjects > 50) maxSubSteps = 80;
+					if (numObjects > 100) maxSubSteps = 120;
+					if (numObjects > 200) maxSubSteps = 150;
 
-					float fixedTimeStep = 1.0f / 240.0f;
+					float fixedTimeStep = 1.0f / 600.0f;
 
 					bool valid = true;
 					for (int i = 0; i < pPhysicsWorld->getNumCollisionObjects(); ++i) {
@@ -781,7 +781,7 @@ void AbstractScene::InitPhysics()
 
 	pPhysicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
-	pPhysicsWorld->getSolverInfo().m_numIterations = 150;
+	pPhysicsWorld->getSolverInfo().m_numIterations = 300;
 
 	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
 	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_WARMSTARTING;
@@ -789,7 +789,7 @@ void AbstractScene::InitPhysics()
 	pPhysicsWorld->getSolverInfo().m_splitImpulse = true;
 	pPhysicsWorld->getSolverInfo().m_splitImpulsePenetrationThreshold = -0.02f;
 
-	pPhysicsWorld->getSolverInfo().m_erp = 0.2f;
+	pPhysicsWorld->getSolverInfo().m_erp = 0.8f;
 	pPhysicsWorld->getSolverInfo().m_erp2 = 0.2f;
 
 	pPhysicsWorld->getSolverInfo().m_globalCfm = 0.00001f;

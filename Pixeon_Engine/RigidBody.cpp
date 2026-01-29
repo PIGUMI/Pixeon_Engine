@@ -613,9 +613,9 @@ void RigidBody::CreateRigidBody()
 
 	pRigidBody_->setUserPointer(this);
 
-	pRigidBody_->setCcdMotionThreshold(0.001f);
+	pRigidBody_->setCcdMotionThreshold(0.0f);
 
-	pRigidBody_->setCcdSweptSphereRadius(0.05f);
+	pRigidBody_->setCcdSweptSphereRadius(0.3f);
 
 	if (pCompoundShape_)
 	{
@@ -630,6 +630,15 @@ void RigidBody::CreateRigidBody()
 
 	pRigidBody_->setAnisotropicFriction(pCompoundShape_->getAnisotropicRollingFrictionDirection(),
 		btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+
+	if (fMass_ == 0.0f || (bKinematic_ && fMass_ <= 1.0f))
+	{
+		pRigidBody_->setCollisionFlags(
+			pRigidBody_->getCollisionFlags() |
+			btCollisionObject::CF_STATIC_OBJECT
+		);
+		pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+	}
 
 	SetFriction(fFriction_);
 	SetRestitution(fRestitution_);
