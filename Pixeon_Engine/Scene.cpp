@@ -871,6 +871,7 @@ std::vector<EffectComponent*> AbstractScene::CollectEffectComponents(int layer)
 
 void AbstractScene::AddObjectLocal(AbstractObject* obj) {
 	if (!obj) return;
+	obj->SetParentScene(this);
 
 	auto it = std::find(_ToBeAdded.begin(), _ToBeAdded.end(), obj);
 	if (it != _ToBeAdded.end()) return;
