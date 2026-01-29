@@ -268,6 +268,14 @@ void Script_Weapon::ApplyDamageAndKnockback(Object target, Float3 direction, flo
         );
         RigidBodyAddImpulse(rigidBody, &impulse);
     }
+
+    char ObjectName[255];
+	GetObjectName(target, ObjectName, sizeof(ObjectName));
+    if (strstr(ObjectName, "Entity") != nullptr)
+    {
+		// ダメージ処理（仮実装）
+		RemoveObjectFromScene(_parentScene, target);
+	}
 }
 
 void Script_Weapon::CreateBulletTrailEffect(Float3 start, Float3 end) {
