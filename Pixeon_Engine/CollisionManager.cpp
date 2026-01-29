@@ -415,14 +415,10 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 				CollisionInfo exitInfo;
 				exitInfo.HitObject = prevObject->GetParent();
 				if (exitInfo.HitObject)
-				{
 					exitInfo.HitObjectName = exitInfo.HitObject->GetObjectName();
-				}
 				else
-				{
 					exitInfo.HitObjectName = "";
-				}
-
+				
 				collision->OnCollisionExit_(exitInfo);
 			}
 		}
