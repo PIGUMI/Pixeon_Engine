@@ -367,6 +367,8 @@ void BoxCollision::CreateBoxShape()
 		f3Size_.y * 0.5f * worldScale.y,
 		f3Size_.z * 0.5f * worldScale.z
 	));
+
+	pBoxShape_->setMargin(0.01f);
 }
 
 void BoxCollision::UpdateCollisionShape()

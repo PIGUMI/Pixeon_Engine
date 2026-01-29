@@ -613,16 +613,24 @@ void RigidBody::CreateRigidBody()
 
 	pRigidBody_->setUserPointer(this);
 
-	pRigidBody_->setCcdMotionThreshold(0.01f);
-	pRigidBody_->setCcdSweptSphereRadius(0.1f);
+	pRigidBody_->setCcdMotionThreshold(0.001f);
+
+	pRigidBody_->setCcdSweptSphereRadius(0.05f);
+
 	if (pCompoundShape_)
 	{
-		pCompoundShape_->setMargin(0.04f);
+		pCompoundShape_->setMargin(0.02f);
 	}
-	pRigidBody_->setContactProcessingThreshold(0.001f);
-	pRigidBody_->setSleepingThresholds(0.1f, 0.1f);
 
-	// •¨—ƒpƒ‰ƒ[ƒ^‚ðÝ’è
+	pRigidBody_->setContactProcessingThreshold(0.0001f);
+
+	pRigidBody_->setSleepingThresholds(0.2f, 0.2f);
+
+	pRigidBody_->setDeactivationTime(2.0f);
+
+	pRigidBody_->setAnisotropicFriction(pCompoundShape_->getAnisotropicRollingFrictionDirection(),
+		btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+
 	SetFriction(fFriction_);
 	SetRestitution(fRestitution_);
 	SetDamping(fLinearDamping_, fAngularDamping_);
@@ -632,6 +640,7 @@ void RigidBody::CreateRigidBody()
 	SetKinematic(bKinematic_);
 	SetGravityEnabled(bUseGravity_);
 	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
+
 	bAddedToWorld_ = false;
 }
 

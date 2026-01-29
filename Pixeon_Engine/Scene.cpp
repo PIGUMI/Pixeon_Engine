@@ -303,7 +303,9 @@ void AbstractScene::PlayUpdate() {
 
 					int maxSubSteps = 10;
 					if (numObjects > 20) maxSubSteps = 15;
-					if (numObjects > 50) maxSubSteps = 20;
+					if (numObjects > 50) maxSubSteps = 30;
+					if (numObjects > 100) maxSubSteps = 40;
+					if (numObjects > 200) maxSubSteps = 50;
 
 					float fixedTimeStep = 1.0f / 240.0f;
 
@@ -320,8 +322,13 @@ void AbstractScene::PlayUpdate() {
 					if (valid) {
 						pPhysicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 
-						if (numObjects > 50) {
-							pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
+						if (numObjects > 100) {
+							static int resetCounter = 0;
+							resetCounter++;
+							if (resetCounter > 60) {
+								pPhysicsWorld->getBroadphase()->resetPool(pPhysicsWorld->getDispatcher());
+								resetCounter = 0;
+							}
 						}
 					}
 				}
@@ -774,21 +781,26 @@ void AbstractScene::InitPhysics()
 
 	pPhysicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
-	pPhysicsWorld->getSolverInfo().m_numIterations = 20;
+	pPhysicsWorld->getSolverInfo().m_numIterations = 100;
+
 	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
 	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_WARMSTARTING;
 
 	pPhysicsWorld->getSolverInfo().m_splitImpulse = true;
-	pPhysicsWorld->getSolverInfo().m_splitImpulsePenetrationThreshold = -0.01f;
+	pPhysicsWorld->getSolverInfo().m_splitImpulsePenetrationThreshold = -0.02f;
 
-	pPhysicsWorld->getSolverInfo().m_erp = 0.3f;
-	pPhysicsWorld->getSolverInfo().m_erp2 = 0.3f;
+	pPhysicsWorld->getSolverInfo().m_erp = 0.2f;
+	pPhysicsWorld->getSolverInfo().m_erp2 = 0.2f;
 
 	pPhysicsWorld->getSolverInfo().m_globalCfm = 0.00001f;
 
 	pPhysicsWorld->getDispatchInfo().m_useContinuous = true;
+	pPhysicsWorld->getDispatchInfo().m_allowedCcdPenetration = 0.001f;
 
 	pPhysicsWorld->getSolverInfo().m_timeStep = 1.0f / 240.0f;
+
+	pPhysicsWorld->getSolverInfo().m_numIterations = 100;
+	pPhysicsWorld->getSolverInfo().m_minimumSolverBatchSize = 128;
 }
 
 void AbstractScene::CleanupPhysics()

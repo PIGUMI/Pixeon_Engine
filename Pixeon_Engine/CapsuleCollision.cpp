@@ -373,15 +373,15 @@ void CapsuleCollision::CreateCapsuleShape()
 		worldScale = _Parent->GetWorldTransform().scale;
 	}
 
-	// カプセルの円柱部分の高さを計算
 	float cylinderHeight = fHeight_ - 2.0f * fRadius_;
 	if (cylinderHeight < 0.0f) cylinderHeight = 0.0f;
 
-	// BulletのカプセルはY軸方向
 	pCapsuleShape_ = new btCapsuleShape(
 		fRadius_ * std::max(worldScale.x, worldScale.z),
 		cylinderHeight * worldScale.y
 	);
+
+	pCapsuleShape_->setMargin(0.01f);
 }
 
 void CapsuleCollision::UpdateCollisionShape()

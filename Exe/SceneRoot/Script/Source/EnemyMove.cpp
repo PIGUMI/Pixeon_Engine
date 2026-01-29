@@ -56,6 +56,10 @@ void Script_EnemyMove::Update(float DeltaTime) {
 
     Float3 aiPos = GetCurrentPosition();
 
+    if(aiPos.y < -10.0f) {
+		RemoveObjectFromScene(currentScene, aiObject);
+	}
+
     float distanceToPlayer = 0.0f;
     bool playerDetected = false;
 
