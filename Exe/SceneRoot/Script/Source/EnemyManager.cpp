@@ -15,7 +15,7 @@ void Script_EnemyManager:: Update(float DeltaTime) {
 
     int count = 0;
 	CountChildObjects(_parentObject, &count);
-	if (count >= ENEMY_COUNT) return;
+	//if (count >= ENEMY_COUNT) return;
     Object EntityTemp;
     AddObjectToScene(_parentScene, _Enemy, &EntityTemp);
     ObjectParenthood(EntityTemp, _parentObject);

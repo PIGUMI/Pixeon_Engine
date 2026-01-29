@@ -781,7 +781,7 @@ void AbstractScene::InitPhysics()
 
 	pPhysicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
-	pPhysicsWorld->getSolverInfo().m_numIterations = 100;
+	pPhysicsWorld->getSolverInfo().m_numIterations = 150;
 
 	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
 	pPhysicsWorld->getSolverInfo().m_solverMode |= SOLVER_USE_WARMSTARTING;
@@ -797,7 +797,7 @@ void AbstractScene::InitPhysics()
 	pPhysicsWorld->getDispatchInfo().m_useContinuous = true;
 	pPhysicsWorld->getDispatchInfo().m_allowedCcdPenetration = 0.001f;
 
-	pPhysicsWorld->getSolverInfo().m_timeStep = 1.0f / 240.0f;
+	pPhysicsWorld->getSolverInfo().m_timeStep = 1.0f / 300.0f;
 
 	pPhysicsWorld->getSolverInfo().m_numIterations = 100;
 	pPhysicsWorld->getSolverInfo().m_minimumSolverBatchSize = 128;
