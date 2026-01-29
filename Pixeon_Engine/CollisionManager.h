@@ -74,6 +74,8 @@ private:
 	void ProcessCollisionEvents(BaseCollision* collision,
 		const std::vector<CollisionInfo>& newCollisions);
 
+	void CleanupCollisionReferences(BaseCollision* collision);
+
 private:
 	btDiscreteDynamicsWorld* m_DynamicsWorld = nullptr;
 

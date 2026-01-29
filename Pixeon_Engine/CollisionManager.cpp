@@ -95,6 +95,39 @@ void CollisionManager::Shutdown()
 	m_CurrentCollisions.clear();
 }
 
+// ★修正1: 削除されるコリジョンを参照している全てのエントリをクリーンアップ
+void CollisionManager::CleanupCollisionReferences(BaseCollision* collision)
+{
+	if (!collision) return;
+
+	// m_PreviousCollisionsから、このコリジョンへの参照を全て削除
+	for (auto& pair : m_PreviousCollisions)
+	{
+		auto& collisionList = pair.second;
+		collisionList.erase(
+			std::remove(collisionList.begin(), collisionList.end(), collision),
+			collisionList.end()
+		);
+	}
+
+	// m_CurrentCollisionsから、このコリジョンのオブジェクトへの参照を削除
+	AbstractObject* parent = collision->GetParent();
+	if (parent)
+	{
+		for (auto& pair : m_CurrentCollisions)
+		{
+			auto& infoList = pair.second;
+			infoList.erase(
+				std::remove_if(infoList.begin(), infoList.end(),
+					[parent](const CollisionInfo& info) {
+						return info.HitObject == parent;
+					}),
+				infoList.end()
+			);
+		}
+	}
+}
+
 void CollisionManager::RegisterBoxCollision(BoxCollision* collision)
 {
 	if (collision && std::find(m_BoxCollisions.begin(), m_BoxCollisions.end(), collision) == m_BoxCollisions.end())
@@ -117,6 +150,9 @@ void CollisionManager::UnregisterBoxCollision(BoxCollision* collision)
 			delete callbackIt->second;
 			m_ContactCallbacks.erase(callbackIt);
 		}
+
+		// ★修正2: 削除前に全ての参照をクリーンアップ
+		CleanupCollisionReferences(collision);
 
 		m_PreviousCollisions.erase(collision);
 		m_CurrentCollisions.erase(collision);
@@ -145,6 +181,9 @@ void CollisionManager::UnregisterCapsuleCollision(CapsuleCollision* collision)
 			delete callbackIt->second;
 			m_ContactCallbacks.erase(callbackIt);
 		}
+
+		// ★修正3: 削除前に全ての参照をクリーンアップ
+		CleanupCollisionReferences(collision);
 
 		m_PreviousCollisions.erase(collision);
 		m_CurrentCollisions.erase(collision);
@@ -175,6 +214,9 @@ void CollisionManager::CheckManualCollisions()
 
 	for (BoxCollision* collision : m_BoxCollisions)
 	{
+		// ★修正4: nullptrチェック追加
+		if (!collision || !collision->GetParent()) continue;
+
 		RigidBody* rigidBody = collision->GetParent()->GetComponent<RigidBody>();
 		if (!rigidBody)
 		{
@@ -184,6 +226,9 @@ void CollisionManager::CheckManualCollisions()
 
 	for (CapsuleCollision* collision : m_CapsuleCollisions)
 	{
+		// ★修正5: nullptrチェック追加
+		if (!collision || !collision->GetParent()) continue;
+
 		RigidBody* rigidBody = collision->GetParent()->GetComponent<RigidBody>();
 		if (!rigidBody)
 		{
@@ -191,7 +236,7 @@ void CollisionManager::CheckManualCollisions()
 		}
 	}
 
-	// Box ⇔ Box の衝突判定
+	// Box と Box の衝突判定
 	for (size_t i = 0; i < manualBoxCollisions.size(); ++i)
 	{
 		std::vector<CollisionInfo> newCollisions;
@@ -219,7 +264,7 @@ void CollisionManager::CheckManualCollisions()
 		ProcessCollisionEvents(manualBoxCollisions[i], newCollisions);
 	}
 
-	// Box ⇔ Capsule の衝突判定
+	// Box と Capsule の衝突判定
 	for (BoxCollision* boxCol : manualBoxCollisions)
 	{
 		std::vector<CollisionInfo> boxNewCollisions;
@@ -247,7 +292,7 @@ void CollisionManager::CheckManualCollisions()
 		ProcessCollisionEvents(boxCol, boxNewCollisions);
 	}
 
-	// Capsule ⇔ Capsule の衝突判定
+	// Capsule と Capsule の衝突判定
 	for (size_t i = 0; i < manualCapsuleCollisions.size(); ++i)
 	{
 		std::vector<CollisionInfo> newCollisions;
@@ -323,10 +368,11 @@ void CollisionManager::ProcessBulletCollisions()
 	}
 }
 
+// ★修正6: ProcessCollisionEventsに安全性チェックを追加
 void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 	const std::vector<CollisionInfo>& newCollisions)
 {
-	if (!collision) return;
+	if (!collision || !collision->GetParent()) return;
 
 	// 重複排除
 	std::vector<CollisionInfo> uniqueCollisions;
@@ -363,6 +409,9 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 	// 新しい衝突を処理
 	for (const CollisionInfo& info : uniqueCollisions)
 	{
+		// ★修正7: HitObjectの有効性チェック
+		if (!info.HitObject) continue;
+
 		BaseCollision* otherCollision = nullptr;
 
 		// BoxCollisionとCapsuleCollisionの両方をチェック
@@ -405,20 +454,54 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 	}
 
 	// OnCollisionExitの処理
+	// ★修正8: 安全性チェックを追加
 	for (BaseCollision* prevObject : previousObjects)
 	{
+		// prevObjectが有効かチェック
+		if (!prevObject) continue;
+
+		// prevObjectがまだ登録されているかチェック
+		bool isStillRegistered = false;
+
+		// BoxCollisionリストをチェック
+		for (BoxCollision* box : m_BoxCollisions)
+		{
+			if (box == prevObject)
+			{
+				isStillRegistered = true;
+				break;
+			}
+		}
+
+		// CapsuleCollisionリストもチェック
+		if (!isStillRegistered)
+		{
+			for (CapsuleCollision* capsule : m_CapsuleCollisions)
+			{
+				if (capsule == prevObject)
+				{
+					isStillRegistered = true;
+					break;
+				}
+			}
+		}
+
+		// 登録されていないオブジェクトはスキップ(削除済み)
+		if (!isStillRegistered) continue;
+
+		// GetParent()が有効かチェック
+		AbstractObject* prevParent = prevObject->GetParent();
+		if (!prevParent) continue;
+
 		auto it = std::find(currentObjects.begin(), currentObjects.end(), prevObject);
 		if (it == currentObjects.end())
 		{
 			if (collision->OnCollisionExit_)
 			{
 				CollisionInfo exitInfo;
-				exitInfo.HitObject = prevObject->GetParent();
-				if (exitInfo.HitObject)
-					exitInfo.HitObjectName = exitInfo.HitObject->GetObjectName();
-				else
-					exitInfo.HitObjectName = "";
-				
+				exitInfo.HitObject = prevParent;
+				exitInfo.HitObjectName = prevParent->GetObjectName();
+
 				collision->OnCollisionExit_(exitInfo);
 			}
 		}
@@ -436,7 +519,10 @@ void CollisionManager::DrawDebugInfo()
 {
 	for (BoxCollision* collision : m_BoxCollisions)
 	{
-		collision->DrawDebugWireframe();
+		if (collision)
+		{
+			collision->DrawDebugWireframe();
+		}
 	}
 }
 
@@ -450,26 +536,66 @@ float CollisionManager::ClosestPointsBetweenLineSegments(
 	DirectX::XMVECTOR r = DirectX::XMVectorSubtract(p1, p2);
 
 	float a = DirectX::XMVectorGetX(DirectX::XMVector3Dot(d1, d1));
-	float b = DirectX::XMVectorGetX(DirectX::XMVector3Dot(d1, d2));
-	float c = DirectX::XMVectorGetX(DirectX::XMVector3Dot(d1, r));
 	float e = DirectX::XMVectorGetX(DirectX::XMVector3Dot(d2, d2));
 	float f = DirectX::XMVectorGetX(DirectX::XMVector3Dot(d2, r));
 
 	float s, t;
-	float denom = a * e - b * b;
+	const float EPSILON = 1e-6f;
 
-	if (denom != 0.0f)
+	if (a <= EPSILON && e <= EPSILON)
 	{
-		s = (b * f - c * e) / denom;
-		s = std::max(0.0f, std::min(1.0f, s));
+		s = t = 0.0f;
+		DirectX::XMStoreFloat3(&point1, p1);
+		DirectX::XMStoreFloat3(&point2, p2);
+
+		DirectX::XMVECTOR c1 = DirectX::XMLoadFloat3(&point1);
+		DirectX::XMVECTOR c2 = DirectX::XMLoadFloat3(&point2);
+		DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(c1, c2);
+		return DirectX::XMVectorGetX(DirectX::XMVector3Length(diff));
+	}
+
+	if (a <= EPSILON)
+	{
+		s = 0.0f;
+		t = f / e;
+		t = std::max(0.0f, std::min(1.0f, t));
 	}
 	else
 	{
-		s = 0.0f;
-	}
+		float c = DirectX::XMVectorGetX(DirectX::XMVector3Dot(d1, r));
+		if (e <= EPSILON)
+		{
+			t = 0.0f;
+			s = std::max(0.0f, std::min(1.0f, -c / a));
+		}
+		else
+		{
+			float b = DirectX::XMVectorGetX(DirectX::XMVector3Dot(d1, d2));
+			float denom = a * e - b * b;
 
-	t = (b * s + f) / e;
-	t = std::max(0.0f, std::min(1.0f, t));
+			if (denom != 0.0f)
+			{
+				s = std::max(0.0f, std::min(1.0f, (b * f - c * e) / denom));
+			}
+			else
+			{
+				s = 0.0f;
+			}
+
+			t = (b * s + f) / e;
+
+			if (t < 0.0f)
+			{
+				t = 0.0f;
+				s = std::max(0.0f, std::min(1.0f, -c / a));
+			}
+			else if (t > 1.0f)
+			{
+				t = 1.0f;
+				s = std::max(0.0f, std::min(1.0f, (b - c) / a));
+			}
+		}
+	}
 
 	DirectX::XMVECTOR c1 = DirectX::XMVectorAdd(p1, DirectX::XMVectorScale(d1, s));
 	DirectX::XMVECTOR c2 = DirectX::XMVectorAdd(p2, DirectX::XMVectorScale(d2, t));
@@ -510,7 +636,7 @@ DirectX::XMFLOAT3 CollisionManager::ClosestPointOnLineSegmentToAABB(
 	DirectX::XMFLOAT3 result;
 	DirectX::XMStoreFloat3(&result, pointOnLine);
 
-	// AABBの範囲内にクランプ
+	// AABB範囲内にクランプ
 	result.x = std::max(boxMin.x, std::min(boxMax.x, result.x));
 	result.y = std::max(boxMin.y, std::min(boxMax.y, result.y));
 	result.z = std::max(boxMin.z, std::min(boxMax.z, result.z));
@@ -564,7 +690,7 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 	DirectX::XMStoreFloat3(&topCenterF, topCenter);
 	DirectX::XMStoreFloat3(&bottomCenterF, bottomCenter);
 
-	// ボックスのAABBを計算（簡易版）
+	// ボックスのAABBを計算(簡易版)
 	DirectX::XMFLOAT3 boxMin = {
 		boxPos.x - boxSize.x * boxScale.x * 0.5f,
 		boxPos.y - boxSize.y * boxScale.y * 0.5f,
@@ -576,12 +702,12 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 		boxPos.z + boxSize.z * boxScale.z * 0.5f
 	};
 
-	// カプセルの線分とボックスの最近接点を計算
+	// カプセルの線分とボックスの最近点を計算
 	DirectX::XMFLOAT3 closestPoint = ClosestPointOnLineSegmentToAABB(
 		topCenterF, bottomCenterF, boxMin, boxMax
 	);
 
-	// 最近接点までの距離を計算
+	// 最近点までの距離を計算
 	DirectX::XMVECTOR closestVec = DirectX::XMLoadFloat3(&closestPoint);
 	DirectX::XMVECTOR lineStart = DirectX::XMLoadFloat3(&topCenterF);
 	DirectX::XMVECTOR lineEnd = DirectX::XMLoadFloat3(&bottomCenterF);
