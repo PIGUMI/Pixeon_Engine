@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cmath>
 
-#define ENEMY_COUNT (50)
+#define ENEMY_COUNT (10)
 
 void Script_EnemyManager::BeginPlay() {
     IScript::BeginPlay();
