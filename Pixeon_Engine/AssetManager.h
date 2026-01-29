@@ -33,7 +33,7 @@ public:
 
 	void DrawDebugGUI();
 
-	void StartAutoSync(std::chrono::milliseconds interval = std::chrono::milliseconds(1000),bool recursive = true);
+	void StartAutoSync(std::chrono::milliseconds interval = std::chrono::milliseconds(1000), bool recursive = true);
 
 	void StopAutoSync();
 

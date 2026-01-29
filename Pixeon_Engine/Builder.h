@@ -6,7 +6,6 @@ struct BuilderData
 	std::string gameName;
 	std::string startScene;
 	std::string gameVersion;
-
 };
 
 class Builder
@@ -26,4 +25,3 @@ private:
 	static Builder* _instance;
 	BuilderData _builderData;
 };
-

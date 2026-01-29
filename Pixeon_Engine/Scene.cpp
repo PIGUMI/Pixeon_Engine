@@ -618,7 +618,7 @@ void AbstractScene::LoadToFile() {
 	}
 }
 
-void AbstractScene::SetMainCamera(CameraComponent* camera){
+void AbstractScene::SetMainCamera(CameraComponent* camera) {
 	_MainCamera = camera;
 	if (_MainCamera)
 		_MainCameraNumber = _MainCamera->GetCameraNumber();

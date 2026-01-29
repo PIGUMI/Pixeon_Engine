@@ -90,7 +90,6 @@ void AbstractObject::Draw(int Layer) {
 * à@–¾@: I—¹ˆ—
 */
 void AbstractObject::UnInit() {
-
 	RemoveParent();
 
 	for (auto child : _children) {

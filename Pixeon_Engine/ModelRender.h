@@ -116,8 +116,6 @@ private:
 
 	void EnsureDefaultBoneMatrices();
 
-
-
 private:
 	std::string m_modelPath;
 	std::shared_ptr<ModelSharedResource> m_model;

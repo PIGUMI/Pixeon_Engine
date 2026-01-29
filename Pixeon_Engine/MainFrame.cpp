@@ -208,7 +208,7 @@ void MainFrame::Draw()
 			case SoftWareMode::ENGINE:
 				EngineFrame::GetInstance()->Draw(Layer_Index);
 				DirectX11::GetInstance()->SetBlendMode(BLEND_ALPHA);
-				if(SceneManger::GetInstance())
+				if (SceneManger::GetInstance())
 				{
 					if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
 					{

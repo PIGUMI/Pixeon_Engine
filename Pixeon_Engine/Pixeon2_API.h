@@ -4,8 +4,6 @@
 #include <string>
 #include <DirectXMath.h>
 
-
-
 // Wrapper 4 Object
 class object {
 public:
@@ -37,7 +35,7 @@ class scene {
 public:
 	scene(Scene handle) : Handle(handle) {}
 	~scene() = default;
-	
+
 	int GetObjectCount();
 	object* FindObject(const std::string& name);
 	void AddObject(object* obj);

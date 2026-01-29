@@ -223,7 +223,6 @@ void Animator2D::Draw(int Layer)
 							kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
 					}
 				}
-
 			}
 
 			PreviewImage->SetVertexOffsetDown(kf.vertexOffset.Down);

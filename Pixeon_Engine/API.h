@@ -95,7 +95,7 @@ extern "C" {
 	PIXEON_API APIResult FindObjectByName(Scene scene, const char* name, Object* outObject);
 	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject);
 	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject);
-	PIXEON_API APIResult AddObjectToScene(Scene scene, Object object,Object *CloneObject = nullptr);
+	PIXEON_API APIResult AddObjectToScene(Scene scene, Object object, Object* CloneObject = nullptr);
 	PIXEON_API APIResult RemoveObjectFromScene(Scene scene, Object object);
 	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber);
 	PIXEON_API APIResult SetMainCameraByPtr(Component camera);
@@ -270,7 +270,7 @@ extern "C" {
 	PIXEON_API APIResult BoxCollisionSetIsTrigger(Component component, bool isTrigger);
 	PIXEON_API APIResult BoxCollisionGetIsTrigger(Component component, bool* outIsTrigger);
 
-	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component,CollisionEnterCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component, CollisionEnterCallback callback);
 	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, CollisionStayCallback callback);
 	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, CollisionExitCallback callback);
 

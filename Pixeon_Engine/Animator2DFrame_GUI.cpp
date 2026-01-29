@@ -125,7 +125,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		if (!selectedKeyFrame_->editorFlag.bPosition)
 		{
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); 
+			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(SJ("位置").c_str());
 			ImGui::SameLine();
 			ImGui::Text(SJ("X:Y").c_str());
@@ -133,7 +133,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Position").c_str(), &selectedKeyFrame_->StartTransform.Position.x);
 			selectedKeyFrame_->EndTransform.Position = selectedKeyFrame_->StartTransform.Position;
 			ImGui::SameLine();
-			if(ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##pos").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##pos").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bPosition = true;
 			}
@@ -189,14 +189,14 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		}
 
 		/* サイズ */
-		if(!selectedKeyFrame_->editorFlag.bScale)
+		if (!selectedKeyFrame_->editorFlag.bScale)
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("サイズ").c_str());
 			ImGui::SameLine();
 			ImGui::Text(SJ("X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Scale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x,0.01f);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Scale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x, 0.01f);
 			selectedKeyFrame_->EndTransform.Scale = selectedKeyFrame_->StartTransform.Scale;
 			ImGui::SameLine();
 			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("詳細展開##scl").c_str()))
@@ -211,8 +211,8 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			ImGui::Text(SJ("サイズ:Start X:Y").c_str());
 			ImGui::Text(SJ("サイズ:End X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartScale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x,0.01f);
-			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndScale").c_str(), &selectedKeyFrame_->EndTransform.Scale.x,0.01f);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartScale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x, 0.01f);
+			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndScale").c_str(), &selectedKeyFrame_->EndTransform.Scale.x, 0.01f);
 			ImGui::SameLine();
 			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("簡易表示##scl").c_str()))
 			{
@@ -227,7 +227,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("頂点オフセット").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("上##VertexOffsetUp").c_str(), &selectedKeyFrame_->vertexOffset.Up,1.0f,-50.0f,50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("上##VertexOffsetUp").c_str(), &selectedKeyFrame_->vertexOffset.Up, 1.0f, -50.0f, 50.0f);
 			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("下##VertexOffsetDown").c_str(), &selectedKeyFrame_->vertexOffset.Down, 1.0f, -50.0f, 50.0f);
 			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("左##VertexOffsetLeft").c_str(), &selectedKeyFrame_->vertexOffset.Left, 1.0f, -50.0f, 50.0f);
 			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("右##VertexOffsetRight").c_str(), &selectedKeyFrame_->vertexOffset.Right, 1.0f, -50.0f, 50.0f);
@@ -356,7 +356,7 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text(SJ("UI移動向き").c_str());
 			ImGui::TableSetColumnIndex(1);
-			if(selectedKeyFrame_->uiShift.direction)
+			if (selectedKeyFrame_->uiShift.direction)
 			{
 				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("垂直##UIShiftDirection").c_str()))
 				{
@@ -386,7 +386,6 @@ void Animator2DFrame::DrawKeyFrameEditor()
 				selectedKeyFrame_->uiShift.IsActive = false;
 			}
 		}
-
 
 		/* テクスチャの設定GUI */
 		ImGui::TableNextRow();

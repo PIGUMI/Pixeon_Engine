@@ -66,7 +66,6 @@ void SettingManager::LoadConfig() {
 	if (configJson.contains("MouseSensitivity")) {
 		MouseSensitivity = configJson["MouseSensitivity"].get<float>();
 	}
-
 }
 
 void SettingManager::SaveConfig() {

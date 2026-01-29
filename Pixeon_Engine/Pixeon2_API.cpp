@@ -109,4 +109,3 @@ void scene::RemoveObject(object* obj)
 {
 	RemoveObjectFromScene(Handle, obj->Handle);
 }
-

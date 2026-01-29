@@ -12,7 +12,6 @@
 #include <nlohmann/json.hpp>
 #include <set>
 
-
 EngineFrame* EngineFrame::instance = nullptr;
 
 EngineFrame* EngineFrame::GetInstance()

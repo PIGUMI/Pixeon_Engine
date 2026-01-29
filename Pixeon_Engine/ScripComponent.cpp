@@ -62,14 +62,13 @@ void ScripComponent::EditUpdate()
 	{
 		if (_InGamePlay)
 		{
-			if(_scriptInstance)
+			if (_scriptInstance)
 				_scriptInstance->EndPlay();
 			_InGamePlay = false;
 		}
 	}
 	catch (const std::exception&)
 	{
-
 	}
 }
 
@@ -233,7 +232,6 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 
 	return LoadScript(scriptName);
 }
-
 
 bool ScripComponent::LoadScript(const std::string& scriptName) {
 	if (_scriptInstance) {

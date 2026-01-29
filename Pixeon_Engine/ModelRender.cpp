@@ -342,7 +342,6 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 
 DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 	const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const {
-
 	Transform t = _Parent->GetWorldTransform();
 
 	// メッシュのローカル変換(GlobalRotation含む)
