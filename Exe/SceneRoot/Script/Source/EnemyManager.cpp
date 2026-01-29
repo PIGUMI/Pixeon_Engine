@@ -19,14 +19,6 @@ void Script_EnemyManager:: Update(float DeltaTime) {
     Object EntityTemp;
     AddObjectToScene(_parentScene, _Enemy, &EntityTemp);
     ObjectParenthood(EntityTemp, _parentObject);
-	Float3 playerPos;
-	APIResult res = GetObjectPosition(_Player, &playerPos);
-	if (res != PN_SUCCESS) return;
-	float spawnX, spawnZ;
-	CalcEnemySpawnPos(playerPos.x, playerPos.z, spawnX, spawnZ);
-	Float3 enemyPos = { spawnX, 0.0f, spawnZ };
-	SetObjectPosition(EntityTemp,enemyPos);
-
 }
 
 void Script_EnemyManager::EndPlay() {
