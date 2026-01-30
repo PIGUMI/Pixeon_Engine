@@ -2,7 +2,6 @@
 #include "ScripComponent.h"
 #include "SettingManager.h"
 #include "IScript.h"
-
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -390,7 +389,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	// check vcvars
 	std::string vcvars = GetVSDevEnvPath();
 	if (vcvars.empty()) {
-		result.errorMessage = "vcvars64.bat not found.  Please install Visual Studio 2022.";
+		result.errorMessage = "vcvars64.bat not found. Please install Visual Studio 2022.";
 		result.log = result.errorMessage;
 		return result;
 	}
@@ -410,7 +409,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	}
 	catch (...) {}
 
-	// 古いDLLのタイムスタンプを記録（ビルド前）
+	// 古いDLLのタイムスタンプを記録(ビルド前)
 	fs::file_time_type oldDllTime;
 	bool hadOldDll = false;
 	if (fs::exists(dllPath)) {
@@ -421,6 +420,19 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		catch (...) {}
 	}
 
+	// ========================================
+	// vcpkg パスの設定
+	// ========================================
+	std::string vcpkgRoot = "C:/vcpkg";  // vcpkgのインストールパス(環境に合わせて変更)
+	std::string vcpkgInclude = vcpkgRoot + "/installed/x64-windows/include";
+	std::string vcpkgLib = vcpkgRoot + "/installed/x64-windows/lib";
+
+	// vcpkgが存在するか確認
+	bool hasVcpkg = fs::exists(vcpkgInclude);
+	if (!hasVcpkg) {
+		std::cout << "[ScriptManager] Warning: vcpkg not found at " << vcpkgRoot << std::endl;
+	}
+
 	// Build command
 	std::string engineLib = includeDir + "\\Pixeon_Engine.lib";
 	std::ostringstream cmd;
@@ -429,8 +441,21 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		<< "\"" << srcPath << "\" "
 		<< "\"" + SettingManager::GetInstance()->GetScriptFilePath() + "Include/IScript.cpp\" "
 		<< "/Fe:\"" << dllPath << "\" "
-		<< "/I\"" << includeDir << "\" "
-		<< "/link /LIBPATH:\"" << includeDir << "\" \"" << engineLib << "\" user32.lib "
+		<< "/I\"" << includeDir << "\" ";
+
+	// vcpkgのインクルードパスを追加
+	if (hasVcpkg) {
+		cmd << "/I\"" << vcpkgInclude << "\" ";
+	}
+
+	cmd << "/link /LIBPATH:\"" << includeDir << "\" ";
+
+	// vcpkgのライブラリパスを追加
+	if (hasVcpkg) {
+		cmd << "/LIBPATH:\"" << vcpkgLib << "\" ";
+	}
+
+	cmd << "\"" << engineLib << "\" user32.lib "
 		<< "/IMPLIB:\"" << libPath << "\" "
 		<< "/PDB:\"" << pdbPath << "\""
 		<< " > \"" << logFile << "\" 2>&1\"";
@@ -448,7 +473,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		result.log = ss.str();
 	}
 	else {
-		result.log = "No build log produced. ";
+		result.log = "No build log produced.";
 	}
 
 	// ビルド結果を判定
@@ -462,17 +487,16 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	// DLLが存在するか確認
 	if (!fs::exists(dllPath)) {
 		result.errorMessage = "DLL not found after build: " + dllPath;
-		result.log = "Build failed:  DLL was not created.\n\n" + result.log;
+		result.log = "Build failed: DLL was not created.\n\n" + result.log;
 		result.success = false;
 		return result;
 	}
 
-	// DLLが実際に更新されたか確認（タイムスタンプチェック）
+	// DLLが実際に更新されたか確認(タイムスタンプチェック)
 	if (hadOldDll) {
 		try {
 			fs::file_time_type newDllTime = fs::last_write_time(dllPath);
 			if (newDllTime <= oldDllTime) {
-				// DLLが更新されていない = ビルド失敗
 				result.errorMessage = "DLL was not updated after build (compilation likely failed)";
 				result.log = "Build failed: DLL timestamp unchanged.\n\n" + result.log;
 				result.success = false;
@@ -480,7 +504,6 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 			}
 		}
 		catch (...) {
-			// タイムスタンプ取得失敗時は警告を追加
 			result.log = "Warning: Could not verify DLL update time.\n\n" + result.log;
 		}
 	}

@@ -70,7 +70,7 @@
                     "Type": 7
                 },
                 {
-                    "Data": "ScriptName ScriptTest\n",
+                    "Data": "ScriptName Network\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }
