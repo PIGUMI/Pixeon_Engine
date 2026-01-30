@@ -67,12 +67,16 @@ void ScripComponent::EditUpdate()
 			_InGamePlay = false;
 		}
 	}
-	catch (const std::exception&)
+	catch (const std::exception& e)
 	{
+		std::cerr << "[ScripComponent] Exception in EditUpdate: "
+			<< e.what() << std::endl;
+		_StopOnError = true;
 	}
 }
 
 void ScripComponent::UInit() {
+	if (_scriptInstance)_scriptInstance->ClearParent();
 	UnLoadScript();
 }
 
@@ -484,6 +488,89 @@ void ScripComponent::DrawInspector() {
 		_showBuildLog = false;
 	}
 
+	if (_scriptInstance && !_scriptName.empty()) {
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Text("Script Properties");
+		ImGui::Separator();
+
+		auto properties = _scriptInstance->GetProperties();
+
+		if (!properties.empty()) {
+			if (ImGui::BeginTable(("ScriptProps_" + Ptr).c_str(), 2,
+				ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp)) {
+
+				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+				ImGui::TableHeadersRow();
+
+				for (auto& prop : properties) {
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s", prop.name.c_str());
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::PushItemWidth(-1);
+
+					std::string id = "##" + prop.name + "_" + Ptr;
+					bool changed = false;
+
+					switch (prop.type) {
+					case PropertyType::FLOAT: {
+						float* value = static_cast<float*>(prop.dataPtr);
+						if (prop.hasRange) {
+							changed = ImGui::SliderFloat(id.c_str(), value, prop.minValue, prop.maxValue);
+						}
+						else {
+							changed = ImGui::DragFloat(id.c_str(), value, 0.1f);
+						}
+						break;
+					}
+					case PropertyType::INT: {
+						int* value = static_cast<int*>(prop.dataPtr);
+						if (prop.hasRange) {
+							changed = ImGui::SliderInt(id.c_str(), value, (int)prop.minValue, (int)prop.maxValue);
+						}
+						else {
+							changed = ImGui::DragInt(id.c_str(), value);
+						}
+						break;
+					}
+					case PropertyType::BOOL: {
+						bool* value = static_cast<bool*>(prop.dataPtr);
+						changed = ImGui::Checkbox(id.c_str(), value);
+						break;
+					}
+					case PropertyType::STRING: {
+						std::string* value = static_cast<std::string*>(prop.dataPtr);
+						char buffer[256];
+						strncpy_s(buffer, value->c_str(), sizeof(buffer) - 1);
+						buffer[sizeof(buffer) - 1] = '\0';
+						if (ImGui::InputText(id.c_str(), buffer, sizeof(buffer))) {
+							*value = buffer;
+							changed = true;
+						}
+						break;
+					}
+					}
+
+					// 値が変更されたら、必要に応じて処理
+					if (changed) {
+						// デバッグ出力やコールバック呼び出しなど
+					}
+
+					ImGui::PopItemWidth();
+				}
+
+				ImGui::EndTable();
+			}
+		}
+		else {
+			ImGui::TextDisabled("No properties defined in this script.");
+		}
+	}
+
 	ImGui::BeginChild(("BuildLogDisplay_" + Ptr).c_str(),
 		ImVec2(0, 250),
 		true,
@@ -531,6 +618,8 @@ void ScripComponent::DrawInspector() {
 	ImGui::EndGroup();
 
 	ImGui::Spacing();
+
+
 	ImGui::TextDisabled("Script sources:  Script/Src/*. cpp -> Build -> Script/Bin/*.dll");
 	ImGui::TextDisabled("Create Script:  generates header+cpp skeleton.  Implement logic in generated cpp.");
 }

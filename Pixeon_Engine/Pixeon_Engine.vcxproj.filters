@@ -460,6 +460,9 @@
     <ClInclude Include="Pixeon2_API.h">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptproperty.h">
+      <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="今後の修正.txt">

@@ -193,6 +193,7 @@
     <ClInclude Include="SceneManger.h" />
     <ClInclude Include="ScripComponent.h" />
     <ClInclude Include="ScriptManager.h" />
+    <ClInclude Include="Scriptproperty.h" />
     <ClInclude Include="SettingManager.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="SoundManager.h" />
