@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include <WinSock2.h>
 #include <map>
+#include <vector>
 #include <string>
 
 #pragma comment(lib, "ws2_32.lib")
@@ -37,6 +38,10 @@ private:
 
     // 他プレイヤー管理
     std::map<int, OtherPlayerData> otherPlayers;
+	Object myPlayerObject = nullptr;
+    Object otherPlayerObject = nullptr;
+	std::vector<Object*> OtherPlayerObjects;
+    
 
     // 送信タイマー
     float sendTimer = 0.0f;
@@ -52,6 +57,8 @@ private:
     // プレイヤー管理
     void UpdateOtherPlayer(int userID, const Float3& pos, const Float3& rot, int animNo);
     void RemoveOtherPlayer(int userID);
+
+
 
 public:
     // プロパティ
