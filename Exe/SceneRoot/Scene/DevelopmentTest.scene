@@ -4,7 +4,7 @@
         {
             "Components": [
                 {
-                    "Data": "17.4209 5.66771 -3.53965 1.64 0.08 0 7.47673 4.86856 -2.85038 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "12.0491 5.26486 -1.4705 1.73 0.57 0 3.73651 -0.131458 -0.135816 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -68,19 +68,42 @@
                     "Data": "1 1 1 0 0 0 0 0 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
-                },
-                {
-                    "Data": "1\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
                 }
             ],
-            "Name": "l",
+            "Name": "Player",
             "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
-                    7.900000095367432,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "ScriptName Network\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
+                }
+            ],
+            "Name": "NetWorkManager",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [

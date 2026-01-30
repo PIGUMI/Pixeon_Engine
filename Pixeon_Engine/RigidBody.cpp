@@ -51,6 +51,14 @@ void RigidBody::BeginPlay()
 						SetGravityEnabled(bUseGravity_);
 
 						SetKinematic(bKinematic_);
+						if(!bKinematic_ && fMass_ > 0.0f)
+						{
+							pRigidBody_->setActivationState(ACTIVE_TAG);
+							pRigidBody_->forceActivationState(ACTIVE_TAG);
+							pRigidBody_->activate(true);
+
+							pRigidBody_->setLinearVelocity(btVector3(0, -0.01f, 0));
+						}
 					}
 					else
 					{
