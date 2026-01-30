@@ -5,8 +5,9 @@
 #include <string>
 #include <vector>
 #include "API.h"
+#include "Scriptproperty.h"
 
-class IScript
+class IScript : public ScriptPropertyBase
 {
 public:
 	virtual ~IScript();
@@ -18,10 +19,15 @@ public:
 	void SetParentObject(Object obj) { _parentObject = obj; }
 	void SetParentScene(Scene scene) { _parentScene = scene; }
 
+	void ClearParent();
 public:
 	virtual void OnCollisionEnter(const APICollisionInfo* info);
 	virtual void OnCollisionStay(const APICollisionInfo* info);
 	virtual void OnCollisionExit(const APICollisionInfo* info);
+
+	std::vector<PropertyMetadata> GetProperties() override { return {}; }
+	std::string SerializeProperty(const std::string& name) override { return ""; }
+	void DeserializeProperty(const std::string& name, const std::string& value) override {}
 
 protected:
 	Object _parentObject = nullptr;

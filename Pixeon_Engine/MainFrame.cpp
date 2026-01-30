@@ -191,7 +191,13 @@ void MainFrame::Draw()
 
 			Layer* layerSettings = nullptr;
 			if (_softwareMode == SoftWareMode::ENGINE) {
-				layerSettings = EngineFrame::GetInstance()->GetLayer(Layer_Index);
+				if(SceneManger::GetInstance())
+				{
+					if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
+					{
+						layerSettings = scene->GetLayer(Layer_Index);
+					}
+				}
 			}
 
 			if (layerSettings && !layerSettings->visible) {
@@ -241,7 +247,13 @@ void MainFrame::Draw()
 
 			Layer* layerSettings = nullptr;
 			if (_softwareMode == SoftWareMode::ENGINE) {
-				layerSettings = EngineFrame::GetInstance()->GetLayer(Layer_Index);
+				if(SceneManger::GetInstance())
+				{
+					if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
+					{
+						layerSettings = scene->GetLayer(Layer_Index);
+					}
+				}
 			}
 
 			if (layerSettings && !layerSettings->visible) {

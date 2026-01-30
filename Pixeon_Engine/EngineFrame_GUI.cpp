@@ -23,6 +23,7 @@ void EngineFrame::HandleAssetContextMenu(const std::filesystem::path& path)
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("名前変更").c_str())) {
 			SceneRenameNewName_ = path.stem().string();
 			ShowSceneRename = true;
+			selectedLayer_ = nullptr;
 		}
 	}
 }
@@ -440,7 +441,6 @@ void  EngineFrame::InspectorWindow()
 
 void  EngineFrame::ContentWindow()
 {
-	// 初期パス設定（Assetsフォルダ）
 	if (currentDir.empty()) {
 		std::string assetsPath = "SceneRoot/";
 		currentDir = assetsPath;
@@ -514,7 +514,7 @@ void  EngineFrame::ContentWindow()
 		ImTextureID icon = isDir ? (ImTextureID)FolderIcon_ : EngineFrame::GetInstance()->GetAssetIcon(fileName);
 
 		// 表示文字列と ID を分離
-		std::string displayName = AbbreviateName(fileName, 12);        // 画面に表示する略称
+		std::string displayName = AbbreviateName(fileName, 12);
 		std::string idName = fileName + "##" + std::to_string(index++); // ImGui ID
 
 		float groupX = ImGui::GetCursorPosX();
@@ -803,34 +803,39 @@ void EngineFrame::LayerWindow()
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("レイヤー").c_str());
 
 	for (int i = 0; i < MAX_LAYER_COUNT; i++) {
-		auto& layer = layers_[i];
+		if (SceneManger::GetInstance() == nullptr) return;
+		if (SceneManger::GetInstance()->GetCurrentScene() == nullptr) return;
+		auto layer = SceneManger::GetInstance()->GetCurrentScene()->GetLayer(i);
+
+		ImGui::PushID(i);
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow |
 			ImGuiTreeNodeFlags_SpanAvailWidth;
-		if (&layer == selectedLayer_) {
+		if (layer == selectedLayer_) {
 			flags |= ImGuiTreeNodeFlags_Selected;
 		}
 
-		std::string label = layer.name + " [" + std::to_string(i) + "]";
+		std::string label = layer->name + " [" + std::to_string(i) + "]";
 		bool nodeOpen = ImGui::TreeNodeEx(&layer, flags,
 			GUI::GetInstance()->ShiftJISToUTF8(label).c_str());
 
 		if (ImGui::IsItemClicked()) {
-			selectedLayer_ = &layer;
+			selectedLayer_ = layer;
 		}
 
 		ImGui::SameLine();
-		ImGui::Checkbox(("##visible" + std::to_string(i)).c_str(), &layer.visible);
+		ImGui::Checkbox(("##visible" + std::to_string(i)).c_str(), &layer->visible);
 
 		if (nodeOpen) {
-			for (size_t j = 0; j < layer.postEffects.size(); j++) {
-				auto& effect = layer.postEffects[j];
+			for (size_t j = 0; j < layer->postEffects.size(); j++) {
+				auto& effect = layer->postEffects[j];
 				ImGui::BulletText("%s %s",
 					effect->GetName().c_str(),
 					effect->enabled ? "" : "(Disabled)");
 			}
 			ImGui::TreePop();
 		}
+		ImGui::PopID();
 	}
 
 	ImGui::End();

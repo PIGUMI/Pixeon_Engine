@@ -91,7 +91,6 @@ void IScript::UnregisterAllCollisions()
 {
 	std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
 
-	// すべての登録を解除
 	for (Component collision : _registeredCollisions) {
 		auto it = g_scriptInstances.find(collision);
 		if (it != g_scriptInstances.end()) {
@@ -109,16 +108,19 @@ void IScript::Update(float DeltaTime)
 
 void IScript::EndPlay()
 {
-	// スクリプト終了時にコールバックを解除
 	UnregisterAllCollisions();
 }
 
 void IScript::CallCustom(const std::string& functionName)
 {
-	// ユーザーがオーバーライドする
 }
 
-// デフォルト実装（ユーザーがオーバーライド）
+void IScript::ClearParent()
+{
+	_parentObject = nullptr;
+	_parentScene = nullptr;
+}
+
 void IScript::OnCollisionEnter(const APICollisionInfo* info)
 {
 	// オーバーライドされない場合は何もしない
