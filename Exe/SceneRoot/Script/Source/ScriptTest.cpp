@@ -2,6 +2,8 @@
 
 void Script_ScriptTest::BeginPlay() {
     IScript::BeginPlay(); // BeginPlay
+	TestVar = 42;
+	TestFloat = 3.14f;
 }
 
 void Script_ScriptTest:: Update(float DeltaTime) {
