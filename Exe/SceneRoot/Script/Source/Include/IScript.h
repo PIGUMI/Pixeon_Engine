@@ -5,31 +5,37 @@
 #include <string>
 #include <vector>
 #include "API.h"
+#include "Scriptproperty.h"
 
-class IScript
+class IScript : public ScriptPropertyBase
 {
 public:
-    virtual ~IScript();
-    virtual void BeginPlay();
-    virtual void Update(float DeltaTime);
-    virtual void EndPlay();
+	virtual ~IScript();
+	virtual void BeginPlay();
+	virtual void Update(float DeltaTime);
+	virtual void EndPlay();
 
-    virtual void CallCustom(const std::string& functionName);
-    void SetParentObject(Object obj) { _parentObject = obj; }
-    void SetParentScene(Scene scene) { _parentScene = scene; }
+	virtual void CallCustom(const std::string& functionName);
+	void SetParentObject(Object obj) { _parentObject = obj; }
+	void SetParentScene(Scene scene) { _parentScene = scene; }
 
+	void ClearParent();
 public:
-    virtual void OnCollisionEnter(const APICollisionInfo* info);
-    virtual void OnCollisionStay(const APICollisionInfo* info);
-    virtual void OnCollisionExit(const APICollisionInfo* info);
+	virtual void OnCollisionEnter(const APICollisionInfo* info);
+	virtual void OnCollisionStay(const APICollisionInfo* info);
+	virtual void OnCollisionExit(const APICollisionInfo* info);
+
+	std::vector<PropertyMetadata> GetProperties() override { return {}; }
+	std::string SerializeProperty(const std::string& name) override { return ""; }
+	void DeserializeProperty(const std::string& name, const std::string& value) override {}
 
 protected:
-    Object _parentObject = nullptr;
+	Object _parentObject = nullptr;
 	Scene _parentScene = nullptr;
 private:
-    std::vector<Component> _registeredCollisions;
-    void RegisterCollisionComponent(Component collision);
-    void UnregisterAllCollisions();
+	std::vector<Component> _registeredCollisions;
+	void RegisterCollisionComponent(Component collision);
+	void UnregisterAllCollisions();
 };
 
 #endif // _ISCRIPT_H_

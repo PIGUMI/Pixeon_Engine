@@ -468,30 +468,10 @@ void ScripComponent::DrawInspector() {
 	ImGui::Separator();
 	ImGui::Spacing();
 
-	ImGui::BeginGroup();
-
-	if (_showBuildLog) {
-		if (_buildSuccess) {
-			ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "[SUCCESS]");
-		}
-		else {
-			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "[FAILED]");
-		}
-		ImGui::SameLine();
-	}
-
-	ImGui::Text("Build / Action Log");
-
-	ImGui::SameLine();
-	if (ImGui::SmallButton(("Clear##clearlog_" + Ptr).c_str())) {
-		_buildLog.clear();
-		_showBuildLog = false;
-	}
-
+	// ========================================
+	// スクリプトプロパティ表示セクション
+	// ========================================
 	if (_scriptInstance && !_scriptName.empty()) {
-		ImGui::Spacing();
-		ImGui::Separator();
-		ImGui::Spacing();
 		ImGui::Text("Script Properties");
 		ImGui::Separator();
 
@@ -569,6 +549,31 @@ void ScripComponent::DrawInspector() {
 		else {
 			ImGui::TextDisabled("No properties defined in this script.");
 		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+	}
+
+	// ========================================
+	// ビルド/アクションログセクション
+	// ========================================
+	if (_showBuildLog) {
+		if (_buildSuccess) {
+			ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "[SUCCESS]");
+		}
+		else {
+			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "[FAILED]");
+		}
+		ImGui::SameLine();
+	}
+
+	ImGui::Text("Build / Action Log");
+
+	ImGui::SameLine();
+	if (ImGui::SmallButton(("Clear##clearlog_" + Ptr).c_str())) {
+		_buildLog.clear();
+		_showBuildLog = false;
 	}
 
 	ImGui::BeginChild(("BuildLogDisplay_" + Ptr).c_str(),
@@ -615,10 +620,8 @@ void ScripComponent::DrawInspector() {
 	}
 
 	ImGui::EndChild();
-	ImGui::EndGroup();
 
 	ImGui::Spacing();
-
 
 	ImGui::TextDisabled("Script sources:  Script/Src/*. cpp -> Build -> Script/Bin/*.dll");
 	ImGui::TextDisabled("Create Script:  generates header+cpp skeleton.  Implement logic in generated cpp.");

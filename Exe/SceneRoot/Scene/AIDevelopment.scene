@@ -3061,6 +3061,11 @@
                     "Data": "1 1 1 0 0 0 0 2 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
+                },
+                {
+                    "Data": "ScriptName \n",
+                    "Name": "ScripComponent",
+                    "Type": 3
                 }
             ],
             "Name": "Player",
