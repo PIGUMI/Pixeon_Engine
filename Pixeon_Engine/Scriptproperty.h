@@ -1,28 +1,29 @@
+// ScriptProperty.h (最終改良版 - X-Macroパターン)
 #ifndef _SCRIPT_PROPERTY_H_
 #define _SCRIPT_PROPERTY_H_
 
 #include <string>
 #include <vector>
-#include <functional>
 #include <sstream>
 
+// プロパティの型
 enum class PropertyType
 {
     FLOAT,
     INT,
     BOOL,
-    STRING,
+    STRING
 };
 
 // プロパティのメタデータ
 struct PropertyMetadata
 {
-    std::string name;           // 変数名
-    PropertyType type;          // 型
-    void* dataPtr;             // データへのポインタ
-    float minValue = 0.0f;     // 数値型の最小値
-    float maxValue = 100.0f;   // 数値型の最大値
-    bool hasRange = false;     // 範囲制限があるか
+    std::string name;
+    PropertyType type;
+    void* dataPtr;
+    float minValue = 0.0f;
+    float maxValue = 100.0f;
+    bool hasRange = false;
 
     PropertyMetadata(const std::string& n, PropertyType t, void* ptr)
         : name(n), type(t), dataPtr(ptr) {
@@ -33,6 +34,7 @@ struct PropertyMetadata
     }
 };
 
+// スクリプトプロパティのベースクラス
 class ScriptPropertyBase
 {
 public:
@@ -42,46 +44,61 @@ public:
     virtual void DeserializeProperty(const std::string& name, const std::string& value) = 0;
 };
 
-#define BEGIN_SCRIPT_PROPERTIES() \
-    public: \
+// ========================================
+// X-Macroパターン：1箇所で定義するだけ
+// ========================================
+
+// GetPropertiesの実装を自動生成
+#define IMPLEMENT_GET_PROPERTIES() \
     std::vector<PropertyMetadata> GetProperties() override { \
-        std::vector<PropertyMetadata> props;
-
-#define SCRIPT_PROPERTY(type, varName) \
-        props.push_back(PropertyMetadata(#varName, type, &varName));
-
-#define SCRIPT_PROPERTY_RANGE(type, varName, minVal, maxVal) \
-        props.push_back(PropertyMetadata(#varName, type, &varName, minVal, maxVal));
-
-#define END_SCRIPT_PROPERTIES() \
+        std::vector<PropertyMetadata> props; \
+        PROPERTY_LIST(REGISTER_PROP) \
         return props; \
     }
 
-#define BEGIN_SERIALIZE_PROPERTIES() \
-    std::string SerializeProperty(const std::string& name) override {
-
-#define SERIALIZE_PROPERTY(varName) \
-        if (name == #varName) { \
-            std::ostringstream ss; \
-            ss << varName; \
-            return ss.str(); \
-        }
-
-#define END_SERIALIZE_PROPERTIES() \
+// SerializePropertyの実装を自動生成
+#define IMPLEMENT_SERIALIZE() \
+    std::string SerializeProperty(const std::string& name) override { \
+        std::ostringstream ss; \
+        PROPERTY_LIST(SERIALIZE_PROP) \
         return ""; \
     }
 
-#define BEGIN_DESERIALIZE_PROPERTIES() \
-    void DeserializeProperty(const std::string& name, const std::string& value) override {
-
-#define DESERIALIZE_PROPERTY(varName) \
-        if (name == #varName) { \
-            std::istringstream ss(value); \
-            ss >> varName; \
-            return; \
-        }
-
-#define END_DESERIALIZE_PROPERTIES() \
+// DeserializePropertyの実装を自動生成
+#define IMPLEMENT_DESERIALIZE() \
+    void DeserializeProperty(const std::string& name, const std::string& value) override { \
+        std::istringstream ss(value); \
+        PROPERTY_LIST(DESERIALIZE_PROP) \
     }
+
+// 内部使用マクロ（通常プロパティ）
+#define REGISTER_PROP(type, varName) \
+    props.push_back(PropertyMetadata(#varName, PropertyType::type, &varName));
+
+#define SERIALIZE_PROP(type, varName) \
+    if (name == #varName) { ss << varName; return ss.str(); }
+
+#define DESERIALIZE_PROP(type, varName) \
+    if (name == #varName) { ss >> varName; return; }
+
+// 内部使用マクロ（範囲指定プロパティ）
+#define REGISTER_PROP_RANGE(type, varName, minVal, maxVal) \
+    props.push_back(PropertyMetadata(#varName, PropertyType::type, &varName, minVal, maxVal));
+
+#define SERIALIZE_PROP_RANGE(type, varName, minVal, maxVal) \
+    if (name == #varName) { ss << varName; return ss.str(); }
+
+#define DESERIALIZE_PROP_RANGE(type, varName, minVal, maxVal) \
+    if (name == #varName) { ss >> varName; return; }
+
+// ========================================
+// ユーザー向けマクロ（これだけ使えばOK）
+// ========================================
+
+// 全ての実装を一括生成
+#define DECLARE_SCRIPT_PROPERTIES() \
+    IMPLEMENT_GET_PROPERTIES() \
+    IMPLEMENT_SERIALIZE() \
+    IMPLEMENT_DESERIALIZE()
 
 #endif // _SCRIPT_PROPERTY_H_
