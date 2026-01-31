@@ -42,6 +42,7 @@ namespace nlohmann {
 struct OtherPlayerData
 {
     Object playerObject = nullptr;
+    Component rigidBodyComponent = nullptr;
 
     // 現在の位置・回転
     Float3 Position;
@@ -79,6 +80,7 @@ private:
     std::map<int, OtherPlayerData> otherPlayers;
     Object myPlayerObject = nullptr;
     Object otherPlayerObject = nullptr;
+    Component myRigidBody = nullptr;  // 自分のRigidBody
     std::vector<Object*> OtherPlayerObjects;
 
     // 送信タイマー
@@ -109,6 +111,10 @@ private:
     void RemoveOtherPlayer(int userID);
     void InterpolateOtherPlayers(float DeltaTime);
 
+    // RigidBody関連
+    void SetupRigidBody(Object obj, Component& outRigidBody);
+    void UpdateRigidBodyPosition(Component rigidBody, const Float3& targetPos, const Float3& targetRot, float deltaTime);
+
     // ユーティリティ
     Float3 LerpFloat3(const Float3& a, const Float3& b, float t);
     std::string GetSocketErrorMessage(int errorCode);
@@ -122,6 +128,9 @@ public:
     float ConnectionRetryInterval = 2.0f;
     std::string PlayerPrefabName = "Player";
     std::string OtherPlayerPrefabName = "OtherPlayer";
+
+    // 物理設定
+    bool UsePhysicsForOtherPlayers = true;
 
     // デバッグ用変数(GUI表示)
     std::string DebugLog = "Initializing...";
@@ -137,6 +146,7 @@ public:
     ACTION(FLOAT, ConnectionRetryInterval) \
     ACTION(STRING, PlayerPrefabName) \
     ACTION(STRING, OtherPlayerPrefabName) \
+    ACTION(BOOL, UsePhysicsForOtherPlayers) \
     ACTION(STRING, DebugLog) \
     ACTION(STRING, ConnectionStatus) \
     ACTION(INT, CurrentUserID) \

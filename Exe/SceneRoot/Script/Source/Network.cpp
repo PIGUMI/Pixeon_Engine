@@ -7,11 +7,17 @@ void Script_Network::BeginPlay() {
     IScript::BeginPlay();
     AddDebugLog("BeginPlay called");
     InitializeNetwork();
+
     FindObjectByName(_parentScene, PlayerPrefabName.c_str(), &myPlayerObject);
     FindPrefabObjectByName(OtherPlayerPrefabName.c_str(), &otherPlayerObject);
 
     if (myPlayerObject != nullptr) {
         AddDebugLog("Player object found");
+        // 自分のRigidBodyコンポーネントを取得
+        FindComponent(myPlayerObject, "RigidBody", &myRigidBody);
+        if (myRigidBody != nullptr) {
+            AddDebugLog("Player RigidBody found");
+        }
     }
     else {
         AddDebugLog("ERROR: Player object not found!");
@@ -372,13 +378,6 @@ void Script_Network::ReceiveData()
             continue;
         }
     }
-
-    if (packetsReceived > 0) {
-        // 受信があったことをログに残す(頻繁すぎるので条件付き)
-        // std::stringstream ss;
-        // ss << "Received " << packetsReceived << " packets";
-        // AddDebugLog(ss.str());
-    }
 }
 
 
@@ -401,9 +400,14 @@ void Script_Network::UpdateOtherPlayer(int userID, const Float3& pos, const Floa
             ss << "OtherPlayer_" << userID;
             SetObjectName(clonedObj, ss.str().c_str());
 
-            // 初期位置と回転を設定(補間なし)
+            // 初期位置と回転を設定
             SetObjectPosition(clonedObj, pos);
             SetObjectRotation(clonedObj, rot);
+
+            // RigidBodyのセットアップ
+            if (UsePhysicsForOtherPlayers) {
+                SetupRigidBody(clonedObj, newPlayer.rigidBodyComponent);
+            }
 
             ss.str("");
             ss << "New player created: UserID=" << userID;
@@ -463,26 +467,84 @@ void Script_Network::InterpolateOtherPlayers(float DeltaTime)
 
         if (playerData.playerObject == nullptr) continue;
 
-        // 現在の位置と回転を取得
-        Float3 currentPos, currentRot;
-        if (GetObjectPosition(playerData.playerObject, &currentPos) != PN_SUCCESS) continue;
-        if (GetObjectRotation(playerData.playerObject, &currentRot) != PN_SUCCESS) continue;
+        // RigidBodyを使用する場合は専用の更新処理
+        if (UsePhysicsForOtherPlayers && playerData.rigidBodyComponent != nullptr)
+        {
+            UpdateRigidBodyPosition(playerData.rigidBodyComponent,
+                playerData.TargetPosition,
+                playerData.TargetRotation,
+                DeltaTime);
+        }
+        else
+        {
+            // 通常の補間処理
+            Float3 currentPos, currentRot;
+            if (GetObjectPosition(playerData.playerObject, &currentPos) != PN_SUCCESS) continue;
+            if (GetObjectRotation(playerData.playerObject, &currentRot) != PN_SUCCESS) continue;
 
-        // 補間係数を計算(指数減衰)
-        double expValue = exp(-static_cast<double>(playerData.InterpolationSpeed) * static_cast<double>(DeltaTime));
-        float t = 1.0f - static_cast<float>(expValue);
+            // 補間係数を計算(指数減衰)
+            double expValue = exp(-static_cast<double>(playerData.InterpolationSpeed) * static_cast<double>(DeltaTime));
+            float t = 1.0f - static_cast<float>(expValue);
 
-        // 位置を補間
-        Float3 newPos = LerpFloat3(currentPos, playerData.TargetPosition, t);
-        SetObjectPosition(playerData.playerObject, newPos);
+            // 位置を補間
+            Float3 newPos = LerpFloat3(currentPos, playerData.TargetPosition, t);
+            SetObjectPosition(playerData.playerObject, newPos);
 
-        // 回転を補間
-        Float3 newRot = LerpFloat3(currentRot, playerData.TargetRotation, t);
-        SetObjectRotation(playerData.playerObject, newRot);
+            // 回転を補間
+            Float3 newRot = LerpFloat3(currentRot, playerData.TargetRotation, t);
+            SetObjectRotation(playerData.playerObject, newRot);
 
-        // 内部状態も更新
-        playerData.Position = newPos;
-        playerData.Rotation = newRot;
+            // 内部状態も更新
+            playerData.Position = newPos;
+            playerData.Rotation = newRot;
+        }
+    }
+}
+
+void Script_Network::SetupRigidBody(Object obj, Component& outRigidBody)
+{
+    if (FindComponent(obj, "RigidBody", &outRigidBody) != PN_SUCCESS)
+    {
+        AddDebugLog("WARNING: RigidBody not found on OtherPlayer");
+        outRigidBody = nullptr;
+        return;
+    }
+
+    if (RigidBodySetKinematic(outRigidBody, true) == PN_SUCCESS)
+    {
+        AddDebugLog("OtherPlayer RigidBody set to Kinematic");
+    }
+
+    if (RigidBodySetUseGravity(outRigidBody, false) == PN_SUCCESS)
+    {
+        AddDebugLog("OtherPlayer gravity disabled");
+    }
+}
+
+void Script_Network::UpdateRigidBodyPosition(Component rigidBody, const Float3& targetPos, const Float3& targetRot, float deltaTime)
+{
+    if (rigidBody == nullptr) return;
+
+    Float3 currentPos;
+    Object parentObj = nullptr;
+
+    Float3 currentVel;
+    if (RigidBodyGetVelocity(rigidBody, &currentVel) == PN_SUCCESS)
+    {
+    }
+
+    // 簡易版: 直接位置を設定(Kinematicオブジェクトなので衝突判定は有効)
+    // この方法でも物理演算エンジンが衝突を検出します
+    for (auto& pair : otherPlayers)
+    {
+        if (pair.second.rigidBodyComponent == rigidBody)
+        {
+            SetObjectPosition(pair.second.playerObject, targetPos);
+            SetObjectRotation(pair.second.playerObject, targetRot);
+            pair.second.Position = targetPos;
+            pair.second.Rotation = targetRot;
+            break;
+        }
     }
 }
 
@@ -520,7 +582,6 @@ std::string Script_Network::GetSocketErrorMessage(int errorCode)
 
 void Script_Network::AddDebugLog(const std::string& message)
 {
-    // 最新のメッセージを先頭に追加(最大1000文字まで)
     std::string newLog = message + "\n" + DebugLog;
     if (newLog.length() > 1000) {
         newLog = newLog.substr(0, 1000);

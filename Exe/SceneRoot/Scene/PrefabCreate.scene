@@ -4,7 +4,7 @@
         {
             "Components": [
                 {
-                    "Data": "-2.32591 33.0467 -37.4842 3.49999 0.92 0 -0.200856 25.0907 -31.8109 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "21.8681 53.2898 25.5324 0.799998 1.02 0 18.1137 44.7687 21.886 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -32,60 +32,22 @@
         {
             "Components": [
                 {
-                    "Data": "ScriptName Network\n",
-                    "Name": "ScripComponent",
-                    "Type": 3
+                    "Data": "0 1 1 1 1 10 20 35 1 1 0 0 0 0 0 0 ",
+                    "Name": "Light",
+                    "Type": 1
                 }
             ],
-            "Name": "Manager",
+            "Name": "Light",
             "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
-                    0.0,
+                    4.099999904632568,
                     0.0
                 ],
                 "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "70\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                },
-                {
-                    "Data": "ScriptName PlayerMove\n",
-                    "Name": "ScripComponent",
-                    "Type": 3
-                }
-            ],
-            "Name": "Player",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
+                    -1.5707963705062866,
+                    -0.017453286796808243,
                     0.0
                 ],
                 "Scale": [
@@ -176,6 +138,6 @@
     ],
     "SceneSettings": {
         "MainCameraNumber": 0,
-        "Name": "NetWrok"
+        "Name": "PrefabCreate"
     }
 }
