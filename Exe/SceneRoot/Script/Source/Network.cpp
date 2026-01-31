@@ -284,10 +284,6 @@ void Script_Network::ReceiveData()
             int error = WSAGetLastError();
             if (error != WSAEWOULDBLOCK)
             {
-                // WSAEWOULDBLOCK以外のエラーは表示
-                // std::stringstream ss;
-                // ss << "Receive error: " << GetSocketErrorMessage(error);
-                // AddDebugLog(ss.str());
             }
             break;
         }
@@ -427,13 +423,11 @@ void Script_Network::UpdateOtherPlayer(int userID, const Float3& pos, const Floa
     }
     else
     {
-        // パケット順序チェック(古いパケットは無視)
         if (seqNum != -1 && seqNum <= it->second.LastSequenceNumber)
         {
             return;
         }
 
-        // 既存プレイヤーのターゲット位置を更新
         it->second.TargetPosition = pos;
         it->second.TargetRotation = rot;
         it->second.AnimationNo = animNo;
