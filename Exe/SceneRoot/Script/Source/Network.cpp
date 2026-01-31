@@ -72,20 +72,6 @@ void Script_Network::CleanupNetwork()
     }
     WSACleanup();
 
-    // 他プレイヤーのオブジェクトを削除
-    Scene currentScene;
-    if (GetCurrentScene(&currentScene) == PN_SUCCESS)
-    {
-        for (auto& pair : otherPlayers)
-        {
-            if (pair.second.playerObject != nullptr)
-            {
-                RemoveObjectFromScene(currentScene, pair.second.playerObject);
-            }
-        }
-    }
-    otherPlayers.clear();
-
     isInitialized = false;
     std::cout << "ネットワーク終了\n";
 }

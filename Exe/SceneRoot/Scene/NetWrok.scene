@@ -1,0 +1,93 @@
+{
+    "Layers": [],
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "4.28638 6.27793 6.48766 0.58 0.68 0 0.0250939 -0.01 -0.0164407 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Camera",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "ScriptName Network\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
+                }
+            ],
+            "Name": "Manager",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1 1 1 0 0 0 0 0 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                }
+            ],
+            "Name": "Player",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "NetWrok"
+    }
+}
