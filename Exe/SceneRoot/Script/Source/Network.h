@@ -1,7 +1,13 @@
 #pragma once
 #include "Include/IScript.h"
-#include <nlohmann/json.hpp>
+
+// WinSock2のインクルード(順序重要)
+#ifndef _WINSOCKAPI_
+#define _WINSOCKAPI_
+#endif
 #include <WinSock2.h>
+#include <WS2tcpip.h>
+
 #include <map>
 #include <vector>
 #include <string>
@@ -9,15 +15,48 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma warning(disable:4996)
 
+// nlohmann/jsonのインクルード(ビルドエラー時は無視)
+#if defined(__has_include) && __has_include(<nlohmann/json.hpp>)
+#include <nlohmann/json.hpp>
+#define HAS_JSON
+#elif defined(__has_include) && __has_include("nlohmann/json.hpp")
+#include "nlohmann/json.hpp"
+#define HAS_JSON
+#else
+// jsonがない場合のダミー定義
+namespace nlohmann {
+    class json {
+    public:
+        json() {}
+        template<typename T> json& operator[](const T&) { return *this; }
+        template<typename T> T get() const { return T(); }
+        template<typename T> bool contains(const T&) const { return false; }
+        std::string dump() const { return "{}"; }
+        static json parse(const std::string&) { return json(); }
+    };
+}
+#endif
+
 #define BUFFER_SIZE (4096)
 
 struct OtherPlayerData
 {
     Object playerObject = nullptr;
+
+    // 現在の位置・回転
     Float3 Position;
     Float3 Rotation;
+
+    // 補間用のターゲット位置・回転
+    Float3 TargetPosition;
+    Float3 TargetRotation;
+    float InterpolationSpeed = 10.0f;
+
     int AnimationNo = 0;
     bool IsActive = false;
+
+    // パケット順序管理
+    int LastSequenceNumber = -1;
 };
 
 class Script_Network : public IScript {
@@ -38,38 +77,70 @@ private:
 
     // 他プレイヤー管理
     std::map<int, OtherPlayerData> otherPlayers;
-	Object myPlayerObject = nullptr;
+    Object myPlayerObject = nullptr;
     Object otherPlayerObject = nullptr;
-	std::vector<Object*> OtherPlayerObjects;
-    
+    std::vector<Object*> OtherPlayerObjects;
 
     // 送信タイマー
     float sendTimer = 0.0f;
+
+    // ハートビート
+    float heartbeatTimer = 0.0f;
+
+    // 接続リトライ
+    float connectionRetryTimer = 0.0f;
+    bool isConnected = false;
+
+    // パケットシーケンス番号
+    int sequenceNumber = 0;
 
     // 初期化・終了
     void InitializeNetwork();
     void CleanupNetwork();
 
     // 送受信
+    void SendConnectionRequest();
     void SendPlayerData();
+    void SendHeartbeat();
     void ReceiveData();
 
     // プレイヤー管理
-    void UpdateOtherPlayer(int userID, const Float3& pos, const Float3& rot, int animNo);
+    void UpdateOtherPlayer(int userID, const Float3& pos, const Float3& rot, int animNo, int seqNum);
     void RemoveOtherPlayer(int userID);
+    void InterpolateOtherPlayers(float DeltaTime);
 
-
+    // ユーティリティ
+    Float3 LerpFloat3(const Float3& a, const Float3& b, float t);
+    std::string GetSocketErrorMessage(int errorCode);
+    void AddDebugLog(const std::string& message);
 
 public:
-    // プロパティ
     std::string ServerIP = "127.0.0.1";
     int ServerPort = 50008;
-    float SendInterval = 0.05f;  // 送信間隔(秒)
-    std::string PlayerPrefabName = "Player";  // 他プレイヤー用のPrefab名
+    float SendInterval = 0.05f;
+    float HeartbeatInterval = 1.0f;
+    float ConnectionRetryInterval = 2.0f;
+    std::string PlayerPrefabName = "Player";
+    std::string OtherPlayerPrefabName = "OtherPlayer";
+
+    // デバッグ用変数(GUI表示)
+    std::string DebugLog = "Initializing...";
+    std::string ConnectionStatus = "Disconnected";
+    int CurrentUserID = -1;
+    int OtherPlayerCount = 0;
 
 #define PROPERTY_LIST(ACTION) \
+    ACTION(STRING, ServerIP) \
     ACTION(INT, ServerPort) \
-    ACTION(FLOAT, SendInterval)
+    ACTION(FLOAT, SendInterval) \
+    ACTION(FLOAT, HeartbeatInterval) \
+    ACTION(FLOAT, ConnectionRetryInterval) \
+    ACTION(STRING, PlayerPrefabName) \
+    ACTION(STRING, OtherPlayerPrefabName) \
+    ACTION(STRING, DebugLog) \
+    ACTION(STRING, ConnectionStatus) \
+    ACTION(INT, CurrentUserID) \
+    ACTION(INT, OtherPlayerCount)
 
     DECLARE_SCRIPT_PROPERTIES()
 #undef PROPERTY_LIST
