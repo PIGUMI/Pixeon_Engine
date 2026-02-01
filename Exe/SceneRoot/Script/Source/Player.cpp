@@ -65,9 +65,11 @@ void Script_Player::Movement(float DeltaTime) {
 	}
 	_isMoving = false;
 	// ÉLÅ[ì¸óÕÇ…ÇÊÇÈà⁄ìÆèàóù
+	int AnimationNo = 0;
 
 	if (KeyPressed('W'))
 	{
+		AnimationNo = 1;
 		player_Transform.position.x += -forward.x * _MoveSpeed;
 		player_Transform.position.y += -forward.y * _MoveSpeed;
 		player_Transform.position.z += -forward.z * _MoveSpeed;
@@ -79,6 +81,7 @@ void Script_Player::Movement(float DeltaTime) {
 	}
 	if (KeyPressed('S'))
 	{
+		AnimationNo = 1;
 		player_Transform.position.x -= -forward.x * _MoveSpeed;
 		player_Transform.position.y -= -forward.y * _MoveSpeed;
 		player_Transform.position.z -= -forward.z * _MoveSpeed;
@@ -90,6 +93,7 @@ void Script_Player::Movement(float DeltaTime) {
 	}
 	if (KeyPressed('A'))
 	{
+		AnimationNo = 1;
 		player_Transform.position.x += right.x * (_MoveSpeed * 0.5f);
 		player_Transform.position.y += right.y * (_MoveSpeed * 0.5f);
 		player_Transform.position.z += right.z * (_MoveSpeed * 0.5f);
@@ -101,6 +105,7 @@ void Script_Player::Movement(float DeltaTime) {
 	}
 	if (KeyPressed('D'))
 	{
+		AnimationNo = 1;
 		player_Transform.position.x -= right.x * (_MoveSpeed * 0.5f);
 		player_Transform.position.y -= right.y * (_MoveSpeed * 0.5f);
 		player_Transform.position.z -= right.z * (_MoveSpeed * 0.5f);
@@ -123,4 +128,5 @@ void Script_Player::Movement(float DeltaTime) {
 		head_Transform.position.y = 1.5f;
 	}
 	SetObjectTransform(_Head, &head_Transform);
+	SetVariableInt(_Body, "AnimationNo", AnimationNo);
 }

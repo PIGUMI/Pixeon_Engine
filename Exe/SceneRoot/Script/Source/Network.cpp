@@ -216,7 +216,7 @@ void Script_Network::SendPlayerData()
     transform trans;
     int AnimationNo = 0;
     if (GetObjectWorldTransform(myPlayerObject, &trans) != PN_SUCCESS) return;
-    if (GetAnimationClip(Animation, &AnimationNo) != PN_SUCCESS) {
+    if (GetVariableInt(myPlayerObject, "AnimationNo", &AnimationNo) != PN_SUCCESS) {
         AnimationNo = 0;
 	}
     
