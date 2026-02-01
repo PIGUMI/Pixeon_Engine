@@ -43,6 +43,7 @@ struct OtherPlayerData
 {
     Object playerObject = nullptr;
     Component rigidBodyComponent = nullptr;
+	Component Animation = nullptr;
 
     // 現在の位置・回転
     Float3 Position;
@@ -81,6 +82,7 @@ private:
     Object myPlayerObject = nullptr;
     Object otherPlayerObject = nullptr;
     Component myRigidBody = nullptr;  // 自分のRigidBody
+	Component Animation = nullptr;    // 自分のアニメーションコンポーネント
     std::vector<Object*> OtherPlayerObjects;
 
     // 送信タイマー

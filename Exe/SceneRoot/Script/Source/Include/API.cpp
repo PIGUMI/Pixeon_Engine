@@ -32,8 +32,6 @@
 #include <cstring>
 #include <DirectXMath.h>
 
-
-
 // Utility Functions
 extern "C" {
 	PIXEON_API Float2 CreateFloat2(float x, float y) {
@@ -221,7 +219,7 @@ extern "C" {
 		*outObject = reinterpret_cast<Object>(childObj);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult AddObjectToScene(Scene InScene, Object object,Object* CloneObject)
+	PIXEON_API APIResult AddObjectToScene(Scene InScene, Object object, Object* CloneObject)
 	{
 		if (!object) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -236,7 +234,7 @@ extern "C" {
 		}
 		AbstractObject* CloneObj = objPtr->Clone();
 		scenePtr->AddObjectLocal(CloneObj);
-		if(CloneObject) {
+		if (CloneObject) {
 			*CloneObject = reinterpret_cast<Object>(CloneObj);
 		}
 		return PN_SUCCESS;
@@ -774,8 +772,7 @@ extern "C" {
 		objPtr->SetObjectName(std::string(name));
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult SetObjectPosition(Object object, Float3 position){
-
+	PIXEON_API APIResult SetObjectPosition(Object object, Float3 position) {
 		AbstractObject* objPtr = nullptr;
 		if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
@@ -784,7 +781,7 @@ extern "C" {
 
 		for (auto rb : objPtr->GetComponents())
 		{
-			if(rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
+			if (rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
 			{
 				static_cast<RigidBody*>(rb)->SyncPositionToBullet(ToXMFloat3(position));
 			}
@@ -812,9 +809,9 @@ extern "C" {
 		}
 		objPtr->SetRotation(rotation.x, rotation.y, rotation.z);
 
-		for(auto rb : objPtr->GetComponents())
+		for (auto rb : objPtr->GetComponents())
 		{
-			if(rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
+			if (rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
 			{
 				static_cast<RigidBody*>(rb)->SyncRotationToBullet(ToXMFloat3(rotation));
 			}
@@ -908,9 +905,9 @@ extern "C" {
 
 		objPtr->SetTransform(transform);
 
-		for(auto rb : objPtr->GetComponents())
+		for (auto rb : objPtr->GetComponents())
 		{
-			if(rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
+			if (rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
 			{
 				static_cast<RigidBody*>(rb)->SyncTransformToBullet();
 			}
@@ -1766,7 +1763,6 @@ extern "C" {
 		modelRenderComp->SetGlobalScale(ToXMFloat3(*inScale));
 		return PN_SUCCESS;
 	}
-	
 
 	// Animation Component
 	PIXEON_API APIResult PlayAnimation(Component animationComp)
@@ -1845,6 +1841,22 @@ extern "C" {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		animComp->SetAnimationClip(clipIndex);
+		return PN_SUCCESS;
+	}
+	PIXEON_API APIResult GetAnimationClip(Component animationComp, int* outClipIndex)
+	{
+		if (!outClipIndex) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+		if (!animComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outClipIndex = animComp->GetAnimationClip();
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult SetAnimationPlaybackSpeed(Component animationComp, float speed)
@@ -2520,7 +2532,7 @@ extern "C" {
 		if (!effectComponent) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		*outIsPlaying =  effectComponent->IsPlaying();
+		*outIsPlaying = effectComponent->IsPlaying();
 		return PN_SUCCESS;
 	}
 	PIXEON_API APIResult CallScriptFunction(Component Script, const char* functionName)

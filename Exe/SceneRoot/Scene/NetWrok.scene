@@ -4,7 +4,7 @@
         {
             "Components": [
                 {
-                    "Data": "2.79638 3.50938 -5.99603 3.16999 0.37 0 3.0611 -0.106773 3.32348 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "2.29514 1.12334 2.91333 6.01992 0.0699982 0 4.89112 0.423929 -6.71848 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -38,54 +38,6 @@
                 }
             ],
             "Name": "Manager",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "70\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                },
-                {
-                    "Data": "ScriptName PlayerMove\n",
-                    "Name": "ScripComponent",
-                    "Type": 3
-                },
-                {
-                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0\n1\n1\n1\n3DModel/Fast Run.fbx\n",
-                    "Name": "Animation",
-                    "Type": 5
-                }
-            ],
-            "Name": "Player",
             "Parent": "",
             "Transform": {
                 "Position": [
@@ -186,31 +138,87 @@
         {
             "Components": [
                 {
-                    "Data": "70\n1\n0\n0.5\n0\n0\n0.05\n0\n0\n1\n1\n1\n",
+                    "Data": "0.2 1.6 0 0.8 0 0 0 1\n",
+                    "Name": "CapsuleCollision",
+                    "Type": 8
+                },
+                {
+                    "Data": "70\n0\n1\n0.5\n0\n0\n0.05\n1\n1\n1\n0\n1\n",
                     "Name": "RigidBody",
                     "Type": 6
                 },
                 {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
+                    "Data": "ScriptName Player\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
+                }
+            ],
+            "Name": "Player",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    2.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0.3 0.3 0.3 0 0 0 0 0 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "0\n1\n1\n1\n3DModel/Fast Run.fbx\n",
-                    "Name": "Animation",
-                    "Type": 5
+                    "Data": "2.38419e-07 1.19209e-07 0 -3.14159 4.05609e-08 6.56381e-07 5.24521e-06 0 2 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
                 }
             ],
-            "Name": "OtherPlayer",
-            "Parent": "",
+            "Name": "Head",
+            "Parent": "Player",
             "Transform": {
                 "Position": [
-                    2.700000047683716,
+                    0.0,
+                    1.600000023841858,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0.5 1.4 0.5 0 0.7 0 0 0 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                }
+            ],
+            "Name": "Body",
+            "Parent": "Player",
+            "Transform": {
+                "Position": [
+                    0.0,
                     0.0,
                     0.0
                 ],

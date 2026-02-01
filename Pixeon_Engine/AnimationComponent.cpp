@@ -437,6 +437,11 @@ bool AnimationComponent::SetAnimationClip(int clipIndex) {
 	return true;
 }
 
+int AnimationComponent::GetAnimationClip()
+{
+	return m_currentClip;
+}
+
 bool AnimationComponent::IsPlaying() const { return m_playing && !m_paused; }
 
 bool AnimationComponent::IsPaused()  const { return m_paused; }

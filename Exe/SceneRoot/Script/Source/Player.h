@@ -1,28 +1,34 @@
 #pragma once
 #include "Include/IScript.h"
 
-class Script_PlayerMove : public IScript {
+class Script_Player : public IScript {
 public:
     void BeginPlay() override;
     void Update(float DeltaTime) override;
     void EndPlay() override;
-
+private:
+	void Movement(float DeltaTime);
 public:
-	float MoveSpeed = 5.0f;
-	int AnimationState = 0;
-	int NowAnimationState = -1;
-	Component _animator = nullptr;
+    float _Sensitivity = 0.005f;
+	float _LimitAngle = 70.0f;
+	float _MoveSpeed = 0.1f;
+private:
+	float _walkTimer = 0.0f;
+	bool _isMoving = false;
+	Object _Head;
+    Object _Body;
+	Component _Camera;
 public:
 #define PROPERTY_LIST(ACTION) \
-    ACTION(FLOAT, MoveSpeed) \
-    ACTION(INT, AnimationState)
-
+    ACTION(FLOAT, _Sensitivity) \
+    ACTION(FLOAT, _LimitAngle) \
+    ACTION(FLOAT, _MoveSpeed)
     DECLARE_SCRIPT_PROPERTIES()
 #undef PROPERTY_LIST
 };
 
 extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
-    return new Script_PlayerMove();
+    return new Script_Player();
 }
 
 extern "C" __declspec(dllexport) void DestroyScriptInstance(IScript* script) {

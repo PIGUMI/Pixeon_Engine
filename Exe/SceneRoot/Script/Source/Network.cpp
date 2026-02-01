@@ -7,8 +7,9 @@ void Script_Network::BeginPlay() {
     IScript::BeginPlay();
     AddDebugLog("BeginPlay called");
     InitializeNetwork();
-
-    FindObjectByName(_parentScene, PlayerPrefabName.c_str(), &myPlayerObject);
+	Object ParentObject = nullptr;
+    FindObjectByName(_parentScene, PlayerPrefabName.c_str(), &ParentObject);
+	FindChildObjectByName(ParentObject, "Body", &myPlayerObject);
     FindPrefabObjectByName(OtherPlayerPrefabName.c_str(), &otherPlayerObject);
 
     if (myPlayerObject != nullptr) {
@@ -18,6 +19,7 @@ void Script_Network::BeginPlay() {
         if (myRigidBody != nullptr) {
             AddDebugLog("Player RigidBody found");
         }
+		FindComponent(myPlayerObject, "Animation", &Animation);
     }
     else {
         AddDebugLog("ERROR: Player object not found!");
@@ -211,22 +213,26 @@ void Script_Network::SendPlayerData()
 {
     if (!isInitialized || !isConnected || myPlayerObject == nullptr || myUserID == -1) return;
 
-    Float3 pos, rot;
-    if (GetObjectPosition(myPlayerObject, &pos) != PN_SUCCESS) return;
-    if (GetObjectRotation(myPlayerObject, &rot) != PN_SUCCESS) return;
+    transform trans;
+    int AnimationNo = 0;
+    if (GetObjectWorldTransform(myPlayerObject, &trans) != PN_SUCCESS) return;
+    if (GetAnimationClip(Animation, &AnimationNo) != PN_SUCCESS) {
+        AnimationNo = 0;
+	}
+    
 
     try {
         nlohmann::json sendData;
         sendData["type"] = "update";
         sendData["UserID"] = myUserID;
         sendData["seq"] = sequenceNumber++;
-        sendData["Pos"]["X"] = pos.x;
-        sendData["Pos"]["Y"] = pos.y;
-        sendData["Pos"]["Z"] = pos.z;
-        sendData["Rot"]["X"] = rot.x;
-        sendData["Rot"]["Y"] = rot.y;
-        sendData["Rot"]["Z"] = rot.z;
-        sendData["AnimationNo"] = 0;
+        sendData["Pos"]["X"] = trans.position.x;
+        sendData["Pos"]["Y"] = trans.position.y;
+        sendData["Pos"]["Z"] = trans.position.z;
+        sendData["Rot"]["X"] = trans.rotation.x;
+        sendData["Rot"]["Y"] = trans.rotation.y;
+        sendData["Rot"]["Z"] = trans.rotation.z;
+        sendData["AnimationNo"] = AnimationNo;
 
         std::string data_str = sendData.dump();
 
@@ -387,6 +393,7 @@ void Script_Network::UpdateOtherPlayer(int userID, const Float3& pos, const Floa
         OtherPlayerData newPlayer;
 
         Object clonedObj = nullptr;
+		Component AnimComp = nullptr;
         if (AddObjectToScene(_parentScene, otherPlayerObject, &clonedObj) == PN_SUCCESS)
         {
             newPlayer.playerObject = clonedObj;
@@ -399,6 +406,11 @@ void Script_Network::UpdateOtherPlayer(int userID, const Float3& pos, const Floa
             // 初期位置と回転を設定
             SetObjectPosition(clonedObj, pos);
             SetObjectRotation(clonedObj, rot);
+            
+            // Animationコンポーネントのセットアップ
+            FindComponent(clonedObj, "Animation", &AnimComp);
+            newPlayer.Animation = AnimComp;
+			SetAnimationClip(AnimComp, animNo);
 
             // RigidBodyのセットアップ
             if (UsePhysicsForOtherPlayers) {
@@ -492,6 +504,13 @@ void Script_Network::InterpolateOtherPlayers(float DeltaTime)
             playerData.Position = newPos;
             playerData.Rotation = newRot;
         }
+		// アニメーション更新
+        if (playerData.Animation != nullptr)
+        {
+			int NowAnimNo = -1;
+			GetAnimationClip(playerData.Animation, &NowAnimNo);
+			if (NowAnimNo != playerData.AnimationNo)SetAnimationClip(playerData.Animation, playerData.AnimationNo);
+        }
     }
 }
 
@@ -527,8 +546,6 @@ void Script_Network::UpdateRigidBodyPosition(Component rigidBody, const Float3& 
     {
     }
 
-    // 簡易版: 直接位置を設定(Kinematicオブジェクトなので衝突判定は有効)
-    // この方法でも物理演算エンジンが衝突を検出します
     for (auto& pair : otherPlayers)
     {
         if (pair.second.rigidBodyComponent == rigidBody)

@@ -1843,6 +1843,22 @@ extern "C" {
 		animComp->SetAnimationClip(clipIndex);
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult GetAnimationClip(Component animationComp, int* outClipIndex)
+	{
+		if (!outClipIndex) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(animationComp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		AnimationComponent* animComp = dynamic_cast<AnimationComponent*>(compPtr);
+		if (!animComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		*outClipIndex = animComp->GetAnimationClip();
+		return PN_SUCCESS;
+	}
 	PIXEON_API APIResult SetAnimationPlaybackSpeed(Component animationComp, float speed)
 	{
 		AbstractComponent* compPtr = nullptr;

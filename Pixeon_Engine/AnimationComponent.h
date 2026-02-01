@@ -43,6 +43,7 @@ public:
 	void Restart();
 
 	bool SetAnimationClip(int clipIndex);
+	int GetAnimationClip();
 	void SetPlaybackSpeed(float s) { m_speed = s; }
 	void SetLoop(bool b) { m_loop = b; }
 

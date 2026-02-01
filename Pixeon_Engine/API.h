@@ -234,6 +234,7 @@ extern "C" {
 	PIXEON_API APIResult StopAnimation(Component animationComp);
 	PIXEON_API APIResult RestartAnimation(Component animationComp);
 	PIXEON_API APIResult SetAnimationClip(Component animationComp, int clipIndex);
+	PIXEON_API APIResult GetAnimationClip(Component animationComp, int* outClipIndex);
 	PIXEON_API APIResult SetAnimationPlaybackSpeed(Component animationComp, float speed);
 	PIXEON_API APIResult SetAnimationLoop(Component animationComp, bool loop);
 
