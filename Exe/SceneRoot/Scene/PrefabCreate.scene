@@ -4,7 +4,7 @@
         {
             "Components": [
                 {
-                    "Data": "20.8564 51.9528 28.2482 0.399998 0.8 0 18.1433 44.7792 21.8311 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-7.90522 8.69984 15.3091 -0.0200022 0.0700001 0 -7.7057 8.00041 5.33556 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -32,7 +32,7 @@
         {
             "Components": [
                 {
-                    "Data": "0 1 1 1 1 10 20 35 1 1 0 0 0 0 0 0 ",
+                    "Data": "0 0.0035587 0.393625 1 1 10 20 35 1 1 0 0 0 0 0 0 ",
                     "Name": "Light",
                     "Type": 1
                 }
@@ -46,8 +46,8 @@
                     0.0
                 ],
                 "Rotation": [
-                    -1.5707963705062866,
-                    -0.017453286796808243,
+                    -2.2322587966918945,
+                    2.672081708908081,
                     0.0
                 ],
                 "Scale": [
@@ -120,6 +120,62 @@
             "Transform": {
                 "Position": [
                     0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n0.1 0.1 0.1\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.1 0.1 0.1\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "NewObject1",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    -13.5,
                     0.0,
                     0.0
                 ],

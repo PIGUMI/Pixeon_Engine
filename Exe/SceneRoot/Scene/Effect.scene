@@ -1,0 +1,65 @@
+{
+    "Layers": [],
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "-7.13396 5.38434 8.44544 -0.49 0.26 6.33678e-39 -2.58588 2.81353 -0.0813309 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Effect/00_Basic/Simple_Distortion.efkefc 1 0 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0\n",
+                    "Name": "EffectComponent",
+                    "Type": 10
+                }
+            ],
+            "Name": "Effect",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "Effect"
+    }
+}
