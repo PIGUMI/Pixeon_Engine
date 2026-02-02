@@ -226,7 +226,7 @@ void MainFrame::Draw()
 				}
 				break;
 			case SoftWareMode::ANIMTOR2D:
-				Animator2DFrame::GetInstance()->Draw();
+				if (Layer_Index == 0)Animator2DFrame::GetInstance()->Draw();
 				break;
 			}
 

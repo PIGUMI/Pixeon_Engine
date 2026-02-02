@@ -50,10 +50,18 @@ void UpdateInput(HWND hWnd)
 		ScreenToClient(hWnd, &CursorPos);
 	}
 
-	mouseMoveX = CursorPos.x - prevMousePos.x;
-	mouseMoveY = CursorPos.y - prevMousePos.y;
-
-	prevMousePos = CursorPos;
+	if (GetForegroundWindow() != hWnd)
+	{
+		mouseMoveX = 0;
+		mouseMoveY = 0;
+		prevMousePos = CursorPos; // 次フレームで移動量が突然出来るのを防ぐ
+	}
+	else
+	{
+		mouseMoveX = CursorPos.x - prevMousePos.x;
+		mouseMoveY = CursorPos.y - prevMousePos.y;
+		prevMousePos = CursorPos;
+	}
 
 	// フレーム確定：WndProc で積算した正/負をそのままフレーム変数へ渡し、累積はクリア
 	g_wheelForwardFrameDelta = g_wheelPosAccum;

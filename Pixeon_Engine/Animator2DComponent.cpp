@@ -31,6 +31,7 @@ void Animator2DComponent::EditUpdate()
 
 void Animator2DComponent::Draw(int Layer)
 {
+	if (Layer != _LayerNumber) return;
 	int count = 0;
 	for (auto& animator : _animators) {
 		animator->SetLayer(_LayerNumber);
