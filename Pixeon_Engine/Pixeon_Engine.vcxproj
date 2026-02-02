@@ -155,6 +155,7 @@
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CapsuleCollision.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="ColorGradingEffect.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="EasingGraph.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CapsuleCollision.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="ColorGradingEffect .cpp" />
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="EasingGraph.cpp" />
     <ClCompile Include="EffectComponent.cpp" />

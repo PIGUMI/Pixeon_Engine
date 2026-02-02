@@ -260,6 +260,9 @@
     <ClCompile Include="Pixeon2_API.cpp">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClCompile>
+    <ClCompile Include="ColorGradingEffect .cpp">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -462,6 +465,9 @@
     </ClInclude>
     <ClInclude Include="Scriptproperty.h">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorGradingEffect.h">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

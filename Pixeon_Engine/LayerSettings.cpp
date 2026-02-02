@@ -6,6 +6,7 @@
 
 #include "PixelateEffect.h"
 #include "BloomEffect.h"
+#include "ColorGradingEffect.h"
 
 Layer::Layer() {
 }
@@ -438,6 +439,9 @@ std::shared_ptr<PostEffectBase> Layer::CreatePostEffect(PostEffectType type) {
 		return std::make_shared<PixelateEffect>();
 	case PostEffectType::BLOOM:
 		return std::make_shared<BloomEffect>();
+	case PostEffectType::COLOR_GRADING:
+		return std::make_shared<ColorGradingEffect>();
+
 
 	default:
 		return nullptr;

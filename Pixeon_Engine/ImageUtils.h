@@ -16,4 +16,15 @@ namespace ImageUtils {
 		float intensity = 1.0f,
 		const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(1, 1, 1, 1),
 		const DirectX::XMFLOAT4& uvRect = DirectX::XMFLOAT4(0, 0, 1, 1));
+
+	void DrawSRVColorGrading(ID3D11ShaderResourceView* srv,
+		float x, float y, float width, float height,
+		float brightness = 0.0f,
+		float contrast = 1.0f,
+		float saturation = 1.0f,
+		float hueShift = 0.0f,
+		float temperature = 0.0f,
+		float tint = 0.0f,
+		float gamma = 1.0f,
+		const DirectX::XMFLOAT4& uvRect = DirectX::XMFLOAT4(0, 0, 1, 1));
 }
