@@ -80,7 +80,7 @@
                     "Type": 0
                 },
                 {
-                    "Data": "ScriptName Title\n",
+                    "Data": "ScriptName Title\nPropertyCount 3\nProperty Multi Title_Multi\nProperty SelectIndex 0\nProperty Solo InGame\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }

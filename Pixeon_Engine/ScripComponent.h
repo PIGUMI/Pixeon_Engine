@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
+#include <map>
 #include <filesystem>
 #include "IScript.h"
 
@@ -25,7 +26,7 @@ public:
 	bool LoadScript(const std::string& scriptName);
 	void UnLoadScript();
 
-	// ユーティリティ（Inspector 用）
+	// ユーティリティ(Inspector 用)
 	bool LoadScriptByName(const std::string& scriptName);
 	bool CreateScriptFiles(const std::string& scriptName);
 	void RefreshScriptList();
@@ -39,6 +40,9 @@ private:
 	IScript* _scriptInstance = nullptr;
 	std::string _scriptName;
 
+	// プロパティ値の保存用 (プロパティ名 -> シリアライズされた値)
+	std::map<std::string, std::string> _savedProperties;
+
 	// Inspector state
 	std::vector<std::string> _scriptList;
 	int _selectedIndex = -1;
@@ -49,6 +53,10 @@ private:
 	bool _buildSuccess = false;
 	bool _StopOnError = false;
 	bool _InGamePlay = false;
+
+	// プロパティの保存と復元のヘルパー関数
+	void SaveProperties();
+	void RestoreProperties();
 };
 
 #endif // !SCRIPT_COMPONENT_H

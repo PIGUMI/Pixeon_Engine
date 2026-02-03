@@ -82,17 +82,69 @@ void ScripComponent::UInit() {
 
 void ScripComponent::SaveToFile(std::ostream& out) {
 	out << "ScriptName " << _scriptName << std::endl;
+
+	// プロパティ値を保存
+	if (_scriptInstance) {
+		SaveProperties(); // 現在の値を_savedPropertiesに保存
+	}
+
+	// 保存されたプロパティ値をファイルに出力
+	out << "PropertyCount " << _savedProperties.size() << std::endl;
+	for (const auto& prop : _savedProperties) {
+		out << "Property " << prop.first << " " << prop.second << std::endl;
+	}
 }
 
 void ScripComponent::LoadFromFile(std::istream& in) {
 	std::string key;
+	int propertyCount = 0;
+
 	while (in >> key) {
 		if (key == "ScriptName") {
 			in >> _scriptName;
 		}
+		else if (key == "PropertyCount") {
+			in >> propertyCount;
+		}
+		else if (key == "Property") {
+			std::string propName, propValue;
+			in >> propName;
+			std::getline(in, propValue); // 残りの行を読み込む
+			// 先頭の空白を削除
+			if (!propValue.empty() && propValue[0] == ' ') {
+				propValue = propValue.substr(1);
+			}
+			_savedProperties[propName] = propValue;
+		}
 	}
+
+	// スクリプトをロード
 	if (!_scriptName.empty()) {
 		LoadScriptByName(_scriptName);
+		// ロード後にプロパティを復元
+		RestoreProperties();
+	}
+}
+
+void ScripComponent::SaveProperties() {
+	if (!_scriptInstance) return;
+
+	_savedProperties.clear();
+	auto properties = _scriptInstance->GetProperties();
+
+	for (const auto& prop : properties) {
+		std::string serialized = _scriptInstance->SerializeProperty(prop.name);
+		if (!serialized.empty()) {
+			_savedProperties[prop.name] = serialized;
+		}
+	}
+}
+
+void ScripComponent::RestoreProperties() {
+	if (!_scriptInstance) return;
+
+	for (const auto& prop : _savedProperties) {
+		_scriptInstance->DeserializeProperty(prop.first, prop.second);
 	}
 }
 
@@ -243,6 +295,8 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 
 bool ScripComponent::LoadScript(const std::string& scriptName) {
 	if (_scriptInstance) {
+		// スクリプトをアンロードする前に現在のプロパティを保存
+		SaveProperties();
 		UnLoadScript();
 	}
 	_scriptName = scriptName;
@@ -253,6 +307,10 @@ bool ScripComponent::LoadScript(const std::string& scriptName) {
 		return false;
 	}
 	_scriptInstance = inst;
+
+	// 新しいインスタンスにプロパティを復元
+	RestoreProperties();
+
 	return true;
 }
 
@@ -278,102 +336,75 @@ void ScripComponent::DrawInspector() {
 	if (!ImGui::CollapsingHeader(GUI::GetInstance()->ShiftJISToUTF8(label).c_str())) return;
 
 	if (ImGui::BeginTable(("ScriptTable_" + Ptr).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("Available Scripts");
-		ImGui::TableSetColumnIndex(1);
-		std::vector<const char*> items;
-		for (auto& s : _scriptList) items.push_back(s.c_str());
-		if (items.empty()) {
-			ImGui::TextDisabled("No scripts found in Script/Src");
-		}
-		else {
-			if (_selectedIndex < 0) _selectedIndex = 0;
-			ImGui::PushItemWidth(-1);
-			if (ImGui::Combo(("##ScriptList_" + Ptr).c_str(), &_selectedIndex, items.data(), (int)items.size())) {
-			}
-			ImGui::PopItemWidth();
-		}
+		ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+		ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("New Script Name");
+		ImGui::TableSetColumnIndex(0); ImGui::Text("Create New Script");
 		ImGui::TableSetColumnIndex(1);
 		ImGui::PushItemWidth(-1);
 		ImGui::InputText(("##NewScriptName_" + Ptr).c_str(), _newNameBuf, sizeof(_newNameBuf));
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+		if (ImGui::Button(("Create##create_" + Ptr).c_str())) {
+			std::string name = _newNameBuf;
+			if (!name.empty()) {
+				bool success = CreateScriptFiles(name);
+				if (success) {
+					_buildLog = "Script files created successfully: " + name + ".h, " + name + ".cpp";
+					_buildSuccess = true;
+					_showBuildLog = true;
+					memset(_newNameBuf, 0, sizeof(_newNameBuf));
+				}
+				else {
+					_buildLog = "Failed to create script files: " + name;
+					_buildSuccess = false;
+					_showBuildLog = true;
+				}
+			}
+		}
+
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text("Available Scripts");
+		ImGui::TableSetColumnIndex(1);
+		ImGui::PushItemWidth(-1);
+		if (ImGui::BeginCombo(("##AvailableScripts_" + Ptr).c_str(),
+			(_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) ? _scriptList[_selectedIndex].c_str() : "Select...")) {
+			for (int i = 0; i < (int)_scriptList.size(); i++) {
+				bool selected = (_selectedIndex == i);
+				if (ImGui::Selectable(_scriptList[i].c_str(), selected)) {
+					_selectedIndex = i;
+				}
+				if (selected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 		ImGui::PopItemWidth();
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Actions");
 		ImGui::TableSetColumnIndex(1);
 		ImGui::BeginGroup();
-		if (ImGui::Button(("Create Script##create_" + Ptr).c_str())) {
-			std::string name = _newNameBuf;
-			if (!name.empty()) {
-				if (CreateScriptFiles(name)) {
-					RefreshScriptList();
-					for (size_t i = 0; i < _scriptList.size(); ++i) {
-						if (_scriptList[i] == name) { _selectedIndex = (int)i; break; }
-					}
 
-					_buildLog = "Script files created successfully:\n";
-					_buildLog += "- " + name + ".h\n";
-					_buildLog += "- " + name + ".cpp\n";
-					_buildSuccess = true;
-					_showBuildLog = true;
-				}
-				else {
-					_buildLog = "Failed to create script files for:  " + name;
-					_buildSuccess = false;
-					_showBuildLog = true;
-				}
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button(("Build##build_" + Ptr).c_str())) {
-			std::string name;
-			if (_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) {
-				name = _scriptList[_selectedIndex];
-			}
-			if (name.empty()) name = std::string(_newNameBuf);
-			if (!name.empty()) {
-				// ビルド前にこのスクリプトの全インスタンスをアンロード
-				_buildLog = "Unloading all instances of script: " + name + "\n\n";
-				_showBuildLog = true;
-				ScriptManager::Instance().UnloadAllInstancesOfScript(name);
-
-				// ScriptManagerのビルド機能を使用
-				auto result = ScriptManager::Instance().BuildScriptDll(name);
-				_buildLog += result.log;
-				_buildSuccess = result.success;
-				_showBuildLog = true;
-
-				if (result.success) {
-					std::cout << "[ScripComponent] Build succeeded for " << name << std::endl;
-				}
-				else {
-					std::cerr << "[ScripComponent] Build failed for " << name << ": " << result.errorMessage << std::endl;
-				}
-
-				RefreshScriptList();
-			}
-		}
-		ImGui::SameLine();
 		if (ImGui::Button(("Load##load_" + Ptr).c_str())) {
-			std::string name;
-			if (_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) name = _scriptList[_selectedIndex];
-			if (!name.empty()) {
-				bool success = LoadScriptByName(name);
-				if (success && _scriptInstance) {
-					_buildLog = "Script loaded successfully:  " + name;
-					_buildSuccess = true;
-					_showBuildLog = true;
-				}
-				else if (!_showBuildLog) {
-					_buildLog = "Failed to load script: " + name;
-					_buildSuccess = false;
-					_showBuildLog = true;
+			if (_selectedIndex >= 0 && _selectedIndex < (int)_scriptList.size()) {
+				std::string name = _scriptList[_selectedIndex];
+				if (!name.empty()) {
+					bool success = LoadScriptByName(name);
+					if (success) {
+						_buildLog += "\nScript loaded: " + name;
+						_buildSuccess = true;
+						_showBuildLog = true;
+					}
+					else {
+						_buildLog += "\nFailed to load script: " + name;
+						_buildSuccess = false;
+						_showBuildLog = true;
+					}
 				}
 			}
 		}
+		ImGui::SameLine();
 		if (ImGui::Button(("Unload##unload_" + Ptr).c_str())) {
 			if (!_scriptName.empty()) {
 				std::string unloadedName = _scriptName;
@@ -539,9 +570,12 @@ void ScripComponent::DrawInspector() {
 					}
 					}
 
-					// 値が変更されたら、必要に応じて処理
+					// 値が変更されたら、_savedPropertiesを更新
 					if (changed) {
-						// デバッグ出力やコールバック呼び出しなど
+						std::string serialized = _scriptInstance->SerializeProperty(prop.name);
+						if (!serialized.empty()) {
+							_savedProperties[prop.name] = serialized;
+						}
 					}
 
 					ImGui::PopItemWidth();
