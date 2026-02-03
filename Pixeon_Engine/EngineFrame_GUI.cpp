@@ -406,6 +406,14 @@ void  EngineFrame::InspectorWindow()
 					ImGui::SameLine();
 					ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(comp->GetComponentName()).c_str());
 					ImGui::Separator();
+					if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("•¡»").c_str())) {
+						AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(SelectedObject, comp->GetComponentType());
+						std::stringstream ss;
+						comp->SaveToFile(ss);
+						newComp->LoadFromFile(ss);
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SameLine();
 					if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("íœ").c_str())) {
 						SelectedObject->RemoveComponent(comp);
 						removeComponentIndex = i;
