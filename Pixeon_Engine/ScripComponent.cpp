@@ -83,9 +83,8 @@ void ScripComponent::UInit() {
 void ScripComponent::SaveToFile(std::ostream& out) {
 	out << "ScriptName " << _scriptName << std::endl;
 
-	// プロパティ値を保存
 	if (_scriptInstance) {
-		SaveProperties(); // 現在の値を_savedPropertiesに保存
+		SaveProperties();
 	}
 
 	// 保存されたプロパティ値をファイルに出力
@@ -345,7 +344,6 @@ void ScripComponent::DrawInspector() {
 		ImGui::PushItemWidth(-1);
 		ImGui::InputText(("##NewScriptName_" + Ptr).c_str(), _newNameBuf, sizeof(_newNameBuf));
 		ImGui::PopItemWidth();
-		ImGui::SameLine();
 		if (ImGui::Button(("Create##create_" + Ptr).c_str())) {
 			std::string name = _newNameBuf;
 			if (!name.empty()) {
@@ -363,6 +361,7 @@ void ScripComponent::DrawInspector() {
 				}
 			}
 		}
+
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Available Scripts");

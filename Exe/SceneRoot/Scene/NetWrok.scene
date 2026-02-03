@@ -75,7 +75,7 @@
         {
             "Components": [
                 {
-                    "Data": "-25.1049 10.8235 5.32044 11.2699 0.499998 0 -16.6572 6.02928 2.94308 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
+                    "Data": "-25.0922 10.8323 5.34802 11.2699 0.499998 0 -16.6445 6.03806 2.97066 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -103,7 +103,7 @@
         {
             "Components": [
                 {
-                    "Data": "ScriptName Network\nPropertyCount 12\nProperty ConnectionRetryInterval 2\nProperty ConnectionStatus Disconnected\nProperty CurrentUserID -1\nProperty DebugLog Initializing...\nProperty HeartbeatInterval 1\nProperty OtherPlayerCount 0\nProperty OtherPlayerPrefabName OtherPlayer\nProperty PlayerPrefabName Player\nProperty SendInterval 0.05\nProperty ServerIP 127.0.0.1\nProperty ServerPort 50008\nProperty UsePhysicsForOtherPlayers 1\n",
+                    "Data": "ScriptName PropertyCount\nPropertyCount 12\nProperty ConnectionRetryInterval 2\nProperty ConnectionStatus Disconnected\nProperty CurrentUserID -1\nProperty DebugLog Initializing...\nProperty HeartbeatInterval 1\nProperty OtherPlayerCount 0\nProperty OtherPlayerPrefabName OtherPlayer\nProperty PlayerPrefabName Player\nProperty SendInterval 0.05\nProperty ServerIP 127.0.0.1\nProperty ServerPort 50008\nProperty UsePhysicsForOtherPlayers 1\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }
