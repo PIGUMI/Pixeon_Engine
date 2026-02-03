@@ -81,11 +81,23 @@ public:
 	bool IsRotationConstraintX() const { return bLockRotationX_; }
 	bool IsRotationConstraintY() const { return bLockRotationY_; }
 	bool IsRotationConstraintZ() const { return bLockRotationZ_; }
+
+	// カメラ距離に基づく制御
+	void SetCullingDistance(float distance);
+	float GetCullingDistance() const { return fCullingDistance_; }
+	void SetUseCulling(bool useCulling);
+	bool IsUseCulling() const { return bUseCulling_; }
+	void UpdateCullingState();
+	bool IsActiveInPhysicsWorld() const { return bActiveInPhysicsWorld_; }
+
 private:
 	void CreateRigidBody();
 	void UpdateMassProperties();
 	btQuaternion EulerToQuaternion(const DirectX::XMFLOAT3& euler);
 	DirectX::XMFLOAT3 QuaternionToEuler(const btQuaternion& quat);
+	void AddToPhysicsWorld();
+	void RemoveFromPhysicsWorld();
+	float CalculateDistanceToCamera();
 
 private:
 	float fMass_ = 1.0f;
@@ -116,6 +128,12 @@ private:
 	bool bLockRotationX_ = false;
 	bool bLockRotationY_ = false;
 	bool bLockRotationZ_ = false;
+
+	// カリング関連
+	bool bUseCulling_ = false;
+	float fCullingDistance_ = 100.0f;
+	bool bActiveInPhysicsWorld_ = true;
+	bool bWasActiveLastFrame_ = true;
 };
 
 #endif // _RIGID_BODY_H_

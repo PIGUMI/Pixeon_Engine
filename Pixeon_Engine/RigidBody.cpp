@@ -2,6 +2,7 @@
 #include "Object.h"
 #include "Scene.h"
 #include "GUI.h"
+#include "CameraComponent.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -40,8 +41,13 @@ void RigidBody::BeginPlay()
 
 					if (pRigidBody_->getCollisionShape() && pRigidBody_->getMotionState())
 					{
-						physicsWorld->addRigidBody(pRigidBody_);
-						bAddedToWorld_ = true;
+						// カリング状態を確認してワールドに追加
+						UpdateCullingState();
+						if (bActiveInPhysicsWorld_)
+						{
+							physicsWorld->addRigidBody(pRigidBody_);
+							bAddedToWorld_ = true;
+						}
 
 						pRigidBody_->setActivationState(ACTIVE_TAG);
 						pRigidBody_->forceActivationState(ACTIVE_TAG);
@@ -51,7 +57,7 @@ void RigidBody::BeginPlay()
 						SetGravityEnabled(bUseGravity_);
 
 						SetKinematic(bKinematic_);
-						if(!bKinematic_ && fMass_ > 0.0f)
+						if (!bKinematic_ && fMass_ > 0.0f)
 						{
 							pRigidBody_->setActivationState(ACTIVE_TAG);
 							pRigidBody_->forceActivationState(ACTIVE_TAG);
@@ -112,7 +118,13 @@ void RigidBody::InGameUpdate()
 {
 	if (!pRigidBody_)return;
 
-	if (!bKinematic_ && !bManualTransformControl_)
+	// カリング状態を更新
+	if (bUseCulling_)
+	{
+		UpdateCullingState();
+	}
+
+	if (!bKinematic_ && !bManualTransformControl_ && bActiveInPhysicsWorld_)
 	{
 		SyncTransformFromBullet();
 	}
@@ -280,6 +292,29 @@ void RigidBody::DrawInspector()
 			ImGui::EndTable();
 		}
 
+		// カリング設定
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("距離カリング使用").c_str());
+		bool UseCulling = bUseCulling_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::Checkbox(SJ("##UseCullingCheckbox").c_str(), &UseCulling))
+			SetUseCulling(UseCulling);
+
+		if (bUseCulling_)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("カリング距離").c_str());
+			float CullingDistance = fCullingDistance_;
+			ImGui::TableSetColumnIndex(1);
+			if (ImGui::InputFloat(SJ("##CullingDistanceInput").c_str(), &CullingDistance, 1.0f, 10.0f, "%.1f"))
+				SetCullingDistance(CullingDistance);
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("物理アクティブ").c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text(bActiveInPhysicsWorld_ ? SJ("有効").c_str() : SJ("無効").c_str());
+		}
+
 		ImGui::EndTable();
 	}
 }
@@ -298,6 +333,8 @@ void RigidBody::SaveToFile(std::ostream& out)
 	out << bLockRotationX_ << std::endl;
 	out << bLockRotationY_ << std::endl;
 	out << bLockRotationZ_ << std::endl;
+	out << bUseCulling_ << std::endl;
+	out << fCullingDistance_ << std::endl;
 }
 
 void RigidBody::LoadFromFile(std::istream& in)
@@ -314,6 +351,17 @@ void RigidBody::LoadFromFile(std::istream& in)
 	in >> bLockRotationX_;
 	in >> bLockRotationY_;
 	in >> bLockRotationZ_;
+
+	// カリング設定を読み込み(古いファイルとの互換性のためデフォルト値を使用)
+	if (in >> bUseCulling_)
+	{
+		in >> fCullingDistance_;
+	}
+	else
+	{
+		bUseCulling_ = false;
+		fCullingDistance_ = 100.0f;
+	}
 
 	if (pRigidBody_)
 	{
@@ -810,4 +858,119 @@ void RigidBody::SetRotationConstraintZ(bool lock)
 {
 	bLockRotationZ_ = lock;
 	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
+}
+
+// カメラ距離に基づくカリング制御
+void RigidBody::SetCullingDistance(float distance)
+{
+	fCullingDistance_ = distance;
+}
+
+void RigidBody::SetUseCulling(bool useCulling)
+{
+	bUseCulling_ = useCulling;
+	if (!bUseCulling_ && !bActiveInPhysicsWorld_)
+	{
+		// カリングを無効にした場合、物理ワールドに追加
+		AddToPhysicsWorld();
+	}
+}
+
+void RigidBody::UpdateCullingState()
+{
+	if (!bUseCulling_ || !_Parent || !_Parent->GetParentScene())
+		return;
+
+	float distance = CalculateDistanceToCamera();
+	bool shouldBeActive = distance <= fCullingDistance_;
+
+	// 状態が変化した場合のみ処理
+	if (shouldBeActive != bActiveInPhysicsWorld_)
+	{
+		if (shouldBeActive)
+		{
+			AddToPhysicsWorld();
+		}
+		else
+		{
+			RemoveFromPhysicsWorld();
+		}
+	}
+
+	bWasActiveLastFrame_ = bActiveInPhysicsWorld_;
+}
+
+float RigidBody::CalculateDistanceToCamera()
+{
+	if (!_Parent || !_Parent->GetParentScene())
+		return 0.0f;
+
+	CameraComponent* mainCamera = _Parent->GetParentScene()->GetMainCamera();
+	if (!mainCamera || !mainCamera->GetParent())
+		return 0.0f;
+
+	DirectX::XMFLOAT3 cameraPos = mainCamera->GetWorldFixation();
+	DirectX::XMFLOAT3 objectPos = _Parent->GetWorldTransform().position;
+
+	float dx = objectPos.x - cameraPos.x;
+	float dy = objectPos.y - cameraPos.y;
+	float dz = objectPos.z - cameraPos.z;
+
+	return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
+void RigidBody::AddToPhysicsWorld()
+{
+	if (!pRigidBody_ || bAddedToWorld_ || !_Parent || !_Parent->GetParentScene())
+		return;
+
+	btDiscreteDynamicsWorld* physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
+	if (physicsWorld)
+	{
+		try
+		{
+			physicsWorld->addRigidBody(pRigidBody_);
+			bAddedToWorld_ = true;
+			bActiveInPhysicsWorld_ = true;
+
+			// ワールドに追加したときに現在の状態を同期
+			SyncTransformToBullet();
+			pRigidBody_->activate(true);
+		}
+		catch (...)
+		{
+			bAddedToWorld_ = false;
+			bActiveInPhysicsWorld_ = false;
+		}
+	}
+}
+
+void RigidBody::RemoveFromPhysicsWorld()
+{
+	if (!pRigidBody_ || !bAddedToWorld_ || !_Parent || !_Parent->GetParentScene())
+		return;
+
+	btDiscreteDynamicsWorld* physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
+	if (physicsWorld)
+	{
+		try
+		{
+			// 現在の状態を保存してからワールドから削除
+			btTransform currentTransform = pRigidBody_->getWorldTransform();
+			btVector3 currentVelocity = pRigidBody_->getLinearVelocity();
+			btVector3 currentAngularVelocity = pRigidBody_->getAngularVelocity();
+
+			physicsWorld->removeRigidBody(pRigidBody_);
+			bAddedToWorld_ = false;
+			bActiveInPhysicsWorld_ = false;
+
+			// 状態を復元（再度アクティブになったときのため）
+			pRigidBody_->setWorldTransform(currentTransform);
+			pRigidBody_->setLinearVelocity(currentVelocity);
+			pRigidBody_->setAngularVelocity(currentAngularVelocity);
+		}
+		catch (...)
+		{
+		}
+	}
 }
