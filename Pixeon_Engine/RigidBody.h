@@ -87,8 +87,17 @@ public:
 	float GetCullingDistance() const { return fCullingDistance_; }
 	void SetUseCulling(bool useCulling);
 	bool IsUseCulling() const { return bUseCulling_; }
+	void SetAlwaysActive(bool alwaysActive);
+	bool IsAlwaysActive() const { return bAlwaysActive_; }
 	void UpdateCullingState();
 	bool IsActiveInPhysicsWorld() const { return bActiveInPhysicsWorld_; }
+
+	// スリープ制御
+	void SetDisableSleep(bool disableSleep);
+	bool IsDisableSleep() const { return bDisableSleep_; }
+
+	// CollisionからのWorld操作を許可するフラグ
+	bool CanModifyPhysicsWorld() const { return !bUseCulling_ || bAlwaysActive_; }
 
 private:
 	void CreateRigidBody();
@@ -131,9 +140,13 @@ private:
 
 	// カリング関連
 	bool bUseCulling_ = false;
+	bool bAlwaysActive_ = false;  // 常にアクティブにするフラグ
 	float fCullingDistance_ = 100.0f;
 	bool bActiveInPhysicsWorld_ = true;
 	bool bWasActiveLastFrame_ = true;
+
+	// スリープ制御
+	bool bDisableSleep_ = false;  // スリープを無効化するフラグ
 };
 
 #endif // _RIGID_BODY_H_

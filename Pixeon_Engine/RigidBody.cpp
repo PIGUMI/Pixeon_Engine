@@ -42,15 +42,32 @@ void RigidBody::BeginPlay()
 					if (pRigidBody_->getCollisionShape() && pRigidBody_->getMotionState())
 					{
 						// カリング状態を確認してワールドに追加
-						UpdateCullingState();
+						if (bUseCulling_ && !bAlwaysActive_)
+						{
+							UpdateCullingState();
+						}
+						else
+						{
+							// カリング無効または常にアクティブの場合は必ずワールドに追加
+							bActiveInPhysicsWorld_ = true;
+						}
+
 						if (bActiveInPhysicsWorld_)
 						{
 							physicsWorld->addRigidBody(pRigidBody_);
 							bAddedToWorld_ = true;
 						}
 
-						pRigidBody_->setActivationState(ACTIVE_TAG);
-						pRigidBody_->forceActivationState(ACTIVE_TAG);
+						// スリープ設定を適用
+						if (bDisableSleep_)
+						{
+							pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+						}
+						else
+						{
+							pRigidBody_->setActivationState(ACTIVE_TAG);
+							pRigidBody_->forceActivationState(ACTIVE_TAG);
+						}
 
 						SyncTransformToBullet();
 
@@ -59,8 +76,15 @@ void RigidBody::BeginPlay()
 						SetKinematic(bKinematic_);
 						if (!bKinematic_ && fMass_ > 0.0f)
 						{
-							pRigidBody_->setActivationState(ACTIVE_TAG);
-							pRigidBody_->forceActivationState(ACTIVE_TAG);
+							if (bDisableSleep_)
+							{
+								pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+							}
+							else
+							{
+								pRigidBody_->setActivationState(ACTIVE_TAG);
+								pRigidBody_->forceActivationState(ACTIVE_TAG);
+							}
 							pRigidBody_->activate(true);
 
 							pRigidBody_->setLinearVelocity(btVector3(0, -0.01f, 0));
@@ -118,10 +142,19 @@ void RigidBody::InGameUpdate()
 {
 	if (!pRigidBody_)return;
 
-	// カリング状態を更新
-	if (bUseCulling_)
+	// カリング状態を更新（常にアクティブでない場合のみ）
+	if (bUseCulling_ && !bAlwaysActive_)
 	{
 		UpdateCullingState();
+	}
+
+	// スリープ無効化が有効な場合、常にアクティブ状態を維持
+	if (bDisableSleep_ && pRigidBody_ && bAddedToWorld_)
+	{
+		if (pRigidBody_->getActivationState() != DISABLE_DEACTIVATION)
+		{
+			pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+		}
 	}
 
 	if (!bKinematic_ && !bManualTransformControl_ && bActiveInPhysicsWorld_)
@@ -292,6 +325,14 @@ void RigidBody::DrawInspector()
 			ImGui::EndTable();
 		}
 
+		// スリープ無効化
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("スリープ無効化").c_str());
+		bool DisableSleep = bDisableSleep_;
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::Checkbox(SJ("##DisableSleepCheckbox").c_str(), &DisableSleep))
+			SetDisableSleep(DisableSleep);
+
 		// カリング設定
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("距離カリング使用").c_str());
@@ -303,16 +344,26 @@ void RigidBody::DrawInspector()
 		if (bUseCulling_)
 		{
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("カリング距離").c_str());
-			float CullingDistance = fCullingDistance_;
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("常にアクティブ").c_str());
+			bool AlwaysActive = bAlwaysActive_;
 			ImGui::TableSetColumnIndex(1);
-			if (ImGui::InputFloat(SJ("##CullingDistanceInput").c_str(), &CullingDistance, 1.0f, 10.0f, "%.1f"))
-				SetCullingDistance(CullingDistance);
+			if (ImGui::Checkbox(SJ("##AlwaysActiveCheckbox").c_str(), &AlwaysActive))
+				SetAlwaysActive(AlwaysActive);
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("物理アクティブ").c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(bActiveInPhysicsWorld_ ? SJ("有効").c_str() : SJ("無効").c_str());
+			if (!bAlwaysActive_)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("カリング距離").c_str());
+				float CullingDistance = fCullingDistance_;
+				ImGui::TableSetColumnIndex(1);
+				if (ImGui::InputFloat(SJ("##CullingDistanceInput").c_str(), &CullingDistance, 1.0f, 10.0f, "%.1f"))
+					SetCullingDistance(CullingDistance);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("物理アクティブ").c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text(bActiveInPhysicsWorld_ ? SJ("有効").c_str() : SJ("無効").c_str());
+			}
 		}
 
 		ImGui::EndTable();
@@ -333,7 +384,9 @@ void RigidBody::SaveToFile(std::ostream& out)
 	out << bLockRotationX_ << std::endl;
 	out << bLockRotationY_ << std::endl;
 	out << bLockRotationZ_ << std::endl;
+	out << bDisableSleep_ << std::endl;
 	out << bUseCulling_ << std::endl;
+	out << bAlwaysActive_ << std::endl;
 	out << fCullingDistance_ << std::endl;
 }
 
@@ -352,14 +405,34 @@ void RigidBody::LoadFromFile(std::istream& in)
 	in >> bLockRotationY_;
 	in >> bLockRotationZ_;
 
-	// カリング設定を読み込み(古いファイルとの互換性のためデフォルト値を使用)
-	if (in >> bUseCulling_)
+	// スリープ設定を読み込み
+	if (in >> bDisableSleep_)
 	{
-		in >> fCullingDistance_;
+		// カリング設定を読み込み(古いファイルとの互換性のためデフォルト値を使用)
+		if (in >> bUseCulling_)
+		{
+			if (in >> bAlwaysActive_)
+			{
+				in >> fCullingDistance_;
+			}
+			else
+			{
+				bAlwaysActive_ = false;
+				fCullingDistance_ = 100.0f;
+			}
+		}
+		else
+		{
+			bUseCulling_ = false;
+			bAlwaysActive_ = false;
+			fCullingDistance_ = 100.0f;
+		}
 	}
 	else
 	{
+		bDisableSleep_ = false;
 		bUseCulling_ = false;
+		bAlwaysActive_ = false;
 		fCullingDistance_ = 100.0f;
 	}
 
@@ -374,6 +447,7 @@ void RigidBody::LoadFromFile(std::istream& in)
 		SetRollingFriction(fRollingFriction_);
 		SetSpinningFriction(fSpinningFriction_);
 		SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
+		SetDisableSleep(bDisableSleep_);
 	}
 }
 
@@ -396,7 +470,16 @@ void RigidBody::SetKinematic(bool kinematic)
 		else
 		{
 			pRigidBody_->setCollisionFlags(pRigidBody_->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
-			pRigidBody_->setActivationState(ACTIVE_TAG);
+
+			// スリープ設定に応じてアクティベーション状態を設定
+			if (bDisableSleep_)
+			{
+				pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+			}
+			else
+			{
+				pRigidBody_->setActivationState(ACTIVE_TAG);
+			}
 		}
 	}
 }
@@ -418,8 +501,17 @@ void RigidBody::SetGravityEnabled(bool useGravity)
 		{
 			pRigidBody_->setGravity(btVector3(0, 0, 0));
 		}
-		pRigidBody_->setActivationState(ACTIVE_TAG);
-		pRigidBody_->forceActivationState(ACTIVE_TAG);
+
+		// スリープ設定に応じてアクティベーション状態を設定
+		if (bDisableSleep_)
+		{
+			pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+		}
+		else
+		{
+			pRigidBody_->setActivationState(ACTIVE_TAG);
+			pRigidBody_->forceActivationState(ACTIVE_TAG);
+		}
 	}
 }
 
@@ -464,6 +556,7 @@ void RigidBody::AddForce(const DirectX::XMFLOAT3& force)
 	if (pRigidBody_ && !bKinematic_)
 	{
 		pRigidBody_->applyCentralForce(btVector3(force.x, force.y, force.z));
+		pRigidBody_->activate(true);
 	}
 }
 
@@ -472,6 +565,7 @@ void RigidBody::AddImpulse(const DirectX::XMFLOAT3& impulse)
 	if (pRigidBody_ && !bKinematic_)
 	{
 		pRigidBody_->applyCentralImpulse(btVector3(impulse.x, impulse.y, impulse.z));
+		pRigidBody_->activate(true);
 	}
 }
 
@@ -480,6 +574,7 @@ void RigidBody::SetVelocity(const DirectX::XMFLOAT3& velocity)
 	if (pRigidBody_ && !bKinematic_)
 	{
 		pRigidBody_->setLinearVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+		pRigidBody_->activate(true);
 	}
 }
 
@@ -680,7 +775,15 @@ void RigidBody::CreateRigidBody()
 
 	pRigidBody_->setContactProcessingThreshold(0.0001f);
 
-	pRigidBody_->setSleepingThresholds(0.2f, 0.2f);
+	// スリープ閾値の設定（スリープ無効化時は高い値を設定）
+	if (bDisableSleep_)
+	{
+		pRigidBody_->setSleepingThresholds(0.0f, 0.0f);
+	}
+	else
+	{
+		pRigidBody_->setSleepingThresholds(0.2f, 0.2f);
+	}
 
 	pRigidBody_->setDeactivationTime(2.0f);
 
@@ -693,6 +796,11 @@ void RigidBody::CreateRigidBody()
 			pRigidBody_->getCollisionFlags() |
 			btCollisionObject::CF_STATIC_OBJECT
 		);
+		pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+	}
+	else if (bDisableSleep_)
+	{
+		// スリープ無効化が有効な場合
 		pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
 	}
 
@@ -860,6 +968,29 @@ void RigidBody::SetRotationConstraintZ(bool lock)
 	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 }
 
+// スリープ制御
+void RigidBody::SetDisableSleep(bool disableSleep)
+{
+	bDisableSleep_ = disableSleep;
+
+	if (pRigidBody_)
+	{
+		if (bDisableSleep_)
+		{
+			// スリープを無効化
+			pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+			pRigidBody_->setSleepingThresholds(0.0f, 0.0f);
+		}
+		else
+		{
+			// 通常のスリープ設定に戻す
+			pRigidBody_->setActivationState(ACTIVE_TAG);
+			pRigidBody_->setSleepingThresholds(0.2f, 0.2f);
+			pRigidBody_->activate(true);
+		}
+	}
+}
+
 // カメラ距離に基づくカリング制御
 void RigidBody::SetCullingDistance(float distance)
 {
@@ -868,17 +999,44 @@ void RigidBody::SetCullingDistance(float distance)
 
 void RigidBody::SetUseCulling(bool useCulling)
 {
+	bool prevUseCulling = bUseCulling_;
 	bUseCulling_ = useCulling;
-	if (!bUseCulling_ && !bActiveInPhysicsWorld_)
+
+	// カリング設定が変更された場合
+	if (prevUseCulling != bUseCulling_)
 	{
-		// カリングを無効にした場合、物理ワールドに追加
-		AddToPhysicsWorld();
+		if (!bUseCulling_ && !bActiveInPhysicsWorld_)
+		{
+			// カリングを無効にした場合、物理ワールドに追加
+			AddToPhysicsWorld();
+		}
+	}
+}
+
+void RigidBody::SetAlwaysActive(bool alwaysActive)
+{
+	bool prevAlwaysActive = bAlwaysActive_;
+	bAlwaysActive_ = alwaysActive;
+
+	// 常にアクティブ設定が変更された場合
+	if (prevAlwaysActive != bAlwaysActive_)
+	{
+		if (bAlwaysActive_ && !bActiveInPhysicsWorld_)
+		{
+			// 常にアクティブに設定した場合、物理ワールドに追加
+			AddToPhysicsWorld();
+		}
+		else if (!bAlwaysActive_ && bUseCulling_)
+		{
+			// 常にアクティブを解除した場合、カリング状態を更新
+			UpdateCullingState();
+		}
 	}
 }
 
 void RigidBody::UpdateCullingState()
 {
-	if (!bUseCulling_ || !_Parent || !_Parent->GetParentScene())
+	if (!bUseCulling_ || bAlwaysActive_ || !_Parent || !_Parent->GetParentScene())
 		return;
 
 	float distance = CalculateDistanceToCamera();
@@ -909,7 +1067,7 @@ float RigidBody::CalculateDistanceToCamera()
 	if (!mainCamera || !mainCamera->GetParent())
 		return 0.0f;
 
-	DirectX::XMFLOAT3 cameraPos = mainCamera->GetWorldFixation();
+	DirectX::XMFLOAT3 cameraPos = mainCamera->GetParent()->GetWorldTransform().position;
 	DirectX::XMFLOAT3 objectPos = _Parent->GetWorldTransform().position;
 
 	float dx = objectPos.x - cameraPos.x;
@@ -936,6 +1094,12 @@ void RigidBody::AddToPhysicsWorld()
 			// ワールドに追加したときに現在の状態を同期
 			SyncTransformToBullet();
 			pRigidBody_->activate(true);
+
+			// スリープ設定を適用
+			if (bDisableSleep_)
+			{
+				pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
+			}
 		}
 		catch (...)
 		{

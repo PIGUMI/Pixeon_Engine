@@ -155,11 +155,11 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
 
-	// カプセルの描画（簡略化：円柱部分と上下の円）
+	// カプセルの描画(簡略化:円柱部分と上下の円)
 	const int segments = 16;
 	const float angleStep = DirectX::XM_2PI / segments;
 
-	// Y軸方向のベクトル（回転適用後）
+	// Y軸方向のベクトル(回転適用後)
 	DirectX::XMVECTOR upVec = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	upVec = DirectX::XMVector3TransformNormal(upVec, matRot);
 
@@ -177,7 +177,7 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMStoreFloat3(&topCenterF, topCenter);
 	DirectX::XMStoreFloat3(&bottomCenterF, bottomCenter);
 
-	// 円柱の円を描画（上下）
+	// 円柱の円を描画(上下)
 	DirectX::XMVECTOR rightVec = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	rightVec = DirectX::XMVector3TransformNormal(rightVec, matRot);
 
@@ -211,7 +211,7 @@ void CapsuleCollision::Draw(int Layer)
 		DirectX::XMStoreFloat3(&p2Bottom, DirectX::XMVectorAdd(bottomCenter, offset2));
 		LineRenderer::GetInstance()->DrawLine(p1Bottom, p2Bottom, color, world, view, Proj, 0.05f);
 
-		// 縦のライン（4本）
+		// 縦のライン(4本)
 		if (i % (segments / 4) == 0)
 		{
 			LineRenderer::GetInstance()->DrawLine(p1Top, p1Bottom, color, world, view, Proj, 0.05f);
@@ -391,12 +391,15 @@ void CapsuleCollision::UpdateCollisionShape()
 	bool wasInWorld = false;
 	btDiscreteDynamicsWorld* physicsWorld = nullptr;
 
+	// RigidBodyのカリング制御を考慮
 	if (pAttachedRigidBody_ && pAttachedRigidBody_->GetBtRigidBody())
 	{
 		if (_Parent && _Parent->GetParentScene())
 		{
 			physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
-			if (physicsWorld)
+
+			// RigidBodyのカリング制御が有効で、かつ物理ワールドからの削除を許可している場合のみ削除
+			if (physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld() && pAttachedRigidBody_->IsActiveInPhysicsWorld())
 			{
 				physicsWorld->removeRigidBody(pAttachedRigidBody_->GetBtRigidBody());
 				wasInWorld = true;
@@ -436,12 +439,13 @@ void CapsuleCollision::UpdateCollisionShape()
 
 		pAttachedRigidBody_->AddCollisionShape(pCapsuleShape_, localTransform);
 
-		if (wasInWorld && physicsWorld)
+		// RigidBodyのカリング制御が許可している場合のみワールドに追加
+		if (wasInWorld && physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld())
 		{
 			physicsWorld->addRigidBody(pAttachedRigidBody_->GetBtRigidBody());
 		}
 
-		if (pAttachedRigidBody_->GetBtRigidBody())
+		if (pAttachedRigidBody_->GetBtRigidBody() && pAttachedRigidBody_->IsActiveInPhysicsWorld())
 		{
 			pAttachedRigidBody_->GetBtRigidBody()->activate(true);
 		}

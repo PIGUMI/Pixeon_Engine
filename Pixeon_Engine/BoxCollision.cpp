@@ -378,14 +378,16 @@ void BoxCollision::UpdateCollisionShape()
 	bool wasInWorld = false;
 	btDiscreteDynamicsWorld* physicsWorld = nullptr;
 
+	// RigidBodyのカリング制御を考慮
 	if (pAttachedRigidBody_ && pAttachedRigidBody_->GetBtRigidBody())
 	{
 		if (_Parent && _Parent->GetParentScene())
 		{
 			physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
-			if (physicsWorld)
+
+			// RigidBodyのカリング制御が有効で、かつ物理ワールドからの削除を許可している場合のみ削除
+			if (physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld() && pAttachedRigidBody_->IsActiveInPhysicsWorld())
 			{
-				// 一旦ワールドから削除
 				physicsWorld->removeRigidBody(pAttachedRigidBody_->GetBtRigidBody());
 				wasInWorld = true;
 			}
@@ -416,19 +418,20 @@ void BoxCollision::UpdateCollisionShape()
 
 	if (pAttachedRigidBody_ && pBoxShape_)
 	{
-		// ローカル座標系でのトランスフォーム（回転は含めない）
+		// ローカル座標系でのトランスフォーム(回転は含めない)
 		btTransform localTransform;
 		localTransform.setIdentity();
 		localTransform.setOrigin(btVector3(f3Center_.x, f3Center_.y, f3Center_.z));
 
 		pAttachedRigidBody_->AddCollisionShape(pBoxShape_, localTransform);
 
-		if (wasInWorld && physicsWorld)
+		// RigidBodyのカリング制御が許可している場合のみワールドに追加
+		if (wasInWorld && physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld())
 		{
 			physicsWorld->addRigidBody(pAttachedRigidBody_->GetBtRigidBody());
 		}
 
-		if (pAttachedRigidBody_->GetBtRigidBody())
+		if (pAttachedRigidBody_->GetBtRigidBody() && pAttachedRigidBody_->IsActiveInPhysicsWorld())
 		{
 			pAttachedRigidBody_->GetBtRigidBody()->activate(true);
 		}
@@ -465,7 +468,7 @@ void BoxCollision::DetachFromRigidBody()
 
 void BoxCollision::ProcessCollisionCallBacks()
 {
-	/* 現在使用されてません */
+	/* 現在使用されていません */
 	/* CollisionManagerが代わりに衝突処理を行います。 */
 }
 
@@ -484,14 +487,14 @@ bool BoxCollision::OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX:
 
 	if (intersect)
 	{
-		// 衝突点と法線を計算（簡易版）
+		// 衝突点と法線を計算(簡易版)
 		info.HitPoint = DirectX::XMFLOAT3(
 			(pos1.x + pos2.x) * 0.5f,
 			(pos1.y + pos2.y) * 0.5f,
 			(pos1.z + pos2.z) * 0.5f
 		);
 
-		// 簡易的な法線計算（pos1からpos2への方向）
+		// 簡易的な法線計算(pos1からpos2への方向)
 		DirectX::XMFLOAT3 direction = {
 			pos2.x - pos1.x,
 			pos2.y - pos1.y,
