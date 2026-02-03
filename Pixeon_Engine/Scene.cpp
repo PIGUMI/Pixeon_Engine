@@ -94,7 +94,7 @@ void AbstractScene::Init() {
 	_collisionManager = new CollisionManager;
 	_collisionManager->Initialize(pPhysicsWorld);
 
-	for(int i = 0 ; i < MAX_LAYER_COUNT; i++)
+	for (int i = 0; i < MAX_LAYER_COUNT; i++)
 	{
 		Layer* layer = new Layer;
 		layer->layerIndex = i;
@@ -434,8 +434,6 @@ void AbstractScene::Draw(int Layer) {
 		}
 	}
 }
-
-
 
 void AbstractScene::DrawUI()
 {

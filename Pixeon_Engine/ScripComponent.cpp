@@ -362,7 +362,6 @@ void ScripComponent::DrawInspector() {
 			}
 		}
 
-
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("Available Scripts");
 		ImGui::TableSetColumnIndex(1);
@@ -514,7 +513,6 @@ void ScripComponent::DrawInspector() {
 		if (!properties.empty()) {
 			if (ImGui::BeginTable(("ScriptProps_" + Ptr).c_str(), 2,
 				ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp)) {
-
 				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 150.0f);
 				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 				ImGui::TableHeadersRow();

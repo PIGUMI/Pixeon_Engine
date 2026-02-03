@@ -442,7 +442,6 @@ std::shared_ptr<PostEffectBase> Layer::CreatePostEffect(PostEffectType type) {
 	case PostEffectType::COLOR_GRADING:
 		return std::make_shared<ColorGradingEffect>();
 
-
 	default:
 		return nullptr;
 	}

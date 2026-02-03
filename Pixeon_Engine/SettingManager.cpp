@@ -69,7 +69,6 @@ void SettingManager::LoadConfig() {
 	if (configJson.contains("VcpkgFilePath")) {
 		VcpkgFilePath = configJson["VcpkgFilePath"].get<std::string>();
 	}
-	
 }
 
 void SettingManager::SaveConfig() {

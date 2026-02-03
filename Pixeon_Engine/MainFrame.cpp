@@ -191,7 +191,7 @@ void MainFrame::Draw()
 
 			Layer* layerSettings = nullptr;
 			if (_softwareMode == SoftWareMode::ENGINE) {
-				if(SceneManger::GetInstance())
+				if (SceneManger::GetInstance())
 				{
 					if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
 					{
@@ -247,7 +247,7 @@ void MainFrame::Draw()
 
 			Layer* layerSettings = nullptr;
 			if (_softwareMode == SoftWareMode::ENGINE) {
-				if(SceneManger::GetInstance())
+				if (SceneManger::GetInstance())
 				{
 					if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
 					{
