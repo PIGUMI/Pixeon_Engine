@@ -3,11 +3,9 @@
 #include <unordered_map>
 #include <mutex>
 
-// スレッドセーフな管理のためmutexを追加
 static std::unordered_map<Component, IScript*> g_scriptInstances;
 static std::mutex g_scriptInstancesMutex;
 
-// グローバルコールバック関数
 void OnEnterCallback(Component collision, const APICollisionInfo* info)
 {
 	std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
@@ -103,7 +101,6 @@ void IScript::UnregisterAllCollisions()
 
 void IScript::Update(float DeltaTime)
 {
-	// ユーザーがオーバーライドする
 }
 
 void IScript::EndPlay()
@@ -124,15 +121,12 @@ void IScript::ClearParent()
 
 void IScript::OnCollisionEnter(const APICollisionInfo* info)
 {
-	// オーバーライドされない場合は何もしない
 }
 
 void IScript::OnCollisionStay(const APICollisionInfo* info)
 {
-	// オーバーライドされない場合は何もしない
 }
 
 void IScript::OnCollisionExit(const APICollisionInfo* info)
 {
-	// オーバーライドされない場合は何もしない
 }

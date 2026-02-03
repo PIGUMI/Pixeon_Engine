@@ -51,7 +51,7 @@ private:
 		std::map<ScripComponent*, IScript*> instances;
 		std::filesystem::file_time_type lastCppWriteTime;
 		std::filesystem::file_time_type lastHWriteTime;
-		bool initialized = false; // タイムスタンプが初期化されたかどうか
+		bool initialized = false;
 	};
 
 	bool BuildScriptDll(const std::string& scriptName, std::string& outError);

@@ -103,7 +103,7 @@
         {
             "Components": [
                 {
-                    "Data": "ScriptName PropertyCount\nPropertyCount 12\nProperty ConnectionRetryInterval 2\nProperty ConnectionStatus Disconnected\nProperty CurrentUserID -1\nProperty DebugLog Initializing...\nProperty HeartbeatInterval 1\nProperty OtherPlayerCount 0\nProperty OtherPlayerPrefabName OtherPlayer\nProperty PlayerPrefabName Player\nProperty SendInterval 0.05\nProperty ServerIP 127.0.0.1\nProperty ServerPort 50008\nProperty UsePhysicsForOtherPlayers 1\n",
+                    "Data": "ScriptName Network\nPropertyCount 12\nProperty ConnectionRetryInterval 2\nProperty ConnectionStatus Disconnected\nProperty CurrentUserID -1\nProperty DebugLog Initializing...\nProperty HeartbeatInterval 1\nProperty OtherPlayerCount 0\nProperty OtherPlayerPrefabName OtherPlayer\nProperty PlayerPrefabName Player\nProperty SendInterval 0.05\nProperty ServerIP 127.0.0.1\nProperty ServerPort 50008\nProperty UsePhysicsForOtherPlayers 1\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }
@@ -247,22 +247,17 @@
         {
             "Components": [
                 {
-                    "Data": "0.3 0.3 0.3 0 0 0 0 0 1\n",
+                    "Data": "0.5 1.4 0.5 0 0.7 0 0 0 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
-                },
-                {
-                    "Data": "2.38419e-07 1.19209e-07 0 -3.14159 4.05609e-08 6.56381e-07 5.24521e-06 0 2 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
-                    "Name": "CameraComponent",
-                    "Type": 0
                 }
             ],
-            "Name": "Head",
+            "Name": "Body",
             "Parent": "Player",
             "Transform": {
                 "Position": [
                     0.0,
-                    1.600000023841858,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
@@ -280,17 +275,22 @@
         {
             "Components": [
                 {
-                    "Data": "0.5 1.4 0.5 0 0.7 0 0 0 1\n",
+                    "Data": "0.3 0.3 0.3 0 0 0 0 0 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
+                },
+                {
+                    "Data": "2.38419e-07 1.19209e-07 0 -3.14159 4.05609e-08 6.56381e-07 5.24521e-06 0 2 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
                 }
             ],
-            "Name": "Body",
+            "Name": "Head",
             "Parent": "Player",
             "Transform": {
                 "Position": [
                     0.0,
-                    0.0,
+                    1.600000023841858,
                     0.0
                 ],
                 "Rotation": [

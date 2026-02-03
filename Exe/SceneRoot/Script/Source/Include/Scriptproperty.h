@@ -1,4 +1,3 @@
-
 #ifndef _SCRIPT_PROPERTY_H_
 #define _SCRIPT_PROPERTY_H_
 

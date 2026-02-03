@@ -96,13 +96,18 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 	std::string headerPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".h";
 	std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
-	// タイムスタンプの初期化(初回のみ)
+	// ソースファイルの存在確認
+	bool hasCpp = fs::exists(srcPath);
+	bool hasH = fs::exists(headerPath);
+	bool hasDll = fs::exists(dllPath);
+
+	// タイムスタンプの初期化(初回のみ、ソースファイルがある場合)
 	if (!entry.initialized) {
 		try {
-			if (fs::exists(srcPath)) {
+			if (hasCpp) {
 				entry.lastCppWriteTime = fs::last_write_time(srcPath);
 			}
-			if (fs::exists(headerPath)) {
+			if (hasH) {
 				entry.lastHWriteTime = fs::last_write_time(headerPath);
 			}
 			entry.initialized = true;
@@ -115,16 +120,23 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 
 	// ビルドが必要かチェック
 	bool needBuild = false;
-	bool hasDll = fs::exists(dllPath);
 
-	// DLLが存在しない場合は必ずビルド
-	if (!hasDll) {
-		needBuild = true;
-		std::cout << "[ScriptManager] DLL not found, building: " << scriptName << std::endl;
+	// ケース1: DLLもソースもない → エラー
+	if (!hasDll && !hasCpp) {
+		std::cerr << "[ScriptManager] Neither DLL nor source files found for: " << scriptName << std::endl;
+		return nullptr;
 	}
-	else {
-		// ソースファイルの変更をチェック
-		if (fs::exists(srcPath)) {
+
+	// ケース2: DLLはないがソースがある → ビルド必須
+	if (!hasDll && hasCpp) {
+		needBuild = true;
+		std::cout << "[ScriptManager] DLL not found but source exists, building: " << scriptName << std::endl;
+	}
+
+	// ケース3: DLLがあってソースもある → タイムスタンプチェック
+	if (hasDll && (hasCpp || hasH)) {
+		// .cppファイルの変更をチェック
+		if (hasCpp) {
 			try {
 				auto currentCppTime = fs::last_write_time(srcPath);
 				auto dllTime = fs::last_write_time(dllPath);
@@ -143,8 +155,8 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 			}
 		}
 
-		// ヘッダーファイルの変更をチェック
-		if (fs::exists(headerPath)) {
+		// .hファイルの変更をチェック
+		if (hasH) {
 			try {
 				auto currentHTime = fs::last_write_time(headerPath);
 				auto dllTime = fs::last_write_time(dllPath);
@@ -164,26 +176,44 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 		}
 	}
 
+	// ケース4: DLLがあるがソースがない → ビルド不要、DLLをそのまま使用
+	if (hasDll && !hasCpp && !hasH) {
+		std::cout << "[ScriptManager] Using precompiled DLL (no source files): " << scriptName << std::endl;
+		needBuild = false;
+	}
+
 	if (needBuild) {
-		// ビルド前にDLLをアンロード(重要!)
-		if (entry.hDll != nullptr) {
-			std::cout << "[ScriptManager] Unloading DLL before rebuild: " << scriptName << std::endl;
-			UnloadDllEntry(entry);
-		}
-
-		auto result = BuildScriptDll(scriptName);
-		if (!result.success) {
-			std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << result.errorMessage << std::endl;
-
-			// Build失敗時: 既存のDLLが存在する場合はそれを使用
+		// ソースファイルがない場合はビルドできない
+		if (!hasCpp) {
+			std::cerr << "[ScriptManager] Cannot build: source file not found: " << srcPath << std::endl;
 			if (hasDll) {
-				std::cout << "[ScriptManager] Using existing DLL (build environment may not be available): " << scriptName << std::endl;
-				// ビルド失敗したが既存DLLを使うので処理を続行
+				std::cout << "[ScriptManager] Using existing DLL instead: " << scriptName << std::endl;
 			}
 			else {
-				// DLLが存在せず、ビルドも失敗した場合はエラー
-				std::cerr << "[ScriptManager] No DLL available and build failed for: " << scriptName << std::endl;
 				return nullptr;
+			}
+		}
+		else {
+			// ビルド前にDLLをアンロード(重要!)
+			if (entry.hDll != nullptr) {
+				std::cout << "[ScriptManager] Unloading DLL before rebuild: " << scriptName << std::endl;
+				UnloadDllEntry(entry);
+			}
+
+			auto result = BuildScriptDll(scriptName);
+			if (!result.success) {
+				std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << result.errorMessage << std::endl;
+
+				// Build失敗時: 既存のDLLが存在する場合はそれを使用
+				if (hasDll) {
+					std::cout << "[ScriptManager] Using existing DLL after build failure: " << scriptName << std::endl;
+					// ビルド失敗したが既存DLLを使うので処理を続行
+				}
+				else {
+					// DLLが存在せず、ビルドも失敗した場合はエラー
+					std::cerr << "[ScriptManager] No DLL available and build failed for: " << scriptName << std::endl;
+					return nullptr;
+				}
 			}
 		}
 	}
@@ -263,16 +293,27 @@ void ScriptManager::Update()
 		std::string headerPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".h";
 		std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
+		// ソースファイルの存在確認
+		bool hasCpp = fs::exists(srcPath);
+		bool hasH = fs::exists(headerPath);
+		bool hasDll = fs::exists(dllPath);
+
+		// ソースファイルがない場合はホットリロード不可（DLLのみ運用）
+		if (!hasCpp && !hasH) {
+			++it;
+			continue;
+		}
+
 		bool needBuild = false;
 
 		// .cppファイルの変更をチェック
-		if (fs::exists(srcPath)) {
+		if (hasCpp) {
 			try {
 				auto cppTime = fs::last_write_time(srcPath);
 				// タイムスタンプが変わった かつ DLLより新しい
 				if (cppTime != entry.lastCppWriteTime) {
 					entry.lastCppWriteTime = cppTime;
-					if (!fs::exists(dllPath) || cppTime > fs::last_write_time(dllPath)) {
+					if (!hasDll || cppTime > fs::last_write_time(dllPath)) {
 						needBuild = true;
 						std::cout << "[ScriptManager] .cpp file changed: " << scriptName << std::endl;
 					}
@@ -282,13 +323,13 @@ void ScriptManager::Update()
 		}
 
 		// .hファイルの変更をチェック
-		if (fs::exists(headerPath)) {
+		if (hasH) {
 			try {
 				auto hTime = fs::last_write_time(headerPath);
 				// タイムスタンプが変わった かつ DLLより新しい
 				if (hTime != entry.lastHWriteTime) {
 					entry.lastHWriteTime = hTime;
-					if (!fs::exists(dllPath) || hTime > fs::last_write_time(dllPath)) {
+					if (!hasDll || hTime > fs::last_write_time(dllPath)) {
 						needBuild = true;
 						std::cout << "[ScriptManager] .h file changed: " << scriptName << std::endl;
 					}
@@ -342,7 +383,32 @@ void ScriptManager::Update()
 								entry.instances[owner] = newInst;
 								entry.refCount++;
 								newInst->SetOwnerComponent(owner);
-								newInst->BeginPlay();
+
+								// CRITICAL: SetParentObject/Sceneを設定しないとBeginPlayで例外が発生
+								try {
+									// ScripComponentから親オブジェクトを取得
+									AbstractObject* parentObj = owner->GetParent();
+									if (parentObj) {
+										newInst->SetParentObject(static_cast<Object>(parentObj));
+
+										// 親シーンを取得
+										AbstractScene* parentScene = parentObj->GetParentScene();
+										if (parentScene) {
+											newInst->SetParentScene(static_cast<Scene>(parentScene));
+										}
+									}
+								}
+								catch (const std::exception& e) {
+									std::cerr << "[ScriptManager] Exception while setting parent: " << e.what() << std::endl;
+								}
+
+								// BeginPlayを呼び出し
+								try {
+									newInst->BeginPlay();
+								}
+								catch (const std::exception& e) {
+									std::cerr << "[ScriptManager] Exception in BeginPlay during hot reload: " << e.what() << std::endl;
+								}
 							}
 						}
 					}
@@ -356,7 +422,7 @@ void ScriptManager::Update()
 				std::cerr << result.log << std::endl;
 
 				// Build失敗時: 既存のDLLを再ロードして使用
-				if (fs::exists(dllPath)) {
+				if (hasDll) {
 					std::cout << "[ScriptManager] Attempting to use existing DLL after build failure: " << scriptName << std::endl;
 
 					if (LoadDllForScript(scriptName, entry)) {
@@ -371,7 +437,30 @@ void ScriptManager::Update()
 									entry.instances[owner] = newInst;
 									entry.refCount++;
 									newInst->SetOwnerComponent(owner);
-									newInst->BeginPlay();
+
+									// CRITICAL: SetParentObject/Sceneを設定しないとBeginPlayで例外が発生
+									try {
+										AbstractObject* parentObj = owner->GetParent();
+										if (parentObj) {
+											newInst->SetParentObject(static_cast<Object>(parentObj));
+
+											AbstractScene* parentScene = parentObj->GetParentScene();
+											if (parentScene) {
+												newInst->SetParentScene(static_cast<Scene>(parentScene));
+											}
+										}
+									}
+									catch (const std::exception& e) {
+										std::cerr << "[ScriptManager] Exception while setting parent: " << e.what() << std::endl;
+									}
+
+									// BeginPlayを呼び出し
+									try {
+										newInst->BeginPlay();
+									}
+									catch (const std::exception& e) {
+										std::cerr << "[ScriptManager] Exception in BeginPlay during fallback: " << e.what() << std::endl;
+									}
 								}
 							}
 						}
@@ -445,51 +534,77 @@ void ScriptManager::RegisterAllScripts()
 	std::lock_guard<std::mutex> lk(_mutex);
 
 	std::string srcDirStr = SettingManager::GetInstance()->GetScriptFilePath();
-	if (srcDirStr.empty()) return;
+	std::string dllDirStr = SettingManager::GetInstance()->GetDLLFilePath();
 
-	fs::path srcDir = srcDirStr;
-	if (!fs::exists(srcDir)) return;
+	if (srcDirStr.empty() && dllDirStr.empty()) return;
 
-	for (auto& p : fs::directory_iterator(srcDir)) {
-		if (!p.is_regular_file()) continue;
-		auto ext = p.path().extension().string();
-		if (ext != ".cpp" && ext != ".CPP" && ext != ".cxx") continue;
+	// ソースディレクトリから.cppファイルを探す
+	if (!srcDirStr.empty()) {
+		fs::path srcDir = srcDirStr;
+		if (fs::exists(srcDir)) {
+			for (auto& p : fs::directory_iterator(srcDir)) {
+				if (!p.is_regular_file()) continue;
+				auto ext = p.path().extension().string();
+				if (ext != ".cpp" && ext != ".CPP" && ext != ".cxx") continue;
 
-		std::string name = p.path().stem().string();
-		auto it = _dllMap.find(name);
-		if (it == _dllMap.end()) {
-			DllEntry entry;
-			try {
-				entry.lastCppWriteTime = fs::last_write_time(p.path());
+				std::string name = p.path().stem().string();
+				auto it = _dllMap.find(name);
+				if (it == _dllMap.end()) {
+					DllEntry entry;
+					try {
+						entry.lastCppWriteTime = fs::last_write_time(p.path());
 
-				// 対応する.hファイルがあればそのタイムスタンプも記録
-				std::string hPath = SettingManager::GetInstance()->GetScriptFilePath() + name + ".h";
-				if (fs::exists(hPath)) {
-					entry.lastHWriteTime = fs::last_write_time(hPath);
+						// 対応する.hファイルがあればそのタイムスタンプも記録
+						std::string hPath = srcDirStr + name + ".h";
+						if (fs::exists(hPath)) {
+							entry.lastHWriteTime = fs::last_write_time(hPath);
+						}
+
+						entry.initialized = true;
+					}
+					catch (...) {
+						// if cannot read time, leave default
+					}
+					_dllMap.emplace(name, std::move(entry));
 				}
+				else {
+					// 既に存在する場合はタイムスタンプを最新にしておく
+					try {
+						it->second.lastCppWriteTime = fs::last_write_time(p.path());
 
-				entry.initialized = true;
+						std::string hPath = srcDirStr + name + ".h";
+						if (fs::exists(hPath)) {
+							it->second.lastHWriteTime = fs::last_write_time(hPath);
+						}
+
+						it->second.initialized = true;
+					}
+					catch (...) {}
+				}
 			}
-			catch (...) {
-				// if cannot read time, leave default
-			}
-			// hDll==nullptr, instances empty, refCount==0 の仮エントリを作るだけ
-			_dllMap.emplace(name, std::move(entry));
 		}
-		else {
-			// 既に存在する場合はタイムスタンプを最新にしておく(Update の処理判断の基になる)
-			try {
-				it->second.lastCppWriteTime = fs::last_write_time(p.path());
+	}
 
-				// 対応する.hファイルがあればそのタイムスタンプも更新
-				std::string hPath = SettingManager::GetInstance()->GetScriptFilePath() + name + ".h";
-				if (fs::exists(hPath)) {
-					it->second.lastHWriteTime = fs::last_write_time(hPath);
+	// DLLディレクトリから.dllファイルを探す（ソースがなくても登録）
+	if (!dllDirStr.empty()) {
+		fs::path dllDir = dllDirStr;
+		if (fs::exists(dllDir)) {
+			for (auto& p : fs::directory_iterator(dllDir)) {
+				if (!p.is_regular_file()) continue;
+				auto ext = p.path().extension().string();
+				if (ext != ".dll" && ext != ".DLL") continue;
+
+				std::string name = p.path().stem().string();
+
+				// まだ登録されていない場合のみ追加（ソースから登録済みの場合はスキップ）
+				auto it = _dllMap.find(name);
+				if (it == _dllMap.end()) {
+					DllEntry entry;
+					entry.initialized = true; // DLLのみの場合は初期化済みとする
+					_dllMap.emplace(name, std::move(entry));
+					std::cout << "[ScriptManager] Registered precompiled DLL: " << name << std::endl;
 				}
-
-				it->second.initialized = true;
 			}
-			catch (...) {}
 		}
 	}
 }
