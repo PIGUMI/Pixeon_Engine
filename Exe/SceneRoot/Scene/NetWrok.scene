@@ -1,5 +1,92 @@
 {
-    "Layers": [],
+    "Layers": [
+        {
+            "layerIndex": 0,
+            "name": "Layer 0",
+            "opacity": 1.0,
+            "postEffects": [
+                {
+                    "enabled": true,
+                    "params": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "intensity": 1.0,
+                        "pixelSize": 8.0
+                    },
+                    "priority": 0,
+                    "type": 3
+                }
+            ],
+            "visible": true
+        },
+        {
+            "layerIndex": 1,
+            "name": "Layer 1",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 2,
+            "name": "Layer 2",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 3,
+            "name": "Layer 3",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 4,
+            "name": "Layer 4",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 5,
+            "name": "Layer 5",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 6,
+            "name": "Layer 6",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 7,
+            "name": "Layer 7",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 8,
+            "name": "Layer 8",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 9,
+            "name": "Layer 9",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        }
+    ],
     "Objects": [
         {
             "Components": [

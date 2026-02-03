@@ -76,6 +76,11 @@ AbstractScene::~AbstractScene()
 	}
 	_SaveObjects.clear();
 
+	// ƒŒƒCƒ„[‚Ì‰ð•ú
+	for (auto& layer : _layers) {
+		delete layer;
+	}
+	_layers.clear();
 	_lights.clear();
 }
 
@@ -430,6 +435,8 @@ void AbstractScene::Draw(int Layer) {
 	}
 }
 
+
+
 void AbstractScene::DrawUI()
 {
 }
@@ -524,6 +531,7 @@ void AbstractScene::SaveToFile() {
 	SceneData["Objects"] = ObjectArray;
 
 	nlohmann::json layersData = nlohmann::json::array();
+	std::string LayerSizeStr = "LayerCount_" + std::to_string(_layers.size());
 	for (auto& layer : _layers) {
 		nlohmann::json layerJson;
 		layer->SaveToJson(layerJson);
@@ -637,11 +645,8 @@ void AbstractScene::LoadToFile() {
 
 		if (sceneData.contains("Layers") && sceneData["Layers"].is_array()) {
 			auto& layersArray = sceneData["Layers"];
-			_layers.clear();
 			for (const auto& layerJson : layersArray) {
-				Layer* layer = new Layer();
-				layer->LoadFromJson(layerJson);
-				_layers.push_back(layer);
+				_layers[layerJson["layerIndex"].get<int>()]->LoadFromJson(layerJson);
 			}
 		}
 	}
