@@ -683,7 +683,7 @@
                     "Type": 6
                 },
                 {
-                    "Data": "ScriptName Player\n",
+                    "Data": "ScriptName Player\nPropertyCount 3\nProperty _LimitAngle 70\nProperty _MoveSpeed 0.1\nProperty _Sensitivity 0.005\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }
@@ -744,7 +744,7 @@
                     "Type": 7
                 },
                 {
-                    "Data": "2.00234e-07 0 4.05626e-10 -3.14159 0 6.56381e-07 3.8147e-06 0 2 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
+                    "Data": "31.8304 -10.841 -2.39708 -1.74159 0.16 6.56381e-07 33.7761 -11.1597 -2.0615 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
