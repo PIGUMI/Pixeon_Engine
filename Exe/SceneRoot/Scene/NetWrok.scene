@@ -103,7 +103,7 @@
         {
             "Components": [
                 {
-                    "Data": "ScriptName Network\n",
+                    "Data": "ScriptName Network\nPropertyCount 12\nProperty ConnectionRetryInterval 2\nProperty ConnectionStatus Disconnected\nProperty CurrentUserID -1\nProperty DebugLog Initializing...\nProperty HeartbeatInterval 1\nProperty OtherPlayerCount 0\nProperty OtherPlayerPrefabName OtherPlayer\nProperty PlayerPrefabName Player\nProperty SendInterval 0.05\nProperty ServerIP 127.0.0.1\nProperty ServerPort 50008\nProperty UsePhysicsForOtherPlayers 1\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }
@@ -219,7 +219,7 @@
                     "Type": 6
                 },
                 {
-                    "Data": "ScriptName Player\n",
+                    "Data": "ScriptName Player\nPropertyCount 3\nProperty _LimitAngle 70\nProperty _MoveSpeed 0.1\nProperty _Sensitivity 0.005\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }

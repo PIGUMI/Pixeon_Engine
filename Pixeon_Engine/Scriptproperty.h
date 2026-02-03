@@ -1,4 +1,4 @@
-// ScriptProperty.h (最終改良版 - X-Macroパターン)
+
 #ifndef _SCRIPT_PROPERTY_H_
 #define _SCRIPT_PROPERTY_H_
 
@@ -6,7 +6,6 @@
 #include <vector>
 #include <sstream>
 
-// プロパティの型
 enum class PropertyType
 {
     FLOAT,
@@ -15,7 +14,6 @@ enum class PropertyType
     STRING
 };
 
-// プロパティのメタデータ
 struct PropertyMetadata
 {
     std::string name;
@@ -34,7 +32,6 @@ struct PropertyMetadata
     }
 };
 
-// スクリプトプロパティのベースクラス
 class ScriptPropertyBase
 {
 public:
@@ -44,11 +41,6 @@ public:
     virtual void DeserializeProperty(const std::string& name, const std::string& value) = 0;
 };
 
-// ========================================
-// X-Macroパターン：1箇所で定義するだけ
-// ========================================
-
-// GetPropertiesの実装を自動生成
 #define IMPLEMENT_GET_PROPERTIES() \
     std::vector<PropertyMetadata> GetProperties() override { \
         std::vector<PropertyMetadata> props; \
@@ -56,7 +48,6 @@ public:
         return props; \
     }
 
-// SerializePropertyの実装を自動生成
 #define IMPLEMENT_SERIALIZE() \
     std::string SerializeProperty(const std::string& name) override { \
         std::ostringstream ss; \
@@ -64,14 +55,12 @@ public:
         return ""; \
     }
 
-// DeserializePropertyの実装を自動生成
 #define IMPLEMENT_DESERIALIZE() \
     void DeserializeProperty(const std::string& name, const std::string& value) override { \
         std::istringstream ss(value); \
         PROPERTY_LIST(DESERIALIZE_PROP) \
     }
 
-// 内部使用マクロ（通常プロパティ）
 #define REGISTER_PROP(type, varName) \
     props.push_back(PropertyMetadata(#varName, PropertyType::type, &varName));
 
@@ -81,7 +70,6 @@ public:
 #define DESERIALIZE_PROP(type, varName) \
     if (name == #varName) { ss >> varName; return; }
 
-// 内部使用マクロ（範囲指定プロパティ）
 #define REGISTER_PROP_RANGE(type, varName, minVal, maxVal) \
     props.push_back(PropertyMetadata(#varName, PropertyType::type, &varName, minVal, maxVal));
 
@@ -91,11 +79,6 @@ public:
 #define DESERIALIZE_PROP_RANGE(type, varName, minVal, maxVal) \
     if (name == #varName) { ss >> varName; return; }
 
-// ========================================
-// ユーザー向けマクロ（これだけ使えばOK）
-// ========================================
-
-// 全ての実装を一括生成
 #define DECLARE_SCRIPT_PROPERTIES() \
     IMPLEMENT_GET_PROPERTIES() \
     IMPLEMENT_SERIALIZE() \

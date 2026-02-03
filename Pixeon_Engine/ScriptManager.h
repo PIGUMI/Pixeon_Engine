@@ -47,9 +47,11 @@ private:
 
 	struct DllEntry {
 		HMODULE hDll = nullptr;
-		int refCount = 0; // 作成されたインスタンス数
-		std::map<ScripComponent*, IScript*> instances; // owner -> instance
+		int refCount = 0;
+		std::map<ScripComponent*, IScript*> instances;
 		std::filesystem::file_time_type lastCppWriteTime;
+		std::filesystem::file_time_type lastHWriteTime;
+		bool initialized = false; // タイムスタンプが初期化されたかどうか
 	};
 
 	bool BuildScriptDll(const std::string& scriptName, std::string& outError);

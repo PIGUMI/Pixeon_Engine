@@ -119,6 +119,7 @@ void IScript::ClearParent()
 {
 	_parentObject = nullptr;
 	_parentScene = nullptr;
+	_ownerComponent = nullptr;
 }
 
 void IScript::OnCollisionEnter(const APICollisionInfo* info)
