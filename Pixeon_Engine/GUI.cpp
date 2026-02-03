@@ -356,6 +356,12 @@ void GUI::SettingWindow()
 		strncpy_s(PackingToolBuffer, PackingTool.c_str(), sizeof(PackingToolBuffer));
 		if (ImGui::InputText(ShiftJISToUTF8("PackingTool").c_str(), PackingToolBuffer, sizeof(PackingToolBuffer)))SettingManager::GetInstance()->SetPackingToolFilePath(PackingToolBuffer);
 
+		std::string VcpkgPath = SettingManager::GetInstance()->GetVcpkgFilePath();
+		char VcpkgBuffer[256];
+		strncpy_s(VcpkgBuffer, VcpkgPath.c_str(), sizeof(VcpkgBuffer));
+		if (ImGui::InputText(ShiftJISToUTF8("VcpkgƒtƒHƒ‹ƒ_").c_str(), VcpkgBuffer, sizeof(VcpkgBuffer)))SettingManager::GetInstance()->SetVcpkgFilePath(VcpkgBuffer);
+
+
 		char ExternelToolBuffer[256];
 		std::string ExternelTool = SettingManager::GetInstance()->GetExternelToolPath();
 		strncpy_s(ExternelToolBuffer, ExternelTool.c_str(), sizeof(ExternelToolBuffer));

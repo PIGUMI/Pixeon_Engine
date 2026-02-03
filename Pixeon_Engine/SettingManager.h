@@ -63,6 +63,9 @@ public:
 	std::string GetAnimator2DProjectFilePath() const { return Animator2DProjectFilePath; }
 	void SetAnimator2DProjectFilePath(const std::string& path) { Animator2DProjectFilePath = path; }
 
+	std::string GetVcpkgFilePath() const { return VcpkgFilePath; }
+	void SetVcpkgFilePath(const std::string& path) { VcpkgFilePath = path; }
+
 private:
 	static SettingManager* instance;
 private:
@@ -78,6 +81,7 @@ private:
 	std::string ScriptFilePath = "SceneRoot/Script/Source/";
 	std::string ScriptLogFilePath = "SceneRoot/Script/Log/";
 	std::string Animator2DProjectFilePath = "SceneRoot/Editor/Project/";
+	std::string VcpkgFilePath = "E:/vcpkg";
 	DirectX::XMFLOAT4 BackgroundColor = DirectX::XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	float MouseSensitivity = 0.01f;
 

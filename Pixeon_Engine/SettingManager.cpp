@@ -66,6 +66,10 @@ void SettingManager::LoadConfig() {
 	if (configJson.contains("MouseSensitivity")) {
 		MouseSensitivity = configJson["MouseSensitivity"].get<float>();
 	}
+	if (configJson.contains("VcpkgFilePath")) {
+		VcpkgFilePath = configJson["VcpkgFilePath"].get<std::string>();
+	}
+	
 }
 
 void SettingManager::SaveConfig() {
@@ -80,6 +84,7 @@ void SettingManager::SaveConfig() {
 	configJson["ExternelTool"] = ExternelTool;
 	configJson["PixelPostEffect"] = MainFrame::GetInstance()->isPixelated();
 	configJson["MouseSensitivity"] = MouseSensitivity;
+	configJson["VcpkgFilePath"] = VcpkgFilePath;
 
 	// JSONÉtÉ@ÉCÉãÇ…èëÇ´çûÇﬁ
 	std::ofstream configFile(CONFIG_FILE_PATH);

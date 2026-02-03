@@ -423,7 +423,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	// ========================================
 	// vcpkg パスの設定
 	// ========================================
-	std::string vcpkgRoot = "E:/vcpkg";  // vcpkgのインストールパス(環境に合わせて変更)
+	std::string vcpkgRoot = SettingManager::GetInstance()->GetVcpkgFilePath();
 	std::string vcpkgInclude = vcpkgRoot + "/installed/x64-windows/include";
 	std::string vcpkgLib = vcpkgRoot + "/installed/x64-windows/lib";
 
