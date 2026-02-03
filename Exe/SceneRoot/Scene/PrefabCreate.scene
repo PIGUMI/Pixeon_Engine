@@ -1,10 +1,111 @@
 {
-    "Layers": [],
+    "Layers": [
+        {
+            "layerIndex": 0,
+            "name": "Layer 0",
+            "opacity": 1.0,
+            "postEffects": [
+                {
+                    "enabled": true,
+                    "params": {
+                        "brightness": 0.0,
+                        "contrast": 1.0,
+                        "gamma": 1.2000000476837158,
+                        "hueShift": 1.0,
+                        "saturation": 4.0,
+                        "temperature": 0.25,
+                        "tint": 0.0
+                    },
+                    "priority": 0,
+                    "type": 4
+                },
+                {
+                    "enabled": true,
+                    "params": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "intensity": 0.0,
+                        "pixelSize": 5.0
+                    },
+                    "priority": 0,
+                    "type": 3
+                }
+            ],
+            "visible": true
+        },
+        {
+            "layerIndex": 1,
+            "name": "Layer 1",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 2,
+            "name": "Layer 2",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 3,
+            "name": "Layer 3",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 4,
+            "name": "Layer 4",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 5,
+            "name": "Layer 5",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 6,
+            "name": "Layer 6",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 7,
+            "name": "Layer 7",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 8,
+            "name": "Layer 8",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 9,
+            "name": "Layer 9",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        }
+    ],
     "Objects": [
         {
             "Components": [
                 {
-                    "Data": "0.240908 5.82599 3.41145 0.109999 0.16 0 -0.842844 4.23281 -6.40116 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-12.6429 67.3486 -27.121 3.47 1.11 0 -11.2087 58.3916 -22.912 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -42,12 +143,12 @@
             "Transform": {
                 "Position": [
                     0.0,
-                    4.099999904632568,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [
-                    -2.2322587966918945,
-                    2.672081708908081,
+                    -1.0663787126541138,
+                    -3.1415927410125732,
                     0.0
                 ],
                 "Scale": [
@@ -116,34 +217,6 @@
                 }
             ],
             "Name": "Ground",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.05 0.05 0.05\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1 1 1.1\n2\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                }
-            ],
-            "Name": "NewObject",
             "Parent": "",
             "Transform": {
                 "Position": [

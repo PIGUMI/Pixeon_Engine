@@ -4,23 +4,7 @@
             "layerIndex": 0,
             "name": "Layer 0",
             "opacity": 1.0,
-            "postEffects": [
-                {
-                    "enabled": true,
-                    "params": {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "intensity": 1.0,
-                        "pixelSize": 8.0
-                    },
-                    "priority": 0,
-                    "type": 3
-                }
-            ],
+            "postEffects": [],
             "visible": true
         },
         {
