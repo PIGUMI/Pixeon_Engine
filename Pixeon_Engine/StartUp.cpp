@@ -91,98 +91,135 @@ extern "C" {
 	* 関数名　EngineProc
 	* 引　数　HWND wnd：ウインドウハンドル　UINT uint：ウインドウメッセージ　WPARAM wparam：ウインドウメッセージパラメータ1　LPARAM lparam：ウインドウメッセージパラメータ2
 	* 戻り値　なし
-	* 説　明　
+	* 説　明　エンジンのウインドウプロシージャ処理を行う関数
 	*/
-    __declspec(dllexport) LRESULT EngineProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
-    {
-        // カスタムIME処理（ImGuiの前に処理）
-        switch (msg)
-        {
-        case WM_IME_SETCONTEXT:
-        {
-            // IMEの変換ウィンドウを無効化
-            lparam &= ~ISC_SHOWUICOMPOSITIONWINDOW;
-            return DefWindowProc(wnd, msg, wparam, lparam);
-        }
+	__declspec(dllexport) LRESULT EngineProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
+	{
+		// IME状態管理
+		static int imeBlockCounter = 0;  // カウンターで管理
 
-        case WM_IME_COMPOSITION:
-        {
-            HIMC hIMC = ImmGetContext(wnd);
-            if (hIMC)
-            {
-                if (lparam & GCS_RESULTSTR)
-                {
-                    // 確定文字列を取得（Unicode）
-                    LONG len = ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, NULL, 0);
-                    if (len > 0)
-                    {
-                        std::wstring wstr(len / sizeof(wchar_t), 0);
-                        ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, &wstr[0], len);
+		switch (msg)
+		{
+		case WM_IME_SETCONTEXT:
+		{
+			// IMEの変換ウィンドウを無効化
+			lparam &= ~ISC_SHOWUICOMPOSITIONWINDOW;
+			return DefWindowProc(wnd, msg, wparam, lparam);
+		}
 
-                        // UTF-16からUTF-8に変換
-                        int utf8Len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
-                        if (utf8Len > 0)
-                        {
-                            std::string utf8str(utf8Len - 1, 0);
-                            WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &utf8str[0], utf8Len, NULL, NULL);
+		case WM_IME_STARTCOMPOSITION:
+		{
+			imeBlockCounter = 10;  // 10メッセージ分ブロック
+			return 0;
+		}
 
-                            // ImGuiの入力バッファに追加
-                            ImGuiIO& io = ImGui::GetIO();
-                            io.AddInputCharactersUTF8(utf8str.c_str());
-                        }
-                    }
-                }
-                ImmReleaseContext(wnd, hIMC);
-            }
-            // WM_IME_COMPOSITIONを処理したのでImGuiには渡さない
-            return 0;
-        }
+		case WM_IME_COMPOSITION:
+		{
+			HIMC hIMC = ImmGetContext(wnd);
+			if (hIMC)
+			{
+				if (lparam & GCS_RESULTSTR)
+				{
+					// 確定文字列を取得（Unicode）
+					LONG len = ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, NULL, 0);
+					if (len > 0)
+					{
+						std::wstring wstr(len / sizeof(wchar_t), 0);
+						ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, &wstr[0], len);
 
-        case WM_CHAR:
-        {
-            // IME経由の文字は無視（WM_IME_COMPOSITIONで処理済み）
-            // 0x80以上の文字コードはIME経由なので無視
-            if (wparam >= 0x80)
-            {
-                return 0;
-            }
-            // 半角英数のみImGuiに渡す
-            break;
-        }
+						// UTF-16からUTF-8に変換
+						int utf8Len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+						if (utf8Len > 0)
+						{
+							std::string utf8str(utf8Len - 1, 0);
+							WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &utf8str[0], utf8Len, NULL, NULL);
 
-        case WM_SYSCHAR:
-            // システム文字も無視
-            return 0;
-        }
+							// ImGuiの入力バッファに追加
+							ImGuiIO& io = ImGui::GetIO();
+							io.AddInputCharactersUTF8(utf8str.c_str());
+						}
+					}
 
-        // ImGuiのWndProcHandler（半角英数などの処理）
-        if (ImGui_ImplWin32_WndProcHandler(wnd, msg, wparam, lparam))
-            return 1;
+					// 確定後もブロックを継続
+					imeBlockCounter = 10;
+				}
+				ImmReleaseContext(wnd, hIMC);
+			}
+			return 0;
+		}
 
-        // その他のメッセージ処理
-        switch (msg)
-        {
-        case WM_MOUSEWHEEL:
-            OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wparam));
-            return 0;
+		case WM_IME_ENDCOMPOSITION:
+		{
+			imeBlockCounter = 10;  // 終了後もブロックを継続
+			return 0;
+		}
 
-        case WM_MOUSEHWHEEL:
-            OnMouseHWheel(GET_WHEEL_DELTA_WPARAM(wparam));
-            return 0;
+		case WM_CHAR:
+		{
+			// IMEブロックカウンターが有効な間はWM_CHARを無視
+			if (imeBlockCounter > 0)
+			{
+				imeBlockCounter--;
+				return 0;
+			}
 
-        case WM_SIZE:
-            if (isInit && wparam != SIZE_MINIMIZED) {
-                UINT width = LOWORD(lparam);
-                UINT height = HIWORD(lparam);
-                screenHeight = height;
-                screenWidth = width;
-                DirectX11::GetInstance()->OnResize(width, height);
-            }
-            return 0;
-        }
+			// マルチバイト文字（日本語など）を無視
+			if (wparam >= 0x80)
+			{
+				return 0;
+			}
 
-        return 0; // 未処理。exe側で DefWindowProc に回す
-    }
+			// 制御文字の処理
+			if (wparam < 0x20 && wparam != 0x0D && wparam != 0x09 && wparam != 0x08)
+			{
+				return 0;
+			}
+
+			// 半角英数記号のみImGuiに渡す
+			break;
+		}
+
+		case WM_SYSCHAR:
+			// システム文字は無視
+			return 0;
+
+		case WM_IME_CHAR:
+			// IME文字メッセージは無視
+			return 0;
+
+		case WM_IME_NOTIFY:
+			// IME通知も処理したことにする
+			return 0;
+		}
+
+		// ImGuiのWndProcHandler
+		if (ImGui_ImplWin32_WndProcHandler(wnd, msg, wparam, lparam))
+			return 1;
+
+		// その他のメッセージ処理
+		switch (msg)
+		{
+		case WM_MOUSEWHEEL:
+			OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wparam));
+			return 0;
+
+		case WM_MOUSEHWHEEL:
+			OnMouseHWheel(GET_WHEEL_DELTA_WPARAM(wparam));
+			return 0;
+
+		case WM_SIZE:
+			if (isInit && wparam != SIZE_MINIMIZED) {
+				UINT width = LOWORD(lparam);
+				UINT height = HIWORD(lparam);
+				screenHeight = height;
+				screenWidth = width;
+				DirectX11::GetInstance()->OnResize(width, height);
+			}
+			return 0;
+		}
+
+		return 0;
+	}
 }
 
 /*
