@@ -70,6 +70,11 @@ int MainFrame::Init(const EngineConfig& InPut)
 	_updateDraw = false;;
 	_engineConfig = InPut;
 
+	if(!IZANAGI::GetInstance()->Initialize("SceneRoot/Tool/IZANAGI/qwen2.5-7b-instruct-q3_k_m.gguf", 8192, 4, 2)) {
+		MessageBox(nullptr, "IZANAGIエンジンの初期化に失敗しました。モデルファイルを確認してください。", "エラー", MB_OK | MB_ICONERROR);
+		return -1;
+	}
+
 	SettingManager::GetInstance()->LoadConfig();
 	/* COM の初期化 */
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -347,6 +352,8 @@ void MainFrame::UnInit() {
 	SoundManager::DeleteInstance();
 	ResourceService::DeleteInstance();
 	DirectX11::DestroyInstance();
+	IZANAGI::GetInstance()->Shutdown();
+	IZANAGI::DestroyInstance();
 	CoUninitialize();
 }
 
