@@ -81,6 +81,9 @@
     <Filter Include="ソース ファイル\1_MainFrame\PostEffect">
       <UniqueIdentifier>{ea3205c7-7486-4cab-9a5d-da28742d90c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\4_IZANAGI">
+      <UniqueIdentifier>{621dd858-4c7d-46f4-b883-a65b8060d49f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -262,6 +265,9 @@
     </ClCompile>
     <ClCompile Include="ColorGradingEffect .cpp">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="IZANAGI.cpp">
+      <Filter>ソース ファイル\4_IZANAGI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -468,6 +474,9 @@
     </ClInclude>
     <ClInclude Include="ColorGradingEffect.h">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="IZANAGI.h">
+      <Filter>ソース ファイル\4_IZANAGI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

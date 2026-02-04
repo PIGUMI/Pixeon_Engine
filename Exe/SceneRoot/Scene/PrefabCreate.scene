@@ -683,7 +683,7 @@
                     "Type": 6
                 },
                 {
-                    "Data": "ScriptName Player\nPropertyCount 3\nProperty _LimitAngle 70\nProperty _MoveSpeed 0.1\nProperty _Sensitivity 0.005\n",
+                    "Data": "ScriptName Player\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }

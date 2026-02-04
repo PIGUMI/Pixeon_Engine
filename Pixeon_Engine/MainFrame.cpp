@@ -25,6 +25,7 @@
 #include "Animator2DFrame.h"
 #include "ImageUtils.h"
 #include "LayerSettings.h"
+#include "IZANAGI.h"
 #include <crtdbg.h>
 
 MainFrame* MainFrame::instance_ = nullptr;

@@ -12,6 +12,5 @@
     "MouseSensitivity": 0.009999999776482582,
     "PixelPostEffect": false,
     "SceneFilePath": "SceneRoot/Scene/",
-    "VcpkgFilePath": "C:/vcpkg",
     "bZBuffer": true
 }
