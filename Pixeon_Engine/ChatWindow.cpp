@@ -111,7 +111,7 @@ void ChatWindow::Draw() {
 
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 
-    std::string windowTitle = ConvertToUTF8("AIチャット");
+    std::string windowTitle = ConvertToUTF8("AIチャット[IZANAGI]");
     if (ImGui::Begin(windowTitle.c_str(), &isVisible_, flags)) {
 
         // ヘッダー情報
@@ -173,7 +173,7 @@ void ChatWindow::Draw() {
                 }
                 else if (msg.sender == "AI") {
                     color = ImVec4(0.8f, 1.0f, 0.6f, 1.0f);
-                    prefix = ConvertToUTF8("AI: ");
+                    prefix = ConvertToUTF8("イザナギAI: ");
                 }
                 else if (msg.sender == "System") {
                     color = msg.isError ? ImVec4(1.0f, 0.4f, 0.4f, 1.0f) : ImVec4(0.7f, 0.7f, 0.7f, 1.0f);

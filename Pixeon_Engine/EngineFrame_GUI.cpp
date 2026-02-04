@@ -148,6 +148,7 @@ void EngineFrame::DrawGUI()
 
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ゲームビュー").c_str(), dock_main_id);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("インスペクター").c_str(), dock_id_right);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("AIチャット[IZANAGI]").c_str(), dock_id_right);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("コンソール").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Prefab").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("コンテンツドロワー").c_str(), dock_id_bottom);
