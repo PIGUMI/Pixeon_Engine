@@ -8,7 +8,7 @@
 #include "_Geometry.h"
 #include "GUI.h"
 #include "Input.h"
-
+#include "ChatWindow.h"
 #include <nlohmann/json.hpp>
 #include <set>
 
@@ -37,6 +37,8 @@ void EngineFrame::Init()
 	SceneManger::GetInstance()->Init();
 	SceneManger::GetInstance()->Load();
 	LineRenderer::GetInstance()->Initialize();
+	ChatWindow::GetInstance()->Initialize();
+	ChatWindow::GetInstance()->SetVisible(true);
 	LoadPrefabs();
 
 	ImgIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/img.png", DirectX11::GetInstance()->GetDevice());
@@ -69,7 +71,7 @@ void EngineFrame::Update()
 		bBeginPlayCalled_ = false;
 		SceneManger::GetInstance()->EditUpdate();
 	}
-
+	ChatWindow::GetInstance()->Update();
 	if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))
 	{
 		bShowGUI_ = !bShowGUI_;
@@ -149,6 +151,7 @@ void EngineFrame::UnInit()
 	LineRenderer::GetInstance()->Finalize();
 	SceneManger::GetInstance()->Save();
 	SceneManger::DestroyInstance();
+	ChatWindow::GetInstance()->DestroyInstance();
 	prefabs_.clear();
 }
 

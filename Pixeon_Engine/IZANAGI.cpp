@@ -257,10 +257,9 @@ bool IZANAGI::Initialize(const std::string& modelPath, int contextSize, int thre
 * 戻り値　なし
 * 説　明　IZANAGIエンジンをシャットダウンする関数
 */
-void IZANAGI::SendAIMessage(const std::string& message) {
-    std::string utf8Message = ShiftJISToUTF8(message);
+void IZANAGI::SendAIMessage(const std::string& messageUTF8) {
     std::lock_guard<std::mutex> lock(messageMutex);
-    inputQueue.push(utf8Message);
+    inputQueue.push(messageUTF8);
 }
 
 /*
@@ -271,7 +270,7 @@ void IZANAGI::SendAIMessage(const std::string& message) {
 */
 std::string IZANAGI::GetAIMessage() {
     std::lock_guard<std::mutex> lock(messageMutex);
-    return UTF8ToShiftJIS(latestResponse);
+    return latestResponse;
 }
 
 /*

@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "Object.h"
 #include "SettingManager.h"
+#include "ChatWindow.h"
 #include <filesystem>
 #include <vector>
 #include <string>
@@ -170,6 +171,7 @@ void EngineFrame::DrawGUI()
 	SceneRenameWindow();
 	LayerWindow();
 	LayerInspectorWindow();
+	ChatWindow::GetInstance()->Draw();
 }
 
 void EngineFrame::GameViewWindow()

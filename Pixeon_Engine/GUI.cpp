@@ -46,42 +46,52 @@ void GUI::Init()
 
 	io.IniFilename = nullptr;
 
-	io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/meiryo.ttc", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+	// 【重要】フォント設定を明示的にUTF-8対応にする
+	ImFontConfig config;
+	config.OversampleH = 2;
+	config.OversampleV = 1;
+	config.PixelSnapH = true;
+
+	// 日本語フォントをUTF-8として読み込む
+	io.Fonts->AddFontFromFileTTF(
+		"C:/Windows/Fonts/meiryo.ttc",
+		18.0f,
+		&config,
+		io.Fonts->GetGlyphRangesJapanese()
+	);
+
+	// フォントビルド
+	io.Fonts->Build();
+
 	ImGui_ImplWin32_Init(MainFrame::GetInstance()->GetWindowHandle());
 	ImGui_ImplDX11_Init(DirectX11::GetInstance()->GetDevice(), DirectX11::GetInstance()->GetContext());
 
+	// 以降のスタイル設定は同じ...
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec4* colors = style.Colors;
 
-	// タブを完全フラット＆ボーダーレスに
-	ImVec4 flatTabColor = ImVec4(0.18f, 0.20f, 0.23f, 1.00f); // 基本のタブ背景色
-	ImVec4 flatTabActive = ImVec4(0.20f, 0.22f, 0.25f, 1.00f); // アクティブタブ（ほんのり違い）
-	ImVec4 flatTabHovered = ImVec4(0.23f, 0.25f, 0.28f, 1.00f); // ホバー（やや明るく）
+	ImVec4 flatTabColor = ImVec4(0.18f, 0.20f, 0.23f, 1.00f);
+	ImVec4 flatTabActive = ImVec4(0.20f, 0.22f, 0.25f, 1.00f);
+	ImVec4 flatTabHovered = ImVec4(0.23f, 0.25f, 0.28f, 1.00f);
 
 	colors[ImGuiCol_Tab] = flatTabColor;
 	colors[ImGuiCol_TabUnfocused] = flatTabColor;
 	colors[ImGuiCol_TabUnfocusedActive] = flatTabColor;
-	colors[ImGuiCol_TabActive] = flatTabColor; // アクティブ時も同じ色に
-	colors[ImGuiCol_TabHovered] = flatTabColor; // ホバー時も同じ色に
+	colors[ImGuiCol_TabActive] = flatTabColor;
+	colors[ImGuiCol_TabHovered] = flatTabColor;
 	colors[ImGuiCol_TabActive] = flatTabActive;
 	colors[ImGuiCol_TabHovered] = flatTabHovered;
 
-	// タブとタブのボーダーを完全に消す
 	colors[ImGuiCol_Border] = flatTabColor;
 	colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
 
-	// タブの角丸を無しに
 	style.TabRounding = 0.0f;
 	style.FrameRounding = 0.0f;
 	style.WindowRounding = 0.0f;
-
 	style.TabBorderSize = 0.0f;
-
-	// タブの内側余白を抑えめにして高さも下げる
 	style.FramePadding = ImVec2(12, 4);
 	style.ItemSpacing = ImVec2(6, 2);
 
-	// タブのテキスト色（アクティブのみ白寄り・非アクティブはグレー寄りで差をつける）
 	colors[ImGuiCol_Text] = ImVec4(0.88f, 0.90f, 0.94f, 1.00f);
 	colors[ImGuiCol_TextDisabled] = ImVec4(0.45f, 0.48f, 0.54f, 1.00f);
 

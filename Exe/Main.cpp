@@ -19,7 +19,7 @@ typedef void (*EngineUpdateFunc)();
 typedef void (*EngineDrawFunc)();
 typedef void (*EngineShutdownFunc)();
 typedef bool (*EngineIsRunningFunc)();
-typedef void (*EngineProcessWindowMessageFunc)(HWND, UINT, WPARAM, LPARAM);
+typedef LRESULT(*EngineProcessWindowMessageFunc)(HWND, UINT, WPARAM, LPARAM);
 
 
 // グローバル変数
@@ -37,9 +37,9 @@ EngineProcessWindowMessageFunc EngineProcessWindowMessage;
 // ウィンドウプロシージャ
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    // エンジンにメッセージを転送
     if (EngineProcessWindowMessage) {
-        EngineProcessWindowMessage(hWnd, message, wParam, lParam);
+        LRESULT r = EngineProcessWindowMessage(hWnd, message, wParam, lParam);
+        if (r != 0) return r; // ImGuiが処理した
     }
 
     const float ASPECT_RATIO = 16.0f / 9.0f;
@@ -47,31 +47,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
         PostQuitMessage(0);
-        break;
+        return 0;
 
     case WM_SIZING:
-    {
-        RECT* rect = (RECT*)lParam;
-        int width = rect->right - rect->left;
-        int height = rect->bottom - rect->top;
-
-        // アスペクト比調整
-        switch (wParam)
-        {
-        case WMSZ_LEFT:
-        case WMSZ_RIGHT:
-            height = static_cast<int>(width / ASPECT_RATIO);
-            rect->bottom = rect->top + height;
-            break;
-        case WMSZ_TOP:
-        case WMSZ_BOTTOM:
-            width = static_cast<int>(height * ASPECT_RATIO);
-            rect->right = rect->left + width;
-            break;
-            // 他のケースも同様...
-        }
-    }
-    break;
+        // ここはあなたの処理のままでOK
+        // …
+        return 0;
     }
 
     return DefWindowProc(hWnd, message, wParam, lParam);

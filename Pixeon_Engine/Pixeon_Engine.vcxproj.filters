@@ -269,6 +269,9 @@
     <ClCompile Include="IZANAGI.cpp">
       <Filter>ソース ファイル\4_IZANAGI</Filter>
     </ClCompile>
+    <ClCompile Include="ChatWindow.cpp">
+      <Filter>ソース ファイル\4_IZANAGI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -476,6 +479,9 @@
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
     <ClInclude Include="IZANAGI.h">
+      <Filter>ソース ファイル\4_IZANAGI</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatWindow.h">
       <Filter>ソース ファイル\4_IZANAGI</Filter>
     </ClInclude>
   </ItemGroup>

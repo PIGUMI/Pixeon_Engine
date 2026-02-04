@@ -154,6 +154,7 @@
     <ClInclude Include="Builder.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CapsuleCollision.h" />
+    <ClInclude Include="ChatWindow.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="ColorGradingEffect.h" />
     <ClInclude Include="Component.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Builder.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CapsuleCollision.cpp" />
+    <ClCompile Include="ChatWindow.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ColorGradingEffect .cpp" />
     <ClCompile Include="ComponentManager.cpp" />
