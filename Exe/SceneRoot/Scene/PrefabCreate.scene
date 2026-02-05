@@ -341,7 +341,7 @@
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence1",
+            "Name": "MetalFence0",
             "Parent": "MetalFence",
             "Transform": {
                 "Position": [
@@ -351,7 +351,7 @@
                 ],
                 "Rotation": [
                     0.0,
-                    1.5707963705062866,
+                    0.0,
                     0.0
                 ],
                 "Scale": [
@@ -547,7 +547,7 @@
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence0",
+            "Name": "MetalFence2",
             "Parent": "MetalFence",
             "Transform": {
                 "Position": [
@@ -557,7 +557,7 @@
                 ],
                 "Rotation": [
                     0.0,
-                    0.0,
+                    -1.5707963705062866,
                     0.0
                 ],
                 "Scale": [
@@ -650,7 +650,7 @@
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence2",
+            "Name": "MetalFence1",
             "Parent": "MetalFence",
             "Transform": {
                 "Position": [
@@ -660,106 +660,7 @@
                 ],
                 "Rotation": [
                     0.0,
-                    -1.5707963705062866,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0.2 1.6 0 0.8 0 0 0 1\n",
-                    "Name": "CapsuleCollision",
-                    "Type": 8
-                },
-                {
-                    "Data": "70\n0\n1\n0.5\n0\n0\n0.05\n1\n1\n1\n0\n1\n1\n0\n1\n100\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                },
-                {
-                    "Data": "ScriptName Player\nPropertyCount 3\nProperty _LimitAngle 70\nProperty _MoveSpeed 0.1\nProperty _Sensitivity 0.005\n",
-                    "Name": "ScripComponent",
-                    "Type": 3
-                }
-            ],
-            "Name": "Player",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    -40.0,
-                    9.600000381469727,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0.5 1.4 0.5 0 0.7 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                }
-            ],
-            "Name": "Body",
-            "Parent": "Player",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0.3 0.3 0.3 0 0 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "0 0 0 3.14159 0 6.56381e-07 -3.8147e-06 0 2 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
-                    "Name": "CameraComponent",
-                    "Type": 0
-                }
-            ],
-            "Name": "Head",
-            "Parent": "Player",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    1.600000023841858,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
+                    1.5707963705062866,
                     0.0
                 ],
                 "Scale": [
