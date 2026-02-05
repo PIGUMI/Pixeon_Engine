@@ -29,6 +29,7 @@ public:
 	void Shutdown();
 
     bool LoadPersona(const std::string& personaPath);
+	bool SetPersona(const std::string& personaContent);
     void SetSystemPrompt(const std::string& prompt);
     std::string GetSystemPrompt() const;
     void ClearConversationHistory();

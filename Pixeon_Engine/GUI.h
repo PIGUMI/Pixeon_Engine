@@ -34,6 +34,7 @@ private:
 	void SettingWindow();
 	void InputDebugWindow();
 	void ShaderEditorWindow();
+	void AISettingWindow();
 public:
 	bool bSceneCreateWindow_;
 	bool bShaderListWindow_;
@@ -45,6 +46,7 @@ public:
 	bool bInputDebugWindow_;
 	bool bShaderEditorWindow_;
 	bool bEffectManagerWindow_;
+	bool bAISettingWindow_;
 private:
 	GUI() = default;
 	~GUI() = default;

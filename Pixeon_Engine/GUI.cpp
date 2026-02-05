@@ -11,6 +11,7 @@
 #include "SoundManager.h"
 #include "SettingManager.h"
 #include "EffectManager.h"
+#include "IZANAGI.h"
 
 #include "SceneManger.h"
 #include "Scene.h"
@@ -121,6 +122,7 @@ void GUI::BeginDraw()
 	InputDebugWindow();
 	ShaderEditorWindow();
 	EffectManagerWindow();
+	AISettingWindow();
 }
 
 void GUI::EndDraw()
@@ -190,7 +192,7 @@ void GUI::MainMenuBar()
 		if (ImGui::BeginMenu(ShiftJISToUTF8("ツール").c_str()))
 		{
 			if (ImGui::MenuItem(ShiftJISToUTF8("シェーダーエディタ").c_str())) bShaderEditorWindow_ = true;
-
+			if (ImGui::MenuItem(ShiftJISToUTF8("AI設定ウィンドウ").c_str())) bAISettingWindow_ = true;
 			if (ImGui::MenuItem(ShiftJISToUTF8("フォルダ").c_str())) {
 				std::string Path = File::GetExePath();
 				Path = File::RemoveExeFromPath(Path);
@@ -476,8 +478,7 @@ void GUI::ShaderEditorWindow()
 	if (!bShaderEditorWindow_)return;
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
-	if (
-		ImGui::Begin(ShiftJISToUTF8("シェーダー作成").c_str(), &bShaderEditorWindow_, flags)) {
+	if (ImGui::Begin(ShiftJISToUTF8("シェーダー作成").c_str(), &bShaderEditorWindow_, flags)) {
 		ImGui::Text(ShiftJISToUTF8("シェーダーエディターウインドウです").c_str());
 		ImGui::Text(ShiftJISToUTF8("シェーダーファイルフォルダ:").c_str());
 		ImGui::SameLine();
@@ -516,6 +517,24 @@ void GUI::ShaderEditorWindow()
 					}
 				}
 			}
+		}
+		ImGui::End();
+	}
+}
+
+void GUI::AISettingWindow()
+{
+	if (!bAISettingWindow_)return;
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+	if (ImGui::Begin(ShiftJISToUTF8("AI設定").c_str(), &bAISettingWindow_, flags))
+	{
+		static char persona[4096] = "";
+		ImGui::Text(ShiftJISToUTF8("性格の設定").c_str());
+		ImGui::InputTextMultiline(ShiftJISToUTF8("##PersonaInput").c_str(), (char*)persona, sizeof(persona), ImVec2(-1.0f, -1.0f));
+		if(ImGui::Button(ShiftJISToUTF8("適用").c_str(), ImVec2(120, 0)))
+		{
+			IZANAGI::GetInstance()->SetPersona(std::string(persona));
 		}
 		ImGui::End();
 	}

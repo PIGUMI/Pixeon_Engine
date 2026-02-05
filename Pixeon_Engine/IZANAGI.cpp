@@ -154,6 +154,33 @@ bool IZANAGI::LoadPersona(const std::string& personaPath) {
 }
 
 /*
+* 関数名　SetPersona
+* 引　数　const std::string& personaContent：ペルソナ内容の文字列
+* 戻り値　bool：設定成功ならtrue、失敗ならfalse
+* 説　明　指定されたペルソナ内容をシステムプロンプトとして設定する関数
+*/
+bool IZANAGI::SetPersona(const std::string& personaContent)
+{
+        std::stringstream buffer;
+        buffer << personaContent;
+
+
+        std::string fileContent = buffer.str();
+
+        if (fileContent.length() >= 3 &&
+            (unsigned char)fileContent[0] == 0xEF &&
+            (unsigned char)fileContent[1] == 0xBB &&
+            (unsigned char)fileContent[2] == 0xBF) {
+            fileContent = fileContent.substr(3);
+        }
+
+        systemPrompt = fileContent;
+
+        ClearConversationHistory();
+        return true;
+}
+
+/*
 * 関数名　SetSystemPrompt
 * 引　数　const std::string& prompt：新しいシステムプロンプト
 * 戻り値　なし
