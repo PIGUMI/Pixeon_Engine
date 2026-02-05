@@ -8,7 +8,7 @@
                 {
                     "enabled": true,
                     "params": {
-                        "brightness": 0.0,
+                        "brightness": -0.10999999940395355,
                         "contrast": 1.0,
                         "gamma": 1.2000000476837158,
                         "hueShift": 1.0,
@@ -29,7 +29,7 @@
                             1.0
                         ],
                         "intensity": 0.0,
-                        "pixelSize": 5.0
+                        "pixelSize": 12.899999618530273
                     },
                     "priority": 0,
                     "type": 3
@@ -105,7 +105,7 @@
         {
             "Components": [
                 {
-                    "Data": "-39.3984 18.6569 -10.5392 9.9 0.609999 0 -35.6482 12.9282 -3.25097 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-46.0706 12.7117 -3.22835 10.5699 0.289996 0 -37.3433 9.85223 0.728581 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -444,7 +444,7 @@
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence0",
+            "Name": "MetalFence3",
             "Parent": "MetalFence",
             "Transform": {
                 "Position": [
@@ -454,7 +454,7 @@
                 ],
                 "Rotation": [
                     0.0,
-                    0.0,
+                    3.1415927410125732,
                     0.0
                 ],
                 "Scale": [
@@ -547,7 +547,7 @@
                     "Type": 6
                 }
             ],
-            "Name": "MetalFence3",
+            "Name": "MetalFence0",
             "Parent": "MetalFence",
             "Transform": {
                 "Position": [
@@ -557,7 +557,7 @@
                 ],
                 "Rotation": [
                     0.0,
-                    3.1415927410125732,
+                    0.0,
                     0.0
                 ],
                 "Scale": [
@@ -744,7 +744,7 @@
                     "Type": 7
                 },
                 {
-                    "Data": "20.5015 -3.53325 1.31855 -1.25159 0.55 6.56381e-07 22.1204 -4.57862 0.783483 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
+                    "Data": "0 0 0 3.14159 0 6.56381e-07 -3.8147e-06 0 2 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -771,7 +771,7 @@
         }
     ],
     "SceneSettings": {
-        "MainCameraNumber": 1,
+        "MainCameraNumber": 0,
         "Name": "PrefabCreate"
     }
 }

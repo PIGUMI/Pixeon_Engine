@@ -260,6 +260,7 @@ bool IZANAGI::Initialize(const std::string& modelPath, int contextSize, int thre
 void IZANAGI::SendAIMessage(const std::string& messageUTF8) {
     std::lock_guard<std::mutex> lock(messageMutex);
     inputQueue.push(messageUTF8);
+    latestResponse.clear();
 }
 
 /*

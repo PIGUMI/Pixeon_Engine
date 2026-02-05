@@ -274,12 +274,14 @@ void ChatWindow::SendAIMessage(const std::string& messageUTF8) {
     // ユーザーメッセージを追加（UTF-8）
     AddMessage("User", cleanMessage, false);
 
+    // 前回の応答をクリア（重要！）
+    lastResponseContent_.clear();
+
     // IZANAGIに送信（UTF-8のまま）
     izanagi->SendAIMessage(cleanMessage);
 
     // 応答待機フラグをセット
     isWaitingForResponse_ = true;
-    lastResponseContent_ = "";
 
     ScrollToBottom();
 }
@@ -290,29 +292,28 @@ void ChatWindow::CheckAIResponse() {
     IZANAGI* izanagi = IZANAGI::GetInstance();
     if (!izanagi || !izanagi->GetInitialized()) return;
 
-    // AIが処理中かチェック
+    // AI処理中かチェック
     if (!izanagi->Processing()) {
         // 応答を取得（UTF-8）
         std::string response = izanagi->GetAIMessage();
 
-        if (!response.empty() && response != lastResponseContent_) {
+        // 応答が空でなく、かつ前回と異なる場合のみ表示
+        if (!response.empty() && (lastResponseContent_.empty() || response != lastResponseContent_)) {
             AddMessage("AI", response, false);
             lastResponseContent_ = response;
             ScrollToBottom();
             isWaitingForResponse_ = false;
         }
         else if (response.empty()) {
+            // 空の応答が続く場合のタイムアウト処理
             static int emptyResponseCount = 0;
             emptyResponseCount++;
 
-            if (emptyResponseCount > 10) {
+            if (emptyResponseCount > 20) {  // 10から20に増やす
                 AddMessage("System", ConvertToUTF8("AIからの応答がありませんでした"), true);
                 isWaitingForResponse_ = false;
                 emptyResponseCount = 0;
             }
-        }
-        else {
-            isWaitingForResponse_ = false;
         }
     }
 }
