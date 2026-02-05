@@ -11,31 +11,10 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <nlohmann/json.hpp>
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma warning(disable:4996)
-
-// nlohmann/jsonのインクルード(ビルドエラー時は無視)
-#if defined(__has_include) && __has_include(<nlohmann/json.hpp>)
-#include <nlohmann/json.hpp>
-#define HAS_JSON
-#elif defined(__has_include) && __has_include("nlohmann/json.hpp")
-#include "nlohmann/json.hpp"
-#define HAS_JSON
-#else
-// jsonがない場合のダミー定義
-namespace nlohmann {
-    class json {
-    public:
-        json() {}
-        template<typename T> json& operator[](const T&) { return *this; }
-        template<typename T> T get() const { return T(); }
-        template<typename T> bool contains(const T&) const { return false; }
-        std::string dump() const { return "{}"; }
-        static json parse(const std::string&) { return json(); }
-    };
-}
-#endif
 
 #define BUFFER_SIZE (4096)
 
