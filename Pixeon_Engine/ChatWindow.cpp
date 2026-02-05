@@ -73,6 +73,11 @@ void ChatWindow::Initialize() {
         return;
     }
 
+    if (!izanagi->GetInitialized()) {
+		AddMessage("System", ConvertToUTF8("IZANAGIエンジンが初期化されていません"), true);
+		return;
+	}
+
     AddMessage("System", ConvertToUTF8("AIチャットが準備完了しました"), false);
     AddMessage("System", ConvertToUTF8("何か話しかけてください"), false);
 
@@ -91,7 +96,7 @@ void ChatWindow::Shutdown() {
 }
 
 void ChatWindow::Update() {
-    if (!isInitialized_ || !isVisible_) return;
+    if (!isInitialized_ || !isVisible_ || !IZANAGI::GetInstance()->GetInitialized()) return;
 
     static auto lastTime = std::chrono::high_resolution_clock::now();
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -146,14 +151,6 @@ void ChatWindow::Draw() {
         ImGui::SameLine();
         std::string autoScrollLabel = ConvertToUTF8("自動スクロール");
         ImGui::Checkbox(autoScrollLabel.c_str(), &autoScroll_);
-
-        ImGui::SameLine();
-        std::string clearHistoryLabel = ConvertToUTF8("履歴クリア");
-        if (ImGui::SmallButton(clearHistoryLabel.c_str())) {
-            std::lock_guard<std::mutex> lock(messagesMutex_);
-            messages_.clear();
-            AddMessage("System", ConvertToUTF8("チャット履歴をクリアしました"), false);
-        }
 
         ImGui::Separator();
 
@@ -261,7 +258,7 @@ void ChatWindow::SendAIMessage(const std::string& messageUTF8) {
     if (!isInitialized_ || messageUTF8.empty()) return;
 
     IZANAGI* izanagi = IZANAGI::GetInstance();
-    if (!izanagi) {
+    if (!izanagi || !izanagi->GetInitialized()) {
         AddMessage("System", ConvertToUTF8("IZANAGIが利用できません"), true);
         return;
     }
@@ -291,7 +288,7 @@ void ChatWindow::CheckAIResponse() {
     if (!isWaitingForResponse_) return;
 
     IZANAGI* izanagi = IZANAGI::GetInstance();
-    if (!izanagi) return;
+    if (!izanagi || !izanagi->GetInitialized()) return;
 
     // AIが処理中かチェック
     if (!izanagi->Processing()) {

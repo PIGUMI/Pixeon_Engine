@@ -21,7 +21,7 @@ public:
 	static void DestroyInstance();
 
 	bool Initialize(const std::string& modelPath, int contextSize, int threads, int gpuLayers);
-	
+	bool GetInitialized() const { return isInitialized; }
 	void SendAIMessage(const std::string& message);
 	std::string GetAIMessage();
 	bool Processing();

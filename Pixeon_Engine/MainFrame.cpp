@@ -72,7 +72,6 @@ int MainFrame::Init(const EngineConfig& InPut)
 
 	if(!IZANAGI::GetInstance()->Initialize("SceneRoot/Tool/IZANAGI/qwen2.5-7b-instruct-q3_k_m.gguf", 8192, 4, 2)) {
 		MessageBox(nullptr, "IZANAGIエンジンの初期化に失敗しました。モデルファイルを確認してください。", "エラー", MB_OK | MB_ICONERROR);
-		return -1;
 	}
 
 	SettingManager::GetInstance()->LoadConfig();
