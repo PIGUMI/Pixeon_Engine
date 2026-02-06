@@ -349,9 +349,18 @@ void EffectComponent::DrawTransformSettings()
 	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‰ñ“]").c_str());
 	ImGui::TableSetColumnIndex(1);
 	{
-		DirectX::XMFLOAT3 rot = rotation_;
+		DirectX::XMFLOAT3 rot = {
+			DirectX::XMConvertToDegrees(rotation_.x),
+			DirectX::XMConvertToDegrees(rotation_.y),
+			DirectX::XMConvertToDegrees(rotation_.z)
+		};
 		if (ImGui::DragFloat3("##Rotation", &rot.x, 1.0f))
 		{
+			rot = {
+				DirectX::XMConvertToRadians(rot.x),
+				DirectX::XMConvertToRadians(rot.y),
+				DirectX::XMConvertToRadians(rot.z)
+			};
 			SetRotation(rot);
 		}
 	}
