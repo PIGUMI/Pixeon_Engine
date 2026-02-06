@@ -90,7 +90,7 @@ float CalculateShadow(float3 worldPos)
     
     // PCF (Percentage Closer Filtering) でソフトシャドウ
     float shadow = 0.0f;
-    float bias = 0.005f;
+    float bias = 0.001f; // 0.005f から 0.001f に変更（より小さく）
     
     [unroll]
     for (int x = -1; x <= 1; ++x)
@@ -98,11 +98,11 @@ float CalculateShadow(float3 worldPos)
         [unroll]
         for (int y = -1; y <= 1; ++y)
         {
-            float2 offset = float2(x, y) * (1.0f / 2048.0f); // SHADOW_MAP_SIZE
+            float2 offset = float2(x, y) * (1.0f / 2048.0f);
             shadow += gShadowMap.SampleCmpLevelZero(
                 gShadowSampler,
                 shadowTexCoord + offset,
-                currentDepth - bias
+                currentDepth - bias // バイアスを適用
             );
         }
     }

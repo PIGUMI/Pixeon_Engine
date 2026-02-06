@@ -987,7 +987,6 @@ bool AbstractScene::CreateShadowMapResources()
 
 DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 {
-	// メインのディレクショナルライトを取得
 	DirectX::XMFLOAT3 lightDir(0, -1, 0);
 
 	for (auto* light : _lights) {
@@ -1003,9 +1002,9 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 	}
 
 	DirectX::XMVECTOR lightPos = DirectX::XMVectorSet(
-		cameraPos.x - lightDir.x,
-		cameraPos.y - lightDir.y,
-		cameraPos.z - lightDir.z,
+		cameraPos.x - lightDir.x * 80.0f,  // ライト距離: 80
+		cameraPos.y - lightDir.y * 80.0f,
+		cameraPos.z - lightDir.z * 80.0f,
 		1.0f
 	);
 	DirectX::XMVECTOR target = DirectX::XMLoadFloat3(&cameraPos);
@@ -1013,14 +1012,11 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 
 	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
 
-	float size = 100.0f; 
-
-
+	float size = 120.0f;  // 描画範囲: 120x120
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
-		size,
-		size,
-		1.0f,
-		200.0f
+		size, size,
+		0.5f,    // ニアクリップ
+		250.0f   // ファークリップ
 	);
 
 	return lightView * lightProj;

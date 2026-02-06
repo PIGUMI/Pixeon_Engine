@@ -99,5 +99,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shadowMapSRV;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_shadowSampler;
 
-	static constexpr int SHADOW_MAP_SIZE = 2048;
+	static constexpr int SHADOW_MAP_SIZE = 4096;
 };
