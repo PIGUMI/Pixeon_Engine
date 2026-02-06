@@ -1003,11 +1003,10 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 		cameraPos = _MainCamera->GetPosition();
 	}
 
-	// ライトの位置と方向からビュー行列を作成（カメラ位置を中心に）
 	DirectX::XMVECTOR lightPos = DirectX::XMVectorSet(
 		cameraPos.x - lightDir.x * 50.0f,  // ① ライトの距離（デフォルト: 50.0f）
-		cameraPos.y - lightDir.y * 50.0f,  //    大きくすると影が遠くまで届く
-		cameraPos.z - lightDir.z * 50.0f,  //    小さくすると影の精度が上がる
+		cameraPos.y - lightDir.y * 50.0f,
+		cameraPos.z - lightDir.z * 50.0f,
 		1.0f
 	);
 	DirectX::XMVECTOR target = DirectX::XMLoadFloat3(&cameraPos);
@@ -1015,19 +1014,15 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 
 	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
 
-	// 正射影行列（シャドウマップ用）
-	float size = 100.0f;  // ② 影の描画範囲の幅と高さ（デフォルト: 100.0f）
+	float size = 100.0f; 
 	//    大きくすると広範囲に影が描画される
 	//    小さくすると影の精度が上がる
 
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
-		size,       // 幅
-		size,       // 高さ
+		size,
+		size,
 		1.0f,       // ③ ニアクリップ（デフォルト: 1.0f）
-		//    影が描画される最小距離
 		200.0f      // ④ ファークリップ（デフォルト: 200.0f）
-					//    影が描画される最大距離
-					//    大きくすると深い影も描画される
 	);
 
 	return lightView * lightProj;
