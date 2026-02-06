@@ -1,10 +1,5 @@
-cbuffer ModelCB : register(b0)
-{
-    matrix gWorld;
-    matrix gView;
-    matrix gProj;
-    float4 gBaseColor;
-};
+Texture2D gTex0 : register(t0);
+SamplerState gSamp : register(s0);
 
 struct LightGPU
 {
@@ -19,25 +14,26 @@ struct LightGPU
     float enabled;
     float pad;
 };
+
 cbuffer LightArrayCB : register(b1)
 {
-    LightGPU gLights[8]; // kMaxLights
+    LightGPU gLights[8];
 };
+
 cbuffer LightCountCB : register(b2)
 {
     int gLightCount;
     float3 _padLC;
 };
 
-Texture2D gBaseTex : register(t0);
-SamplerState gLinear : register(s0);
-
-struct PS_INPUT
+struct PS_IN
 {
     float4 pos : SV_POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD;
+    float2 uv : TEXCOORD0;
+    float4 col : COLOR0;
     float3 worldPos : WORLDPOS;
+    float3 normal : NORMAL;
+    bool isFrontFace : SV_IsFrontFace; // í«â¡ÅFï\ó†îªíË
 };
 
 float AttenuationPoint(float dist, float range)
@@ -61,11 +57,14 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
 {
     if (l.enabled < 0.5)
         return 0;
+    
     float3 result = 0;
+    
     if (l.type == 0)
     {
+        // Directional
         float3 L = -normalize(l.direction);
-        float ndl = saturate(dot(N, L));
+        float ndl = saturate(abs(dot(N, L))); // abs()Ç≈óºñ ëŒâû
         result = l.color * (ndl * l.intensity);
     }
     else
@@ -74,38 +73,54 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
         float dist = length(Lvec);
         if (dist > l.range)
             return 0;
+        
         float3 L = Lvec / dist;
-        float ndl = saturate(dot(N, L));
+        float ndl = saturate(abs(dot(N, L))); // abs()Ç≈óºñ ëŒâû
         if (ndl <= 0)
             return 0;
+        
         float att = AttenuationPoint(dist, l.range);
+        
         if (l.type == 2)
         {
+            // Spot
             float sf = SpotFactor(L, l.direction, l.innerCos, l.outerCos);
             att *= sf;
             if (att <= 0)
                 return 0;
         }
+        
         result = l.color * (ndl * l.intensity * att);
     }
+    
     return result;
 }
 
-float4 main(PS_INPUT i) : SV_TARGET
+float4 main(PS_IN i) : SV_Target
 {
-    float4 texCol = gBaseTex.Sample(gLinear, i.uv);
+    float4 tex = gTex0.Sample(gSamp, i.uv);
+    
+    if (tex.a * i.col.a < 0.01)
+        discard;
+    
     float3 N = normalize(i.normal);
+    if (!i.isFrontFace)
+    {
+        N = -N;
+    }
+    
     float3 P = i.worldPos;
-
+    
     float3 lighting = 0;
     [unroll]
     for (int li = 0; li < gLightCount; ++li)
     {
         lighting += ApplyLight(gLights[li], P, N);
     }
-
-    float3 ambient = 0.1 * gBaseColor.rgb;
-
-    float3 color = (ambient + lighting) * texCol.rgb * gBaseColor.rgb;
-    return float4(color, texCol.a * gBaseColor.a);
+    
+    float3 ambient = 0.1 * i.col.rgb;
+    
+    float3 color = (ambient + lighting) * tex.rgb * i.col.rgb;
+    
+    return float4(color, tex.a * i.col.a);
 }
