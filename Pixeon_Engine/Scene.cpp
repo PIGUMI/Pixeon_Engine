@@ -2,6 +2,8 @@
 #include "System.h"
 #include "Object.h"
 #include "ComponentManager.h"
+#include "ModelRender.h"
+#include "ModelManager.h"
 #include "SettingManager.h"
 #include "EffectManager.h"
 #include "Component.h"
@@ -101,6 +103,7 @@ void AbstractScene::Init() {
 		layer->name = "Layer " + std::to_string(i);
 		_layers.push_back(layer);
 	}
+	CreateShadowMapResources();
 }
 
 void AbstractScene::BeginPlay() {
@@ -402,7 +405,40 @@ void AbstractScene::PlayUpdate() {
 }
 
 void AbstractScene::Draw(int Layer) {
+	RenderShadowMap();
+
 	UploadLightsToGPU();
+
+	auto ctx = DirectX11::GetInstance()->GetContext();
+	DirectX::XMMATRIX lightVP = GetLightViewProjection();
+
+	struct ShadowCB {
+		DirectX::XMMATRIX lightViewProj;
+	};
+
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> shadowCB;
+	if (!shadowCB) {
+		D3D11_BUFFER_DESC bd{};
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bd.ByteWidth = sizeof(ShadowCB);
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowCB.GetAddressOf());
+	}
+
+	ShadowCB shadowData;
+	shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightVP);
+	ctx->UpdateSubresource(shadowCB.Get(), 0, nullptr, &shadowData, 0, 0);
+
+	ID3D11Buffer* cbs3[] = { shadowCB.Get() };
+	ctx->PSSetConstantBuffers(3, 1, cbs3);
+
+	// シャドウマップをピクセルシェーダーにバインド
+	ID3D11ShaderResourceView* srvs[] = { m_shadowMapSRV.Get() };
+	ctx->PSSetShaderResources(1, 1, srvs);
+
+	ID3D11SamplerState* samplers[] = { m_shadowSampler.Get() };
+	ctx->PSSetSamplers(1, 1, samplers);
+
 
 	std::vector<AbstractObject*> sortedList;
 
@@ -884,6 +920,245 @@ void AbstractScene::CleanupAndReinitializePhysics()
 			}
 		}
 	}
+}
+
+bool AbstractScene::CreateShadowMapResources()
+{
+	auto dev = DirectX11::GetInstance()->GetDevice();
+	if (!dev) return false;
+
+	// シャドウマップテクスチャ作成
+	D3D11_TEXTURE2D_DESC texDesc{};
+	texDesc.Width = SHADOW_MAP_SIZE;
+	texDesc.Height = SHADOW_MAP_SIZE;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+	if (FAILED(dev->CreateTexture2D(&texDesc, nullptr, m_shadowMapTexture.GetAddressOf()))) {
+		return false;
+	}
+
+	// デプスステンシルビュー作成
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Texture2D.MipSlice = 0;
+
+	if (FAILED(dev->CreateDepthStencilView(m_shadowMapTexture.Get(), &dsvDesc,
+		m_shadowMapDSV.GetAddressOf()))) {
+		return false;
+	}
+
+	// シェーダーリソースビュー作成
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	if (FAILED(dev->CreateShaderResourceView(m_shadowMapTexture.Get(), &srvDesc,
+		m_shadowMapSRV.GetAddressOf()))) {
+		return false;
+	}
+
+	// シャドウサンプラー作成
+	D3D11_SAMPLER_DESC sampDesc{};
+	sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.BorderColor[0] = 1.0f;
+	sampDesc.BorderColor[1] = 1.0f;
+	sampDesc.BorderColor[2] = 1.0f;
+	sampDesc.BorderColor[3] = 1.0f;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	if (FAILED(dev->CreateSamplerState(&sampDesc, m_shadowSampler.GetAddressOf()))) {
+		return false;
+	}
+
+	return true;
+}
+
+DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
+{
+	// メインのディレクショナルライトを取得
+	DirectX::XMFLOAT3 lightDir(0, -1, 0);
+
+	for (auto* light : _lights) {
+		if (light && light->GetType() == LightComponent::LightType::Directional) {
+			lightDir = light->GetWorldDirection();
+			break;
+		}
+	}
+
+	// ライトの位置と方向からビュー行列を作成
+	DirectX::XMVECTOR lightPos = DirectX::XMVectorSet(
+		-lightDir.x * 50.0f,
+		-lightDir.y * 50.0f,
+		-lightDir.z * 50.0f,
+		1.0f
+	);
+	DirectX::XMVECTOR target = DirectX::XMVectorSet(0, 0, 0, 1);
+	DirectX::XMVECTOR up = DirectX::XMVectorSet(0, 1, 0, 0);
+
+	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
+
+	// 正射影行列（シャドウマップ用）
+	float size = 50.0f;
+	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
+		size, size, 1.0f, 100.0f
+	);
+
+	return lightView * lightProj;
+}
+
+void AbstractScene::RenderShadowMap() {
+	auto ctx = DirectX11::GetInstance()->GetContext();
+	if (!ctx || !m_shadowMapDSV) return;
+
+	// 現在のレンダーターゲットを保存
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> oldRTV;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> oldDSV;
+	ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
+
+	D3D11_VIEWPORT oldViewport;
+	UINT numViewports = 1;
+	ctx->RSGetViewports(&numViewports, &oldViewport);
+
+	// シャドウマップ用のビューポート設定
+	D3D11_VIEWPORT shadowViewport{};
+	shadowViewport.Width = static_cast<float>(SHADOW_MAP_SIZE);
+	shadowViewport.Height = static_cast<float>(SHADOW_MAP_SIZE);
+	shadowViewport.MinDepth = 0.0f;
+	shadowViewport.MaxDepth = 1.0f;
+	ctx->RSSetViewports(1, &shadowViewport);
+
+	// シャドウマップをクリア
+	ctx->ClearDepthStencilView(m_shadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	// レンダーターゲットなし、デプスのみ
+	ID3D11RenderTargetView* nullRTV = nullptr;
+	ctx->OMSetRenderTargets(1, &nullRTV, m_shadowMapDSV.Get());
+
+	// ライトビュー行列を取得
+	DirectX::XMMATRIX lightViewProj = GetLightViewProjection();
+
+	// シャドウマップ用のシェーダーを取得
+	auto* sm = ShaderManager::GetInstance();
+	ID3D11VertexShader* shadowVS = sm->GetVertexShader("VS_ShadowMap");
+	ID3D11PixelShader* shadowPS = sm->GetPixelShader("PS_ShadowMap");
+
+	if (shadowVS && shadowPS) {
+		ctx->VSSetShader(shadowVS, nullptr, 0);
+		ctx->PSSetShader(shadowPS, nullptr, 0);
+
+		// シャドウマップ用の定数バッファを作成・設定
+		struct ShadowCB {
+			DirectX::XMMATRIX lightViewProj;
+			DirectX::XMMATRIX world;
+		};
+
+		static Microsoft::WRL::ComPtr<ID3D11Buffer> shadowVSCB;
+		if (!shadowVSCB) {
+			D3D11_BUFFER_DESC bd{};
+			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			bd.ByteWidth = sizeof(ShadowCB);
+			bd.Usage = D3D11_USAGE_DEFAULT;
+			DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowVSCB.GetAddressOf());
+		}
+
+		// 全オブジェクトをライト視点で描画
+		for (auto& obj : _objects) {
+			if (!obj || obj->GetParent() != nullptr) continue;
+
+			bool isSaveObject = std::find(_SaveObjects.begin(), _SaveObjects.end(), obj) != _SaveObjects.end();
+			if (isSaveObject) continue;
+
+			// ModelRenderComponentを持つオブジェクトのみ描画
+			auto modelComps = obj->GetComponentsByType<ModelRenderComponent>();
+			for (auto* modelComp : modelComps) {
+				if (!modelComp) continue;
+
+				auto model = modelComp->GetModel();
+				if (!model) continue;
+
+				// ワールド行列を計算
+				Transform t = obj->GetWorldTransform();
+				DirectX::XMMATRIX world = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z) *
+					DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z) *
+					DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
+
+				// グローバルオフセット・スケール・回転を適用
+				DirectX::XMFLOAT3 globalOffset = modelComp->GetGlobalOffset();
+				DirectX::XMFLOAT3 globalScale = modelComp->GetGlobalScale();
+				DirectX::XMFLOAT3 globalRotation = modelComp->GetGlobalRotation();
+
+				DirectX::XMMATRIX globalTransform =
+					DirectX::XMMatrixScaling(globalScale.x, globalScale.y, globalScale.z) *
+					DirectX::XMMatrixRotationRollPitchYaw(globalRotation.x, globalRotation.y, globalRotation.z) *
+					DirectX::XMMatrixTranslation(globalOffset.x, globalOffset.y, globalOffset.z);
+
+				DirectX::XMMATRIX finalWorld = globalTransform * world;
+
+				// 定数バッファ更新
+				ShadowCB shadowData;
+				shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightViewProj);
+				shadowData.world = DirectX::XMMatrixTranspose(finalWorld);
+				ctx->UpdateSubresource(shadowVSCB.Get(), 0, nullptr, &shadowData, 0, 0);
+
+				ID3D11Buffer* cbs[] = { shadowVSCB.Get() };
+				ctx->VSSetConstantBuffers(0, 1, cbs);
+
+				// モデル描画
+				UINT stride = sizeof(ModelVertex);
+				UINT offset = 0;
+				ID3D11Buffer* vb = model->vb.Get();
+				ID3D11Buffer* ib = model->ib.Get();
+
+				if (!vb || !ib) continue;
+
+				ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+				ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+				ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+				// 入力レイアウトを設定
+				const void* bc = nullptr;
+				size_t bcSize = 0;
+				if (sm->GetVSBytecode("VS_ShadowMap", &bc, &bcSize)) {
+					static Microsoft::WRL::ComPtr<ID3D11InputLayout> shadowLayout;
+					if (!shadowLayout) {
+						D3D11_INPUT_ELEMENT_DESC desc[] = {
+							{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(ModelVertex, position), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+							{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(ModelVertex, normal), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+							{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(ModelVertex, tangent), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+							{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(ModelVertex, uv), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+							{ "BLENDINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, offsetof(ModelVertex, boneIndices), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+							{ "BLENDWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(ModelVertex, boneWeights), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+						};
+						DirectX11::GetInstance()->GetDevice()->CreateInputLayout(desc, _countof(desc), bc, bcSize, shadowLayout.GetAddressOf());
+					}
+					if (shadowLayout) {
+						ctx->IASetInputLayout(shadowLayout.Get());
+					}
+				}
+
+				// 全サブメッシュを描画
+				for (const auto& submesh : model->submeshes) {
+					ctx->DrawIndexed(submesh.indexCount, submesh.indexOffset, 0);
+				}
+			}
+		}
+	}
+
+	// 元のレンダーターゲットとビューポートに戻す
+	ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
+	ctx->RSSetViewports(1, &oldViewport);
 }
 
 std::vector<EffectComponent*> AbstractScene::CollectEffectComponents(int layer)

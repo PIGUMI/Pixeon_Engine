@@ -8,31 +8,16 @@
                 {
                     "enabled": true,
                     "params": {
-                        "brightness": -0.10999999940395355,
+                        "brightness": 0.0,
                         "contrast": 1.0,
-                        "gamma": 1.2000000476837158,
-                        "hueShift": 1.0,
-                        "saturation": 4.0,
-                        "temperature": 0.25,
+                        "gamma": 1.0,
+                        "hueShift": 0.0,
+                        "saturation": 1.9800000190734863,
+                        "temperature": 0.0,
                         "tint": 0.0
                     },
                     "priority": 0,
                     "type": 4
-                },
-                {
-                    "enabled": true,
-                    "params": {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "intensity": 0.0,
-                        "pixelSize": 12.899999618530273
-                    },
-                    "priority": 0,
-                    "type": 3
                 }
             ],
             "visible": true
@@ -105,7 +90,7 @@
         {
             "Components": [
                 {
-                    "Data": "-0.737298 22.0215 7.63791 75.1 1.08 0 0.647579 13.2019 3.13267 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-4.44616 6.40952 6.37831 68.4101 0.3 0 1.74428 3.45432 -0.898041 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -142,13 +127,13 @@
             "Parent": "",
             "Transform": {
                 "Position": [
+                    7.199999809265137,
                     0.0,
-                    0.0,
-                    0.0
+                    -12.199999809265137
                 ],
                 "Rotation": [
-                    -1.0663787126541138,
-                    -3.1415927410125732,
+                    -0.9651496410369873,
+                    0.0,
                     0.0
                 ],
                 "Scale": [
@@ -513,7 +498,7 @@
         {
             "Components": [],
             "Name": "MetalFence",
-            "Parent": "Stage",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -935,6 +920,34 @@
                 "Rotation": [
                     0.0,
                     -1.5707963705062866,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.05 0.05 0.05\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "Scale": [

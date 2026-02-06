@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <Windows.h>
+#include <wrl/client.h>
+#include <d3d11.h>
 
 class AbstractObject;
 class LightComponent;
@@ -64,7 +67,9 @@ private:
 	void InitPhysics();
 	void CleanupPhysics();
 	void CleanupAndReinitializePhysics();
-
+	bool CreateShadowMapResources();
+	void RenderShadowMap();
+	DirectX::XMMATRIX GetLightViewProjection();
 	std::vector<EffectComponent*> CollectEffectComponents(int layer);
 private:
 	std::string _name = "DefaultScene";
@@ -89,4 +94,10 @@ private:
 	btCollisionDispatcher* pDispatcher = nullptr;
 	btDbvtBroadphase* pOverlappingPairCache = nullptr;
 	btSequentialImpulseConstraintSolver* pSolver = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_shadowMapTexture;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_shadowMapDSV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shadowMapSRV;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_shadowSampler;
+
+	static constexpr int SHADOW_MAP_SIZE = 2048;
 };

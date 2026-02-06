@@ -75,6 +75,7 @@ public:
 	void SetGlobalRotation(const DirectX::XMFLOAT3& rotation) { m_globalRotation = rotation; }
 	DirectX::XMFLOAT3 GetGlobalRotation() const { return m_globalRotation; }
 
+	std::shared_ptr<ModelSharedResource> GetModel() const { return m_model; }
 private:
 	struct CBData {
 		DirectX::XMMATRIX World;

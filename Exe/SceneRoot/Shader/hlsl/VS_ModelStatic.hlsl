@@ -34,5 +34,4 @@ VS_OUTPUT main(VS_INPUT i)
     o.normal = mul(float4(i.normal, 0), gWorld).xyz;
     o.uv = i.uv;
     return o;
-
 }
