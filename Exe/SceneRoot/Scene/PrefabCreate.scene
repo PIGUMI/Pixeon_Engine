@@ -10,10 +10,10 @@
                     "params": {
                         "brightness": 0.0,
                         "contrast": 1.0,
-                        "gamma": 1.0,
+                        "gamma": 1.2400000095367432,
                         "hueShift": 0.0,
                         "saturation": 1.9800000190734863,
-                        "temperature": 0.0,
+                        "temperature": 0.4099999964237213,
                         "tint": 0.0
                     },
                     "priority": 0,
@@ -90,7 +90,7 @@
         {
             "Components": [
                 {
-                    "Data": "-4.44616 6.40952 6.37831 68.4101 0.3 0 1.74428 3.45432 -0.898041 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "-3.26078 17.6547 8.05306 63.96 0.860001 0 -9.15633 10.0763 5.25844 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -158,162 +158,6 @@
                     0.0,
                     0.0,
                     0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender1",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender2",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender3",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender4",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender5",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender6",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender7",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender8",
-                    "Type": 4
-                },
-                {
-                    "Data": "90 1 90 0 -0.5 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "Ground",
-            "Parent": "Stage",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [],
-            "Name": "Actor",
-            "Parent": "Stage",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                }
-            ],
-            "Name": "MapActor1",
-            "Parent": "Actor",
-            "Transform": {
-                "Position": [
-                    -38.0,
-                    0.0,
-                    38.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "1 1 1 0 0 0 0 0 1\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                }
-            ],
-            "Name": "MapActor2",
-            "Parent": "Actor",
-            "Transform": {
-                "Position": [
-                    38.0,
-                    0.0,
-                    -38.0
                 ],
                 "Rotation": [
                     0.0,
@@ -497,6 +341,162 @@
         },
         {
             "Components": [],
+            "Name": "Actor",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1 1 1 0 0 0 0 0 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                }
+            ],
+            "Name": "MapActor1",
+            "Parent": "Actor",
+            "Transform": {
+                "Position": [
+                    -38.0,
+                    0.0,
+                    38.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "1 1 1 0 0 0 0 0 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                }
+            ],
+            "Name": "MapActor2",
+            "Parent": "Actor",
+            "Transform": {
+                "Position": [
+                    38.0,
+                    0.0,
+                    -38.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "90 1 90 0 -0.5 0 0 0 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "Ground",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
             "Name": "MetalFence",
             "Parent": "",
             "Transform": {
@@ -601,7 +601,7 @@
                 }
             ],
             "Name": "MetalFence1",
-            "Parent": "MetalFence",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -704,7 +704,7 @@
                 }
             ],
             "Name": "MetalFence3",
-            "Parent": "MetalFence",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -807,7 +807,7 @@
                 }
             ],
             "Name": "MetalFence0",
-            "Parent": "MetalFence",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -910,7 +910,7 @@
                 }
             ],
             "Name": "MetalFence2",
-            "Parent": "MetalFence",
+            "Parent": "",
             "Transform": {
                 "Position": [
                     0.0,
@@ -932,7 +932,7 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.05 0.05 0.05\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.05 0.05 0.05\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1.1 1 1.01\n2\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -941,13 +941,46 @@
             "Parent": "",
             "Transform": {
                 "Position": [
-                    0.0,
+                    -5.400000095367432,
                     0.0,
                     0.0
                 ],
                 "Rotation": [
                     0.0,
                     0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n0.05 0.05 0.05\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "0\n1\n1\n0\n",
+                    "Name": "Animation",
+                    "Type": 5
+                }
+            ],
+            "Name": "NewObject1",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    -15.899999618530273,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.045378558337688446,
                     0.0
                 ],
                 "Scale": [

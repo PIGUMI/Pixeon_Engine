@@ -997,22 +997,37 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 		}
 	}
 
-	// ライトの位置と方向からビュー行列を作成
+	// カメラの位置を取得してシャドウマップの中心をカメラ位置にする
+	DirectX::XMFLOAT3 cameraPos(0, 0, 0);
+	if (_MainCamera) {
+		cameraPos = _MainCamera->GetPosition();
+	}
+
+	// ライトの位置と方向からビュー行列を作成（カメラ位置を中心に）
 	DirectX::XMVECTOR lightPos = DirectX::XMVectorSet(
-		-lightDir.x * 50.0f,
-		-lightDir.y * 50.0f,
-		-lightDir.z * 50.0f,
+		cameraPos.x - lightDir.x * 50.0f,  // ① ライトの距離（デフォルト: 50.0f）
+		cameraPos.y - lightDir.y * 50.0f,  //    大きくすると影が遠くまで届く
+		cameraPos.z - lightDir.z * 50.0f,  //    小さくすると影の精度が上がる
 		1.0f
 	);
-	DirectX::XMVECTOR target = DirectX::XMVectorSet(0, 0, 0, 1);
+	DirectX::XMVECTOR target = DirectX::XMLoadFloat3(&cameraPos);
 	DirectX::XMVECTOR up = DirectX::XMVectorSet(0, 1, 0, 0);
 
 	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
 
 	// 正射影行列（シャドウマップ用）
-	float size = 50.0f;
+	float size = 100.0f;  // ② 影の描画範囲の幅と高さ（デフォルト: 100.0f）
+	//    大きくすると広範囲に影が描画される
+	//    小さくすると影の精度が上がる
+
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
-		size, size, 1.0f, 100.0f
+		size,       // 幅
+		size,       // 高さ
+		1.0f,       // ③ ニアクリップ（デフォルト: 1.0f）
+		//    影が描画される最小距離
+		200.0f      // ④ ファークリップ（デフォルト: 200.0f）
+					//    影が描画される最大距離
+					//    大きくすると深い影も描画される
 	);
 
 	return lightView * lightProj;
@@ -1073,12 +1088,12 @@ void AbstractScene::RenderShadowMap() {
 			DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowVSCB.GetAddressOf());
 		}
 
-		// 全オブジェクトをライト視点で描画
-		for (auto& obj : _objects) {
-			if (!obj || obj->GetParent() != nullptr) continue;
+		// 全オブジェクトを再帰的に描画する関数
+		std::function<void(AbstractObject*)> RenderObjectShadow = [&](AbstractObject* obj) {
+			if (!obj) return;
 
 			bool isSaveObject = std::find(_SaveObjects.begin(), _SaveObjects.end(), obj) != _SaveObjects.end();
-			if (isSaveObject) continue;
+			if (isSaveObject) return;
 
 			// ModelRenderComponentを持つオブジェクトのみ描画
 			auto modelComps = obj->GetComponentsByType<ModelRenderComponent>();
@@ -1088,7 +1103,7 @@ void AbstractScene::RenderShadowMap() {
 				auto model = modelComp->GetModel();
 				if (!model) continue;
 
-				// ワールド行列を計算
+				// ワールド行列を計算（GetWorldTransformで親の変換も含まれる）
 				Transform t = obj->GetWorldTransform();
 				DirectX::XMMATRIX world = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z) *
 					DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z) *
@@ -1114,6 +1129,11 @@ void AbstractScene::RenderShadowMap() {
 
 				ID3D11Buffer* cbs[] = { shadowVSCB.Get() };
 				ctx->VSSetConstantBuffers(0, 1, cbs);
+
+				// ボーン行列をシャドウマップシェーダーにも渡す
+				if (model->hasSkin && modelComp->HasBoneMatrices()) {
+					modelComp->SetupBoneMatricesForShader(ctx);
+				}
 
 				// モデル描画
 				UINT stride = sizeof(ModelVertex);
@@ -1152,6 +1172,18 @@ void AbstractScene::RenderShadowMap() {
 				for (const auto& submesh : model->submeshes) {
 					ctx->DrawIndexed(submesh.indexCount, submesh.indexOffset, 0);
 				}
+			}
+
+			// 子オブジェクトも再帰的に描画
+			for (auto* child : obj->GetChildren()) {
+				RenderObjectShadow(child);
+			}
+			};
+
+		// ルートオブジェクトから再帰的に描画
+		for (auto& obj : _objects) {
+			if (obj && obj->GetParent() == nullptr) {
+				RenderObjectShadow(obj);
 			}
 		}
 	}
