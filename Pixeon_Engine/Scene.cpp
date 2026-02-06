@@ -1004,7 +1004,7 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 	}
 
 	DirectX::XMVECTOR lightPos = DirectX::XMVectorSet(
-		cameraPos.x - lightDir.x * 50.0f,  // ① ライトの距離（デフォルト: 50.0f）
+		cameraPos.x - lightDir.x * 50.0f,
 		cameraPos.y - lightDir.y * 50.0f,
 		cameraPos.z - lightDir.z * 50.0f,
 		1.0f
@@ -1015,8 +1015,7 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
 
 	float size = 100.0f; 
-	//    大きくすると広範囲に影が描画される
-	//    小さくすると影の精度が上がる
+
 
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
 		size,
