@@ -997,16 +997,15 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 		}
 	}
 
-	// カメラの位置を取得してシャドウマップの中心をカメラ位置にする
 	DirectX::XMFLOAT3 cameraPos(0, 0, 0);
 	if (_MainCamera) {
 		cameraPos = _MainCamera->GetPosition();
 	}
 
 	DirectX::XMVECTOR lightPos = DirectX::XMVectorSet(
-		cameraPos.x - lightDir.x * 50.0f,
-		cameraPos.y - lightDir.y * 50.0f,
-		cameraPos.z - lightDir.z * 50.0f,
+		cameraPos.x - lightDir.x,
+		cameraPos.y - lightDir.y,
+		cameraPos.z - lightDir.z,
 		1.0f
 	);
 	DirectX::XMVECTOR target = DirectX::XMLoadFloat3(&cameraPos);
@@ -1020,8 +1019,8 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
 		size,
 		size,
-		1.0f,       // ③ ニアクリップ（デフォルト: 1.0f）
-		200.0f      // ④ ファークリップ（デフォルト: 200.0f）
+		1.0f,
+		200.0f
 	);
 
 	return lightView * lightProj;
