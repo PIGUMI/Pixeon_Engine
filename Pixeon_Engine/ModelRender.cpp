@@ -409,7 +409,6 @@ ModelRenderComponent::CullMode ModelRenderComponent::GetMeshCullMode(size_t mesh
 	return m_materials[meshIndex].cullMode;
 }
 
-
 int ModelRenderComponent::GetBoneIndexByName(const std::string& boneName) const {
 	if (!m_model) return -1;
 
@@ -1414,11 +1413,4 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 			ImGui::TreePop();
 		}
 	}
-
-	// コピーボタン
-	ImGui::Separator();
-	if (ImGui::Button(SJ("ボーン名をコピー").c_str())) {
-		ImGui::SetClipboardText(bone.name.c_str());
-	}
-	ImGui::SameLine();
 }

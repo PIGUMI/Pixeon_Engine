@@ -439,7 +439,6 @@ void AbstractScene::Draw(int Layer) {
 	ID3D11SamplerState* samplers[] = { m_shadowSampler.Get() };
 	ctx->PSSetSamplers(1, 1, samplers);
 
-
 	std::vector<AbstractObject*> sortedList;
 
 	for (auto& obj : _objects) {

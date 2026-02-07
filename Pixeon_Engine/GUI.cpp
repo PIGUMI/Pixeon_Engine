@@ -532,7 +532,7 @@ void GUI::AISettingWindow()
 		static char persona[4096] = "";
 		ImGui::Text(ShiftJISToUTF8("性格の設定").c_str());
 		ImGui::InputTextMultiline(ShiftJISToUTF8("##PersonaInput").c_str(), (char*)persona, sizeof(persona), ImVec2(-1.0f, -1.0f));
-		if(ImGui::Button(ShiftJISToUTF8("適用").c_str(), ImVec2(120, 0)))
+		if (ImGui::Button(ShiftJISToUTF8("適用").c_str(), ImVec2(120, 0)))
 		{
 			IZANAGI::GetInstance()->SetPersona(std::string(persona));
 		}

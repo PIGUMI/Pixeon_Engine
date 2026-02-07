@@ -7,37 +7,37 @@
 
 enum class PropertyType
 {
-    FLOAT,
-    INT,
-    BOOL,
-    STRING
+	FLOAT,
+	INT,
+	BOOL,
+	STRING
 };
 
 struct PropertyMetadata
 {
-    std::string name;
-    PropertyType type;
-    void* dataPtr;
-    float minValue = 0.0f;
-    float maxValue = 100.0f;
-    bool hasRange = false;
+	std::string name;
+	PropertyType type;
+	void* dataPtr;
+	float minValue = 0.0f;
+	float maxValue = 100.0f;
+	bool hasRange = false;
 
-    PropertyMetadata(const std::string& n, PropertyType t, void* ptr)
-        : name(n), type(t), dataPtr(ptr) {
-    }
+	PropertyMetadata(const std::string& n, PropertyType t, void* ptr)
+		: name(n), type(t), dataPtr(ptr) {
+	}
 
-    PropertyMetadata(const std::string& n, PropertyType t, void* ptr, float min, float max)
-        : name(n), type(t), dataPtr(ptr), minValue(min), maxValue(max), hasRange(true) {
-    }
+	PropertyMetadata(const std::string& n, PropertyType t, void* ptr, float min, float max)
+		: name(n), type(t), dataPtr(ptr), minValue(min), maxValue(max), hasRange(true) {
+	}
 };
 
 class ScriptPropertyBase
 {
 public:
-    virtual ~ScriptPropertyBase() = default;
-    virtual std::vector<PropertyMetadata> GetProperties() = 0;
-    virtual std::string SerializeProperty(const std::string& name) = 0;
-    virtual void DeserializeProperty(const std::string& name, const std::string& value) = 0;
+	virtual ~ScriptPropertyBase() = default;
+	virtual std::vector<PropertyMetadata> GetProperties() = 0;
+	virtual std::string SerializeProperty(const std::string& name) = 0;
+	virtual void DeserializeProperty(const std::string& name, const std::string& value) = 0;
 };
 
 #define IMPLEMENT_GET_PROPERTIES() \

@@ -7,60 +7,60 @@
 #include <deque>
 
 struct ChatMessage {
-    std::string sender;
-    std::string content;
-    float timestamp;
-    bool isError;
+	std::string sender;
+	std::string content;
+	float timestamp;
+	bool isError;
 
-    ChatMessage(const std::string& s, const std::string& c, float t = 0.0f, bool err = false)
-        : sender(s), content(c), timestamp(t), isError(err) {
-    }
+	ChatMessage(const std::string& s, const std::string& c, float t = 0.0f, bool err = false)
+		: sender(s), content(c), timestamp(t), isError(err) {
+	}
 };
 
 class ChatWindow {
 public:
-    static ChatWindow* GetInstance();
-    static void DestroyInstance();
+	static ChatWindow* GetInstance();
+	static void DestroyInstance();
 
-    void Initialize();
-    void Draw();
-    void Update();
-    void Shutdown();
+	void Initialize();
+	void Draw();
+	void Update();
+	void Shutdown();
 
-    bool IsInitialized() const { return isInitialized_; }
-    bool IsVisible() const { return isVisible_; }
-    void SetVisible(bool visible) { isVisible_ = visible; }
-    void ToggleVisible() { isVisible_ = !isVisible_; }
+	bool IsInitialized() const { return isInitialized_; }
+	bool IsVisible() const { return isVisible_; }
+	void SetVisible(bool visible) { isVisible_ = visible; }
+	void ToggleVisible() { isVisible_ = !isVisible_; }
 
-    // Shift-JISからUTF-8への変換（公開）
-    std::string ConvertToUTF8(const std::string& sjis);
-
-private:
-    ChatWindow();
-    ~ChatWindow();
-
-    void SendAIMessage(const std::string& messageUTF8);
-    void CheckAIResponse();
-    void AddMessage(const std::string& sender, const std::string& contentUTF8, bool isError = false);
-    void ScrollToBottom();
+	// Shift-JISからUTF-8への変換（公開）
+	std::string ConvertToUTF8(const std::string& sjis);
 
 private:
-    static ChatWindow* instance_;
+	ChatWindow();
+	~ChatWindow();
 
-    bool isInitialized_;
-    bool isVisible_;
-    bool autoScroll_;
-    bool scrollToBottom_;
+	void SendAIMessage(const std::string& messageUTF8);
+	void CheckAIResponse();
+	void AddMessage(const std::string& sender, const std::string& contentUTF8, bool isError = false);
+	void ScrollToBottom();
 
-    std::deque<ChatMessage> messages_;
-    std::mutex messagesMutex_;
+private:
+	static ChatWindow* instance_;
 
-    float lastCheckTime_;
-    float checkInterval_;
+	bool isInitialized_;
+	bool isVisible_;
+	bool autoScroll_;
+	bool scrollToBottom_;
 
-    float windowWidth_;
-    float windowHeight_;
-    bool isWaitingForResponse_;
+	std::deque<ChatMessage> messages_;
+	std::mutex messagesMutex_;
 
-    std::string lastResponseContent_;
+	float lastCheckTime_;
+	float checkInterval_;
+
+	float windowWidth_;
+	float windowHeight_;
+	bool isWaitingForResponse_;
+
+	std::string lastResponseContent_;
 };
