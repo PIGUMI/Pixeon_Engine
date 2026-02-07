@@ -389,12 +389,12 @@ void ScriptManager::Update()
 									// ScripComponentから親オブジェクトを取得
 									AbstractObject* parentObj = owner->GetParent();
 									if (parentObj) {
-										newInst->SetParentObject(static_cast<Object>(parentObj));
+										newInst->SetParentObject(static_cast<object>(parentObj));
 
 										// 親シーンを取得
 										AbstractScene* parentScene = parentObj->GetParentScene();
 										if (parentScene) {
-											newInst->SetParentScene(static_cast<Scene>(parentScene));
+											newInst->SetParentScene(static_cast<scene>(parentScene));
 										}
 									}
 								}
@@ -442,11 +442,11 @@ void ScriptManager::Update()
 									try {
 										AbstractObject* parentObj = owner->GetParent();
 										if (parentObj) {
-											newInst->SetParentObject(static_cast<Object>(parentObj));
+											newInst->SetParentObject(static_cast<object>(parentObj));
 
 											AbstractScene* parentScene = parentObj->GetParentScene();
 											if (parentScene) {
-												newInst->SetParentScene(static_cast<Scene>(parentScene));
+												newInst->SetParentScene(static_cast<scene>(parentScene));
 											}
 										}
 									}

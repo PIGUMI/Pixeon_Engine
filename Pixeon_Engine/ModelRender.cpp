@@ -453,7 +453,7 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneWorldPosition(int boneIndex) cons
 	return position;
 }
 
-DirectX::XMFLOAT4 ModelRenderComponent::GetBoneWorldRotation(int boneIndex) const {
+DirectX::XMFLOAT4 ModelRenderComponent::GetBoneWorldRotationQuaternion(int boneIndex) const {
 	using namespace DirectX;
 
 	XMMATRIX worldMatrix = GetBoneWorldMatrix(boneIndex);
@@ -466,6 +466,57 @@ DirectX::XMFLOAT4 ModelRenderComponent::GetBoneWorldRotation(int boneIndex) cons
 	}
 
 	return XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+DirectX::XMFLOAT3 ModelRenderComponent::GetBoneWorldRotation(int boneIndex) const {
+	using namespace DirectX;
+
+	XMMATRIX worldMatrix = GetBoneWorldMatrix(boneIndex);
+	XMVECTOR scale, rotation, translation;
+
+	if (!XMMatrixDecompose(&scale, &rotation, &translation, worldMatrix)) {
+		return XMFLOAT3(0.0f, 0.0f, 0.0f);
+	}
+
+	// クォータニオンをオイラー角に変換
+	XMFLOAT4 quat;
+	XMStoreFloat4(&quat, rotation);
+
+	// クォータニオン → オイラー角変換
+	float pitch, yaw, roll;
+
+	// Pitch (X軸回転)
+	float sinp = 2.0f * (quat.w * quat.x + quat.y * quat.z);
+	float cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
+	pitch = std::atan2(sinp, cosp);
+
+	// Yaw (Y軸回転)
+	float siny = 2.0f * (quat.w * quat.y - quat.z * quat.x);
+	if (std::abs(siny) >= 1.0f) {
+		yaw = std::copysign(XM_PI / 2.0f, siny); // ジンバルロック時
+	}
+	else {
+		yaw = std::asin(siny);
+	}
+
+	// Roll (Z軸回転)
+	float sinr = 2.0f * (quat.w * quat.z + quat.x * quat.y);
+	float cosr = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
+	roll = std::atan2(sinr, cosr);
+
+	return XMFLOAT3(pitch, yaw, roll);
+}
+
+DirectX::XMFLOAT3 ModelRenderComponent::GetBoneWorldRotationDegrees(int boneIndex) const {
+	using namespace DirectX;
+
+	XMFLOAT3 radians = GetBoneWorldRotation(boneIndex);
+
+	return XMFLOAT3(
+		XMConvertToDegrees(radians.x),
+		XMConvertToDegrees(radians.y),
+		XMConvertToDegrees(radians.z)
+	);
 }
 
 int ModelRenderComponent::GetBoneParentIndex(int boneIndex) const {
@@ -1358,7 +1409,7 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 		ImGui::Text("(%.3f, %.3f, %.3f)", worldPos.x, worldPos.y, worldPos.z);
 
 		// ワールド回転
-		DirectX::XMFLOAT4 worldRot = GetBoneWorldRotation(boneIndex);
+		DirectX::XMFLOAT4 worldRot = GetBoneWorldRotationQuaternion(boneIndex);
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ワールド回転").c_str());
 		ImGui::TableSetColumnIndex(1);

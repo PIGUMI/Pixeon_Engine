@@ -24,9 +24,9 @@ void ScripComponent::Init(AbstractObject* owner) {
 void ScripComponent::BeginPlay() {
 	if (_scriptInstance)
 	{
-		Object parentObj = static_cast<Object>(_Parent);
+		object parentObj = static_cast<object>(_Parent);
 		_scriptInstance->SetParentObject(parentObj);
-		Scene parentScene = static_cast<Scene>(_Parent->GetParentScene());
+		scene parentScene = static_cast<scene>(_Parent->GetParentScene());
 		_scriptInstance->SetParentScene(parentScene);
 		try
 		{

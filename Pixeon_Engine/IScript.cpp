@@ -3,10 +3,10 @@
 #include <unordered_map>
 #include <mutex>
 
-static std::unordered_map<Component, IScript*> g_scriptInstances;
+static std::unordered_map<component, IScript*> g_scriptInstances;
 static std::mutex g_scriptInstancesMutex;
 
-void OnEnterCallback(Component collision, const APICollisionInfo* info)
+void OnEnterCallback(component collision, const APICollisionInfo* info)
 {
 	std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
 	auto it = g_scriptInstances.find(collision);
@@ -15,7 +15,7 @@ void OnEnterCallback(Component collision, const APICollisionInfo* info)
 	}
 }
 
-void OnStayCallback(Component collision, const APICollisionInfo* info)
+void OnStayCallback(component collision, const APICollisionInfo* info)
 {
 	std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
 	auto it = g_scriptInstances.find(collision);
@@ -24,7 +24,7 @@ void OnStayCallback(Component collision, const APICollisionInfo* info)
 	}
 }
 
-void OnExitCallback(Component collision, const APICollisionInfo* info)
+void OnExitCallback(component collision, const APICollisionInfo* info)
 {
 	std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
 	auto it = g_scriptInstances.find(collision);
@@ -50,14 +50,14 @@ void IScript::BeginPlay()
 	};
 
 	for (const char* typeName : collisionTypes) {
-		Component collisionComp = nullptr;
+		component collisionComp = nullptr;
 		if (FindComponent(_parentObject, typeName, &collisionComp) == PN_SUCCESS) {
 			RegisterCollisionComponent(collisionComp);
 		}
 	}
 }
 
-void IScript::RegisterCollisionComponent(Component collision)
+void IScript::RegisterCollisionComponent(component collision)
 {
 	if (collision == nullptr) {
 		return;
@@ -89,7 +89,7 @@ void IScript::UnregisterAllCollisions()
 {
 	std::lock_guard<std::mutex> lock(g_scriptInstancesMutex);
 
-	for (Component collision : _registeredCollisions) {
+	for (component collision : _registeredCollisions) {
 		auto it = g_scriptInstances.find(collision);
 		if (it != g_scriptInstances.end()) {
 			g_scriptInstances.erase(it);

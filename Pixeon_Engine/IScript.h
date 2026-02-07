@@ -19,8 +19,8 @@ public:
 
 	virtual void CallCustom(const std::string& functionName);
 
-	void SetParentObject(Object obj) { _parentObject = obj; }
-	void SetParentScene(Scene scene) { _parentScene = scene; }
+	void SetParentObject(object obj) { _parentObject = obj; }
+	void SetParentScene(scene scene) { _parentScene = scene; }
 	void SetOwnerComponent(ScripComponent* owner) { _ownerComponent = owner; }
 
 	ScripComponent* GetOwnerComponent() const { return _ownerComponent; }
@@ -37,13 +37,13 @@ public:
 	void DeserializeProperty(const std::string& name, const std::string& value) override {}
 
 protected:
-	Object _parentObject = nullptr;
-	Scene _parentScene = nullptr;
+	object _parentObject = nullptr;
+	scene _parentScene = nullptr;
 	ScripComponent* _ownerComponent = nullptr;
 
 private:
-	std::vector<Component> _registeredCollisions;
-	void RegisterCollisionComponent(Component collision);
+	std::vector<component> _registeredCollisions;
+	void RegisterCollisionComponent(component collision);
 	void UnregisterAllCollisions();
 };
 
