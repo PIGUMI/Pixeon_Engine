@@ -1,0 +1,257 @@
+{
+    "Layers": [
+        {
+            "layerIndex": 0,
+            "name": "Layer 0",
+            "opacity": 1.0,
+            "postEffects": [
+                {
+                    "enabled": true,
+                    "params": {
+                        "brightness": 0.0,
+                        "contrast": 1.0,
+                        "gamma": 1.0,
+                        "hueShift": 0.0,
+                        "saturation": 2.0,
+                        "temperature": 0.0,
+                        "tint": 0.0
+                    },
+                    "priority": 0,
+                    "type": 4
+                }
+            ],
+            "visible": true
+        },
+        {
+            "layerIndex": 1,
+            "name": "Layer 1",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 2,
+            "name": "Layer 2",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 3,
+            "name": "Layer 3",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 4,
+            "name": "Layer 4",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 5,
+            "name": "Layer 5",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 6,
+            "name": "Layer 6",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 7,
+            "name": "Layer 7",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 8,
+            "name": "Layer 8",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 9,
+            "name": "Layer 9",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        }
+    ],
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "-0.0195003 2.90145 -0.661606 9.38003 0.0699991 6.33678e-39 -0.465738 2.20203 9.30392 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Camera",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/SkyBox/uploads_files_4381654_LightBlueSky.glb\n0.501779 0.501779 0.501779 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n1 1 1\n0 0 0\n2\nTexture/qwantani_moon_noon_puresky.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "SkyBox",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/Real/coast_land_rocks_04_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n2 2 2\n-1.5708 0 0\n1\n3DModel/Real/textures/coast_land_rocks_04_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "Ground",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0 0.597865 0.64366 1 5 10 20 35 1 0 0 0 0 0 0 0 ",
+                    "Name": "Light",
+                    "Type": 1
+                }
+            ],
+            "Name": "Light",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    -0.47643959522247314,
+                    1.0576695203781128,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.02 0.02 0.02\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.5,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    3.075270175933838,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "NewObject1",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.20000000298023224,
+                    2.799999952316284,
+                    5.099999904632568
+                ],
+                "Rotation": [
+                    -0.27401667833328247,
+                    0.04363321512937546,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "graphic"
+    }
+}
