@@ -76,6 +76,34 @@ public:
 	DirectX::XMFLOAT3 GetGlobalRotation() const { return m_globalRotation; }
 
 	std::shared_ptr<ModelSharedResource> GetModel() const { return m_model; }
+
+	// ボーン数を取得
+	size_t GetBoneCount() const { return m_model ? m_model->bones.size() : 0; }
+
+	// ボーン名からインデックスを取得
+	int GetBoneIndexByName(const std::string& boneName) const;
+
+	// インデックスからボーン名を取得
+	std::string GetBoneNameByIndex(int boneIndex) const;
+
+	// ボーンのワールド行列を取得
+	DirectX::XMMATRIX GetBoneWorldMatrix(int boneIndex) const;
+
+	// ボーンのワールド位置を取得
+	DirectX::XMFLOAT3 GetBoneWorldPosition(int boneIndex) const;
+
+	// ボーンのワールド回転を取得
+	DirectX::XMFLOAT4 GetBoneWorldRotation(int boneIndex) const;
+
+	// すべてのボーン情報を取得
+	const std::vector<Bone>* GetBones() const { return m_model ? &m_model->bones : nullptr; }
+
+	// ボーンの親インデックスを取得
+	int GetBoneParentIndex(int boneIndex) const;
+
+	// ボーンの子ボーンリストを取得
+	std::vector<int> GetBoneChildren(int boneIndex) const;
+
 private:
 	struct CBData {
 		DirectX::XMMATRIX World;
@@ -154,4 +182,16 @@ private:
 	DirectX::XMFLOAT3 m_globalOffset{ 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 m_globalScale{ 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 m_globalRotation{ 0.0f, 0.0f, 0.0f };
+
+	// ボーン表示用の状態管理
+	bool m_showBoneHierarchy = false;
+	std::unordered_map<int, bool> m_boneTreeOpenState;  // ボーンツリーの開閉状態
+	int m_selectedBoneIndex = -1;  // 選択中のボーン
+	char m_boneFilterBuffer[128] = "";  // ボーンフィルタ用バッファ
+
+	// ボーン階層表示の再帰関数
+	void DrawBoneHierarchyRecursive(int boneIndex, int depth = 0);
+
+	// ボーン情報の詳細表示
+	void DrawBoneDetails(int boneIndex);
 };

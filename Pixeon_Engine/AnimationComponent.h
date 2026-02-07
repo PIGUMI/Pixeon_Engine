@@ -62,6 +62,15 @@ public:
 	int  GetExternalFileCount() const { return (int)m_externalAnimationFiles.size(); }
 	int  GetClipCountInExternalFile(int externalFileIndex) const;
 
+	// 現在のアニメーションフレームでのボーン行列を取得
+	DirectX::XMMATRIX GetBoneLocalMatrix(int boneIndex) const;
+
+	// ボーンのアニメーション情報を取得
+	BoneTransform GetBoneTransform(int boneIndex, float time = -1.0f) const;
+
+	// 特定ボーンのアニメーショントラックがあるか確認
+	bool HasAnimationTrackForBone(int boneIndex) const;
+
 private:
 	void UpdateAnimation(float dt);
 	void RebuildBoneMatrices();

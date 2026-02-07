@@ -507,6 +507,56 @@ int AnimationComponent::GetClipCountInExternalFile(int externalFileIndex) const 
 	return extRes ? (int)extRes->clips.size() : 0;
 }
 
+DirectX::XMMATRIX AnimationComponent::GetBoneLocalMatrix(int boneIndex) const {
+	using namespace DirectX;
+
+	if (boneIndex < 0 || boneIndex >= static_cast<int>(m_boneMatrices.size())) {
+		return XMMatrixIdentity();
+	}
+
+	return XMLoadFloat4x4(&m_boneMatrices[boneIndex]);
+}
+
+BoneTransform AnimationComponent::GetBoneTransform(int boneIndex, float time) const {
+	if (!m_resource || m_currentClip < 0 || m_currentClip >= static_cast<int>(m_clips.size())) {
+		return BoneTransform();
+	}
+
+	float t = (time < 0.0f) ? m_time : time;
+	const auto& clip = m_clips[m_currentClip];
+
+	// クリップをロード
+	if (!clip.isLoaded) {
+		const_cast<AnimationComponent*>(this)->LazyLoadClip(m_currentClip);
+	}
+
+	// 対応するチャンネルを探す
+	for (const auto& ch : clip.channels) {
+		if (ch.nodeIndex == boneIndex) {
+			return InterpChannel(ch, t);
+		}
+	}
+
+	// アニメーショントラックがない場合はデフォルト値
+	return BoneTransform();
+}
+
+bool AnimationComponent::HasAnimationTrackForBone(int boneIndex) const {
+	if (m_currentClip < 0 || m_currentClip >= static_cast<int>(m_clips.size())) {
+		return false;
+	}
+
+	const auto& clip = m_clips[m_currentClip];
+
+	for (const auto& ch : clip.channels) {
+		if (ch.nodeIndex == boneIndex) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool AnimationComponent::SetAnimationByExternalIndex(int externalFileIndex, int clipIndexInFile) {
 	if (externalFileIndex < 0 || externalFileIndex >= (int)m_externalAnimationFiles.size()) return false;
 	if (clipIndexInFile < 0) return false;

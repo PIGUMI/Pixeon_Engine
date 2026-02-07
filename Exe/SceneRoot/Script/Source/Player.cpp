@@ -120,12 +120,12 @@ void Script_Player::Movement(float DeltaTime) {
 		_walkTimer += DeltaTime * 10.0f;
 		float headBobAmount = cosf(_walkTimer) * 0.05f;
 		head_Transform.position.y = headBobAmount;
-		head_Transform.position.y += 1.5f;
+		head_Transform.position.y += 1.65f;
 	}
 	else
 	{
 		_walkTimer = 0.0f;
-		head_Transform.position.y = 1.5f;
+		head_Transform.position.y = 1.65f;
 	}
 	SetObjectTransform(_Head, &head_Transform);
 	SetVariableInt(_Body, "AnimationNo", AnimationNo);
