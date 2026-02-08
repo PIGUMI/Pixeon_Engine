@@ -128,7 +128,7 @@ void CollisionManager::CleanupCollisionReferences(BaseCollision* collision)
 	}
 }
 
-void CollisionManager::RegisterBoxCollision(BoxCollision* collision)
+void CollisionManager::RegisterBoxCollision(BoxCollisionComponent* collision)
 {
 	if (collision && std::find(m_BoxCollisions.begin(), m_BoxCollisions.end(), collision) == m_BoxCollisions.end())
 	{
@@ -137,7 +137,7 @@ void CollisionManager::RegisterBoxCollision(BoxCollision* collision)
 	}
 }
 
-void CollisionManager::UnregisterBoxCollision(BoxCollision* collision)
+void CollisionManager::UnregisterBoxCollision(BoxCollisionComponent* collision)
 {
 	auto it = std::find(m_BoxCollisions.begin(), m_BoxCollisions.end(), collision);
 	if (it != m_BoxCollisions.end())
@@ -209,10 +209,10 @@ void CollisionManager::UnregisterRigidBody(RigidBody* rigidBody)
 
 void CollisionManager::CheckManualCollisions()
 {
-	std::vector<BoxCollision*> manualBoxCollisions;
+	std::vector<BoxCollisionComponent*> manualBoxCollisions;
 	std::vector<CapsuleCollision*> manualCapsuleCollisions;
 
-	for (BoxCollision* collision : m_BoxCollisions)
+	for (BoxCollisionComponent* collision : m_BoxCollisions)
 	{
 		// ★修正4: nullptrチェック追加
 		if (!collision || !collision->GetParent()) continue;
@@ -265,7 +265,7 @@ void CollisionManager::CheckManualCollisions()
 	}
 
 	// Box と Capsule の衝突判定
-	for (BoxCollision* boxCol : manualBoxCollisions)
+	for (BoxCollisionComponent* boxCol : manualBoxCollisions)
 	{
 		std::vector<CollisionInfo> boxNewCollisions;
 
@@ -325,7 +325,7 @@ void CollisionManager::ProcessBulletCollisions()
 {
 	if (!m_DynamicsWorld) return;
 
-	for (BoxCollision* collision : m_BoxCollisions)
+	for (BoxCollisionComponent* collision : m_BoxCollisions)
 	{
 		if (!collision || !collision->GetParent()) continue;
 
@@ -414,8 +414,8 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 
 		BaseCollision* otherCollision = nullptr;
 
-		// BoxCollisionとCapsuleCollisionの両方をチェック
-		BoxCollision* otherBoxCollision = info.HitObject->GetComponent<BoxCollision>();
+		// BoxCollisionComponentとCapsuleCollisionの両方をチェック
+		BoxCollisionComponent* otherBoxCollision = info.HitObject->GetComponent<BoxCollisionComponent>();
 		if (otherBoxCollision)
 		{
 			otherCollision = otherBoxCollision;
@@ -463,8 +463,8 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 		// prevObjectがまだ登録されているかチェック
 		bool isStillRegistered = false;
 
-		// BoxCollisionリストをチェック
-		for (BoxCollision* box : m_BoxCollisions)
+		// BoxCollisionComponentリストをチェック
+		for (BoxCollisionComponent* box : m_BoxCollisions)
 		{
 			if (box == prevObject)
 			{
@@ -517,7 +517,7 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 
 void CollisionManager::DrawDebugInfo()
 {
-	for (BoxCollision* collision : m_BoxCollisions)
+	for (BoxCollisionComponent* collision : m_BoxCollisions)
 	{
 		if (collision)
 		{
@@ -644,7 +644,7 @@ DirectX::XMFLOAT3 CollisionManager::ClosestPointOnLineSegmentToAABB(
 	return result;
 }
 
-bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollision* capsule, CollisionInfo& info)
+bool CollisionManager::CheckBoxCapsuleCollision(BoxCollisionComponent* box, CapsuleCollision* capsule, CollisionInfo& info)
 {
 	if (!box || !capsule || !box->GetParent() || !capsule->GetParent())
 		return false;

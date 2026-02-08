@@ -6,10 +6,10 @@
 #include "CollisionManager.h"
 #include "_Geometry.h"
 
-void BoxCollision::Init(AbstractObject* Prt)
+void BoxCollisionComponent::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
-	_ComponentName = "BoxCollision";
+	_ComponentName = "BoxCollisionComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::BOX_COLLISION;
 
 	CreateBoxShape();
@@ -23,7 +23,7 @@ void BoxCollision::Init(AbstractObject* Prt)
 	bCallBackSetAfterBeginPlay = false;
 }
 
-void BoxCollision::BeginPlay()
+void BoxCollisionComponent::BeginPlay()
 {
 	nBeginPlayCount++;
 
@@ -49,7 +49,7 @@ void BoxCollision::BeginPlay()
 	}
 }
 
-void BoxCollision::EditUpdate()
+void BoxCollisionComponent::EditUpdate()
 {
 	if (_Parent)
 	{
@@ -81,7 +81,7 @@ void BoxCollision::EditUpdate()
 	}
 }
 
-void BoxCollision::InGameUpdate()
+void BoxCollisionComponent::InGameUpdate()
 {
 	if (_Parent)
 	{
@@ -117,7 +117,7 @@ void BoxCollision::InGameUpdate()
 	}
 }
 
-void BoxCollision::Draw(int Layer)
+void BoxCollisionComponent::Draw(int Layer)
 {
 	if (Layer != _LayerNumber) return;
 	if (!m_b_BoxLine) return;
@@ -204,7 +204,7 @@ void BoxCollision::Draw(int Layer)
 	}
 }
 
-void BoxCollision::UInit()
+void BoxCollisionComponent::UInit()
 {
 	if (_Parent && _Parent->GetParentScene())
 	{
@@ -225,7 +225,7 @@ void BoxCollision::UInit()
 	CurrentCollisions_.clear();
 }
 
-void BoxCollision::DrawInspector()
+void BoxCollisionComponent::DrawInspector()
 {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
@@ -271,14 +271,14 @@ void BoxCollision::DrawInspector()
 	}
 }
 
-void BoxCollision::SaveToFile(std::ostream& out)
+void BoxCollisionComponent::SaveToFile(std::ostream& out)
 {
 	out << f3Size_.x << " " << f3Size_.y << " " << f3Size_.z << " "
 		<< f3Center_.x << " " << f3Center_.y << " " << f3Center_.z << " "
 		<< bTrigger_ << " " << _LayerNumber << " " << m_b_BoxLine << "\n";
 }
 
-void BoxCollision::LoadFromFile(std::istream& in)
+void BoxCollisionComponent::LoadFromFile(std::istream& in)
 {
 	in >> f3Size_.x >> f3Size_.y >> f3Size_.z
 		>> f3Center_.x >> f3Center_.y >> f3Center_.z
@@ -289,20 +289,20 @@ void BoxCollision::LoadFromFile(std::istream& in)
 	SetTrigger(bTrigger_);
 }
 
-void BoxCollision::SetSize(const DirectX::XMFLOAT3& size)
+void BoxCollisionComponent::SetSize(const DirectX::XMFLOAT3& size)
 {
 	f3Size_ = size;
 	CreateBoxShape();
 	UpdateCollisionShape();
 }
 
-void BoxCollision::SetCenter(const DirectX::XMFLOAT3& center)
+void BoxCollisionComponent::SetCenter(const DirectX::XMFLOAT3& center)
 {
 	f3Center_ = center;
 	UpdateCollisionShape();
 }
 
-void BoxCollision::SetTrigger(bool isTrigger)
+void BoxCollisionComponent::SetTrigger(bool isTrigger)
 {
 	bTrigger_ = isTrigger;
 
@@ -320,7 +320,7 @@ void BoxCollision::SetTrigger(bool isTrigger)
 	}
 }
 
-bool BoxCollision::CheckCollision(BoxCollision* otherBox, CollisionInfo& outCollisionInfo)
+bool BoxCollisionComponent::CheckCollision(BoxCollisionComponent* otherBox, CollisionInfo& outCollisionInfo)
 {
 	if (!otherBox || !_Parent || !otherBox->GetParent())return false;
 
@@ -345,11 +345,11 @@ bool BoxCollision::CheckCollision(BoxCollision* otherBox, CollisionInfo& outColl
 	return OBBIntersection(pos1, rot1, size1, pos2, rot2, size2, outCollisionInfo);
 }
 
-void BoxCollision::DrawDebugWireframe()
+void BoxCollisionComponent::DrawDebugWireframe()
 {
 }
 
-void BoxCollision::CreateBoxShape()
+void BoxCollisionComponent::CreateBoxShape()
 {
 	if (pBoxShape_)
 	{
@@ -371,7 +371,7 @@ void BoxCollision::CreateBoxShape()
 	pBoxShape_->setMargin(0.01f);
 }
 
-void BoxCollision::UpdateCollisionShape()
+void BoxCollisionComponent::UpdateCollisionShape()
 {
 	if (!pBoxShape_) return;
 
@@ -440,7 +440,7 @@ void BoxCollision::UpdateCollisionShape()
 	}
 }
 
-void BoxCollision::AttachToRigidBody()
+void BoxCollisionComponent::AttachToRigidBody()
 {
 	if (_Parent)
 	{
@@ -457,7 +457,7 @@ void BoxCollision::AttachToRigidBody()
 	}
 }
 
-void BoxCollision::DetachFromRigidBody()
+void BoxCollisionComponent::DetachFromRigidBody()
 {
 	if (pAttachedRigidBody_ && pBoxShape_)
 	{
@@ -466,13 +466,13 @@ void BoxCollision::DetachFromRigidBody()
 	}
 }
 
-void BoxCollision::ProcessCollisionCallBacks()
+void BoxCollisionComponent::ProcessCollisionCallBacks()
 {
 	/* 現在使用されていません */
 	/* CollisionManagerが代わりに衝突処理を行います。 */
 }
 
-bool BoxCollision::OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX::XMFLOAT3& rot1, const DirectX::XMFLOAT3& size1, const DirectX::XMFLOAT3& pos2, const DirectX::XMFLOAT3& rot2, const DirectX::XMFLOAT3& size2, CollisionInfo& info)
+bool BoxCollisionComponent::OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX::XMFLOAT3& rot1, const DirectX::XMFLOAT3& size1, const DirectX::XMFLOAT3& pos2, const DirectX::XMFLOAT3& rot2, const DirectX::XMFLOAT3& size2, CollisionInfo& info)
 {
 	// ワールド座標で当たり判定を実行
 	DirectX::XMFLOAT3 min1 = { pos1.x - size1.x * 0.5f, pos1.y - size1.y * 0.5f, pos1.z - size1.z * 0.5f };

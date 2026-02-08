@@ -51,8 +51,6 @@ int RebindBoneNodeIndices(ModelSharedResource* res) {
 }
 
 int RebindChannelNodeIndices(ModelSharedResource* res, AnimationClipRuntime& runtimeClip) {
-	// runtimeClip ‚Í AnimationComponent “à‚Ì m_clips[?]
-	// ‚»‚Ì runtimeClip ‚Í Resource ‘¤ clips[“¯ index] ‚Æ 1:1 ‘Î‰‚µ‚Ä‚¢‚é‘O’ñ
 	if (!res) return 0;
 	int clipIdx = -1;
 	for (size_t i = 0; i < res->clips.size(); ++i)
@@ -65,8 +63,7 @@ int RebindChannelNodeIndices(ModelSharedResource* res, AnimationClipRuntime& run
 		nodeMap[srcClip.nodeHierarchy[i].name] = (int)i;
 
 	int fixed = 0;
-	// runtimeClip.channels ‚Í nodeIndex ‚Æ timeline ‚ğ‚Â‚ª nodeName ‚Í•Û‚µ‚Ä‚¢‚È‚¢‚Ì‚Å
-	// Resource clip ‚Ì channel ‚ğQÆ‚µ‚Ä nodeName ‚ğæ‚é
+
 	for (size_t ch = 0; ch < runtimeClip.channels.size() && ch < srcClip.channels.size(); ++ch) {
 		const std::string& nodeName = srcClip.channels[ch].nodeName;
 		auto it = nodeMap.find(nodeName);

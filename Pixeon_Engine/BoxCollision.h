@@ -4,7 +4,7 @@
 #include "BaseCollision.h"
 #include "BulletPhysics/btBulletDynamicsCommon.h"
 
-class BoxCollision : public BaseCollision
+class BoxCollisionComponent : public BaseCollision
 {
 public:
 	void Init(AbstractObject* Prt) override;
@@ -27,7 +27,7 @@ public:
 
 	void SetTrigger(bool isTrigger) override;
 
-	bool CheckCollision(BoxCollision* otherBox, CollisionInfo& outCollisionInfo);
+	bool CheckCollision(BoxCollisionComponent* otherBox, CollisionInfo& outCollisionInfo);
 
 	btBoxShape* GetBoxShape() const { return pBoxShape_; }
 

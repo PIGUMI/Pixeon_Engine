@@ -72,7 +72,7 @@ AbstractComponent* ComponentManager::AddComponent(AbstractObject* owner, COMPONE
 		component = owner->AddComponent<RigidBody>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::BOX_COLLISION:
-		component = owner->AddComponent<BoxCollision>();
+		component = owner->AddComponent<BoxCollisionComponent>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::CAPSULE_COLLISION:
 		component = owner->AddComponent<CapsuleCollision>();

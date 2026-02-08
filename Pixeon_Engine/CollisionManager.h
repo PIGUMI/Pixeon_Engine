@@ -10,7 +10,7 @@
 #include <functional>
 
 class BaseCollision;
-class BoxCollision;
+class BoxCollisionComponent;
 class CapsuleCollision;
 class RigidBody;
 class AbstractObject;
@@ -44,8 +44,8 @@ public:
 	void Shutdown();
 
 	// コンポーネント登録/削除
-	void RegisterBoxCollision(BoxCollision* collision);
-	void UnregisterBoxCollision(BoxCollision* collision);
+	void RegisterBoxCollision(BoxCollisionComponent* collision);
+	void UnregisterBoxCollision(BoxCollisionComponent* collision);
 	void RegisterCapsuleCollision(CapsuleCollision* collision);
 	void UnregisterCapsuleCollision(CapsuleCollision* collision);
 
@@ -57,7 +57,7 @@ public:
 	void DrawDebugInfo();
 
 private:
-	bool CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollision* capsule, CollisionInfo& info);
+	bool CheckBoxCapsuleCollision(BoxCollisionComponent* box, CapsuleCollision* capsule, CollisionInfo& info);
 	bool CheckCapsuleCapsuleCollision(CapsuleCollision* capsule1, CapsuleCollision* capsule2, CollisionInfo& info);
 
 	DirectX::XMFLOAT3 ClosestPointOnLineSegmentToAABB(
@@ -79,7 +79,7 @@ private:
 private:
 	btDiscreteDynamicsWorld* m_DynamicsWorld = nullptr;
 
-	std::vector<BoxCollision*> m_BoxCollisions;
+	std::vector<BoxCollisionComponent*> m_BoxCollisions;
 	std::vector<CapsuleCollision*> m_CapsuleCollisions;
 	std::vector<RigidBody*> m_RigidBodies;
 

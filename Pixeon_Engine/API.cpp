@@ -2293,7 +2293,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+		BoxCollisionComponent* boxComp = dynamic_cast<BoxCollisionComponent*>(compPtr);
 		if (!boxComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2309,7 +2309,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+		BoxCollisionComponent* boxComp = dynamic_cast<BoxCollisionComponent*>(compPtr);
 		if (!boxComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2322,7 +2322,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+		BoxCollisionComponent* boxComp = dynamic_cast<BoxCollisionComponent*>(compPtr);
 		if (!boxComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2338,7 +2338,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+		BoxCollisionComponent* boxComp = dynamic_cast<BoxCollisionComponent*>(compPtr);
 		if (!boxComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2351,7 +2351,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+		BoxCollisionComponent* boxComp = dynamic_cast<BoxCollisionComponent*>(compPtr);
 		if (!boxComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2367,7 +2367,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(component, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		BoxCollision* boxComp = dynamic_cast<BoxCollision*>(compPtr);
+		BoxCollisionComponent* boxComp = dynamic_cast<BoxCollisionComponent*>(compPtr);
 		if (!boxComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
