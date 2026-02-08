@@ -75,7 +75,7 @@ AbstractComponent* ComponentManager::AddComponent(AbstractObject* owner, COMPONE
 		component = owner->AddComponent<BoxCollisionComponent>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::CAPSULE_COLLISION:
-		component = owner->AddComponent<CapsuleCollision>();
+		component = owner->AddComponent<CapsuleCollisionComponent>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::ANIMATOR2D:
 		component = owner->AddComponent<Animator2DComponent>();

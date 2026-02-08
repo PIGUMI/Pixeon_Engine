@@ -11,7 +11,7 @@
 
 class BaseCollision;
 class BoxCollisionComponent;
-class CapsuleCollision;
+class CapsuleCollisionComponent;
 class RigidBody;
 class AbstractObject;
 struct CollisionInfo;
@@ -46,8 +46,8 @@ public:
 	// コンポーネント登録/削除
 	void RegisterBoxCollision(BoxCollisionComponent* collision);
 	void UnregisterBoxCollision(BoxCollisionComponent* collision);
-	void RegisterCapsuleCollision(CapsuleCollision* collision);
-	void UnregisterCapsuleCollision(CapsuleCollision* collision);
+	void RegisterCapsuleCollision(CapsuleCollisionComponent* collision);
+	void UnregisterCapsuleCollision(CapsuleCollisionComponent* collision);
 
 	void RegisterRigidBody(RigidBody* rigidBody);
 	void UnregisterRigidBody(RigidBody* rigidBody);
@@ -57,8 +57,8 @@ public:
 	void DrawDebugInfo();
 
 private:
-	bool CheckBoxCapsuleCollision(BoxCollisionComponent* box, CapsuleCollision* capsule, CollisionInfo& info);
-	bool CheckCapsuleCapsuleCollision(CapsuleCollision* capsule1, CapsuleCollision* capsule2, CollisionInfo& info);
+	bool CheckBoxCapsuleCollision(BoxCollisionComponent* box, CapsuleCollisionComponent* capsule, CollisionInfo& info);
+	bool CheckCapsuleCapsuleCollision(CapsuleCollisionComponent* capsule1, CapsuleCollisionComponent* capsule2, CollisionInfo& info);
 
 	DirectX::XMFLOAT3 ClosestPointOnLineSegmentToAABB(
 		const DirectX::XMFLOAT3& lineStart,
@@ -80,7 +80,7 @@ private:
 	btDiscreteDynamicsWorld* m_DynamicsWorld = nullptr;
 
 	std::vector<BoxCollisionComponent*> m_BoxCollisions;
-	std::vector<CapsuleCollision*> m_CapsuleCollisions;
+	std::vector<CapsuleCollisionComponent*> m_CapsuleCollisions;
 	std::vector<RigidBody*> m_RigidBodies;
 
 	// 衝突状態追跡用 - BaseCollisionを使用

@@ -7,10 +7,10 @@
 #include "CollisionManager.h"
 #include "_Geometry.h"
 
-void CapsuleCollision::Init(AbstractObject* Prt)
+void CapsuleCollisionComponent::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
-	_ComponentName = "CapsuleCollision";
+	_ComponentName = "CapsuleCollisionComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::CAPSULE_COLLISION;
 
 	CreateCapsuleShape();
@@ -24,7 +24,7 @@ void CapsuleCollision::Init(AbstractObject* Prt)
 	bCallBackSetAfterBeginPlay = false;
 }
 
-void CapsuleCollision::BeginPlay()
+void CapsuleCollisionComponent::BeginPlay()
 {
 	nBeginPlayCount++;
 
@@ -48,7 +48,7 @@ void CapsuleCollision::BeginPlay()
 	}
 }
 
-void CapsuleCollision::EditUpdate()
+void CapsuleCollisionComponent::EditUpdate()
 {
 	if (_Parent)
 	{
@@ -80,7 +80,7 @@ void CapsuleCollision::EditUpdate()
 	}
 }
 
-void CapsuleCollision::InGameUpdate()
+void CapsuleCollisionComponent::InGameUpdate()
 {
 	if (_Parent)
 	{
@@ -116,7 +116,7 @@ void CapsuleCollision::InGameUpdate()
 	}
 }
 
-void CapsuleCollision::Draw(int Layer)
+void CapsuleCollisionComponent::Draw(int Layer)
 {
 	if (Layer != _LayerNumber) return;
 	if (!m_b_CapsuleLine) return;
@@ -219,7 +219,7 @@ void CapsuleCollision::Draw(int Layer)
 	}
 }
 
-void CapsuleCollision::UInit()
+void CapsuleCollisionComponent::UInit()
 {
 	if (_Parent && _Parent->GetParentScene())
 	{
@@ -240,7 +240,7 @@ void CapsuleCollision::UInit()
 	CurrentCollisions_.clear();
 }
 
-void CapsuleCollision::DrawInspector()
+void CapsuleCollisionComponent::DrawInspector()
 {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
@@ -298,14 +298,14 @@ void CapsuleCollision::DrawInspector()
 	}
 }
 
-void CapsuleCollision::SaveToFile(std::ostream& out)
+void CapsuleCollisionComponent::SaveToFile(std::ostream& out)
 {
 	out << fRadius_ << " " << fHeight_ << " "
 		<< f3Center_.x << " " << f3Center_.y << " " << f3Center_.z << " "
 		<< bTrigger_ << " " << _LayerNumber << " " << m_b_CapsuleLine << "\n";
 }
 
-void CapsuleCollision::LoadFromFile(std::istream& in)
+void CapsuleCollisionComponent::LoadFromFile(std::istream& in)
 {
 	in >> fRadius_ >> fHeight_
 		>> f3Center_.x >> f3Center_.y >> f3Center_.z
@@ -317,27 +317,27 @@ void CapsuleCollision::LoadFromFile(std::istream& in)
 	SetTrigger(bTrigger_);
 }
 
-void CapsuleCollision::SetRadius(float radius)
+void CapsuleCollisionComponent::SetRadius(float radius)
 {
 	fRadius_ = radius;
 	CreateCapsuleShape();
 	UpdateCollisionShape();
 }
 
-void CapsuleCollision::SetHeight(float height)
+void CapsuleCollisionComponent::SetHeight(float height)
 {
 	fHeight_ = height;
 	CreateCapsuleShape();
 	UpdateCollisionShape();
 }
 
-void CapsuleCollision::SetCenter(const DirectX::XMFLOAT3& center)
+void CapsuleCollisionComponent::SetCenter(const DirectX::XMFLOAT3& center)
 {
 	f3Center_ = center;
 	UpdateCollisionShape();
 }
 
-void CapsuleCollision::SetTrigger(bool isTrigger)
+void CapsuleCollisionComponent::SetTrigger(bool isTrigger)
 {
 	bTrigger_ = isTrigger;
 
@@ -355,12 +355,12 @@ void CapsuleCollision::SetTrigger(bool isTrigger)
 	}
 }
 
-void CapsuleCollision::DrawDebugWireframe()
+void CapsuleCollisionComponent::DrawDebugWireframe()
 {
 	// •K—v‚É‰ž‚¶‚ÄŽÀ‘•
 }
 
-void CapsuleCollision::CreateCapsuleShape()
+void CapsuleCollisionComponent::CreateCapsuleShape()
 {
 	if (pCapsuleShape_)
 	{
@@ -384,7 +384,7 @@ void CapsuleCollision::CreateCapsuleShape()
 	pCapsuleShape_->setMargin(0.01f);
 }
 
-void CapsuleCollision::UpdateCollisionShape()
+void CapsuleCollisionComponent::UpdateCollisionShape()
 {
 	if (!pCapsuleShape_) return;
 
@@ -454,7 +454,7 @@ void CapsuleCollision::UpdateCollisionShape()
 	}
 }
 
-void CapsuleCollision::AttachToRigidBody()
+void CapsuleCollisionComponent::AttachToRigidBody()
 {
 	if (_Parent)
 	{
@@ -471,7 +471,7 @@ void CapsuleCollision::AttachToRigidBody()
 	}
 }
 
-void CapsuleCollision::DetachFromRigidBody()
+void CapsuleCollisionComponent::DetachFromRigidBody()
 {
 	if (pAttachedRigidBody_ && pCapsuleShape_)
 	{

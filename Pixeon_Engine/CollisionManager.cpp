@@ -159,7 +159,7 @@ void CollisionManager::UnregisterBoxCollision(BoxCollisionComponent* collision)
 	}
 }
 
-void CollisionManager::RegisterCapsuleCollision(CapsuleCollision* collision)
+void CollisionManager::RegisterCapsuleCollision(CapsuleCollisionComponent* collision)
 {
 	if (collision && std::find(m_CapsuleCollisions.begin(), m_CapsuleCollisions.end(), collision) == m_CapsuleCollisions.end())
 	{
@@ -168,7 +168,7 @@ void CollisionManager::RegisterCapsuleCollision(CapsuleCollision* collision)
 	}
 }
 
-void CollisionManager::UnregisterCapsuleCollision(CapsuleCollision* collision)
+void CollisionManager::UnregisterCapsuleCollision(CapsuleCollisionComponent* collision)
 {
 	auto it = std::find(m_CapsuleCollisions.begin(), m_CapsuleCollisions.end(), collision);
 	if (it != m_CapsuleCollisions.end())
@@ -210,7 +210,7 @@ void CollisionManager::UnregisterRigidBody(RigidBody* rigidBody)
 void CollisionManager::CheckManualCollisions()
 {
 	std::vector<BoxCollisionComponent*> manualBoxCollisions;
-	std::vector<CapsuleCollision*> manualCapsuleCollisions;
+	std::vector<CapsuleCollisionComponent*> manualCapsuleCollisions;
 
 	for (BoxCollisionComponent* collision : m_BoxCollisions)
 	{
@@ -224,7 +224,7 @@ void CollisionManager::CheckManualCollisions()
 		}
 	}
 
-	for (CapsuleCollision* collision : m_CapsuleCollisions)
+	for (CapsuleCollisionComponent* collision : m_CapsuleCollisions)
 	{
 		// ★修正5: nullptrチェック追加
 		if (!collision || !collision->GetParent()) continue;
@@ -269,7 +269,7 @@ void CollisionManager::CheckManualCollisions()
 	{
 		std::vector<CollisionInfo> boxNewCollisions;
 
-		for (CapsuleCollision* capsuleCol : manualCapsuleCollisions)
+		for (CapsuleCollisionComponent* capsuleCol : manualCapsuleCollisions)
 		{
 			CollisionInfo info;
 			if (CheckBoxCapsuleCollision(boxCol, capsuleCol, info))
@@ -346,7 +346,7 @@ void CollisionManager::ProcessBulletCollisions()
 		catch (...) {}
 	}
 
-	for (CapsuleCollision* collision : m_CapsuleCollisions)
+	for (CapsuleCollisionComponent* collision : m_CapsuleCollisions)
 	{
 		if (!collision || !collision->GetParent()) continue;
 
@@ -414,7 +414,7 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 
 		BaseCollision* otherCollision = nullptr;
 
-		// BoxCollisionComponentとCapsuleCollisionの両方をチェック
+		// BoxCollisionComponentとCapsuleCollisionComponentの両方をチェック
 		BoxCollisionComponent* otherBoxCollision = info.HitObject->GetComponent<BoxCollisionComponent>();
 		if (otherBoxCollision)
 		{
@@ -422,7 +422,7 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 		}
 		else
 		{
-			CapsuleCollision* otherCapsuleCollision = info.HitObject->GetComponent<CapsuleCollision>();
+			CapsuleCollisionComponent* otherCapsuleCollision = info.HitObject->GetComponent<CapsuleCollisionComponent>();
 			if (otherCapsuleCollision)
 			{
 				otherCollision = otherCapsuleCollision;
@@ -473,10 +473,10 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 			}
 		}
 
-		// CapsuleCollisionリストもチェック
+		// CapsuleCollisionComponentリストもチェック
 		if (!isStillRegistered)
 		{
-			for (CapsuleCollision* capsule : m_CapsuleCollisions)
+			for (CapsuleCollisionComponent* capsule : m_CapsuleCollisions)
 			{
 				if (capsule == prevObject)
 				{
@@ -644,7 +644,7 @@ DirectX::XMFLOAT3 CollisionManager::ClosestPointOnLineSegmentToAABB(
 	return result;
 }
 
-bool CollisionManager::CheckBoxCapsuleCollision(BoxCollisionComponent* box, CapsuleCollision* capsule, CollisionInfo& info)
+bool CollisionManager::CheckBoxCapsuleCollision(BoxCollisionComponent* box, CapsuleCollisionComponent* capsule, CollisionInfo& info)
 {
 	if (!box || !capsule || !box->GetParent() || !capsule->GetParent())
 		return false;
@@ -748,7 +748,7 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollisionComponent* box, Caps
 	return false;
 }
 
-bool CollisionManager::CheckCapsuleCapsuleCollision(CapsuleCollision* capsule1, CapsuleCollision* capsule2, CollisionInfo& info)
+bool CollisionManager::CheckCapsuleCapsuleCollision(CapsuleCollisionComponent* capsule1, CapsuleCollisionComponent* capsule2, CollisionInfo& info)
 {
 	if (!capsule1 || !capsule2 || !capsule1->GetParent() || !capsule2->GetParent())
 		return false;

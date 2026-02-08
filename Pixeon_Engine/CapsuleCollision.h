@@ -4,7 +4,7 @@
 #include "BaseCollision.h"
 #include "BulletPhysics/btBulletDynamicsCommon.h"
 
-class CapsuleCollision : public BaseCollision
+class CapsuleCollisionComponent : public BaseCollision
 {
 public:
 	void Init(AbstractObject* Prt) override;

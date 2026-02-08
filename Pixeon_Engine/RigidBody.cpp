@@ -7,10 +7,10 @@
 #include <sstream>
 #include <algorithm>
 
-void RigidBody::Init(AbstractObject* Prt)
+void RigidBodyComponent::Init(AbstractObject* Prt)
 {
 	_Parent = Prt;
-	_ComponentName = "RigidBody";
+	_ComponentName = "RigidBodyComponent";
 	_Type = ComponentManager::COMPONENT_TYPE::RIGIDBODY;
 
 	pCompoundShape_ = new btCompoundShape();
@@ -18,7 +18,7 @@ void RigidBody::Init(AbstractObject* Prt)
 	CreateRigidBody();
 }
 
-void RigidBody::BeginPlay()
+void RigidBodyComponent::BeginPlay()
 {
 	if (_Parent && _Parent->GetParentScene())
 	{
@@ -127,7 +127,7 @@ void RigidBody::BeginPlay()
 	}
 }
 
-void RigidBody::EditUpdate()
+void RigidBodyComponent::EditUpdate()
 {
 	if (!pRigidBody_)return;
 
@@ -138,7 +138,7 @@ void RigidBody::EditUpdate()
 	}
 }
 
-void RigidBody::InGameUpdate()
+void RigidBodyComponent::InGameUpdate()
 {
 	if (!pRigidBody_)return;
 
@@ -168,7 +168,7 @@ void RigidBody::InGameUpdate()
 	}
 }
 
-void RigidBody::UInit()
+void RigidBodyComponent::UInit()
 {
 	if (pRigidBody_ && _Parent && _Parent->GetParentScene())
 	{
@@ -226,7 +226,7 @@ void RigidBody::UInit()
 	RegisteredColliders_.clear();
 }
 
-void RigidBody::DrawInspector()
+void RigidBodyComponent::DrawInspector()
 {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	std::string label = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
@@ -370,7 +370,7 @@ void RigidBody::DrawInspector()
 	}
 }
 
-void RigidBody::SaveToFile(std::ostream& out)
+void RigidBodyComponent::SaveToFile(std::ostream& out)
 {
 	out << fMass_ << std::endl;
 	out << bKinematic_ << std::endl;
@@ -390,7 +390,7 @@ void RigidBody::SaveToFile(std::ostream& out)
 	out << fCullingDistance_ << std::endl;
 }
 
-void RigidBody::LoadFromFile(std::istream& in)
+void RigidBodyComponent::LoadFromFile(std::istream& in)
 {
 	in >> fMass_;
 	in >> bKinematic_;
@@ -451,13 +451,13 @@ void RigidBody::LoadFromFile(std::istream& in)
 	}
 }
 
-void RigidBody::SetMass(float mass)
+void RigidBodyComponent::SetMass(float mass)
 {
 	fMass_ = mass;
 	UpdateMassProperties();
 }
 
-void RigidBody::SetKinematic(bool kinematic)
+void RigidBodyComponent::SetKinematic(bool kinematic)
 {
 	bKinematic_ = kinematic;
 	if (pRigidBody_)
@@ -484,7 +484,7 @@ void RigidBody::SetKinematic(bool kinematic)
 	}
 }
 
-void RigidBody::SetGravityEnabled(bool useGravity)
+void RigidBodyComponent::SetGravityEnabled(bool useGravity)
 {
 	bUseGravity_ = useGravity;
 	if (pRigidBody_)
@@ -515,7 +515,7 @@ void RigidBody::SetGravityEnabled(bool useGravity)
 	}
 }
 
-void RigidBody::AddCollisionShape(btCollisionShape* shape, const btTransform& localTransform)
+void RigidBodyComponent::AddCollisionShape(btCollisionShape* shape, const btTransform& localTransform)
 {
 	if (pCompoundShape_ && shape)
 	{
@@ -529,7 +529,7 @@ void RigidBody::AddCollisionShape(btCollisionShape* shape, const btTransform& lo
 	}
 }
 
-void RigidBody::RemoveCollisionShape(btCollisionShape* shape)
+void RigidBodyComponent::RemoveCollisionShape(btCollisionShape* shape)
 {
 	if (pCompoundShape_ && shape)
 	{
@@ -551,7 +551,7 @@ void RigidBody::RemoveCollisionShape(btCollisionShape* shape)
 	}
 }
 
-void RigidBody::AddForce(const DirectX::XMFLOAT3& force)
+void RigidBodyComponent::AddForce(const DirectX::XMFLOAT3& force)
 {
 	if (pRigidBody_ && !bKinematic_)
 	{
@@ -560,7 +560,7 @@ void RigidBody::AddForce(const DirectX::XMFLOAT3& force)
 	}
 }
 
-void RigidBody::AddImpulse(const DirectX::XMFLOAT3& impulse)
+void RigidBodyComponent::AddImpulse(const DirectX::XMFLOAT3& impulse)
 {
 	if (pRigidBody_ && !bKinematic_)
 	{
@@ -569,7 +569,7 @@ void RigidBody::AddImpulse(const DirectX::XMFLOAT3& impulse)
 	}
 }
 
-void RigidBody::SetVelocity(const DirectX::XMFLOAT3& velocity)
+void RigidBodyComponent::SetVelocity(const DirectX::XMFLOAT3& velocity)
 {
 	if (pRigidBody_ && !bKinematic_)
 	{
@@ -578,7 +578,7 @@ void RigidBody::SetVelocity(const DirectX::XMFLOAT3& velocity)
 	}
 }
 
-DirectX::XMFLOAT3 RigidBody::GetVelocity() const
+DirectX::XMFLOAT3 RigidBodyComponent::GetVelocity() const
 {
 	if (pRigidBody_)
 	{
@@ -588,7 +588,7 @@ DirectX::XMFLOAT3 RigidBody::GetVelocity() const
 	return DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
-void RigidBody::SyncTransformFromBullet()
+void RigidBodyComponent::SyncTransformFromBullet()
 {
 	if (!pRigidBody_ || !_Parent) return;
 
@@ -642,7 +642,7 @@ void RigidBody::SyncTransformFromBullet()
 	}
 }
 
-void RigidBody::SyncTransformToBullet()
+void RigidBodyComponent::SyncTransformToBullet()
 {
 	if (!pRigidBody_ || !_Parent) return;
 
@@ -665,7 +665,7 @@ void RigidBody::SyncTransformToBullet()
 	}
 }
 
-void RigidBody::SyncPositionToBullet(const DirectX::XMFLOAT3& position)
+void RigidBodyComponent::SyncPositionToBullet(const DirectX::XMFLOAT3& position)
 {
 	if (!pRigidBody_) return;
 
@@ -684,7 +684,7 @@ void RigidBody::SyncPositionToBullet(const DirectX::XMFLOAT3& position)
 	}
 }
 
-void RigidBody::SyncRotationToBullet(const DirectX::XMFLOAT3& rotation)
+void RigidBodyComponent::SyncRotationToBullet(const DirectX::XMFLOAT3& rotation)
 {
 	if (!pRigidBody_) return;
 
@@ -703,7 +703,7 @@ void RigidBody::SyncRotationToBullet(const DirectX::XMFLOAT3& rotation)
 	}
 }
 
-void RigidBody::WarpTo(const DirectX::XMFLOAT3& position)
+void RigidBodyComponent::WarpTo(const DirectX::XMFLOAT3& position)
 {
 	if (!pRigidBody_)return;
 
@@ -717,7 +717,7 @@ void RigidBody::WarpTo(const DirectX::XMFLOAT3& position)
 	pRigidBody_->activate();
 }
 
-void RigidBody::CreateRigidBody()
+void RigidBodyComponent::CreateRigidBody()
 {
 	if (pRigidBody_)
 	{
@@ -817,7 +817,7 @@ void RigidBody::CreateRigidBody()
 	bAddedToWorld_ = false;
 }
 
-void RigidBody::UpdateMassProperties()
+void RigidBodyComponent::UpdateMassProperties()
 {
 	if (pCompoundShape_)
 	{
@@ -841,7 +841,7 @@ void RigidBody::UpdateMassProperties()
 	}
 }
 
-btQuaternion RigidBody::EulerToQuaternion(const DirectX::XMFLOAT3& euler)
+btQuaternion RigidBodyComponent::EulerToQuaternion(const DirectX::XMFLOAT3& euler)
 {
 	DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationRollPitchYaw(
 		euler.x,
@@ -856,7 +856,7 @@ btQuaternion RigidBody::EulerToQuaternion(const DirectX::XMFLOAT3& euler)
 	return btQuaternion(quat_float.x, quat_float.y, quat_float.z, quat_float.w);
 }
 
-DirectX::XMFLOAT3 RigidBody::QuaternionToEuler(const btQuaternion& quat)
+DirectX::XMFLOAT3 RigidBodyComponent::QuaternionToEuler(const btQuaternion& quat)
 {
 	DirectX::XMVECTOR q = DirectX::XMVectorSet(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
 	DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationQuaternion(q);
@@ -869,7 +869,7 @@ DirectX::XMFLOAT3 RigidBody::QuaternionToEuler(const btQuaternion& quat)
 	return euler;
 }
 
-void RigidBody::SetFriction(float friction)
+void RigidBodyComponent::SetFriction(float friction)
 {
 	fFriction_ = friction;
 	if (pRigidBody_)
@@ -878,7 +878,7 @@ void RigidBody::SetFriction(float friction)
 	}
 }
 
-void RigidBody::SetRestitution(float restitution)
+void RigidBodyComponent::SetRestitution(float restitution)
 {
 	fRestitution_ = restitution;
 	if (pRigidBody_)
@@ -887,7 +887,7 @@ void RigidBody::SetRestitution(float restitution)
 	}
 }
 
-void RigidBody::SetLinearDamping(float damping)
+void RigidBodyComponent::SetLinearDamping(float damping)
 {
 	fLinearDamping_ = damping;
 	if (pRigidBody_)
@@ -896,7 +896,7 @@ void RigidBody::SetLinearDamping(float damping)
 	}
 }
 
-void RigidBody::SetAngularDamping(float damping)
+void RigidBodyComponent::SetAngularDamping(float damping)
 {
 	fAngularDamping_ = damping;
 	if (pRigidBody_)
@@ -905,7 +905,7 @@ void RigidBody::SetAngularDamping(float damping)
 	}
 }
 
-void RigidBody::SetDamping(float linearDamping, float angularDamping)
+void RigidBodyComponent::SetDamping(float linearDamping, float angularDamping)
 {
 	fLinearDamping_ = linearDamping;
 	fAngularDamping_ = angularDamping;
@@ -915,7 +915,7 @@ void RigidBody::SetDamping(float linearDamping, float angularDamping)
 	}
 }
 
-void RigidBody::SetRollingFriction(float rollingFriction)
+void RigidBodyComponent::SetRollingFriction(float rollingFriction)
 {
 	fRollingFriction_ = rollingFriction;
 	if (pRigidBody_)
@@ -924,7 +924,7 @@ void RigidBody::SetRollingFriction(float rollingFriction)
 	}
 }
 
-void RigidBody::SetSpinningFriction(float spinningFriction)
+void RigidBodyComponent::SetSpinningFriction(float spinningFriction)
 {
 	fSpinningFriction_ = spinningFriction;
 	if (pRigidBody_)
@@ -933,7 +933,7 @@ void RigidBody::SetSpinningFriction(float spinningFriction)
 	}
 }
 
-void RigidBody::SetRotationConstraint(bool lockX, bool lockY, bool lockZ)
+void RigidBodyComponent::SetRotationConstraint(bool lockX, bool lockY, bool lockZ)
 {
 	bLockRotationX_ = lockX;
 	bLockRotationY_ = lockY;
@@ -950,26 +950,26 @@ void RigidBody::SetRotationConstraint(bool lockX, bool lockY, bool lockZ)
 	}
 }
 
-void RigidBody::SetRotationConstraintX(bool lock)
+void RigidBodyComponent::SetRotationConstraintX(bool lock)
 {
 	bLockRotationX_ = lock;
 	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 }
 
-void RigidBody::SetRotationConstraintY(bool lock)
+void RigidBodyComponent::SetRotationConstraintY(bool lock)
 {
 	bLockRotationY_ = lock;
 	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 }
 
-void RigidBody::SetRotationConstraintZ(bool lock)
+void RigidBodyComponent::SetRotationConstraintZ(bool lock)
 {
 	bLockRotationZ_ = lock;
 	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 }
 
 // スリープ制御
-void RigidBody::SetDisableSleep(bool disableSleep)
+void RigidBodyComponent::SetDisableSleep(bool disableSleep)
 {
 	bDisableSleep_ = disableSleep;
 
@@ -992,12 +992,12 @@ void RigidBody::SetDisableSleep(bool disableSleep)
 }
 
 // カメラ距離に基づくカリング制御
-void RigidBody::SetCullingDistance(float distance)
+void RigidBodyComponent::SetCullingDistance(float distance)
 {
 	fCullingDistance_ = distance;
 }
 
-void RigidBody::SetUseCulling(bool useCulling)
+void RigidBodyComponent::SetUseCulling(bool useCulling)
 {
 	bool prevUseCulling = bUseCulling_;
 	bUseCulling_ = useCulling;
@@ -1013,7 +1013,7 @@ void RigidBody::SetUseCulling(bool useCulling)
 	}
 }
 
-void RigidBody::SetAlwaysActive(bool alwaysActive)
+void RigidBodyComponent::SetAlwaysActive(bool alwaysActive)
 {
 	bool prevAlwaysActive = bAlwaysActive_;
 	bAlwaysActive_ = alwaysActive;
@@ -1034,7 +1034,7 @@ void RigidBody::SetAlwaysActive(bool alwaysActive)
 	}
 }
 
-void RigidBody::UpdateCullingState()
+void RigidBodyComponent::UpdateCullingState()
 {
 	if (!bUseCulling_ || bAlwaysActive_ || !_Parent || !_Parent->GetParentScene())
 		return;
@@ -1058,7 +1058,7 @@ void RigidBody::UpdateCullingState()
 	bWasActiveLastFrame_ = bActiveInPhysicsWorld_;
 }
 
-float RigidBody::CalculateDistanceToCamera()
+float RigidBodyComponent::CalculateDistanceToCamera()
 {
 	if (!_Parent || !_Parent->GetParentScene())
 		return 0.0f;
@@ -1077,7 +1077,7 @@ float RigidBody::CalculateDistanceToCamera()
 	return sqrtf(dx * dx + dy * dy + dz * dz);
 }
 
-void RigidBody::AddToPhysicsWorld()
+void RigidBodyComponent::AddToPhysicsWorld()
 {
 	if (!pRigidBody_ || bAddedToWorld_ || !_Parent || !_Parent->GetParentScene())
 		return;
@@ -1109,7 +1109,7 @@ void RigidBody::AddToPhysicsWorld()
 	}
 }
 
-void RigidBody::RemoveFromPhysicsWorld()
+void RigidBodyComponent::RemoveFromPhysicsWorld()
 {
 	if (!pRigidBody_ || !bAddedToWorld_ || !_Parent || !_Parent->GetParentScene())
 		return;

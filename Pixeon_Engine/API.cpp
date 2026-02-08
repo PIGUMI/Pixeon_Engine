@@ -386,7 +386,7 @@ extern "C" {
 			if (collisionObject) {
 				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
 				if (rigidBody && rigidBody->getUserPointer()) {
-					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					RigidBodyComponent* rbComponent = static_cast<RigidBodyComponent*>(rigidBody->getUserPointer());
 					if (rbComponent) {
 						AbstractObject* hitObj = rbComponent->GetParent();
 						outHit->hitObject = reinterpret_cast<object>(hitObj);
@@ -494,7 +494,7 @@ extern "C" {
 			if (collisionObject) {
 				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
 				if (rigidBody && rigidBody->getUserPointer()) {
-					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					RigidBodyComponent* rbComponent = static_cast<RigidBodyComponent*>(rigidBody->getUserPointer());
 					if (rbComponent) {
 						AbstractObject* hitObj = rbComponent->GetParent();
 						outHit->hitObject = reinterpret_cast<object>(hitObj);
@@ -602,7 +602,7 @@ extern "C" {
 			if (collisionObject) {
 				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
 				if (rigidBody && rigidBody->getUserPointer()) {
-					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					RigidBodyComponent* rbComponent = static_cast<RigidBodyComponent*>(rigidBody->getUserPointer());
 					if (rbComponent) {
 						AbstractObject* hitObj = rbComponent->GetParent();
 						outHit->hitObject = reinterpret_cast<object>(hitObj);
@@ -681,7 +681,7 @@ extern "C" {
 				if (collisionObject) {
 					const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
 					if (rigidBody && rigidBody->getUserPointer()) {
-						RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+						RigidBodyComponent* rbComponent = static_cast<RigidBodyComponent*>(rigidBody->getUserPointer());
 						if (rbComponent && rbComponent->GetParent() == ignoreObj) {
 							return 1.0f; // ‚±‚Ìƒqƒbƒg‚ð–³Ž‹
 						}
@@ -720,7 +720,7 @@ extern "C" {
 			if (collisionObject) {
 				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
 				if (rigidBody && rigidBody->getUserPointer()) {
-					RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
+					RigidBodyComponent* rbComponent = static_cast<RigidBodyComponent*>(rigidBody->getUserPointer());
 					if (rbComponent) {
 						AbstractObject* hitObj = rbComponent->GetParent();
 						outHit->hitObject = reinterpret_cast<object>(hitObj);
@@ -783,7 +783,7 @@ extern "C" {
 		{
 			if (rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
 			{
-				static_cast<RigidBody*>(rb)->SyncPositionToBullet(ToXMFloat3(position));
+				static_cast<RigidBodyComponent*>(rb)->SyncPositionToBullet(ToXMFloat3(position));
 			}
 		}
 		return PN_SUCCESS;
@@ -813,7 +813,7 @@ extern "C" {
 		{
 			if (rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
 			{
-				static_cast<RigidBody*>(rb)->SyncRotationToBullet(ToXMFloat3(rotation));
+				static_cast<RigidBodyComponent*>(rb)->SyncRotationToBullet(ToXMFloat3(rotation));
 			}
 		}
 		return PN_SUCCESS;
@@ -839,8 +839,8 @@ extern "C" {
 		}
 		objPtr->SetScale(scale.x, scale.y, scale.z);
 
-		std::vector<RigidBody*> components = objPtr->GetComponentsByType<RigidBody>();
-		for (RigidBody* rb : components) {
+		std::vector<RigidBodyComponent*> components = objPtr->GetComponentsByType<RigidBodyComponent>();
+		for (RigidBodyComponent* rb : components) {
 			rb->SetTransformDirty(true);
 		}
 		return PN_SUCCESS;
@@ -907,9 +907,9 @@ extern "C" {
 
 		for (auto rb : objPtr->GetComponents())
 		{
-			if (rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RIGIDBODY)
+			if (rb->GetComponentType() == ComponentManager::COMPONENT_TYPE::RigidBodyComponent)
 			{
-				static_cast<RigidBody*>(rb)->SyncTransformToBullet();
+				static_cast<RigidBodyComponent*>(rb)->SyncTransformToBullet();
 			}
 		}
 		return PN_SUCCESS;
@@ -1949,7 +1949,7 @@ extern "C" {
 		return PN_SUCCESS;
 	}
 
-	// RigidBody component
+	// RigidBodyComponent component
 	PIXEON_API APIResult RigidBodyAddForce(component rigidBodyComp, const Float3* inForce)
 	{
 		if (!inForce) {
@@ -1959,7 +1959,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -1975,7 +1975,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -1991,7 +1991,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2007,7 +2007,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2020,7 +2020,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2036,7 +2036,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2049,7 +2049,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2065,7 +2065,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2077,7 +2077,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2092,7 +2092,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2105,7 +2105,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2121,7 +2121,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2134,7 +2134,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2150,7 +2150,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2163,7 +2163,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2179,7 +2179,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2192,7 +2192,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2208,7 +2208,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2221,7 +2221,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2234,7 +2234,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2250,7 +2250,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2263,7 +2263,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2279,7 +2279,7 @@ extern "C" {
 		if (!ValidateHandle<AbstractComponent>(rigidBodyComp, &compPtr)) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		RigidBody* rbComp = dynamic_cast<RigidBody*>(compPtr);
+		RigidBodyComponent* rbComp = dynamic_cast<RigidBodyComponent*>(compPtr);
 		if (!rbComp) {
 			return PN_ERROR_INVALID_HANDLE;
 		}

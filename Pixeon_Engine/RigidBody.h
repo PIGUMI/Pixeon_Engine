@@ -7,9 +7,7 @@
 #include <DirectXMath.h>
 #include <vector>
 
-class BoxCollider;
-
-class RigidBody : public AbstractComponent
+class RigidBodyComponent : public AbstractComponent
 {
 public:
 	void Init(AbstractObject* Prt) override;
