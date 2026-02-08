@@ -16,11 +16,11 @@ typedef enum {
 	PN_ERROR_INVALID_PARAMETER = -5,
 }APIResult;
 
-typedef void* Scene;
-typedef void* Object;
-typedef void* Component;
-typedef void* Animator2d;
-typedef void* Keyframe;
+typedef void* scene;
+typedef void* object;
+typedef void* component;
+typedef void* animator2d;
+typedef void* keyframe;
 
 #pragma pack(push, 1)
 
@@ -55,7 +55,7 @@ typedef struct {
 } CameraTransform;
 
 typedef struct {
-	Object HitObject;
+	object HitObject;
 	Float3 HitPoint;
 	Float3 HitNormal;
 	char HitObjectName[64];
@@ -67,16 +67,16 @@ typedef struct {
 	Float3 point;
 	Float3 normal;
 	float distance;
-	Object hitObject;
+	object hitObject;
 	char hitObjectName[64];
 } RayHit;
 
 #pragma pack(pop)
 
 // API.h
-typedef void (*CollisionEnterCallback)(Component collision, const APICollisionInfo* info);
-typedef void (*CollisionStayCallback)(Component collision, const APICollisionInfo* info);
-typedef void (*CollisionExitCallback)(Component collision, const APICollisionInfo* info);
+typedef void (*CollisionEnterCallback)(component collision, const APICollisionInfo* info);
+typedef void (*CollisionStayCallback)(component collision, const APICollisionInfo* info);
+typedef void (*CollisionExitCallback)(component collision, const APICollisionInfo* info);
 
 // Utility Functions
 extern "C" {
@@ -89,23 +89,23 @@ extern "C" {
 
 // Scene
 extern "C" {
-	PIXEON_API APIResult GetCurrentScene(Scene* outScene);
+	PIXEON_API APIResult GetCurrentScene(scene* outScene);
 	PIXEON_API APIResult ChangeScene(const char* sceneName);
-	PIXEON_API APIResult SceneGetObjectCount(Scene scene, int* outCount);
-	PIXEON_API APIResult FindObjectByName(Scene scene, const char* name, Object* outObject);
-	PIXEON_API APIResult FindChildObjectByName(Object parentObject, const char* name, Object* outObject);
-	PIXEON_API APIResult FindPrefabObjectByName(const char* name, Object* outObject);
-	PIXEON_API APIResult AddObjectToScene(Scene scene, Object object, Object* CloneObject = nullptr);
-	PIXEON_API APIResult RemoveObjectFromScene(Scene scene, Object object);
+	PIXEON_API APIResult SceneGetObjectCount(scene Scene, int* outCount);
+	PIXEON_API APIResult FindObjectByName(scene Scene, const char* name, object* outObject);
+	PIXEON_API APIResult FindChildObjectByName(object parentObject, const char* name, object* outObject);
+	PIXEON_API APIResult FindPrefabObjectByName(const char* name, object* outObject);
+	PIXEON_API APIResult AddObjectToScene(scene Scene, object Object, object* CloneObject = nullptr);
+	PIXEON_API APIResult RemoveObjectFromScene(scene Scene, object Object);
 	PIXEON_API APIResult SetMainCameraByIndex(int inCameraNumber);
-	PIXEON_API APIResult SetMainCameraByPtr(Component camera);
+	PIXEON_API APIResult SetMainCameraByPtr(component camera);
 	PIXEON_API APIResult GetMainCamera(int* outCameraNumber);
-	PIXEON_API APIResult ObjectParenthood(Object childObject, Object parentObject);
+	PIXEON_API APIResult ObjectParenthood(object childObject, object parentObject);
 };
 
 extern "C" {
 	PIXEON_API APIResult Raycast(
-		Scene InScene,
+		scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
@@ -113,7 +113,7 @@ extern "C" {
 	);
 
 	PIXEON_API APIResult RaycastIgnoreTriggers(
-		Scene InScene,
+		scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
@@ -121,7 +121,7 @@ extern "C" {
 	);
 
 	PIXEON_API APIResult SphereCast(
-		Scene InScene,
+		scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float radius,
@@ -130,38 +130,38 @@ extern "C" {
 	);
 
 	PIXEON_API APIResult RaycastIgnoreObject(
-		Scene InScene,
+		scene InScene,
 		Float3 origin,
 		Float3 direction,
 		float maxDistance,
-		Object ignoreObject,
+		object ignoreObject,
 		RayHit* outHit
 	);
 };
 
 extern "C" {
-	PIXEON_API APIResult GetObjectName(Object object, char* outName, int bufferSize);
-	PIXEON_API APIResult SetObjectName(Object object, const char* name);
-	PIXEON_API APIResult SetObjectPosition(Object object, Float3 position);
-	PIXEON_API APIResult GetObjectPosition(Object object, Float3* outPosition);
-	PIXEON_API APIResult SetObjectRotation(Object object, Float3 rotation);
-	PIXEON_API APIResult GetObjectRotation(Object object, Float3* outRotation);
-	PIXEON_API APIResult SetObjectScale(Object object, Float3 scale);
-	PIXEON_API APIResult GetObjectScale(Object object, Float3* outScale);
-	PIXEON_API APIResult GetObjectTransform(Object object, transform* outTransform);
-	PIXEON_API APIResult GetObjectWorldTransform(Object object, transform* outTransform);
-	PIXEON_API APIResult SetObjectTransform(Object object, const transform* inTransform);
-	PIXEON_API APIResult CountChildObjects(Object object, int* outCount);
-	PIXEON_API APIResult FindComponent(Object object, const char* componentName, Component* outComponent);
+	PIXEON_API APIResult GetObjectName(object Object, char* outName, int bufferSize);
+	PIXEON_API APIResult SetObjectName(object Object, const char* name);
+	PIXEON_API APIResult SetObjectPosition(object Object, Float3 position);
+	PIXEON_API APIResult GetObjectPosition(object Object, Float3* outPosition);
+	PIXEON_API APIResult SetObjectRotation(object Object, Float3 rotation);
+	PIXEON_API APIResult GetObjectRotation(object Object, Float3* outRotation);
+	PIXEON_API APIResult SetObjectScale(object Object, Float3 scale);
+	PIXEON_API APIResult GetObjectScale(object Object, Float3* outScale);
+	PIXEON_API APIResult GetObjectTransform(object Object, transform* outTransform);
+	PIXEON_API APIResult GetObjectWorldTransform(object Object, transform* outTransform);
+	PIXEON_API APIResult SetObjectTransform(object Object, const transform* inTransform);
+	PIXEON_API APIResult CountChildObjects(object Object, int* outCount);
+	PIXEON_API APIResult FindComponent(object Object, const char* componentName, component* outComponent);
 };
 
 extern "C" {
-	PIXEON_API APIResult GetVariableInt(Object InObj, const char* InVarName, int* OutValue);
-	PIXEON_API APIResult SetVariableInt(Object InObj, const char* InVarName, int InValue);
-	PIXEON_API APIResult GetVariableFloat(Object InObj, const char* InVarName, float* OutValue);
-	PIXEON_API APIResult SetVariableFloat(Object InObj, const char* InVarName, float InValue);
-	PIXEON_API APIResult GetVariableBool(Object InObj, const char* InVarName, bool* OutValue);
-	PIXEON_API APIResult SetVariableBool(Object InObj, const char* InVarName, bool InValue);
+	PIXEON_API APIResult GetVariableInt(object InObj, const char* InVarName, int* OutValue);
+	PIXEON_API APIResult SetVariableInt(object InObj, const char* InVarName, int InValue);
+	PIXEON_API APIResult GetVariableFloat(object InObj, const char* InVarName, float* OutValue);
+	PIXEON_API APIResult SetVariableFloat(object InObj, const char* InVarName, float InValue);
+	PIXEON_API APIResult GetVariableBool(object InObj, const char* InVarName, bool* OutValue);
+	PIXEON_API APIResult SetVariableBool(object InObj, const char* InVarName, bool InValue);
 };
 
 // InputKey
@@ -178,123 +178,126 @@ extern "C" {
 // Component
 extern "C" {
 	// Camera
-	PIXEON_API APIResult GetCameraTransform(Component camera, CameraTransform* outTransform);
-	PIXEON_API APIResult SetCameraTransform(Component camera, const CameraTransform* inTransform);
-	PIXEON_API APIResult GetCameraFov(Component camera, float* outFov);
-	PIXEON_API APIResult SetCameraFov(Component camera, float inFov);
-	PIXEON_API APIResult GetCameraAspect(Component camera, float* outAspect);
-	PIXEON_API APIResult SetCameraAspect(Component camera, float inAspect);
-	PIXEON_API APIResult GetCameraNearFar(Component camera, float* outNear, float* outFar);
-	PIXEON_API APIResult SetCameraNearFar(Component camera, float inNear, float inFar);
-	PIXEON_API APIResult SetChangeCameraCalculation(Component camera, bool isChange);
-	PIXEON_API APIResult GetCameraNumber(Component camera, int* outCameraNumber);
-	PIXEON_API APIResult GetCameraUpVector(Component camera, Float3* outUp);
-	PIXEON_API APIResult GetCameraRightVector(Component camera, Float3* outRight);
-	PIXEON_API APIResult GetCameraForwardVector(Component camera, Float3* outForward);
+	PIXEON_API APIResult GetCameraTransform(component camera, CameraTransform* outTransform);
+	PIXEON_API APIResult SetCameraTransform(component camera, const CameraTransform* inTransform);
+	PIXEON_API APIResult GetCameraFov(component camera, float* outFov);
+	PIXEON_API APIResult SetCameraFov(component camera, float inFov);
+	PIXEON_API APIResult GetCameraAspect(component camera, float* outAspect);
+	PIXEON_API APIResult SetCameraAspect(component camera, float inAspect);
+	PIXEON_API APIResult GetCameraNearFar(component camera, float* outNear, float* outFar);
+	PIXEON_API APIResult SetCameraNearFar(component camera, float inNear, float inFar);
+	PIXEON_API APIResult SetChangeCameraCalculation(component camera, bool isChange);
+	PIXEON_API APIResult GetCameraNumberAPI(component camera, int* outCameraNumber);
+	PIXEON_API APIResult GetCameraUpVector(component camera, Float3* outUp);
+	PIXEON_API APIResult GetCameraRightVector(component camera, Float3* outRight);
+	PIXEON_API APIResult GetCameraForwardVector(component camera, Float3* outForward);
 
 	// light Component
-	PIXEON_API APIResult GetLightType(Component light, int* outType);
-	PIXEON_API APIResult SetLightType(Component light, int inType);
-	PIXEON_API APIResult GetLightColor(Component light, Float3* outColor);
-	PIXEON_API APIResult SetLightColor(Component light, const Float3* inColor);
-	PIXEON_API APIResult GetLightIntensity(Component light, float* outIntensity);
-	PIXEON_API APIResult SetLightIntensity(Component light, float inIntensity);
-	PIXEON_API APIResult GetLightRange(Component light, float* outRange);
-	PIXEON_API APIResult SetLightRange(Component light, float inRange);
-	PIXEON_API APIResult GetLightSpotInnerOuter(Component light, float* outInnerDeg, float* outOuterDeg);
-	PIXEON_API APIResult SetLightSpotInnerOuter(Component light, float inInnerDeg, float inOuterDeg);
-	PIXEON_API APIResult GetLightEnabled(Component light, bool* outEnabled);
-	PIXEON_API APIResult SetLightEnabled(Component light, bool inEnabled);
+	PIXEON_API APIResult GetLightType(component light, int* outType);
+	PIXEON_API APIResult SetLightType(component light, int inType);
+	PIXEON_API APIResult GetLightColor(component light, Float3* outColor);
+	PIXEON_API APIResult SetLightColor(component light, const Float3* inColor);
+	PIXEON_API APIResult GetLightIntensity(component light, float* outIntensity);
+	PIXEON_API APIResult SetLightIntensity(component light, float inIntensity);
+	PIXEON_API APIResult GetLightRange(component light, float* outRange);
+	PIXEON_API APIResult SetLightRange(component light, float inRange);
+	PIXEON_API APIResult GetLightSpotInnerOuter(component light, float* outInnerDeg, float* outOuterDeg);
+	PIXEON_API APIResult SetLightSpotInnerOuter(component light, float inInnerDeg, float inOuterDeg);
+	PIXEON_API APIResult GetLightEnabled(component light, bool* outEnabled);
+	PIXEON_API APIResult SetLightEnabled(component light, bool inEnabled);
 
 	// ImageRender Component
-	PIXEON_API APIResult GetImageRenderTextureName(Component imageRender, char* outName, int bufferSize);
-	PIXEON_API APIResult SetImageRenderTextureName(Component imageRender, const char* name);
-	PIXEON_API APIResult GetImageTransform(Component imageRender, transform* outTransform);
-	PIXEON_API APIResult SetImageTransform(Component imageRender, const transform* inTransform);
-	PIXEON_API APIResult GetImageRenderColor(Component imageRender, Float4* outColor);
-	PIXEON_API APIResult SetImageRenderColor(Component imageRender, const Float4* inColor);
-	PIXEON_API APIResult GetImageRenderUVRect(Component imageRender, Float4* outUVRect);
-	PIXEON_API APIResult SetImageRenderUVRect(Component imageRender, const Float4* inUVRect);
+	PIXEON_API APIResult GetImageRenderTextureName(component imageRender, char* outName, int bufferSize);
+	PIXEON_API APIResult SetImageRenderTextureName(component imageRender, const char* name);
+	PIXEON_API APIResult GetImageTransform(component imageRender, transform* outTransform);
+	PIXEON_API APIResult SetImageTransform(component imageRender, const transform* inTransform);
+	PIXEON_API APIResult GetImageRenderColor(component imageRender, Float4* outColor);
+	PIXEON_API APIResult SetImageRenderColor(component imageRender, const Float4* inColor);
+	PIXEON_API APIResult GetImageRenderUVRect(component imageRender, Float4* outUVRect);
+	PIXEON_API APIResult SetImageRenderUVRect(component imageRender, const Float4* inUVRect);
 
 	// ModelRender Component
-	PIXEON_API APIResult GetModelColor(Component modelRender, Float4* outColor);
-	PIXEON_API APIResult SetModelColor(Component modelRender, const Float4* inColor);
-	PIXEON_API APIResult SetMaterialTexture(Component modelRender, int materialIndex, const char* texLogicalPath);
-	PIXEON_API APIResult GetOffsetPosition(Component modelRender, Float3* outPosition);
-	PIXEON_API APIResult SetOffsetPosition(Component modelRender, const Float3* inPosition);
-	PIXEON_API APIResult GetOffsetRotation(Component modelRender, Float3* outRotation);
-	PIXEON_API APIResult SetOffsetRotation(Component modelRender, const Float3* inRotation);
-	PIXEON_API APIResult GetOffsetScale(Component modelRender, Float3* outScale);
-	PIXEON_API APIResult SetOffsetScale(Component modelRender, const Float3* inScale);
+	PIXEON_API APIResult GetModelColor(component modelRender, Float4* outColor);
+	PIXEON_API APIResult SetModelColor(component modelRender, const Float4* inColor);
+	PIXEON_API APIResult SetMaterialTexture(component modelRender, int materialIndex, const char* texLogicalPath);
+	PIXEON_API APIResult GetOffsetPosition(component modelRender, Float3* outPosition);
+	PIXEON_API APIResult SetOffsetPosition(component modelRender, const Float3* inPosition);
+	PIXEON_API APIResult GetOffsetRotation(component modelRender, Float3* outRotation);
+	PIXEON_API APIResult SetOffsetRotation(component modelRender, const Float3* inRotation);
+	PIXEON_API APIResult GetOffsetScale(component modelRender, Float3* outScale);
+	PIXEON_API APIResult SetOffsetScale(component modelRender, const Float3* inScale);
+	PIXEON_API APIResult GetBoneName(component modelRender, int boneIndex, char* outName, int bufferSize);
+	PIXEON_API APIResult GetBoneWorldPosition(component modelRender, int boneIndex, Float3* outPosition);
+	PIXEON_API APIResult GetBoneWorldRotation(component modelRender, int boneIndex, Float3* outRotation);
 
 	// Animation Component
-	PIXEON_API APIResult PlayAnimation(Component animationComp);
-	PIXEON_API APIResult PauseAnimation(Component animationComp);
-	PIXEON_API APIResult ResumeAnimation(Component animationComp);
-	PIXEON_API APIResult StopAnimation(Component animationComp);
-	PIXEON_API APIResult RestartAnimation(Component animationComp);
-	PIXEON_API APIResult SetAnimationClip(Component animationComp, int clipIndex);
-	PIXEON_API APIResult GetAnimationClip(Component animationComp, int* outClipIndex);
-	PIXEON_API APIResult SetAnimationPlaybackSpeed(Component animationComp, float speed);
-	PIXEON_API APIResult SetAnimationLoop(Component animationComp, bool loop);
+	PIXEON_API APIResult PlayAnimation(component animationComp);
+	PIXEON_API APIResult PauseAnimation(component animationComp);
+	PIXEON_API APIResult ResumeAnimation(component animationComp);
+	PIXEON_API APIResult StopAnimation(component animationComp);
+	PIXEON_API APIResult RestartAnimation(component animationComp);
+	PIXEON_API APIResult SetAnimationClip(component animationComp, int clipIndex);
+	PIXEON_API APIResult GetAnimationClip(component animationComp, int* outClipIndex);
+	PIXEON_API APIResult SetAnimationPlaybackSpeed(component animationComp, float speed);
+	PIXEON_API APIResult SetAnimationLoop(component animationComp, bool loop);
 
 	// RigidBody Component
-	PIXEON_API APIResult RigidBodyAddForce(Component rigidBodyComp, const Float3* inForce);
-	PIXEON_API APIResult RigidBodyAddImpulse(Component rigidBodyComp, const Float3* inImpulse);
-	PIXEON_API APIResult RigidBodyGetVelocity(Component rigidBodyComp, Float3* outVelocity);
-	PIXEON_API APIResult RigidBodySetVelocity(Component rigidBodyComp, const Float3* inVelocity);
-	PIXEON_API APIResult RigidBodySetKinematic(Component rigidBodyComp, bool isKinematic);
-	PIXEON_API APIResult RigidBodyGetKinematic(Component rigidBodyComp, bool* outIsKinematic);
-	PIXEON_API APIResult RigidBodySetMass(Component rigidBodyComp, float mass);
-	PIXEON_API APIResult RigidBodyGetMass(Component rigidBodyComp, float* outMass);
-	PIXEON_API APIResult RigidBodySetUseGravity(Component rigidBodyComp, bool useGravity);
-	PIXEON_API APIResult RigidBodyGetUseGravity(Component rigidBodyComp, bool* outUseGravity);
-	PIXEON_API APIResult RigidBodySetFriction(Component rigidBodyComp, float friction);
-	PIXEON_API APIResult RigidBodyGetFriction(Component rigidBodyComp, float* outFriction);
-	PIXEON_API APIResult RigidBodySetRestitution(Component rigidBodyComp, float restitution);
-	PIXEON_API APIResult RigidBodyGetRestitution(Component rigidBodyComp, float* outRestitution);
-	PIXEON_API APIResult RigidBodySetLinearDamping(Component rigidBodyComp, float damping);
-	PIXEON_API APIResult RigidBodyGetLinearDamping(Component rigidBodyComp, float* outDamping);
-	PIXEON_API APIResult RigidBodySetAngularDamping(Component rigidBodyComp, float damping);
-	PIXEON_API APIResult RigidBodyGetAngularDamping(Component rigidBodyComp, float* outDamping);
-	PIXEON_API APIResult RigidBodySetDamping(Component rigidBodyComp, float linearDamping, float angularDamping);
-	PIXEON_API APIResult RigidBodySetRollingFriction(Component rigidBodyComp, float rollingFriction);
-	PIXEON_API APIResult RigidBodyGetRollingFriction(Component rigidBodyComp, float* outRollingFriction);
-	PIXEON_API APIResult RigidBodySetSpinningFriction(Component rigidBodyComp, float spinningFriction);
-	PIXEON_API APIResult RigidBodyGetSpinningFriction(Component rigidBodyComp, float* outSpinningFriction);
+	PIXEON_API APIResult RigidBodyAddForce(component rigidBodyComp, const Float3* inForce);
+	PIXEON_API APIResult RigidBodyAddImpulse(component rigidBodyComp, const Float3* inImpulse);
+	PIXEON_API APIResult RigidBodyGetVelocity(component rigidBodyComp, Float3* outVelocity);
+	PIXEON_API APIResult RigidBodySetVelocity(component rigidBodyComp, const Float3* inVelocity);
+	PIXEON_API APIResult RigidBodySetKinematic(component rigidBodyComp, bool isKinematic);
+	PIXEON_API APIResult RigidBodyGetKinematic(component rigidBodyComp, bool* outIsKinematic);
+	PIXEON_API APIResult RigidBodySetMass(component rigidBodyComp, float mass);
+	PIXEON_API APIResult RigidBodyGetMass(component rigidBodyComp, float* outMass);
+	PIXEON_API APIResult RigidBodySetUseGravity(component rigidBodyComp, bool useGravity);
+	PIXEON_API APIResult RigidBodyGetUseGravity(component rigidBodyComp, bool* outUseGravity);
+	PIXEON_API APIResult RigidBodySetFriction(component rigidBodyComp, float friction);
+	PIXEON_API APIResult RigidBodyGetFriction(component rigidBodyComp, float* outFriction);
+	PIXEON_API APIResult RigidBodySetRestitution(component rigidBodyComp, float restitution);
+	PIXEON_API APIResult RigidBodyGetRestitution(component rigidBodyComp, float* outRestitution);
+	PIXEON_API APIResult RigidBodySetLinearDamping(component rigidBodyComp, float damping);
+	PIXEON_API APIResult RigidBodyGetLinearDamping(component rigidBodyComp, float* outDamping);
+	PIXEON_API APIResult RigidBodySetAngularDamping(component rigidBodyComp, float damping);
+	PIXEON_API APIResult RigidBodyGetAngularDamping(component rigidBodyComp, float* outDamping);
+	PIXEON_API APIResult RigidBodySetDamping(component rigidBodyComp, float linearDamping, float angularDamping);
+	PIXEON_API APIResult RigidBodySetRollingFriction(component rigidBodyComp, float rollingFriction);
+	PIXEON_API APIResult RigidBodyGetRollingFriction(component rigidBodyComp, float* outRollingFriction);
+	PIXEON_API APIResult RigidBodySetSpinningFriction(component rigidBodyComp, float spinningFriction);
+	PIXEON_API APIResult RigidBodyGetSpinningFriction(component rigidBodyComp, float* outSpinningFriction);
 
 	// BoxCollision Component
-	PIXEON_API APIResult BoxCollisionSetSize(Component component, Float3 size);
-	PIXEON_API APIResult BoxCollisionGetSize(Component component, Float3* outSize);
-	PIXEON_API APIResult BoxCollisionSetCenter(Component component, Float3 center);
-	PIXEON_API APIResult BoxCollisionGetCenter(Component component, Float3* outCenter);
-	PIXEON_API APIResult BoxCollisionSetIsTrigger(Component component, bool isTrigger);
-	PIXEON_API APIResult BoxCollisionGetIsTrigger(Component component, bool* outIsTrigger);
+	PIXEON_API APIResult BoxCollisionSetSize(component Component, Float3 size);
+	PIXEON_API APIResult BoxCollisionGetSize(component Component, Float3* outSize);
+	PIXEON_API APIResult BoxCollisionSetCenter(component Component, Float3 center);
+	PIXEON_API APIResult BoxCollisionGetCenter(component Component, Float3* outCenter);
+	PIXEON_API APIResult BoxCollisionSetIsTrigger(component Component, bool isTrigger);
+	PIXEON_API APIResult BoxCollisionGetIsTrigger(component Component, bool* outIsTrigger);
 
-	PIXEON_API APIResult CollisionSetCollisionEnterCallback(Component component, CollisionEnterCallback callback);
-	PIXEON_API APIResult CollisionSetCollisionStayCallback(Component component, CollisionStayCallback callback);
-	PIXEON_API APIResult CollisionSetCollisionExitCallback(Component component, CollisionExitCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionEnterCallback(component Component, CollisionEnterCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionStayCallback(component Component, CollisionStayCallback callback);
+	PIXEON_API APIResult CollisionSetCollisionExitCallback(component Component, CollisionExitCallback callback);
 
 	// Animator2D Component
-	PIXEON_API APIResult GetAnimator2D(Component animatorComp, const char* animatorName, Animator2d* outHandel);
-	PIXEON_API APIResult Animator2DPlay(Animator2d animator);
-	PIXEON_API APIResult Animator2DStop(Animator2d animator);
-	PIXEON_API APIResult Animator2DIsEnd(Animator2d animator, bool* End);
-	PIXEON_API APIResult FindKeyFrame(Animator2d animator, const char* keyname, Keyframe* outKeyframe);
-	PIXEON_API APIResult SetVertexOffsetUp(Keyframe keyframe, float offset);
-	PIXEON_API APIResult SetVertexOffsetDown(Keyframe keyframe, float offset);
-	PIXEON_API APIResult SetVertexOffsetLeft(Keyframe keyframe, float offset);
-	PIXEON_API APIResult SetVertexOffsetRight(Keyframe keyframe, float offset);
-	PIXEON_API APIResult GetVertexOffsetUp(Keyframe keyframe, float* outOffset);
-	PIXEON_API APIResult GetVertexOffsetDown(Keyframe keyframe, float* outOffset);
-	PIXEON_API APIResult GetVertexOffsetLeft(Keyframe keyframe, float* outOffset);
-	PIXEON_API APIResult GetVertexOffsetRight(Keyframe keyframe, float* outOffset);
+	PIXEON_API APIResult GetAnimator2D(component animatorComp, const char* animatorName, animator2d* outHandel);
+	PIXEON_API APIResult Animator2DPlay(animator2d animator);
+	PIXEON_API APIResult Animator2DStop(animator2d animator);
+	PIXEON_API APIResult Animator2DIsEnd(animator2d animator, bool* End);
+	PIXEON_API APIResult FindKeyFrame(animator2d animator, const char* keyname, keyframe* outKeyframe);
+	PIXEON_API APIResult SetVertexOffsetUp(keyframe Keyframe, float offset);
+	PIXEON_API APIResult SetVertexOffsetDown(keyframe Keyframe, float offset);
+	PIXEON_API APIResult SetVertexOffsetLeft(keyframe Keyframe, float offset);
+	PIXEON_API APIResult SetVertexOffsetRight(keyframe Keyframe, float offset);
+	PIXEON_API APIResult GetVertexOffsetUp(keyframe Keyframe, float* outOffset);
+	PIXEON_API APIResult GetVertexOffsetDown(keyframe Keyframe, float* outOffset);
+	PIXEON_API APIResult GetVertexOffsetLeft(keyframe Keyframe, float* outOffset);
+	PIXEON_API APIResult GetVertexOffsetRight(keyframe Keyframe, float* outOffset);
 
-	PIXEON_API APIResult EffectPlay(Component effectComp);
-	PIXEON_API APIResult EffectStop(Component effectComp);
-	PIXEON_API APIResult EffectIsPlaying(Component effectComp, bool* outIsPlaying);
+	PIXEON_API APIResult EffectPlay(component effectComp);
+	PIXEON_API APIResult EffectStop(component effectComp);
+	PIXEON_API APIResult EffectIsPlaying(component effectComp, bool* outIsPlaying);
 
-	PIXEON_API APIResult CallScriptFunction(Component Script, const char* functionName);
+	PIXEON_API APIResult CallScriptFunction(component Script, const char* functionName);
 };
 
 #endif// API.h

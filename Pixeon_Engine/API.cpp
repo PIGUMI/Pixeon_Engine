@@ -219,7 +219,7 @@ extern "C" {
 		*outObject = reinterpret_cast<object>(childObj);
 		return PN_SUCCESS;
 	}
-	PIXEON_API APIResult AddObjectToScene(scene InScene, object Object,object* CloneObject)
+	PIXEON_API APIResult AddObjectToScene(scene InScene, object Object, object* CloneObject)
 	{
 		if (!Object) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -1825,7 +1825,6 @@ extern "C" {
 		*outRotation = ToFloat3(rot);
 		return PN_SUCCESS;
 	}
-
 
 	// Animation component
 	PIXEON_API APIResult PlayAnimation(component animationComp)

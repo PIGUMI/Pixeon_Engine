@@ -40,7 +40,7 @@ IScript::~IScript()
 
 void IScript::BeginPlay()
 {
-	if (_parentObject == nullptr) {
+	if (_parentObject) {
 		return;
 	}
 
@@ -51,7 +51,7 @@ void IScript::BeginPlay()
 
 	for (const char* typeName : collisionTypes) {
 		component collisionComp = nullptr;
-		if (FindComponent(_parentObject, typeName, &collisionComp) == PN_SUCCESS) {
+		if (FindComponent(_parentObject->GetHandle(), typeName, &collisionComp) == PN_SUCCESS) {
 			RegisterCollisionComponent(collisionComp);
 		}
 	}
@@ -105,6 +105,10 @@ void IScript::Update(float DeltaTime)
 
 void IScript::EndPlay()
 {
+	delete _parentObject;
+	delete _parentScene;
+	_parentObject = nullptr;
+	_parentScene = nullptr;
 	UnregisterAllCollisions();
 }
 

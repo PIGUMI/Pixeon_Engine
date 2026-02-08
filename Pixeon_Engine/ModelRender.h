@@ -92,13 +92,11 @@ public:
 	// ボーンのワールド位置を取得
 	DirectX::XMFLOAT3 GetBoneWorldPosition(int boneIndex) const;
 
-
 	DirectX::XMFLOAT4 GetBoneWorldRotationQuaternion(int boneIndex) const;
 
 	DirectX::XMFLOAT3 GetBoneWorldRotation(int boneIndex) const;
 
 	DirectX::XMFLOAT3 GetBoneWorldRotationDegrees(int boneIndex) const;
-
 
 	// すべてのボーン情報を取得
 	const std::vector<Bone>* GetBones() const { return m_model ? &m_model->bones : nullptr; }
