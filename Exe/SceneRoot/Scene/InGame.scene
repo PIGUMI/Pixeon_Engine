@@ -12,7 +12,7 @@
                         "contrast": 1.0,
                         "gamma": 1.0,
                         "hueShift": 0.0,
-                        "saturation": 1.9900000095367432,
+                        "saturation": 2.0,
                         "temperature": 0.0,
                         "tint": 0.0
                     },
@@ -90,7 +90,7 @@
         {
             "Components": [
                 {
-                    "Data": "3.79743 4.57323 -3.09437 20.9093 0.269985 6.33678e-39 -4.71104 1.90606 1.43245 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
+                    "Data": "-5.99969 15.4863 6.97484 24.1794 0.549985 6.33678e-39 0.951473 10.2596 2.039 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -162,7 +162,7 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/SkyBox/uploads_files_4381654_LightBlueSky.glb\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n2 1 1\n0 0 0\n2\nTexture/skybox-light-blue-sky-3d-model-bad93c2d7f.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/SkyBox/uploads_files_4381654_LightBlueSky.glb\n0.270463 0.270463 0.270463 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n2 1 1\n0 0 0\n2\nTexture/qwantani_moon_noon_puresky.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -204,8 +204,8 @@
                     0.0
                 ],
                 "Rotation": [
-                    -0.644026517868042,
-                    0.0,
+                    -0.2617993950843811,
+                    -0.4363323152065277,
                     0.0
                 ],
                 "Scale": [
@@ -244,8 +244,59 @@
             }
         },
         {
-            "Components": [],
-            "Name": "Actor",
+            "Components": [
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-55 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-70 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -20\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -40\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-35 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-20 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-50 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n10 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n30 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n35 0 -60\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                }
+            ],
+            "Name": "BackGround1",
             "Parent": "Stage",
             "Transform": {
                 "Position": [
@@ -255,7 +306,7 @@
                 ],
                 "Rotation": [
                     0.0,
-                    0.0,
+                    -3.1415927410125732,
                     0.0
                 ],
                 "Scale": [
@@ -266,36 +317,65 @@
             }
         },
         {
-            "Components": [],
-            "Name": "MapActor2",
-            "Parent": "Actor",
+            "Components": [
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-55 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-70 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -20\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -40\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-35 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-20 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-50 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n10 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n30 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n35 0 -60\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                }
+            ],
+            "Name": "BackGround",
+            "Parent": "Stage",
             "Transform": {
                 "Position": [
-                    38.0,
-                    0.0,
-                    -38.0
-                ],
-                "Rotation": [
                     0.0,
                     0.0,
                     0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [],
-            "Name": "MapActor1",
-            "Parent": "Actor",
-            "Transform": {
-                "Position": [
-                    -38.0,
-                    0.0,
-                    38.0
                 ],
                 "Rotation": [
                     0.0,
@@ -312,84 +392,6 @@
         {
             "Components": [],
             "Name": "Object",
-            "Parent": "Stage",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender1",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender2",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender3",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender4",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender5",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender6",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender7",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender8",
-                    "Type": 4
-                },
-                {
-                    "Data": "90 1 90 0 -0.5 0 0 0 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "Ground",
             "Parent": "Stage",
             "Transform": {
                 "Position": [
@@ -846,57 +848,62 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-55 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-70 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender1",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -20\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender2",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -40\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender3",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-35 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender4",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-20 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender5",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-50 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender6",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n10 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender7",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n30 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender8",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n35 0 -60\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender9",
-                    "Type": 4
+                    "Data": "90 1 90 0 -0.5 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
                 }
             ],
-            "Name": "BackGround1",
+            "Name": "Ground",
             "Parent": "Stage",
             "Transform": {
                 "Position": [
@@ -906,7 +913,73 @@
                 ],
                 "Rotation": [
                     0.0,
-                    -3.1415927410125732,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "Actor",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "MapActor2",
+            "Parent": "Actor",
+            "Transform": {
+                "Position": [
+                    38.0,
+                    0.0,
+                    -38.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "MapActor1",
+            "Parent": "Actor",
+            "Transform": {
+                "Position": [
+                    -38.0,
+                    0.0,
+                    38.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "Scale": [
@@ -919,62 +992,103 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-55 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "0.2 1.6 0 0.8 0 0 0 0\n",
+                    "Name": "CapsuleCollision",
+                    "Type": 8
+                },
+                {
+                    "Data": "70\n0\n1\n0.5\n0\n0\n0.05\n1\n1\n1\n0\n1\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                },
+                {
+                    "Data": "ScriptName CreatStage\nPropertyCount 8\nProperty mapMaxX 38\nProperty mapMaxZ 38\nProperty mapMinX -38\nProperty mapMinZ -38\nProperty marginDistance 1\nProperty objectCount 30\nProperty objectSizeX 7.3\nProperty objectSizeZ 5.5\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
+                }
+            ],
+            "Name": "Player",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    38.0,
+                    0.0,
+                    -38.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0.5 1.4 0.5 0 0.7 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStaticFade\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-70 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender1",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -20\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender2",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -40\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender3",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-35 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender4",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-20 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender5",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-50 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender6",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n10 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender7",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n30 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender8",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n35 0 -60\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender9",
-                    "Type": 4
+                    "Data": "1\n1\n1\n1\n3DModel/Fast Run.fbx\n",
+                    "Name": "Animation",
+                    "Type": 5
                 }
             ],
-            "Name": "BackGround",
-            "Parent": "Stage",
+            "Name": "Body",
+            "Parent": "Player",
             "Transform": {
                 "Position": [
                     0.0,
                     0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0.3 0.3 0.3 0 0 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0 0 0.1 -3.14159 0 6.56381e-07 3.8147e-06 0 2.1 0 1 0 1.0472 1.77778 0.1 1000 2 0 1 1 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                },
+                {
+                    "Data": "2 1 1 1 1 15 20 35 1 0 0 0 0 -3.14159 0 0 ",
+                    "Name": "Light",
+                    "Type": 1
+                }
+            ],
+            "Name": "Head",
+            "Parent": "Player",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    1.649999976158142,
                     0.0
                 ],
                 "Rotation": [
