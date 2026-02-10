@@ -1,7 +1,18 @@
+// Stage.h
 #pragma once
 #include "Include/IScript.h"
 #include <random>
 #include <vector>
+
+class PlacedObjectData {
+public:
+    float x, z, sizeX, sizeZ;
+    Object* objectPtr = nullptr;
+
+    PlacedObjectData(float x_, float z_, float sx, float sz, Object* ptr = nullptr)
+        : x(x_), z(z_), sizeX(sx), sizeZ(sz), objectPtr(ptr) {
+    }
+};
 
 class Script_Stage : public IScript {
 public:
@@ -11,39 +22,35 @@ public:
 
 private:
     std::string prefabNames[3] = {
-        "ContainerABA",  // 見た目タイプ1のプレハブ名
-        "ContainerAAA",  // 見た目タイプ2のプレハブ名
-        "ContainerBBB"   // 見た目タイプ3のプレハブ名
-	};
+        "ContainerABA",
+        "ContainerAAA",
+        "ContainerBBB"
+    };
 
-    struct PlacedObject {
-        float x;
-        float z;
-        float sizeX;
-        float sizeZ;
-	};
+    // ========================================
+    // 自動管理されるリソース
+    // ========================================
+    std::vector<PlacedObjectData>* placedObjects = nullptr;
+    std::mt19937* gen = nullptr;
 
-	std::vector<PlacedObject> placedObjects;
-
-	std::random_device rd;
-    std::mt19937 gen;
-    
-    bool isPlaced;
+    Object* ParentObject = nullptr;
+    bool isPlaced = false;
 
     bool CheckOverlap(float x, float z, float sizeX, float sizeZ);
     void PlaceObject(int typeIndex, float x, float z);
     float GetRandomFloat(float min, float max);
     int GetRandomInt(int min, int max);
+
 public:
-    int objectCount = 30;          // 配置するオブジェクトの総数
-    float objectSizeX = 7.3f;      // オブジェクトのXサイズ
-    float objectSizeZ = 5.5f;      // オブジェクトのZサイズ
-    float mapMinX = -38.0f;        // マップの最小X座標
-    float mapMaxX = 38.0f;         // マップの最大X座標
-    float mapMinZ = -38.0f;        // マップの最小Z座標
-    float mapMaxZ = 38.0f;         // マップの最大Z座標
-    float marginDistance = 1.0f;   // オブジェクト間のマージン距離
-    Object* ParentObject;
+    int objectCount = 30;
+    float objectSizeX = 7.3f;
+    float objectSizeZ = 5.5f;
+    float mapMinX = -38.0f;
+    float mapMaxX = 38.0f;
+    float mapMinZ = -38.0f;
+    float mapMaxZ = 38.0f;
+    float marginDistance = 1.0f;
+
 public:
 #define PROPERTY_LIST(ACTION) \
     ACTION(INT, objectCount) \
@@ -58,11 +65,3 @@ public:
     DECLARE_SCRIPT_PROPERTIES()
 #undef PROPERTY_LIST
 };
-
-extern "C" __declspec(dllexport) IScript* CreateScriptInstance() {
-    return new Script_Stage();
-}
-
-extern "C" __declspec(dllexport) void DestroyScriptInstance(IScript* script) {
-    delete script;
-}

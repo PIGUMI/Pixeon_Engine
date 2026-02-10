@@ -51,6 +51,7 @@ public:
 	// 階層操作
 	Object* FindChildObject(const std::string& name);
 	int GetChildCount();
+	void AddChildObject(Object* child);
 
 	// コンポーネント操作
 	template<typename T>

@@ -102,6 +102,11 @@ int Object::GetChildCount()
 	return count;
 }
 
+void Object::AddChildObject(Object* child)
+{
+	ObjectParenthood(child->GetHandle(), m_Handle);
+}
+
 int Object::GetInt(const std::string& varName)
 {
 	int value = 0;

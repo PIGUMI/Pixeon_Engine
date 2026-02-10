@@ -26,7 +26,7 @@ class Keyframe;
 // ========================================
 // Wrapper for Object
 // ========================================
-class Object {
+class PIXEON_API Object {
 public:
 	Object(object handle) : m_Handle(handle) {}
 	~Object() = default;
@@ -51,6 +51,7 @@ public:
 	// 階層操作
 	Object* FindChildObject(const std::string& name);
 	int GetChildCount();
+	void AddChildObject(Object* child);
 
 	// コンポーネント操作
 	template<typename T>
@@ -73,7 +74,7 @@ private:
 // ========================================
 // Wrapper for Scene
 // ========================================
-class Scene {
+class PIXEON_API Scene {
 public:
 	Scene(scene handle) : m_Handle(handle) {}
 	~Scene() = default;
@@ -109,7 +110,7 @@ private:
 // ========================================
 // Base Component Wrapper
 // ========================================
-class Component {
+class PIXEON_API Component {
 public:
 	Component(component handle) : m_Handle(handle) {}
 	virtual ~Component() = default;
@@ -123,7 +124,7 @@ protected:
 // ========================================
 // Camera Component
 // ========================================
-class Camera : public Component {
+class PIXEON_API Camera : public Component {
 public:
 	Camera(component handle) : Component(handle) {}
 
@@ -148,7 +149,7 @@ public:
 // ========================================
 // Light Component
 // ========================================
-class Light : public Component {
+class PIXEON_API Light : public Component {
 public:
 	Light(component handle) : Component(handle) {}
 
@@ -179,7 +180,7 @@ public:
 // ========================================
 // Image Render Component
 // ========================================
-class Imagerender : public Component {
+class PIXEON_API Imagerender : public Component {
 public:
 	Imagerender(component handle) : Component(handle) {}
 
@@ -199,7 +200,7 @@ public:
 // ========================================
 // Model Render Component
 // ========================================
-class ModelRender : public Component {
+class PIXEON_API ModelRender : public Component {
 public:
 	ModelRender(component handle) : Component(handle) {}
 
@@ -223,7 +224,7 @@ public:
 // ========================================
 // Animation Component
 // ========================================
-class Animation : public Component {
+class PIXEON_API Animation : public Component {
 public:
 	Animation(component handle) : Component(handle) {}
 
@@ -243,7 +244,7 @@ public:
 // ========================================
 // Rigidbody Component
 // ========================================
-class Rigidbody : public Component {
+class PIXEON_API Rigidbody : public Component {
 public:
 	Rigidbody(component handle) : Component(handle) {}
 
@@ -280,7 +281,7 @@ public:
 // ========================================
 // Box Collision Component
 // ========================================
-class Boxcollision : public Component {
+class PIXEON_API Boxcollision : public Component {
 public:
 	Boxcollision(component handle) : Component(handle) {}
 
@@ -310,7 +311,7 @@ private:
 // ========================================
 // Effect Component
 // ========================================
-class Effect : public Component {
+class PIXEON_API Effect : public Component {
 public:
 	Effect(component handle) : Component(handle) {}
 
@@ -322,7 +323,7 @@ public:
 // ========================================
 // Script Component
 // ========================================
-class Script : public Component {
+class PIXEON_API Script : public Component {
 public:
 	Script(component handle) : Component(handle) {}
 
@@ -332,7 +333,7 @@ public:
 // ========================================
 // Keyframe (Animator2D related)
 // ========================================
-class Keyframe {
+class PIXEON_API Keyframe {
 public:
 	Keyframe(keyframe handle) : m_Handle(handle) {}
 
@@ -355,14 +356,14 @@ private:
 // ========================================
 // Animator2d Component
 // ========================================
-class Animator2d : public Component {
+class PIXEON_API Animator2d : public Component {
 public:
 	Animator2d(component handle) : Component(handle) {}
 
 	Animator2dProject* GetAnimator2D(const std::string& animatorName);
 };
 
-class Animator2dProject {
+class PIXEON_API Animator2dProject {
 public:
 	Animator2dProject(animator2d handle) : m_Handle(handle) {}
 	void Play();
@@ -378,7 +379,7 @@ private:
 // ========================================
 // Input Helper
 // ========================================
-class Input {
+class PIXEON_API Input {
 public:
 	static bool IsKeyPressed(char keyCode);
 	static bool IsKeyTriggered(char keyCode);
