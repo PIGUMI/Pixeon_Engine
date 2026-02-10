@@ -87,7 +87,7 @@ void ScripComponent::SaveToFile(std::ostream& out) {
 		SaveProperties();
 	}
 
-	// 保存されたプロパティ値をファイルに出力
+	// Save property values to file
 	out << "PropertyCount " << _savedProperties.size() << std::endl;
 	for (const auto& prop : _savedProperties) {
 		out << "Property " << prop.first << " " << prop.second << std::endl;
@@ -108,8 +108,8 @@ void ScripComponent::LoadFromFile(std::istream& in) {
 		else if (key == "Property") {
 			std::string propName, propValue;
 			in >> propName;
-			std::getline(in, propValue); // 残りの行を読み込む
-			// 先頭の空白を削除
+			std::getline(in, propValue); // Read rest of line
+			// Remove leading space
 			if (!propValue.empty() && propValue[0] == ' ') {
 				propValue = propValue.substr(1);
 			}
@@ -117,10 +117,10 @@ void ScripComponent::LoadFromFile(std::istream& in) {
 		}
 	}
 
-	// スクリプトをロード
+	// Load script
 	if (!_scriptName.empty()) {
 		LoadScriptByName(_scriptName);
-		// ロード後にプロパティを復元
+		// Restore properties after load
 		RestoreProperties();
 	}
 }
@@ -129,13 +129,20 @@ void ScripComponent::SaveProperties() {
 	if (!_scriptInstance) return;
 
 	_savedProperties.clear();
-	auto properties = _scriptInstance->GetProperties();
 
-	for (const auto& prop : properties) {
-		std::string serialized = _scriptInstance->SerializeProperty(prop.name);
-		if (!serialized.empty()) {
-			_savedProperties[prop.name] = serialized;
+	try {
+		auto properties = _scriptInstance->GetProperties();
+
+		for (const auto& prop : properties) {
+			std::string serialized = _scriptInstance->SerializeProperty(prop.name);
+			if (!serialized.empty()) {
+				_savedProperties[prop.name] = serialized;
+			}
 		}
+	}
+	catch (const std::exception& e) {
+		std::cerr << "[ScripComponent] Exception in SaveProperties: " << e.what() << std::endl;
+		_scriptInstance = nullptr;
 	}
 }
 
@@ -245,7 +252,7 @@ bool ScripComponent::CreateScriptFiles(const std::string& scriptName) {
 bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 	std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
-	// DLLが存在しない場合、ScriptManagerを通じてビルド
+	// If DLL does not exist, build via ScriptManager
 	if (!fs::exists(dllPath)) {
 		auto result = ScriptManager::Instance().BuildScriptDll(scriptName);
 		_buildLog = result.log;
@@ -258,7 +265,7 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 		}
 	}
 	else {
-		// DLLが存在する場合でも、ソースの方が新しい場合はリビルド
+		// If DLL exists but source is newer, rebuild
 		std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
 		if (fs::exists(srcPath)) {
 			try {
@@ -266,11 +273,11 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 				auto dllTime = fs::last_write_time(dllPath);
 
 				if (cppTime > dllTime) {
-					// ソースの方が新しいので、すべてのインスタンスをアンロードしてからリビルド
+					// Source is newer, unload all instances and rebuild
 					_buildLog = "Source file is newer than DLL. Rebuilding...\n\n";
 					_showBuildLog = true;
 
-					// ScriptManagerを通じてこのスクリプトの全インスタンスをアンロード
+					// Unload all instances of this script via ScriptManager
 					ScriptManager::Instance().UnloadAllInstancesOfScript(scriptName);
 
 					auto result = ScriptManager::Instance().BuildScriptDll(scriptName);
@@ -284,7 +291,7 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 				}
 			}
 			catch (...) {
-				// タイムスタンプ比較失敗時は既存のDLLを使用
+				// Timestamp comparison failed, use existing DLL
 			}
 		}
 	}
@@ -294,7 +301,7 @@ bool ScripComponent::LoadScriptByName(const std::string& scriptName) {
 
 bool ScripComponent::LoadScript(const std::string& scriptName) {
 	if (_scriptInstance) {
-		// スクリプトをアンロードする前に現在のプロパティを保存
+		// Save current properties before unloading script
 		SaveProperties();
 		UnLoadScript();
 	}
@@ -307,7 +314,7 @@ bool ScripComponent::LoadScript(const std::string& scriptName) {
 	}
 	_scriptInstance = inst;
 
-	// 新しいインスタンスにプロパティを復元
+	// Restore properties to new instance
 	RestoreProperties();
 
 	return true;
@@ -326,7 +333,14 @@ void ScripComponent::UnLoadScript() {
 	}
 }
 
-// --- ImGui Inspector 表示 ---
+void ScripComponent::InvalidateScriptInstance() {
+	_scriptInstance = nullptr;
+	_buildLog = "Script instance invalidated due to build failure.";
+	_buildSuccess = false;
+	_showBuildLog = true;
+}
+
+// --- ImGui Inspector Display ---
 void ScripComponent::DrawInspector() {
 	std::string label = GUI::GetInstance()->ShiftJISToUTF8(_ComponentName);
 	std::string Ptr = std::to_string((uintptr_t)this);
@@ -427,16 +441,16 @@ void ScripComponent::DrawInspector() {
 					_buildLog = "Reloading script: " + name + "\n\n";
 					_showBuildLog = true;
 
-					// ScriptManagerを通じてこのスクリプトの全インスタンスをアンロード
+					// Unload all instances of this script via ScriptManager
 					ScriptManager::Instance().UnloadAllInstancesOfScript(name);
 
-					// リビルド
+					// Rebuild
 					auto result = ScriptManager::Instance().BuildScriptDll(name);
 					_buildLog += result.log;
 					_buildSuccess = result.success;
 
 					if (result.success) {
-						// ビルド成功したらロード
+						// If build succeeded, load
 						bool loadSuccess = LoadScriptByName(name);
 						if (loadSuccess) {
 							_buildLog += "\nScript reloaded successfully:  " + name;
@@ -502,87 +516,103 @@ void ScripComponent::DrawInspector() {
 	ImGui::Spacing();
 
 	// ========================================
-	// スクリプトプロパティ表示セクション
+	// Script Properties Display Section
 	// ========================================
 	if (_scriptInstance && !_scriptName.empty()) {
 		ImGui::Text("Script Properties");
 		ImGui::Separator();
 
-		auto properties = _scriptInstance->GetProperties();
+		try {
+			// Check pointer validity again
+			if (!_scriptInstance) {
+				throw std::runtime_error("Script instance is null");
+			}
 
-		if (!properties.empty()) {
-			if (ImGui::BeginTable(("ScriptProps_" + Ptr).c_str(), 2,
-				ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp)) {
-				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 150.0f);
-				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
-				ImGui::TableHeadersRow();
+			auto properties = _scriptInstance->GetProperties();
 
-				for (auto& prop : properties) {
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s", prop.name.c_str());
+			if (!properties.empty()) {
+				if (ImGui::BeginTable(("ScriptProps_" + Ptr).c_str(), 2,
+					ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp)) {
+					ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+					ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+					ImGui::TableHeadersRow();
 
-					ImGui::TableSetColumnIndex(1);
-					ImGui::PushItemWidth(-1);
+					for (auto& prop : properties) {
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("%s", prop.name.c_str());
 
-					std::string id = "##" + prop.name + "_" + Ptr;
-					bool changed = false;
+						ImGui::TableSetColumnIndex(1);
+						ImGui::PushItemWidth(-1);
 
-					switch (prop.type) {
-					case PropertyType::FLOAT: {
-						float* value = static_cast<float*>(prop.dataPtr);
-						if (prop.hasRange) {
-							changed = ImGui::SliderFloat(id.c_str(), value, prop.minValue, prop.maxValue);
+						std::string id = "##" + prop.name + "_" + Ptr;
+						bool changed = false;
+
+						switch (prop.type) {
+						case PropertyType::FLOAT: {
+							float* value = static_cast<float*>(prop.dataPtr);
+							if (prop.hasRange) {
+								changed = ImGui::SliderFloat(id.c_str(), value, prop.minValue, prop.maxValue);
+							}
+							else {
+								changed = ImGui::DragFloat(id.c_str(), value, 0.1f);
+							}
+							break;
 						}
-						else {
-							changed = ImGui::DragFloat(id.c_str(), value, 0.1f);
+						case PropertyType::INT: {
+							int* value = static_cast<int*>(prop.dataPtr);
+							if (prop.hasRange) {
+								changed = ImGui::SliderInt(id.c_str(), value, (int)prop.minValue, (int)prop.maxValue);
+							}
+							else {
+								changed = ImGui::DragInt(id.c_str(), value);
+							}
+							break;
 						}
-						break;
-					}
-					case PropertyType::INT: {
-						int* value = static_cast<int*>(prop.dataPtr);
-						if (prop.hasRange) {
-							changed = ImGui::SliderInt(id.c_str(), value, (int)prop.minValue, (int)prop.maxValue);
+						case PropertyType::BOOL: {
+							bool* value = static_cast<bool*>(prop.dataPtr);
+							changed = ImGui::Checkbox(id.c_str(), value);
+							break;
 						}
-						else {
-							changed = ImGui::DragInt(id.c_str(), value);
+						case PropertyType::STRING: {
+							std::string* value = static_cast<std::string*>(prop.dataPtr);
+							char buffer[256];
+							strncpy_s(buffer, value->c_str(), sizeof(buffer) - 1);
+							buffer[sizeof(buffer) - 1] = '\0';
+							if (ImGui::InputText(id.c_str(), buffer, sizeof(buffer))) {
+								*value = buffer;
+								changed = true;
+							}
+							break;
 						}
-						break;
-					}
-					case PropertyType::BOOL: {
-						bool* value = static_cast<bool*>(prop.dataPtr);
-						changed = ImGui::Checkbox(id.c_str(), value);
-						break;
-					}
-					case PropertyType::STRING: {
-						std::string* value = static_cast<std::string*>(prop.dataPtr);
-						char buffer[256];
-						strncpy_s(buffer, value->c_str(), sizeof(buffer) - 1);
-						buffer[sizeof(buffer) - 1] = '\0';
-						if (ImGui::InputText(id.c_str(), buffer, sizeof(buffer))) {
-							*value = buffer;
-							changed = true;
 						}
-						break;
-					}
+
+						// If value changed, update _savedProperties
+						if (changed) {
+							std::string serialized = _scriptInstance->SerializeProperty(prop.name);
+							if (!serialized.empty()) {
+								_savedProperties[prop.name] = serialized;
+							}
+						}
+
+						ImGui::PopItemWidth();
 					}
 
-					// 値が変更されたら、_savedPropertiesを更新
-					if (changed) {
-						std::string serialized = _scriptInstance->SerializeProperty(prop.name);
-						if (!serialized.empty()) {
-							_savedProperties[prop.name] = serialized;
-						}
-					}
-
-					ImGui::PopItemWidth();
+					ImGui::EndTable();
 				}
-
-				ImGui::EndTable();
+			}
+			else {
+				ImGui::TextDisabled("No properties defined in this script.");
 			}
 		}
-		else {
-			ImGui::TextDisabled("No properties defined in this script.");
+		catch (const std::exception& e) {
+			ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Error: Failed to get properties");
+			ImGui::TextDisabled("Script instance may be invalid. Try reloading the script.");
+			std::cerr << "[ScripComponent] Exception in GetProperties: " << e.what() << std::endl;
+
+			// Invalidate script instance
+			_scriptInstance = nullptr;
+			_scriptName.clear();
 		}
 
 		ImGui::Spacing();
@@ -591,7 +621,7 @@ void ScripComponent::DrawInspector() {
 	}
 
 	// ========================================
-	// ビルド/アクションログセクション
+	// Build / Action Log Section
 	// ========================================
 	if (_showBuildLog) {
 		if (_buildSuccess) {

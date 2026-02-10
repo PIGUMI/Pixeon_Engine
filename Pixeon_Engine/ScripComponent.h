@@ -22,11 +22,11 @@ public:
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
-	// スクリプト読み込み / 解放
+	// Script load/unload
 	bool LoadScript(const std::string& scriptName);
 	void UnLoadScript();
 
-	// ユーティリティ(Inspector 用)
+	// Utility (for Inspector)
 	bool LoadScriptByName(const std::string& scriptName);
 	bool CreateScriptFiles(const std::string& scriptName);
 	void RefreshScriptList();
@@ -36,11 +36,14 @@ public:
 	IScript* GetScriptInstance() const { return _scriptInstance; }
 	std::string GetScriptName() const { return _scriptName; }
 
+	// Notification from ScriptManager when instance becomes invalid
+	void InvalidateScriptInstance();
+
 private:
 	IScript* _scriptInstance = nullptr;
 	std::string _scriptName;
 
-	// プロパティ値の保存用 (プロパティ名 -> シリアライズされた値)
+	// Property value storage (property name -> serialized value)
 	std::map<std::string, std::string> _savedProperties;
 
 	// Inspector state
@@ -54,7 +57,7 @@ private:
 	bool _StopOnError = false;
 	bool _InGamePlay = false;
 
-	// プロパティの保存と復元のヘルパー関数
+	// Property save/restore helper functions
 	void SaveProperties();
 	void RestoreProperties();
 };
