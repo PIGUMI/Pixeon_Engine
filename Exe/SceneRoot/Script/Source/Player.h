@@ -7,12 +7,22 @@ public:
     void Update(float DeltaTime) override;
     void EndPlay() override;
 private:
+	void Movement(float DeltaTime);
+public:
+    float _Sensitivity = 0.005f;
+    float _LimitAngle = 70.0f;
+    float _MoveSpeed = 0.1f;
+private:
+    float _walkTimer = 0.0f;
+    bool _isMoving = false;
     Object* _Head;
 	Object* _Body;
-	Component* _Camera;
+	Camera* _Camera;
 public:
-#define PROPERTY_LIST(ACTION)
-
+#define PROPERTY_LIST(ACTION) \
+    ACTION(FLOAT, _Sensitivity) \
+        ACTION(FLOAT, _LimitAngle) \
+        ACTION(FLOAT, _MoveSpeed)
     DECLARE_SCRIPT_PROPERTIES()
 #undef PROPERTY_LIST
 };
