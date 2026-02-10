@@ -31,16 +31,13 @@ public:
 	Object(object handle) : m_Handle(handle) {}
 	~Object() = default;
 
-	// 名前操作
 	std::string GetName();
 	void SetName(const std::string& name);
 
-	// トランスフォーム操作
 	transform GetTransform();
 	void SetTransform(const transform& inTransform);
 	transform GetWorldTransform();
 
-	// 位置・回転・スケール操作
 	DirectX::XMFLOAT3 GetPosition();
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	DirectX::XMFLOAT3 GetRotation();
@@ -48,16 +45,14 @@ public:
 	DirectX::XMFLOAT3 GetScale();
 	void SetScale(const DirectX::XMFLOAT3& scale);
 
-	// 階層操作
 	Object* FindChildObject(const std::string& name);
 	int GetChildCount();
 	void AddChildObject(Object* child);
 
-	// コンポーネント操作
+	// Generic template method
 	template<typename T>
 	T* GetComponent(const std::string& componentName);
 
-	// 変数操作
 	int GetInt(const std::string& varName);
 	void SetInt(const std::string& varName, int value);
 	float GetFloat(const std::string& varName);
@@ -72,6 +67,22 @@ private:
 };
 
 // ========================================
+// Explicit Template Specializations Declaration
+// ========================================
+template<> PIXEON_API Camera* Object::GetComponent<Camera>(const std::string& componentName);
+template<> PIXEON_API Light* Object::GetComponent<Light>(const std::string& componentName);
+template<> PIXEON_API Imagerender* Object::GetComponent<Imagerender>(const std::string& componentName);
+template<> PIXEON_API ModelRender* Object::GetComponent<ModelRender>(const std::string& componentName);
+template<> PIXEON_API Animation* Object::GetComponent<Animation>(const std::string& componentName);
+template<> PIXEON_API Rigidbody* Object::GetComponent<Rigidbody>(const std::string& componentName);
+template<> PIXEON_API Boxcollision* Object::GetComponent<Boxcollision>(const std::string& componentName);
+template<> PIXEON_API Effect* Object::GetComponent<Effect>(const std::string& componentName);
+template<> PIXEON_API Script* Object::GetComponent<Script>(const std::string& componentName);
+template<> PIXEON_API Animator2d* Object::GetComponent<Animator2d>(const std::string& componentName);
+
+// (以下、Scene、Componentクラスなどは既存のまま)
+
+// ========================================
 // Wrapper for Scene
 // ========================================
 class PIXEON_API Scene {
@@ -79,23 +90,19 @@ public:
 	Scene(scene handle) : m_Handle(handle) {}
 	~Scene() = default;
 
-	// シーン操作
 	static Scene* GetCurrent();
 	static void Change(const std::string& sceneName);
 
-	// オブジェクト操作
 	int GetObjectCount();
 	Object* FindObject(const std::string& name);
 	static Object* FindPrefabObject(const std::string& name);
 	Object* AddObject(Object* obj);
 	void RemoveObject(Object* obj);
 
-	// カメラ操作
 	void SetMainCamera(int cameraNumber);
 	void SetMainCamera(Camera* camera);
 	int GetMainCamera();
 
-	// レイキャスト
 	bool Raycast(const DirectX::XMFLOAT3& origin, const DirectX::XMFLOAT3& direction, float maxDistance, RayHit* outHit);
 	bool RaycastIgnoreTriggers(const DirectX::XMFLOAT3& origin, const DirectX::XMFLOAT3& direction, float maxDistance, RayHit* outHit);
 	bool SphereCast(const DirectX::XMFLOAT3& origin, const DirectX::XMFLOAT3& direction, float radius, float maxDistance, RayHit* outHit);
@@ -145,6 +152,8 @@ public:
 	void SetChangeCalculation(bool isChange);
 	int GetCameraNumber();
 };
+
+// (以下、残りのクラスは既存のまま)
 
 // ========================================
 // Light Component

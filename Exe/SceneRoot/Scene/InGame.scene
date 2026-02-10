@@ -1002,7 +1002,7 @@
                     "Type": 6
                 },
                 {
-                    "Data": "ScriptName CreatStage\nPropertyCount 8\nProperty mapMaxX 38\nProperty mapMaxZ 38\nProperty mapMinX -38\nProperty mapMinZ -38\nProperty marginDistance 1\nProperty objectCount 30\nProperty objectSizeX 7.3\nProperty objectSizeZ 5.5\n",
+                    "Data": "ScriptName Player\nPropertyCount 0\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 }
