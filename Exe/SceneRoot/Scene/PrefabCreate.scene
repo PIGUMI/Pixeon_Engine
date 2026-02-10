@@ -942,7 +942,7 @@
         {
             "Components": [
                 {
-                    "Data": "ScriptName Test\nPropertyCount 0\n",
+                    "Data": "ScriptName Test\nPropertyCount 4\nProperty _bVar 1\nProperty _fVar 1\nProperty _nVar 0\nProperty _sVar Hello,\n",
                     "Name": "ScripComponent",
                     "Type": 3
                 },
