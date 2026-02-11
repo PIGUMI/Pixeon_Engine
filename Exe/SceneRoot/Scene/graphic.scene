@@ -90,7 +90,7 @@
         {
             "Components": [
                 {
-                    "Data": "-0.320222 3.96054 -2.67082 10.12 0.499999 6.33678e-39 5.30146 -0.833704 4.06801 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
+                    "Data": "1.1187 2.11811 -2.6529 9.61001 0.289999 6.33678e-39 2.88354 -0.741403 6.76562 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -146,7 +146,7 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/Real/coast_land_rocks_04_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n2 2 2\n-1.5708 0 0\n1\n3DModel/Real/textures/coast_land_rocks_04_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Real/coast_land_rocks_04_4k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n2 2 2\n-1.5708 0 0\n1\n3DModel/Real/textures/coast_land_rocks_04_diff_4k.jpg\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
@@ -174,7 +174,7 @@
         {
             "Components": [
                 {
-                    "Data": "0 0.597865 0.64366 1 5 10 20 35 0 1 0 0 0 0 0 0 ",
+                    "Data": "0 0.597865 0.64366 1 5 10 20 35 1 1 0 0 0 0 0 0 ",
                     "Name": "Light",
                     "Type": 1
                 }
@@ -202,7 +202,7 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n0.02 0.02 0.02\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1.1 1 1.1\n2\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.02 0.02 0.02\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1.1 1 1.1\n2\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
@@ -235,7 +235,7 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/Lantern_01_1k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n1 1 1\n-1.5708 0 0\n2\n3DModel/textures/Lantern_01_brass_diff_1k.png\n0 0 0\n1 1 1\n0\n3DModel/textures/Lantern_01_brass_diff_1k.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Lantern_01_1k.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n1 1 1\n-1.5708 0 0\n2\n3DModel/textures/Lantern_01_brass_diff_1k.png\n0 0 0\n1 1 1\n0\n3DModel/textures/Lantern_01_brass_diff_1k.png\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
