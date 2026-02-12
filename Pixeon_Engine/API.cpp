@@ -1795,11 +1795,7 @@ extern "C" {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		DirectX::XMFLOAT3 pos;
-		bool result = false;
 		pos = modelRenderComp->GetBoneWorldPosition(boneIndex);
-		if (!result) {
-			return PN_ERROR_INVALID_PARAMETER;
-		}
 		*outPosition = ToFloat3(pos);
 		return PN_SUCCESS;
 	}
@@ -1817,11 +1813,7 @@ extern "C" {
 			return PN_ERROR_INVALID_HANDLE;
 		}
 		DirectX::XMFLOAT3 rot;
-		bool result = false;
 		rot = modelRenderComp->GetBoneWorldRotationDegrees(boneIndex);
-		if (!result) {
-			return PN_ERROR_INVALID_PARAMETER;
-		}
 		*outRotation = ToFloat3(rot);
 		return PN_SUCCESS;
 	}

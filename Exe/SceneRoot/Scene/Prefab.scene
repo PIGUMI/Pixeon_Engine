@@ -75,9 +75,14 @@
         {
             "Components": [
                 {
-                    "Data": "4.37029 6.06121 7.82121 0.55 0.63 6.33678e-39 0.14683 0.169764 0.932578 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Data": "0.255137 0.876464 -1.23205 3.02998 0.129998 6.33678e-39 -0.849276 -0.419858 8.62187 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
+                },
+                {
+                    "Data": "0 1 1 1 1 10 20 35 1 1 0 0 0 -1.5708 0 0 ",
+                    "Name": "Light",
+                    "Type": 1
                 }
             ],
             "Name": "Camera",
@@ -103,32 +108,17 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n3.65 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender1",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-1.35 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender2",
-                    "Type": 4
-                },
-                {
-                    "Data": "7.3 2.5 5.5 0 1.25 0 0 0 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n0\n0\n0\n100\n",
-                    "Name": "RigidBody",
-                    "Type": 6
+                    "Data": "0\n1\n1\n1\n3DModel/Fast Run.fbx\n",
+                    "Name": "Animation",
+                    "Type": 5
                 }
             ],
-            "Name": "ContainerBBB",
+            "Name": "Model",
             "Parent": "",
             "Transform": {
                 "Position": [
@@ -151,85 +141,22 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n3.65 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender1",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-1.35 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender2",
-                    "Type": 4
-                },
-                {
-                    "Data": "7.3 2.5 5.5 0 1.25 0 0 0 0\n",
+                    "Data": "0.1 0.1 0.1 0 0 0 0 0 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
                 {
-                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n0\n0\n0\n100\n",
-                    "Name": "RigidBody",
-                    "Type": 6
+                    "Data": "ScriptName attachWeapon\nPropertyCount 2\nProperty AttachObjectName Model\nProperty BoneIndex 10\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
                 }
             ],
-            "Name": "ContainerAAA",
+            "Name": "Weapon",
             "Parent": "",
             "Transform": {
                 "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "3DModel/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n3.65 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender1",
-                    "Type": 4
-                },
-                {
-                    "Data": "3DModel/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-1.35 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender2",
-                    "Type": 4
-                },
-                {
-                    "Data": "7.3 2.5 5.5 0 1.25 0 0 0 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n0\n0\n0\n100\n",
-                    "Name": "RigidBody",
-                    "Type": 6
-                }
-            ],
-            "Name": "ContainerABA",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
+                    0.6499999761581421,
+                    0.800000011920929,
                     0.0
                 ],
                 "Rotation": [
