@@ -1818,6 +1818,42 @@ extern "C" {
 		return PN_SUCCESS;
 	}
 
+	PIXEON_API APIResult GetBoneLocalPosition(component modelRender, int boneIndex, Float3* outPosition)
+	{
+		if (!outPosition) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		DirectX::XMFLOAT3 pos = modelRenderComp->GetBoneLocalPosition(boneIndex);
+		*outPosition = ToFloat3(pos);
+		return PN_SUCCESS;
+	}
+
+	PIXEON_API APIResult GetBoneLocalRotation(component modelRender, int boneIndex, Float3* outRotation)
+	{
+		if (!outRotation) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(modelRender, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		ModelRenderComponent* modelRenderComp = dynamic_cast<ModelRenderComponent*>(compPtr);
+		if (!modelRenderComp) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		DirectX::XMFLOAT3 rot = modelRenderComp->GetBoneLocalRotation(boneIndex);
+		*outRotation = ToFloat3(rot);
+		return PN_SUCCESS;
+	}
+
 	// Animation component
 	PIXEON_API APIResult PlayAnimation(component animationComp)
 	{

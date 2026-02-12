@@ -539,6 +539,20 @@ DirectX::XMFLOAT3 ModelRender::GetBoneWorldRotation(int boneIndex)
 	return Pixeon::ToXMFloat3(rot);
 }
 
+DirectX::XMFLOAT3 ModelRender::GetBoneLocalPosition(int boneIndex)
+{
+	Float3 pos;
+	::GetBoneLocalPosition(m_Handle, boneIndex, &pos);
+	return Pixeon::ToXMFloat3(pos);
+}
+
+DirectX::XMFLOAT3 ModelRender::GetBoneLocalRotation(int boneIndex)
+{
+	Float3 rot;
+	::GetBoneLocalRotation(m_Handle, boneIndex, &rot);
+	return Pixeon::ToXMFloat3(rot);
+}
+
 // ========================================
 // Animation Component Implementation
 // ========================================

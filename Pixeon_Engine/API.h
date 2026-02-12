@@ -229,6 +229,8 @@ extern "C" {
 	PIXEON_API APIResult GetBoneName(component modelRender, int boneIndex, char* outName, int bufferSize);
 	PIXEON_API APIResult GetBoneWorldPosition(component modelRender, int boneIndex, Float3* outPosition);
 	PIXEON_API APIResult GetBoneWorldRotation(component modelRender, int boneIndex, Float3* outRotation);
+	PIXEON_API APIResult GetBoneLocalPosition(component modelRender, int boneIndex, Float3* outPosition);
+	PIXEON_API APIResult GetBoneLocalRotation(component modelRender, int boneIndex, Float3* outRotation);
 
 	// Animation Component
 	PIXEON_API APIResult PlayAnimation(component animationComp);

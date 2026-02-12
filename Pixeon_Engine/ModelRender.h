@@ -98,6 +98,10 @@ public:
 
 	DirectX::XMFLOAT3 GetBoneWorldRotationDegrees(int boneIndex) const;
 
+	DirectX::XMFLOAT3 GetBoneLocalPosition(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneLocalRotation(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneLocalRotationDegrees(int boneIndex) const;
+
 	// ‚·‚×‚Ä‚Ìƒ{[ƒ“î•ñ‚ğæ“¾
 	const std::vector<Bone>* GetBones() const { return m_model ? &m_model->bones : nullptr; }
 

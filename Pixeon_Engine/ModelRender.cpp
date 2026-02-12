@@ -519,6 +519,78 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneWorldRotationDegrees(int boneInde
 	);
 }
 
+DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalPosition(int boneIndex) const {
+	using namespace DirectX;
+
+	if (!m_model || boneIndex < 0 || boneIndex >= static_cast<int>(m_boneMatrices.size())) {
+		return XMFLOAT3(0.0f, 0.0f, 0.0f);
+	}
+
+	// ボーン行列から位置を取得
+	XMMATRIX boneMatrix = XMLoadFloat4x4(&m_boneMatrices[boneIndex]);
+
+	XMFLOAT3 position;
+	position.x = XMVectorGetX(boneMatrix.r[3]);
+	position.y = XMVectorGetY(boneMatrix.r[3]);
+	position.z = XMVectorGetZ(boneMatrix.r[3]);
+
+	return position;
+}
+
+DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotation(int boneIndex) const {
+	using namespace DirectX;
+
+	if (!m_model || boneIndex < 0 || boneIndex >= static_cast<int>(m_boneMatrices.size())) {
+		return XMFLOAT3(0.0f, 0.0f, 0.0f);
+	}
+
+	XMMATRIX boneMatrix = XMLoadFloat4x4(&m_boneMatrices[boneIndex]);
+	XMVECTOR scale, rotation, translation;
+
+	if (!XMMatrixDecompose(&scale, &rotation, &translation, boneMatrix)) {
+		return XMFLOAT3(0.0f, 0.0f, 0.0f);
+	}
+
+	// クォータニオンをオイラー角に変換
+	XMFLOAT4 quat;
+	XMStoreFloat4(&quat, rotation);
+
+	float pitch, yaw, roll;
+
+	// Pitch (X軸回転)
+	float sinp = 2.0f * (quat.w * quat.x + quat.y * quat.z);
+	float cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
+	pitch = std::atan2(sinp, cosp);
+
+	// Yaw (Y軸回転)
+	float siny = 2.0f * (quat.w * quat.y - quat.z * quat.x);
+	if (std::abs(siny) >= 1.0f) {
+		yaw = std::copysign(XM_PI / 2.0f, siny);
+	}
+	else {
+		yaw = std::asin(siny);
+	}
+
+	// Roll (Z軸回転)
+	float sinr = 2.0f * (quat.w * quat.z + quat.x * quat.y);
+	float cosr = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
+	roll = std::atan2(sinr, cosr);
+
+	return XMFLOAT3(pitch, yaw, roll);
+}
+
+DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotationDegrees(int boneIndex) const {
+	using namespace DirectX;
+
+	XMFLOAT3 radians = GetBoneLocalRotation(boneIndex);
+
+	return XMFLOAT3(
+		XMConvertToDegrees(radians.x),
+		XMConvertToDegrees(radians.y),
+		XMConvertToDegrees(radians.z)
+	);
+}
+
 int ModelRenderComponent::GetBoneParentIndex(int boneIndex) const {
 	if (!m_model || boneIndex < 0 || boneIndex >= static_cast<int>(m_model->bones.size())) {
 		return -1;

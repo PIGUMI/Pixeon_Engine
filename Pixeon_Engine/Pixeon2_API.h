@@ -228,6 +228,8 @@ public:
 	std::string GetBoneName(int boneIndex);
 	DirectX::XMFLOAT3 GetBoneWorldPosition(int boneIndex);
 	DirectX::XMFLOAT3 GetBoneWorldRotation(int boneIndex);
+	DirectX::XMFLOAT3 GetBoneLocalPosition(int boneIndex);
+	DirectX::XMFLOAT3 GetBoneLocalRotation(int boneIndex);
 };
 
 // ========================================

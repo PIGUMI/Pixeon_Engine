@@ -21,11 +21,7 @@ void Script_attachWeapon::BeginPlay() {
 void Script_attachWeapon:: Update(float DeltaTime) {
     IScript::Update(DeltaTime);// Update
 	if (Model == nullptr)return;
-	DirectX::XMFLOAT3 BonePos = Model->GetBoneWorldPosition(BoneIndex);
-	DirectX::XMFLOAT3 BoneRot = Model->GetBoneWorldRotation(BoneIndex);
-    BonePos.x *= -0.001f;
-	BonePos.y *= 0.001f;
-	BonePos.z *= 0.001f;
+	DirectX::XMFLOAT3 BonePos = Model->GetBoneLocalPosition(BoneIndex);
     BonePos.x += OffsetPosition.x;
     BonePos.y += OffsetPosition.y;
     BonePos.z += OffsetPosition.z;
