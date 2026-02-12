@@ -526,15 +526,19 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalPosition(int boneIndex) cons
 		return XMFLOAT3(0.0f, 0.0f, 0.0f);
 	}
 
-	// ボーン行列から位置を取得
+	// ボーン行列から位置を抽出
 	XMMATRIX boneMatrix = XMLoadFloat4x4(&m_boneMatrices[boneIndex]);
 
-	XMFLOAT3 position;
-	position.x = XMVectorGetX(boneMatrix.r[3]);
-	position.y = XMVectorGetY(boneMatrix.r[3]);
-	position.z = XMVectorGetZ(boneMatrix.r[3]);
+	// オブジェクトのワールドスケールを取得
+	Transform objTransform = _Parent->GetWorldTransform();
 
-	return position;
+	// 位置を抽出（_41, _42, _43がボーンのローカル位置）
+	XMFLOAT3 localPos;
+	localPos.x = m_boneMatrices[boneIndex]._41 * objTransform.scale.x;
+	localPos.y = m_boneMatrices[boneIndex]._42 * objTransform.scale.y;
+	localPos.z = m_boneMatrices[boneIndex]._43 * objTransform.scale.z;
+
+	return localPos;
 }
 
 DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotation(int boneIndex) const {
@@ -544,26 +548,25 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotation(int boneIndex) cons
 		return XMFLOAT3(0.0f, 0.0f, 0.0f);
 	}
 
+	// ボーン行列をロード
 	XMMATRIX boneMatrix = XMLoadFloat4x4(&m_boneMatrices[boneIndex]);
-	XMVECTOR scale, rotation, translation;
 
+	// 行列を分解して回転を取得
+	XMVECTOR scale, rotation, translation;
 	if (!XMMatrixDecompose(&scale, &rotation, &translation, boneMatrix)) {
 		return XMFLOAT3(0.0f, 0.0f, 0.0f);
 	}
 
-	// クォータニオンをオイラー角に変換
 	XMFLOAT4 quat;
 	XMStoreFloat4(&quat, rotation);
 
-	float pitch, yaw, roll;
-
-	// Pitch (X軸回転)
 	float sinp = 2.0f * (quat.w * quat.x + quat.y * quat.z);
 	float cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
-	pitch = std::atan2(sinp, cosp);
+	float pitch = std::atan2(sinp, cosp);
 
-	// Yaw (Y軸回転)
+
 	float siny = 2.0f * (quat.w * quat.y - quat.z * quat.x);
+	float yaw;
 	if (std::abs(siny) >= 1.0f) {
 		yaw = std::copysign(XM_PI / 2.0f, siny);
 	}
@@ -571,14 +574,12 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotation(int boneIndex) cons
 		yaw = std::asin(siny);
 	}
 
-	// Roll (Z軸回転)
 	float sinr = 2.0f * (quat.w * quat.z + quat.x * quat.y);
 	float cosr = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
-	roll = std::atan2(sinr, cosr);
+	float roll = std::atan2(sinr, cosr);
 
 	return XMFLOAT3(pitch, yaw, roll);
 }
-
 DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotationDegrees(int boneIndex) const {
 	using namespace DirectX;
 

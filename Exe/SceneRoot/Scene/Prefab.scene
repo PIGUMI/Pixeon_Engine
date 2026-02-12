@@ -75,7 +75,7 @@
         {
             "Components": [
                 {
-                    "Data": "0.265075 0.876464 -1.23094 3.02998 0.129998 6.33678e-39 -0.839338 -0.419858 8.62299 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
+                    "Data": "12.7902 28.758 78.0887 6.44998 0.349998 6.33678e-39 11.2306 25.329 68.8253 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 },
@@ -108,7 +108,7 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n1 1 1\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
@@ -141,7 +141,7 @@
         {
             "Components": [
                 {
-                    "Data": "0.1 0.1 0.1 0 0 0 0 0 1\n",
+                    "Data": "10 10 10 0 0 0 0 0 1\n",
                     "Name": "BoxCollision",
                     "Type": 7
                 },
@@ -155,8 +155,8 @@
             "Parent": "",
             "Transform": {
                 "Position": [
-                    0.6499999761581421,
-                    0.800000011920929,
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "Rotation": [

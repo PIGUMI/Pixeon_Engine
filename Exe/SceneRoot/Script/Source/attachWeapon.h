@@ -6,15 +6,17 @@ public:
     void BeginPlay() override;
     void Update(float DeltaTime) override;
     void EndPlay() override;
+
 private:
     ModelRender* Model = nullptr;
-	DirectX::XMFLOAT3 OffsetPosition = { 0.0f,0.0f,0.0f };
+
 public:
     std::string AttachObjectName = "Model";
-	int BoneIndex = -1;
+    int BoneIndex = -1;
+
 #define PROPERTY_LIST(ACTION) \
-    ACTION(STRING,AttachObjectName) \
-    ACTION(INT,BoneIndex)
+    ACTION(STRING, AttachObjectName) \
+    ACTION(INT, BoneIndex)
 
     DECLARE_SCRIPT_PROPERTIES()
 #undef PROPERTY_LIST
