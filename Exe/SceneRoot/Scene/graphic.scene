@@ -12,7 +12,7 @@
                         "contrast": 1.0,
                         "gamma": 1.0,
                         "hueShift": 0.0,
-                        "saturation": 2.0,
+                        "saturation": 1.9900000095367432,
                         "temperature": -0.8700000047683716,
                         "tint": 0.0
                     },
@@ -26,7 +26,23 @@
             "layerIndex": 1,
             "name": "Layer 1",
             "opacity": 1.0,
-            "postEffects": [],
+            "postEffects": [
+                {
+                    "enabled": true,
+                    "params": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "intensity": 0.2199999988079071,
+                        "pixelSize": 32.0
+                    },
+                    "priority": 0,
+                    "type": 3
+                }
+            ],
             "visible": true
         },
         {
@@ -90,7 +106,7 @@
         {
             "Components": [
                 {
-                    "Data": "-1.30701 3.90928 -2.82384 10.08 0.379999 6.33678e-39 4.35169 0.200079 4.53965 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
+                    "Data": "-1.13719 2.84903 -4.05679 9.05 0.219999 6.33678e-39 -4.70962 0.666744 5.02481 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -184,7 +200,7 @@
         {
             "Components": [
                 {
-                    "Data": "0 0.893238 0.882084 0.708869 2.2 10 20 35 1 1 0 0 0 0 0 0 ",
+                    "Data": "0 0.893238 0.882084 0.708869 12 10 20 35 1 1 0 0 0 0 0 0 ",
                     "Name": "Light",
                     "Type": 1
                 }
@@ -198,8 +214,8 @@
                     0.0
                 ],
                 "Rotation": [
-                    -1.256602168083191,
-                    1.0576694011688232,
+                    -1.3875014781951904,
+                    0.5550146698951721,
                     0.0
                 ],
                 "Scale": [
@@ -232,7 +248,7 @@
                 ],
                 "Rotation": [
                     0.0,
-                    3.4504637718200684,
+                    3.370178461074829,
                     0.0
                 ],
                 "Scale": [
@@ -272,6 +288,67 @@
                     4.0,
                     4.0,
                     4.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "0\n1\n1\n0\n",
+                    "Name": "Animation",
+                    "Type": 5
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    2.700000047683716,
+                    1.399999976158142,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    -3.1415927410125732,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "Effect/00_Basic/Simple_Distortion.efkefc 1 1 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0\n",
+                    "Name": "EffectComponent",
+                    "Type": 10
+                }
+            ],
+            "Name": "effect",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    -9.300000190734863,
+                    3.200000047683716,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         }
