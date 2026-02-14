@@ -468,12 +468,6 @@ void Script_Player::CameraCollisionUpdate(float DeltaTime)
         cameraDirection.z /= dirLength;
     }
 
-    // 目標カメラ位置
-    DirectX::XMFLOAT3 targetCameraPos;
-    targetCameraPos.x = pivotPos.x + cameraDirection.x * currentRadius;
-    targetCameraPos.y = pivotPos.y + cameraDirection.y * currentRadius;
-    targetCameraPos.z = pivotPos.z + cameraDirection.z * currentRadius;
-
     // レイキャストでコリジョンチェック
     RayHit hit;
     bool hasHit = Physics::Raycast(pivotPos, cameraDirection, currentRadius, hit);
@@ -495,11 +489,35 @@ void Script_Player::CameraCollisionUpdate(float DeltaTime)
     float smoothFactor = Clamp(cameraCollisionSmoothSpeed * DeltaTime, 0.0f, 1.0f);
     currentCameraDistance = Lerp(currentCameraDistance, desiredDistance, smoothFactor);
 
-    // カメラの最終位置��設定
-    DirectX::XMFLOAT3 finalCameraPos;
-    finalCameraPos.x = pivotPos.x + cameraDirection.x * currentCameraDistance;
-    finalCameraPos.y = pivotPos.y + cameraDirection.y * currentCameraDistance;
-    finalCameraPos.z = pivotPos.z + cameraDirection.z * currentCameraDistance;
+    // 最小距離の強制適用（めり込み防止）
+    if (currentCameraDistance < cameraCollisionMinDistance) {
+        currentCameraDistance = cameraCollisionMinDistance;
+    }
+
+    // 再度レイキャストで最終位置を確認（めり込み防止）
+    DirectX::XMFLOAT3 testCameraPos;
+    testCameraPos.x = pivotPos.x + cameraDirection.x * currentCameraDistance;
+    testCameraPos.y = pivotPos.y + cameraDirection.y * currentCameraDistance;
+    testCameraPos.z = pivotPos.z + cameraDirection.z * currentCameraDistance;
+
+    // 最終位置から少し後ろに追加のレイキャストを行う
+    DirectX::XMFLOAT3 reverseDir;
+    reverseDir.x = -cameraDirection.x;
+    reverseDir.y = -cameraDirection.y;
+    reverseDir.z = -cameraDirection.z;
+
+    RayHit reverseHit;
+    bool hasReverseHit = Physics::Raycast(testCameraPos, reverseDir, cameraCollisionRadius * 2.0f, reverseHit);
+
+    if (hasReverseHit && reverseHit.distance < cameraCollisionRadius) {
+        // カメラが壁に近すぎる場合、さらに手前に移動
+        float additionalOffset = cameraCollisionRadius - reverseHit.distance;
+        currentCameraDistance -= additionalOffset;
+        currentCameraDistance = Clamp(currentCameraDistance, cameraCollisionMinDistance, currentRadius);
+
+        std::string debugMsg = "[Player] Additional collision adjustment: " + std::to_string(additionalOffset) + "\n";
+        OutputDebugStringA(debugMsg.c_str());
+    }
 
     // カメラトランスフォームを更新
     CameraTransform camTransform = playerCamera->GetTransform();
