@@ -22,20 +22,17 @@ inline DirectX::XMFLOAT3 LerpFloat3(const DirectX::XMFLOAT3& a, const DirectX::X
     );
 }
 
-// 角度を-180～180の範囲に正規化
 inline float NormalizeAngleDeg(float angle) {
     while (angle > 180.0f) angle -= 360.0f;
     while (angle < -180.0f) angle += 360.0f;
     return angle;
 }
 
-// 2つの角度間の最短回転差を計算（度数法）
 inline float AngleDifferenceDeg(float from, float to) {
     float diff = NormalizeAngleDeg(to - from);
     return diff;
 }
 
-// 角度を滑らかに補間（度数法）
 inline float LerpAngleDeg(float from, float to, float t) {
     float diff = AngleDifferenceDeg(from, to);
     return NormalizeAngleDeg(from + diff * t);
@@ -65,7 +62,6 @@ void Script_Player::BeginPlay() {
     /* Animation取得 */
     playerAnimation = _parentObject->GetComponent<Animation>("Animation");
     if (playerAnimation) {
-        // 初期アニメーションを待機に設定
         playerAnimation->SetClip(idleAnimationIndex);
         playerAnimation->SetLoop(true);
         playerAnimation->Play();
@@ -96,7 +92,6 @@ void Script_Player::BeginPlay() {
     ReticleOutPrefab = _parentScene->FindPrefabObject(ReticleOutName);
     ReticlePrefab = _parentScene->FindPrefabObject(ReticleName);
 
-    // プレハブが見つからない場合の警告
     if (!ReticleInPrefab) {
         std::string msg = "[Player] Warning: ReticleIn prefab not found: " + ReticleInName + "\n";
         OutputDebugStringA(msg.c_str());
@@ -110,7 +105,6 @@ void Script_Player::BeginPlay() {
         OutputDebugStringA(msg.c_str());
     }
 
-    // 召喚インスタンスの初期化
     SpawnedReticleIn = nullptr;
     SpawnedReticleOut = nullptr;
     SpawnedReticle = nullptr;
@@ -124,9 +118,8 @@ void Script_Player::Update(float DeltaTime) {
     PlayerRotationUpdate(DeltaTime);
     AimUpdate(DeltaTime);
     AnimationUpdate(DeltaTime);
-    ReticleUpdate(DeltaTime);  // 追加
+    ReticleUpdate(DeltaTime);
 
-    // 前フレームのエイム状態を保存
     wasAiming = isAiming;
 }
 
@@ -177,22 +170,18 @@ void Script_Player::PlayerMovement(float DeltaTime)
     }
 
     if (isMoving) {
-        // 入力ベクトルを正規化
         float inputLength = sqrtf(inputDirection.x * inputDirection.x + inputDirection.z * inputDirection.z);
         if (inputLength > 0.001f) {
             inputDirection.x /= inputLength;
             inputDirection.z /= inputLength;
         }
 
-        // カメラの前方ベクトルと右ベクトルを取得
         DirectX::XMFLOAT3 cameraForward = playerCamera->GetForwardVector();
         DirectX::XMFLOAT3 cameraRight = playerCamera->GetRightVector();
 
-        // Y軸成分を0にして水平方向のみを使用
         cameraForward.y = 0.0f;
         cameraRight.y = 0.0f;
 
-        // 正規化
         float forwardLength = sqrtf(cameraForward.x * cameraForward.x + cameraForward.z * cameraForward.z);
         if (forwardLength > 0.001f) {
             cameraForward.x /= forwardLength;
@@ -205,13 +194,11 @@ void Script_Player::PlayerMovement(float DeltaTime)
             cameraRight.z /= rightLength;
         }
 
-        // ワールド座標系での移動方向
         DirectX::XMFLOAT3 worldDirection;
         worldDirection.x = cameraRight.x * inputDirection.x + cameraForward.x * inputDirection.z;
         worldDirection.y = 0.0f;
         worldDirection.z = cameraRight.z * inputDirection.x + cameraForward.z * inputDirection.z;
 
-        // 移動速度を決定
         float currentSpeed = walkSpeed;
         if (Input::IsKeyPressed(VK_SHIFT) && !isAiming) {
             currentSpeed = runSpeed;
@@ -221,13 +208,12 @@ void Script_Player::PlayerMovement(float DeltaTime)
             currentSpeed = aimWalkSpeed;
         }
 
-        // 速度を適用
         DirectX::XMFLOAT3 targetVelocity;
         targetVelocity.x = worldDirection.x * currentSpeed;
         targetVelocity.z = worldDirection.z * currentSpeed;
 
         DirectX::XMFLOAT3 currentVelocity = playerRigidbody->GetVelocity();
-        targetVelocity.y = currentVelocity.y; // 重力による落下速度を維持
+        targetVelocity.y = currentVelocity.y;
 
         playerRigidbody->SetVelocity(targetVelocity);
         moveDirection = worldDirection;
@@ -247,14 +233,11 @@ void Script_Player::MouseInput(float DeltaTime)
     int mouseX = Input::GetMouseMoveX();
     int mouseY = Input::GetMouseMoveY();
 
-    // 感度設定（エイム時は別の感度を使用）
     float rotationSensitivity = isAiming ? aimCameraSensitivity : cameraSensitivity;
 
-    // カメラの水平回転（度数法）
     cameraYaw += mouseX * rotationSensitivity * DeltaTime;
     cameraYaw = NormalizeAngleDeg(cameraYaw);
 
-    // カメラの垂直回転（度数法で取得・設定）
     DirectX::XMFLOAT3 cameraRotation = CameraObject->GetRotation();
     float cameraVerticalAngleDeg = XMConvertToDegrees(cameraRotation.x);
 
@@ -263,13 +246,11 @@ void Script_Player::MouseInput(float DeltaTime)
 
     cameraRotation.x = XMConvertToRadians(cameraVerticalAngleDeg);
 
-    // カメラとプレイヤーの相対角度（度数法で計算）
     float relativeAngleDeg = AngleDifferenceDeg(playerYaw, cameraYaw);
     cameraRotation.y = XMConvertToRadians(relativeAngleDeg);
 
     CameraObject->SetRotation(cameraRotation);
 
-    // エイム入力検出
     if (Input::IsKeyPressed(VK_RBUTTON)) {
         isAiming = true;
     }
@@ -280,24 +261,20 @@ void Script_Player::MouseInput(float DeltaTime)
 
 void Script_Player::ShootUpdate(float DeltaTime)
 {
-    // 射撃アニメーションタイマーの更新
     if (isShooting) {
         shootAnimationTimer += DeltaTime;
 
         const float shootAnimationDuration = 0.7f;
 
         if (shootAnimationTimer >= shootAnimationDuration) {
-            // 射撃アニメーション終了
             isShooting = false;
             canShoot = true;
             shootAnimationTimer = 0.0f;
 
-            // エイム中の場合は5フレーム目のポーズに戻る
             if (isAiming && playerAnimation) {
                 playerAnimation->SetClip(aimAnimationIndex);
                 playerAnimation->SetLoop(false);
                 playerAnimation->Play();
-                // 5フレーム後に一時停止（次のフレームで処理）
             }
         }
     }
@@ -305,27 +282,24 @@ void Script_Player::ShootUpdate(float DeltaTime)
     // エイムを開始した瞬間（前フレームはエイムしていない、現在フレームはエイム中）
     static int aimFrameCount = 0;
     if (isAiming && !wasAiming) {
-        // エイム開始時に5フレーム目まで再生してから停止
         if (playerAnimation) {
             playerAnimation->SetClip(aimAnimationIndex);
             playerAnimation->SetLoop(false);
-            playerAnimation->SetPlaybackSpeed(1.0f); // 構え動作は通常速度
+            playerAnimation->SetPlaybackSpeed(1.0f);
             playerAnimation->Play();
             currentAnimationIndex = aimAnimationIndex;
             aimFrameCount = 0;
-            canShoot = true; // エイム開始時は射撃可能
+            canShoot = true;
         }
     }
 
-    // エイム中で射撃していない場合、5フレーム後に一時停止
     if (isAiming && !isShooting && currentAnimationIndex == aimAnimationIndex) {
         if (!wasAiming) {
-            aimFrameCount = 0; // エイム開始時にカウントリセット
+            aimFrameCount = 0;
         }
         aimFrameCount++;
 
-        if (aimFrameCount >= 5 && playerAnimation) {
-            // 5フレーム経過したら一時停止
+        if (aimFrameCount >= 1 && playerAnimation) {
             playerAnimation->Pause();
         }
     }
@@ -333,18 +307,16 @@ void Script_Player::ShootUpdate(float DeltaTime)
         aimFrameCount = 0;
     }
 
-    // 左クリックでエイム中に射撃（射撃可能な場合のみ）
     if (isAiming && Input::IsKeyTriggered(VK_LBUTTON) && canShoot) {
         isShooting = true;
-        canShoot = false; // 射撃不可に設定
+        canShoot = false;
         shootAnimationTimer = 0.0f;
         aimFrameCount = 0;
 
         if (playerAnimation) {
-            // 射撃アニメーションを最初から再生（ループしない、速度1.5倍）
             playerAnimation->SetClip(aimAnimationIndex);
             playerAnimation->SetLoop(false);
-            playerAnimation->SetPlaybackSpeed(shootAnimationSpeed); // 1.5倍速
+            playerAnimation->SetPlaybackSpeed(shootAnimationSpeed);
             playerAnimation->Restart();
             playerAnimation->Play();
             currentAnimationIndex = aimAnimationIndex;
