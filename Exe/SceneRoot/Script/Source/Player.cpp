@@ -90,6 +90,30 @@ void Script_Player::BeginPlay() {
     wasAiming = false;
     canShoot = true;
     shootAnimationTimer = 0.0f;
+
+    // プレハブの取得
+    ReticleInPrefab = _parentScene->FindPrefabObject(ReticleInName);
+    ReticleOutPrefab = _parentScene->FindPrefabObject(ReticleOutName);
+    ReticlePrefab = _parentScene->FindPrefabObject(ReticleName);
+
+    // プレハブが見つからない場合の警告
+    if (!ReticleInPrefab) {
+        std::string msg = "[Player] Warning: ReticleIn prefab not found: " + ReticleInName + "\n";
+        OutputDebugStringA(msg.c_str());
+    }
+    if (!ReticleOutPrefab) {
+        std::string msg = "[Player] Warning: ReticleOut prefab not found: " + ReticleOutName + "\n";
+        OutputDebugStringA(msg.c_str());
+    }
+    if (!ReticlePrefab) {
+        std::string msg = "[Player] Warning: Reticle prefab not found: " + ReticleName + "\n";
+        OutputDebugStringA(msg.c_str());
+    }
+
+    // 召喚インスタンスの初期化
+    SpawnedReticleIn = nullptr;
+    SpawnedReticleOut = nullptr;
+    SpawnedReticle = nullptr;
 }
 
 void Script_Player::Update(float DeltaTime) {
@@ -100,6 +124,7 @@ void Script_Player::Update(float DeltaTime) {
     PlayerRotationUpdate(DeltaTime);
     AimUpdate(DeltaTime);
     AnimationUpdate(DeltaTime);
+    ReticleUpdate(DeltaTime);  // 追加
 
     // 前フレームのエイム状態を保存
     wasAiming = isAiming;
@@ -107,6 +132,7 @@ void Script_Player::Update(float DeltaTime) {
 
 void Script_Player::EndPlay() {
     IScript::EndPlay();
+
     if (playerCamera) {
         delete playerCamera;
         playerCamera = nullptr;
@@ -444,5 +470,59 @@ void Script_Player::AnimationUpdate(float DeltaTime)
         playerAnimation->SetPlaybackSpeed(1.0f); // 通常速度
         playerAnimation->Play();
         currentAnimationIndex = targetAnimationIndex;
+    }
+}
+
+void Script_Player::ReticleUpdate(float DeltaTime)
+{
+    if (!_parentScene) return;
+
+    // エイム開始時
+    if (isAiming && !wasAiming) {
+        OutputDebugStringA("[Player] Aim started - Spawning ReticleIn and Reticle\n");
+
+        // ReticleInを召喚
+        if (ReticleInPrefab) {
+            SpawnedReticleIn = _parentScene->AddObject(ReticleInPrefab);
+            if (SpawnedReticleIn) {
+                OutputDebugStringA("[Player] ReticleIn spawned successfully\n");
+            }
+            else {
+                OutputDebugStringA("[Player] Error: Failed to spawn ReticleIn\n");
+            }
+        }
+
+        // Reticleを召喚
+        if (ReticlePrefab) {
+            SpawnedReticle = _parentScene->AddObject(ReticlePrefab);
+            if (SpawnedReticle) {
+                OutputDebugStringA("[Player] Reticle spawned successfully\n");
+            }
+            else {
+                OutputDebugStringA("[Player] Error: Failed to spawn Reticle\n");
+            }
+        }
+    }
+    // エイム解除時
+    else if (!isAiming && wasAiming) {
+        OutputDebugStringA("[Player] Aim ended - Removing Reticle and spawning ReticleOut\n");
+
+        // Reticleをシーンから削除
+        if (SpawnedReticle) {
+            _parentScene->RemoveObject(SpawnedReticle);
+            SpawnedReticle = nullptr;
+            OutputDebugStringA("[Player] Reticle removed from scene\n");
+        }
+
+        // ReticleOutを召喚
+        if (ReticleOutPrefab) {
+			SpawnedReticleOut = _parentScene->AddObject(ReticleOutPrefab);
+            if (SpawnedReticleOut) {
+                OutputDebugStringA("[Player] ReticleOut spawned successfully\n");
+            }
+            else {
+                OutputDebugStringA("[Player] Error: Failed to spawn ReticleOut\n");
+            }
+        }
     }
 }

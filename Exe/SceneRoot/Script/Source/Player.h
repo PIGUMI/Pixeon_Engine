@@ -13,11 +13,20 @@ private:
     void PlayerMovement(float DeltaTime);
     void AnimationUpdate(float DeltaTime);
     void ShootUpdate(float DeltaTime);
+    void ReticleUpdate(float DeltaTime);  // 追加
 public:
     Object* CameraObject = nullptr;
     Camera* playerCamera = nullptr;
     Rigidbody* playerRigidbody = nullptr;
     Animation* playerAnimation = nullptr;
+
+    Object* ReticleInPrefab = nullptr;   // エイムインアニメーションのプレハブ
+    Object* ReticleOutPrefab = nullptr;  // エイムアウトアニメーションのプレハブ
+    Object* ReticlePrefab = nullptr;     // エイム中のレティクルプレハブ
+
+    Object* SpawnedReticleIn = nullptr;   // 召喚されたReticleInインスタンス
+    Object* SpawnedReticleOut = nullptr;  // 召喚されたReticleOutインスタンス
+    Object* SpawnedReticle = nullptr;     // 召喚されたReticleインスタンス
 
     // エイム関連
     bool isAiming = false;
@@ -36,8 +45,8 @@ public:
     float aimTransitionSpeed = 10.0f; // エイムの遷移速度
 
     // プレイヤー回転関連
-    float cameraYaw = 0.0f;          // カメラの絶対Y軸回転角度
-    float playerYaw = 0.0f;          // プレイヤーの絶対Y軸回転角度
+    float cameraYaw = 0.0f;          // カメラの水平回転角度
+    float playerYaw = 0.0f;          // プレイヤーの水平回転角度
     float playerRotationSpeed = 8.0f; // プレイヤーの回転速度
     bool isMoving = false;           // 移動中フラグ
     bool isRunning = false;
@@ -66,6 +75,10 @@ public:
     int currentAnimationIndex = -1;  // 現在再生中のアニメーション番号
     float shootAnimationSpeed = 1.5f; // 射撃アニメーション速度
 
+    std::string ReticleInName = "ReticleIn";   // エイムインアニメーションの名前
+    std::string ReticleOutName = "ReticleOut"; // エイムアウトアニメーションの名前
+    std::string ReticleName = "Reticle";       // エイム中のレティクルオブジェクトの名前
+
 public:
 #define PROPERTY_LIST(ACTION) \
     ACTION(FLOAT, walkSpeed) \
@@ -85,7 +98,10 @@ public:
     ACTION(FLOAT, shootAnimationSpeed) \
     ACTION(INT, idleAnimationIndex) \
     ACTION(INT, runAnimationIndex) \
-    ACTION(INT, aimAnimationIndex)
+    ACTION(INT, aimAnimationIndex) \
+    ACTION(STRING, ReticleInName) \
+    ACTION(STRING, ReticleOutName) \
+    ACTION(STRING, ReticleName)
 
     DECLARE_SCRIPT_PROPERTIES()
 #undef PROPERTY_LIST
