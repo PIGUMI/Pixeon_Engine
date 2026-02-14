@@ -155,8 +155,8 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
 
-	// カプセルの描画(簡略化:円柱部分と上下の円)
 	const int segments = 16;
+	const int hemisphereSegments = 8;  // 半球の縦方向の分割数
 	const float angleStep = DirectX::XM_2PI / segments;
 
 	// Y軸方向のベクトル(回転適用後)
@@ -177,13 +177,14 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMStoreFloat3(&topCenterF, topCenter);
 	DirectX::XMStoreFloat3(&bottomCenterF, bottomCenter);
 
-	// 円柱の円を描画(上下)
+	// 円柱部分の円の描画
 	DirectX::XMVECTOR rightVec = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	rightVec = DirectX::XMVector3TransformNormal(rightVec, matRot);
 
 	DirectX::XMVECTOR forwardVec = DirectX::XMVector3Cross(upVec, rightVec);
 	forwardVec = DirectX::XMVector3Normalize(forwardVec);
 
+	// 円柱部分の上下の円
 	for (int i = 0; i < segments; ++i)
 	{
 		float angle1 = angleStep * i;
@@ -215,6 +216,136 @@ void CapsuleCollision::Draw(int Layer)
 		if (i % (segments / 4) == 0)
 		{
 			LineRenderer::GetInstance()->DrawLine(p1Top, p1Bottom, color, world, view, Proj, 0.05f);
+		}
+	}
+
+	// 上半球の描画
+	for (int lat = 0; lat < hemisphereSegments; ++lat)
+	{
+		float phi1 = DirectX::XM_PIDIV2 * (float)lat / hemisphereSegments;
+		float phi2 = DirectX::XM_PIDIV2 * (float)(lat + 1) / hemisphereSegments;
+
+		for (int lon = 0; lon < segments; ++lon)
+		{
+			float theta1 = angleStep * lon;
+			float theta2 = angleStep * ((lon + 1) % segments);
+
+			// 緯度方向のライン
+			DirectX::XMVECTOR p1 = DirectX::XMVectorAdd(
+				topCenter,
+				DirectX::XMVectorAdd(
+					DirectX::XMVectorAdd(
+						DirectX::XMVectorScale(rightVec, scaledRadius * cosf(phi1) * cosf(theta1)),
+						DirectX::XMVectorScale(forwardVec, scaledRadius * cosf(phi1) * sinf(theta1))
+					),
+					DirectX::XMVectorScale(upVec, scaledRadius * sinf(phi1))
+				)
+			);
+
+			DirectX::XMVECTOR p2 = DirectX::XMVectorAdd(
+				topCenter,
+				DirectX::XMVectorAdd(
+					DirectX::XMVectorAdd(
+						DirectX::XMVectorScale(rightVec, scaledRadius * cosf(phi2) * cosf(theta1)),
+						DirectX::XMVectorScale(forwardVec, scaledRadius * cosf(phi2) * sinf(theta1))
+					),
+					DirectX::XMVectorScale(upVec, scaledRadius * sinf(phi2))
+				)
+			);
+
+			DirectX::XMFLOAT3 p1f, p2f;
+			DirectX::XMStoreFloat3(&p1f, p1);
+			DirectX::XMStoreFloat3(&p2f, p2);
+
+			// 経度線(4本のみ)
+			if (lon % (segments / 4) == 0)
+			{
+				LineRenderer::GetInstance()->DrawLine(p1f, p2f, color, world, view, Proj, 0.05f);
+			}
+
+			// 緯度線
+			if (lat % 2 == 0)  // 2段おきに描画
+			{
+				DirectX::XMVECTOR p3 = DirectX::XMVectorAdd(
+					topCenter,
+					DirectX::XMVectorAdd(
+						DirectX::XMVectorAdd(
+							DirectX::XMVectorScale(rightVec, scaledRadius * cosf(phi1) * cosf(theta2)),
+							DirectX::XMVectorScale(forwardVec, scaledRadius * cosf(phi1) * sinf(theta2))
+						),
+						DirectX::XMVectorScale(upVec, scaledRadius * sinf(phi1))
+					)
+				);
+
+				DirectX::XMFLOAT3 p3f;
+				DirectX::XMStoreFloat3(&p3f, p3);
+				LineRenderer::GetInstance()->DrawLine(p1f, p3f, color, world, view, Proj, 0.05f);
+			}
+		}
+	}
+
+	// 下半球の描画
+	for (int lat = 0; lat < hemisphereSegments; ++lat)
+	{
+		float phi1 = DirectX::XM_PIDIV2 * (float)lat / hemisphereSegments;
+		float phi2 = DirectX::XM_PIDIV2 * (float)(lat + 1) / hemisphereSegments;
+
+		for (int lon = 0; lon < segments; ++lon)
+		{
+			float theta1 = angleStep * lon;
+			float theta2 = angleStep * ((lon + 1) % segments);
+
+			// 緯度方向のライン
+			DirectX::XMVECTOR p1 = DirectX::XMVectorAdd(
+				bottomCenter,
+				DirectX::XMVectorAdd(
+					DirectX::XMVectorAdd(
+						DirectX::XMVectorScale(rightVec, scaledRadius * cosf(phi1) * cosf(theta1)),
+						DirectX::XMVectorScale(forwardVec, scaledRadius * cosf(phi1) * sinf(theta1))
+					),
+					DirectX::XMVectorScale(upVec, -scaledRadius * sinf(phi1))
+				)
+			);
+
+			DirectX::XMVECTOR p2 = DirectX::XMVectorAdd(
+				bottomCenter,
+				DirectX::XMVectorAdd(
+					DirectX::XMVectorAdd(
+						DirectX::XMVectorScale(rightVec, scaledRadius * cosf(phi2) * cosf(theta1)),
+						DirectX::XMVectorScale(forwardVec, scaledRadius * cosf(phi2) * sinf(theta1))
+					),
+					DirectX::XMVectorScale(upVec, -scaledRadius * sinf(phi2))
+				)
+			);
+
+			DirectX::XMFLOAT3 p1f, p2f;
+			DirectX::XMStoreFloat3(&p1f, p1);
+			DirectX::XMStoreFloat3(&p2f, p2);
+
+			// 経度線(4本のみ)
+			if (lon % (segments / 4) == 0)
+			{
+				LineRenderer::GetInstance()->DrawLine(p1f, p2f, color, world, view, Proj, 0.05f);
+			}
+
+			// 緯度線
+			if (lat % 2 == 0)  // 2段おきに描画
+			{
+				DirectX::XMVECTOR p3 = DirectX::XMVectorAdd(
+					bottomCenter,
+					DirectX::XMVectorAdd(
+						DirectX::XMVectorAdd(
+							DirectX::XMVectorScale(rightVec, scaledRadius * cosf(phi1) * cosf(theta2)),
+							DirectX::XMVectorScale(forwardVec, scaledRadius * cosf(phi1) * sinf(theta2))
+						),
+						DirectX::XMVectorScale(upVec, -scaledRadius * sinf(phi1))
+					)
+				);
+
+				DirectX::XMFLOAT3 p3f;
+				DirectX::XMStoreFloat3(&p3f, p3);
+				LineRenderer::GetInstance()->DrawLine(p1f, p3f, color, world, view, Proj, 0.05f);
+			}
 		}
 	}
 }

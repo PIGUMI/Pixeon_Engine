@@ -23,6 +23,9 @@ void CameraComponent::Init(AbstractObject* Prt) {
 }
 
 void CameraComponent::EditUpdate() {
+	// 親オブジェクトがない場合はスキップ
+	if (!_Parent) return;
+
 	auto trans = _Parent->GetWorldTransform();
 
 	if (_IsChangeCalculation) {
@@ -40,6 +43,9 @@ void CameraComponent::EditUpdate() {
 }
 
 void CameraComponent::InGameUpdate() {
+	// 親オブジェクトがない場合はスキップ
+	if (!_Parent) return;
+
 	auto trans = _Parent->GetWorldTransform();
 
 	if (_IsChangeCalculation) {

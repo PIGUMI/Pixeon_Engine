@@ -132,6 +132,7 @@ public:
 	void SetOwner(AbstractObject* owner);
 
 	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
+	void SetEditorCamera(CameraComponent* camera) { editorCamera_ = camera; }  // í«â¡
 	void PreviewUpdate();
 
 	void SetLayer(int layer) { layer_ = layer; }
@@ -144,7 +145,7 @@ public:
 	Animator2D* Copy();
 private:
 	void KeyFrameUpdate();
-	void EnsurePreviewImage();  // í«â¡:  íxâÑèâä˙âªóp
+	void EnsurePreviewImage();
 
 	DirectX::XMFLOAT2 EaseByBezierCurve(const CurveData& curve, const DirectX::XMFLOAT2& startvalue, const DirectX::XMFLOAT2& endvalue, float elapsed, float duration = 1.0f);
 
@@ -163,4 +164,5 @@ public:
 	AbstractObject* owner_ = nullptr;
 	bool bEditorMode_ = false;
 	int layer_ = 0;
+	CameraComponent* editorCamera_ = nullptr;  // í«â¡
 };

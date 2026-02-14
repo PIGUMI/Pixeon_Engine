@@ -1,148 +1,448 @@
-#include "Player.h"
+﻿#include "Player.h"
+#include <Windows.h>
+#include <DirectXMath.h>
 
-void Script_Player::BeginPlay() {
-    IScript::BeginPlay(); // BeginPlay
-	_Head = _parentObject->FindChildObject("Head");
-	_Body = _parentObject->FindChildObject("Body");
-	_Camera = _Head->GetComponent<Camera>("CameraComponent");
-	_parentScene->SetMainCamera(_Camera);
-	FixedMouseCursor(true);
-
-	_parentObject->SetInt("HP", 100);
+template<typename T>
+inline T Clamp(T value, T min, T max) {
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
 }
 
-void Script_Player:: Update(float DeltaTime) {
-    IScript::Update(DeltaTime);// Update
-	Movement(DeltaTime);
+template<typename T>
+inline T Lerp(T a, T b, float t) {
+    return a + (b - a) * t;
+}
+
+inline DirectX::XMFLOAT3 LerpFloat3(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b, float t) {
+    return DirectX::XMFLOAT3(
+        Lerp(a.x, b.x, t),
+        Lerp(a.y, b.y, t),
+        Lerp(a.z, b.z, t)
+    );
+}
+
+// 角度を-180～180の範囲に正規化
+inline float NormalizeAngleDeg(float angle) {
+    while (angle > 180.0f) angle -= 360.0f;
+    while (angle < -180.0f) angle += 360.0f;
+    return angle;
+}
+
+// 2つの角度間の最短回転差を計算（度数法）
+inline float AngleDifferenceDeg(float from, float to) {
+    float diff = NormalizeAngleDeg(to - from);
+    return diff;
+}
+
+// 角度を滑らかに補間（度数法）
+inline float LerpAngleDeg(float from, float to, float t) {
+    float diff = AngleDifferenceDeg(from, to);
+    return NormalizeAngleDeg(from + diff * t);
+}
+
+using namespace DirectX;
+
+void Script_Player::BeginPlay() {
+    IScript::BeginPlay();
+
+    /* カメラ設定 */
+    CameraObject = _parentObject->FindChildObject("Camera");
+    if (!CameraObject) {
+        return;
+    }
+    playerCamera = CameraObject->GetComponent<Camera>("CameraComponent");
+    _parentScene->SetMainCamera(playerCamera);
+    Input::FixMouseCursor(true);
+
+    /* Rigidbody取得 */
+    playerRigidbody = _parentObject->GetComponent<Rigidbody>("RigidBody");
+    if (playerRigidbody) {
+        playerRigidbody->SetUseGravity(true);
+        playerRigidbody->SetAngularDamping(1.0f);
+    }
+
+    /* Animation取得 */
+    playerAnimation = _parentObject->GetComponent<Animation>("Animation");
+    if (playerAnimation) {
+        // 初期アニメーションを待機に設定
+        playerAnimation->SetClip(idleAnimationIndex);
+        playerAnimation->SetLoop(true);
+        playerAnimation->Play();
+        currentAnimationIndex = idleAnimationIndex;
+    }
+
+    defaultCameraOffset = CameraObject->GetPosition();
+    currentCameraOffset = defaultCameraOffset;
+
+    CameraTransform camTransform = playerCamera->GetTransform();
+    defaultRadius = sqrtf(
+        camTransform.position.x * camTransform.position.x +
+        camTransform.position.y * camTransform.position.y +
+        camTransform.position.z * camTransform.position.z
+    );
+    currentRadius = defaultRadius;
+
+    playerYaw = XMConvertToDegrees(_parentObject->GetRotation().y);
+    cameraYaw = playerYaw;
+
+    moveDirection = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+    wasAiming = false;
+    canShoot = true;
+    shootAnimationTimer = 0.0f;
+}
+
+void Script_Player::Update(float DeltaTime) {
+    IScript::Update(DeltaTime);
+    PlayerMovement(DeltaTime);
+    MouseInput(DeltaTime);
+    ShootUpdate(DeltaTime);
+    PlayerRotationUpdate(DeltaTime);
+    AimUpdate(DeltaTime);
+    AnimationUpdate(DeltaTime);
+
+    // 前フレームのエイム状態を保存
+    wasAiming = isAiming;
 }
 
 void Script_Player::EndPlay() {
-    IScript::EndPlay();// EndPlay
-	if (_Head) {
-		delete _Head;
-		_Head = nullptr;
-	}
-	if (_Body) {
-		delete _Body;
-		_Body = nullptr;
-	}
-	if (_Camera) {
-		delete _Camera;
-		_Camera = nullptr;
-	}
+    IScript::EndPlay();
+    if (playerCamera) {
+        delete playerCamera;
+        playerCamera = nullptr;
+    }
+    if (CameraObject) {
+        delete CameraObject;
+        CameraObject = nullptr;
+    }
+    if (playerRigidbody) {
+        delete playerRigidbody;
+        playerRigidbody = nullptr;
+    }
+    if (playerAnimation) {
+        delete playerAnimation;
+        playerAnimation = nullptr;
+    }
 }
 
-void Script_Player::Movement(float DeltaTime) {
-	// �}�E�X�̈ړ��ʂ��擾
-	int MouseX = Input::GetMouseMoveX();
-	int MouseY = Input::GetMouseMoveY();
-	transform headTransform;
-	transform bodyTransform;
-	headTransform = _Head->GetTransform();
-	bodyTransform = _Body->GetTransform();
-	headTransform.rotation.x += (float)MouseY * _Sensitivity;
-	headTransform.rotation.y += (float)MouseX * _Sensitivity;
+void Script_Player::PlayerMovement(float DeltaTime)
+{
+    if (!playerRigidbody || !playerCamera) return;
+    DirectX::XMFLOAT3 inputDirection(0.0f, 0.0f, 0.0f);
+    isMoving = false;
+    isRunning = false;
 
-	// �㉺���E�̉�]����
-	if (headTransform.rotation.x > DirectX::XMConvertToRadians(_LimitAngle))headTransform.rotation.x = DirectX::XMConvertToRadians(_LimitAngle);
-	if (headTransform.rotation.x < -DirectX::XMConvertToRadians(_LimitAngle))headTransform.rotation.x = -DirectX::XMConvertToRadians(_LimitAngle);
-	if (headTransform.rotation.y - bodyTransform.rotation.y > DirectX::XMConvertToRadians(_LimitAngle))headTransform.rotation.y = bodyTransform.rotation.y + DirectX::XMConvertToRadians(_LimitAngle);
-	if (headTransform.rotation.y - bodyTransform.rotation.y < -DirectX::XMConvertToRadians(_LimitAngle))headTransform.rotation.y = bodyTransform.rotation.y - DirectX::XMConvertToRadians(_LimitAngle);
-	transform playerTransform;
-	DirectX::XMFLOAT3 forward;
-	DirectX::XMFLOAT3 right;
-	playerTransform = _parentObject->GetTransform();
-	forward = _Camera->GetForwardVector();
-	right = _Camera->GetRightVector();
+    // WASD入力を取得
+    if (Input::IsKeyPressed('W')) {
+        inputDirection.z -= 1.0f; // 前方
+        isMoving = true;
+    }
+    if (Input::IsKeyPressed('S')) {
+        inputDirection.z += 1.0f; // 後方
+        isMoving = true;
+    }
+    if (Input::IsKeyPressed('A')) {
+        inputDirection.x += 1.0f; // 左
+        isMoving = true;
+    }
+    if (Input::IsKeyPressed('D')) {
+        inputDirection.x -= 1.0f; // 右
+        isMoving = true;
+    }
 
-	// �O�����̐��K��
-	forward.y = 0.0f;
-	float length = sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
-	if (length > 0.0f)
-	{
-		forward.x /= length;
-		forward.y /= length;
-		forward.z /= length;
-	}
+    if (isMoving) {
+        // 入力ベクトルを正規化
+        float inputLength = sqrtf(inputDirection.x * inputDirection.x + inputDirection.z * inputDirection.z);
+        if (inputLength > 0.001f) {
+            inputDirection.x /= inputLength;
+            inputDirection.z /= inputLength;
+        }
 
-	// ���������̐��K��
-	right.y = 0.0f;
-	length = sqrtf(right.x * right.x + right.y * right.y + right.z * right.z);
-	if (length > 0.0f)
-	{
-		right.x /= length;
-		right.y /= length;
-		right.z /= length;
-	}
-	_isMoving = false;
+        // カメラの前方ベクトルと右ベクトルを取得
+        DirectX::XMFLOAT3 cameraForward = playerCamera->GetForwardVector();
+        DirectX::XMFLOAT3 cameraRight = playerCamera->GetRightVector();
 
-	// �L�[���͂ɂ��ړ�����
-	int AnimationNo = 0;
+        // Y軸成分を0にして水平方向のみを使用
+        cameraForward.y = 0.0f;
+        cameraRight.y = 0.0f;
 
-	if (Input::IsKeyPressed('W'))
-	{
-		AnimationNo = 1;
-		playerTransform.position.x += -forward.x * _MoveSpeed;
-		playerTransform.position.y += -forward.y * _MoveSpeed;
-		playerTransform.position.z += -forward.z * _MoveSpeed;
-		bodyTransform = _Body->GetTransform();
-		bodyTransform.rotation.y = headTransform.rotation.y;
-		_Body->SetTransform(bodyTransform);
-		_parentObject->SetTransform(playerTransform);
-		_isMoving = true;
-	}
+        // 正規化
+        float forwardLength = sqrtf(cameraForward.x * cameraForward.x + cameraForward.z * cameraForward.z);
+        if (forwardLength > 0.001f) {
+            cameraForward.x /= forwardLength;
+            cameraForward.z /= forwardLength;
+        }
 
-	if (Input::IsKeyPressed('S'))
-	{
-		AnimationNo = 1;
-		playerTransform.position.x += forward.x * _MoveSpeed;
-		playerTransform.position.y += forward.y * _MoveSpeed;
-		playerTransform.position.z += forward.z * _MoveSpeed;
-		bodyTransform = _Body->GetTransform();
-		bodyTransform.rotation.y = headTransform.rotation.y;
-		_Body->SetTransform(bodyTransform);
-		_parentObject->SetTransform(playerTransform);
-		_isMoving = true;
-	}
+        float rightLength = sqrtf(cameraRight.x * cameraRight.x + cameraRight.z * cameraRight.z);
+        if (rightLength > 0.001f) {
+            cameraRight.x /= rightLength;
+            cameraRight.z /= rightLength;
+        }
 
-	if (Input::IsKeyPressed('A'))
-	{
-		AnimationNo = 1;
-		playerTransform.position.x += right.x * (_MoveSpeed * 0.5f);
-		playerTransform.position.y += right.y * (_MoveSpeed * 0.5f);
-		playerTransform.position.z += right.z * (_MoveSpeed * 0.5f);
-		bodyTransform = _Body->GetTransform();
-		bodyTransform.rotation.y = headTransform.rotation.y;
-		_Body->SetTransform(bodyTransform);
-		_parentObject->SetTransform(playerTransform);
-		_isMoving = true;
-	}
+        // ワールド座標系での移動方向
+        DirectX::XMFLOAT3 worldDirection;
+        worldDirection.x = cameraRight.x * inputDirection.x + cameraForward.x * inputDirection.z;
+        worldDirection.y = 0.0f;
+        worldDirection.z = cameraRight.z * inputDirection.x + cameraForward.z * inputDirection.z;
 
-	if (Input::IsKeyPressed('D'))
-	{
-		AnimationNo = 1;
-		playerTransform.position.x += -right.x * (_MoveSpeed * 0.5f);
-		playerTransform.position.y += -right.y * (_MoveSpeed * 0.5f);
-		playerTransform.position.z += -right.z * (_MoveSpeed * 0.5f);
-		bodyTransform = _Body->GetTransform();
-		bodyTransform.rotation.y = headTransform.rotation.y;
-		_Body->SetTransform(bodyTransform);
-		_parentObject->SetTransform(playerTransform);
-		_isMoving = true;
-	}
+        // 移動速度を決定
+        float currentSpeed = walkSpeed;
+        if (Input::IsKeyPressed(VK_SHIFT) && !isAiming) {
+            currentSpeed = runSpeed;
+            isRunning = true;
+        }
+        if (isAiming) {
+            currentSpeed = aimWalkSpeed;
+        }
 
-	if (_isMoving)
-	{
-		_walkTimer += DeltaTime * 10.0f;
-		float headBobAmount = cosf(_walkTimer) * 0.05f;
-		headTransform.position.y = headBobAmount;
-		headTransform.position.y = 1.65f;
-	}
-	else
-	{
-		_walkTimer = 0.0f;
-		headTransform.position.y = 1.65f;
-	}
-	_Head->SetTransform(headTransform);
-	_Body->SetInt("AnimationNo", AnimationNo);
+        // 速度を適用
+        DirectX::XMFLOAT3 targetVelocity;
+        targetVelocity.x = worldDirection.x * currentSpeed;
+        targetVelocity.z = worldDirection.z * currentSpeed;
+
+        DirectX::XMFLOAT3 currentVelocity = playerRigidbody->GetVelocity();
+        targetVelocity.y = currentVelocity.y; // 重力による落下速度を維持
+
+        playerRigidbody->SetVelocity(targetVelocity);
+        moveDirection = worldDirection;
+    }
+    else {
+        DirectX::XMFLOAT3 currentVelocity = playerRigidbody->GetVelocity();
+        currentVelocity.x = 0.0f;
+        currentVelocity.z = 0.0f;
+        playerRigidbody->SetVelocity(currentVelocity);
+    }
+}
+
+void Script_Player::MouseInput(float DeltaTime)
+{
+    if (!CameraObject || !playerCamera) return;
+
+    int mouseX = Input::GetMouseMoveX();
+    int mouseY = Input::GetMouseMoveY();
+
+    // 感度設定（エイム時は別の感度を使用）
+    float rotationSensitivity = isAiming ? aimCameraSensitivity : cameraSensitivity;
+
+    // カメラの水平回転（度数法）
+    cameraYaw += mouseX * rotationSensitivity * DeltaTime;
+    cameraYaw = NormalizeAngleDeg(cameraYaw);
+
+    // カメラの垂直回転（度数法で取得・設定）
+    DirectX::XMFLOAT3 cameraRotation = CameraObject->GetRotation();
+    float cameraVerticalAngleDeg = XMConvertToDegrees(cameraRotation.x);
+
+    cameraVerticalAngleDeg += mouseY * rotationSensitivity * DeltaTime;
+    cameraVerticalAngleDeg = Clamp(cameraVerticalAngleDeg, cameraVerticalAngleDegMin, cameraVerticalAngleDegMax);
+
+    cameraRotation.x = XMConvertToRadians(cameraVerticalAngleDeg);
+
+    // カメラとプレイヤーの相対角度（度数法で計算）
+    float relativeAngleDeg = AngleDifferenceDeg(playerYaw, cameraYaw);
+    cameraRotation.y = XMConvertToRadians(relativeAngleDeg);
+
+    CameraObject->SetRotation(cameraRotation);
+
+    // エイム入力検出
+    if (Input::IsKeyPressed(VK_RBUTTON)) {
+        isAiming = true;
+    }
+    else {
+        isAiming = false;
+    }
+}
+
+void Script_Player::ShootUpdate(float DeltaTime)
+{
+    // 射撃アニメーションタイマーの更新
+    if (isShooting) {
+        shootAnimationTimer += DeltaTime;
+
+        const float shootAnimationDuration = 0.7f;
+
+        if (shootAnimationTimer >= shootAnimationDuration) {
+            // 射撃アニメーション終了
+            isShooting = false;
+            canShoot = true;
+            shootAnimationTimer = 0.0f;
+
+            // エイム中の場合は5フレーム目のポーズに戻る
+            if (isAiming && playerAnimation) {
+                playerAnimation->SetClip(aimAnimationIndex);
+                playerAnimation->SetLoop(false);
+                playerAnimation->Play();
+                // 5フレーム後に一時停止（次のフレームで処理）
+            }
+        }
+    }
+
+    // エイムを開始した瞬間（前フレームはエイムしていない、現在フレームはエイム中）
+    static int aimFrameCount = 0;
+    if (isAiming && !wasAiming) {
+        // エイム開始時に5フレーム目まで再生してから停止
+        if (playerAnimation) {
+            playerAnimation->SetClip(aimAnimationIndex);
+            playerAnimation->SetLoop(false);
+            playerAnimation->SetPlaybackSpeed(1.0f); // 構え動作は通常速度
+            playerAnimation->Play();
+            currentAnimationIndex = aimAnimationIndex;
+            aimFrameCount = 0;
+            canShoot = true; // エイム開始時は射撃可能
+        }
+    }
+
+    // エイム中で射撃していない場合、5フレーム後に一時停止
+    if (isAiming && !isShooting && currentAnimationIndex == aimAnimationIndex) {
+        if (!wasAiming) {
+            aimFrameCount = 0; // エイム開始時にカウントリセット
+        }
+        aimFrameCount++;
+
+        if (aimFrameCount >= 5 && playerAnimation) {
+            // 5フレーム経過したら一時停止
+            playerAnimation->Pause();
+        }
+    }
+    else if (!isAiming || isShooting) {
+        aimFrameCount = 0;
+    }
+
+    // 左クリックでエイム中に射撃（射撃可能な場合のみ）
+    if (isAiming && Input::IsKeyTriggered(VK_LBUTTON) && canShoot) {
+        isShooting = true;
+        canShoot = false; // 射撃不可に設定
+        shootAnimationTimer = 0.0f;
+        aimFrameCount = 0;
+
+        if (playerAnimation) {
+            // 射撃アニメーションを最初から再生（ループしない、速度1.5倍）
+            playerAnimation->SetClip(aimAnimationIndex);
+            playerAnimation->SetLoop(false);
+            playerAnimation->SetPlaybackSpeed(shootAnimationSpeed); // 1.5倍速
+            playerAnimation->Restart();
+            playerAnimation->Play();
+            currentAnimationIndex = aimAnimationIndex;
+        }
+
+        // ここで弾を発射する処理を追加
+        // TODO: 発射処理の実装
+    }
+
+    if (!isAiming) {
+        if (isShooting) {
+            isShooting = false;
+            shootAnimationTimer = 0.0f;
+        }
+        canShoot = true;
+        aimFrameCount = 0;
+    }
+}
+
+void Script_Player::PlayerRotationUpdate(float DeltaTime)
+{
+    if (!_parentObject || !CameraObject) return;
+
+    bool shouldRotate = isAiming || isMoving;
+
+    if (shouldRotate) {
+        // 角度差を計算（度数法）
+        float angleDiffDeg = AngleDifferenceDeg(playerYaw, cameraYaw);
+
+        // エイム時と通常時で異なる設定を使用
+        float rotationSpeed;
+        float rotationStartThresholdDeg;
+
+        if (isAiming) {
+            rotationSpeed = playerRotationSpeed * aimRotationSpeedMultiplier * DeltaTime;
+            rotationStartThresholdDeg = aimRotationThreshold;
+        }
+        else {
+            rotationSpeed = playerRotationSpeed * DeltaTime;
+            rotationStartThresholdDeg = normalRotationThreshold;
+        }
+
+        if (abs(angleDiffDeg) > rotationStartThresholdDeg) {
+            // プレイヤーを回転（度数法）
+            playerYaw = LerpAngleDeg(playerYaw, cameraYaw, rotationSpeed);
+            playerYaw = NormalizeAngleDeg(playerYaw);
+
+            // プレイヤーの回転を適用（ラジアンに変換）
+            DirectX::XMFLOAT3 playerRotation = _parentObject->GetRotation();
+            playerRotation.y = XMConvertToRadians(playerYaw);
+            _parentObject->SetRotation(playerRotation);
+
+            // カメラの相対角度を再計算
+            float newRelativeAngleDeg = AngleDifferenceDeg(playerYaw, cameraYaw);
+            DirectX::XMFLOAT3 cameraRotation = CameraObject->GetRotation();
+            cameraRotation.y = XMConvertToRadians(newRelativeAngleDeg);
+            CameraObject->SetRotation(cameraRotation);
+        }
+    }
+}
+
+void Script_Player::AimUpdate(float DeltaTime)
+{
+    if (!CameraObject || !playerCamera) return;
+
+    float targetRadius = isAiming ? aimRadius : defaultRadius;
+    DirectX::XMFLOAT3 targetOffset = isAiming ? aimCameraOffset : defaultCameraOffset;
+
+    float t = Clamp(aimTransitionSpeed * DeltaTime, 0.0f, 1.0f);
+
+    currentRadius = Lerp(currentRadius, targetRadius, t);
+    currentCameraOffset = LerpFloat3(currentCameraOffset, targetOffset, t);
+
+    CameraTransform camTransform = playerCamera->GetTransform();
+
+    float currentLength = sqrtf(
+        camTransform.position.x * camTransform.position.x +
+        camTransform.position.y * camTransform.position.y +
+        camTransform.position.z * camTransform.position.z
+    );
+
+    if (currentLength > 0.001f) {
+        float scale = currentRadius / currentLength;
+        camTransform.position.x *= scale;
+        camTransform.position.y *= scale;
+        camTransform.position.z *= scale;
+    }
+
+    playerCamera->SetTransform(camTransform);
+    CameraObject->SetPosition(currentCameraOffset);
+}
+
+void Script_Player::AnimationUpdate(float DeltaTime)
+{
+    if (!playerAnimation) return;
+
+    // 射撃中はアニメーションを変更しない
+    if (isShooting) {
+        return;
+    }
+
+    // エイム中（構えている状態）もアニメーションを変更しない
+    if (isAiming) {
+        return;
+    }
+
+    // アニメーションの優先順位: 走行 > 待機
+    int targetAnimationIndex = idleAnimationIndex;
+
+    if (isRunning) {
+        // 走行中は走行アニメーション
+        targetAnimationIndex = runAnimationIndex;
+    }
+    else if (isMoving) {
+        // 歩行中も走行アニメーション（速度は違うが同じアニメーション）
+        targetAnimationIndex = runAnimationIndex;
+    }
+
+    // アニメーションが変更された場合のみ切り替え
+    if (currentAnimationIndex != targetAnimationIndex) {
+        playerAnimation->SetClip(targetAnimationIndex);
+        playerAnimation->SetLoop(true); // 待機・走行はループ
+        playerAnimation->SetPlaybackSpeed(1.0f); // 通常速度
+        playerAnimation->Play();
+        currentAnimationIndex = targetAnimationIndex;
+    }
 }

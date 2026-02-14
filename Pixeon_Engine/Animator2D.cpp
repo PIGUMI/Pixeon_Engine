@@ -126,7 +126,6 @@ void Animator2D::EditorUpdate()
 */
 void Animator2D::Draw(int Layer)
 {
-	// PreviewImageを遅延初期化
 	EnsurePreviewImage();
 
 	std::vector<KeyFrame> SortedKeyFrames = KeyFrames_;
@@ -144,6 +143,21 @@ void Animator2D::Draw(int Layer)
 		DrawCount++;
 		if (PreviewImage)
 		{
+			// エディタモードの場合、エディタカメラをセット
+			if (bEditorMode_ && editorCamera_)
+			{
+				PreviewImage->SetCamera(editorCamera_);
+			}
+			else if (owner_)
+			{
+				// ゲームモードの場合、シーンのカメラを使用
+				AbstractScene* scene = owner_->GetParentScene();
+				if (scene)
+				{
+					PreviewImage->SetCamera(scene->GetMainCamera());
+				}
+			}
+
 			switch (viewMode_)
 			{
 			case ViewMode::UI:
@@ -154,75 +168,90 @@ void Animator2D::Draw(int Layer)
 				break;
 			}
 
+			// 統一されたスケール値を使用
+			const float SCALE_FACTOR = 10.0f;
+
 			if (bEditorMode_)
 			{
-				float Cor = 10.0f;
-
-				PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * Cor , kf.NowTransform.Position.y * Cor });
-				PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
-				PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * Cor , kf.NowTransform.Scale.y * Cor });
-				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, kf.Layer));
-
-				if (kf.uiShift.IsActive)
-				{
-					PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
-				}
-				else
-				{
-					PreviewImage->SetUVRect(DirectX::XMFLOAT4(
-						kf.NowTransform.UVPosition.x,
-						kf.NowTransform.UVPosition.y,
-						kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
-						kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
-				}
+				// エディタモード: カメラを使用した描画
+				PreviewImage->SetOffset2D({
+					kf.NowTransform.Position.x * SCALE_FACTOR,
+					kf.NowTransform.Position.y * SCALE_FACTOR
+					});
+				PreviewImage->SetSize2D({
+					kf.NowTransform.Scale.x * SCALE_FACTOR,
+					kf.NowTransform.Scale.y * SCALE_FACTOR
+					});
+				PreviewImage->SetSizeWorld({
+					kf.NowTransform.Scale.x * SCALE_FACTOR,
+					kf.NowTransform.Scale.y * SCALE_FACTOR
+					});
+				PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
+					kf.NowTransform.Position.x * SCALE_FACTOR,
+					kf.NowTransform.Position.y * SCALE_FACTOR,
+					kf.Layer
+				));
 			}
 			else
 			{
+				// ゲームモード
 				if (owner_)
 				{
-					float Cor = 0.4f;
 					DirectX::XMFLOAT3 OwnerPos = owner_->GetWorldPosition();
-					PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * Cor + OwnerPos.x, kf.NowTransform.Position.y * Cor + +OwnerPos.y });
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, kf.Layer));
+					PreviewImage->SetOffset2D({
+						kf.NowTransform.Position.x * SCALE_FACTOR + OwnerPos.x,
+						kf.NowTransform.Position.y * SCALE_FACTOR + OwnerPos.y
+						});
+					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
+						kf.NowTransform.Position.x * SCALE_FACTOR,
+						kf.NowTransform.Position.y * SCALE_FACTOR,
+						kf.Layer
+					));
 
-					PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
-					PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
-
-					if (kf.uiShift.IsActive)
-					{
-						PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
-					}
-					else
-					{
-						PreviewImage->SetUVRect(DirectX::XMFLOAT4(
-							kf.NowTransform.UVPosition.x,
-							kf.NowTransform.UVPosition.y,
-							kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
-							kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
-					}
+					PreviewImage->SetSize2D({
+						kf.NowTransform.Scale.x * SCALE_FACTOR,
+						kf.NowTransform.Scale.y * SCALE_FACTOR
+						});
+					PreviewImage->SetSizeWorld({
+						kf.NowTransform.Scale.x * SCALE_FACTOR,
+						kf.NowTransform.Scale.y * SCALE_FACTOR
+						});
 				}
 				else
 				{
-					float Cor = 0.4f;
-					PreviewImage->SetOffset2D({ kf.NowTransform.Position.x * Cor , kf.NowTransform.Position.y * Cor });
-					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(kf.NowTransform.Position.x * Cor, kf.NowTransform.Position.y * Cor, kf.Layer));
+					PreviewImage->SetOffset2D({
+						kf.NowTransform.Position.x * SCALE_FACTOR,
+						kf.NowTransform.Position.y * SCALE_FACTOR
+						});
+					PreviewImage->SetOffset3D(DirectX::XMFLOAT3(
+						kf.NowTransform.Position.x * SCALE_FACTOR,
+						kf.NowTransform.Position.y * SCALE_FACTOR,
+						kf.Layer
+					));
 
-					PreviewImage->SetSize2D({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
-					PreviewImage->SetSizeWorld({ kf.NowTransform.Scale.x * 10.0f , kf.NowTransform.Scale.y * 10.0f });
-
-					if (kf.uiShift.IsActive)
-					{
-						PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
-					}
-					else
-					{
-						PreviewImage->SetUVRect(DirectX::XMFLOAT4(
-							kf.NowTransform.UVPosition.x,
-							kf.NowTransform.UVPosition.y,
-							kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
-							kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
-					}
+					PreviewImage->SetSize2D({
+						kf.NowTransform.Scale.x * SCALE_FACTOR,
+						kf.NowTransform.Scale.y * SCALE_FACTOR
+						});
+					PreviewImage->SetSizeWorld({
+						kf.NowTransform.Scale.x * SCALE_FACTOR,
+						kf.NowTransform.Scale.y * SCALE_FACTOR
+						});
 				}
+			}
+
+			// UV設定
+			if (kf.uiShift.IsActive)
+			{
+				PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
+			}
+			else
+			{
+				PreviewImage->SetUVRect(DirectX::XMFLOAT4(
+					kf.NowTransform.UVPosition.x,
+					kf.NowTransform.UVPosition.y,
+					kf.NowTransform.UVScale.x + kf.NowTransform.UVPosition.x,
+					kf.NowTransform.UVScale.y + kf.NowTransform.UVPosition.y));
 			}
 
 			PreviewImage->SetVertexOffsetDown(kf.vertexOffset.Down);

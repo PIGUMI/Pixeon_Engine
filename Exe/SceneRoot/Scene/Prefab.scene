@@ -75,7 +75,7 @@
         {
             "Components": [
                 {
-                    "Data": "5.44247 9.19126 9.0483 6.79994 0.819995 6.33678e-39 2.07186 1.87984 3.11685 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
+                    "Data": "-5.92306 4.06223 -1.75948 11.0399 0.349994 6.33678e-39 3.46146 0.633307 -2.17573 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 },
@@ -108,32 +108,116 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/ContainerB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n1.15 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/Idle.fbx\n1 1 1 1\nVS_Animator\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n2\n\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 },
                 {
-                    "Data": "3DModel/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n3.65 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender1",
-                    "Type": 4
+                    "Data": "0\n1\n1\n2\nAnimation/Pistol Run.fbx\nAnimation/Shooting.fbx\n",
+                    "Name": "Animation",
+                    "Type": 5
                 },
                 {
-                    "Data": "3DModel/ContainerA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-1.35 0 2.75\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender2",
-                    "Type": 4
+                    "Data": "0.3 1.5 0 0.75 0 0 0 1\n",
+                    "Name": "CapsuleCollision",
+                    "Type": 8
                 },
                 {
-                    "Data": "7.3 2.5 5.5 0 1.25 0 0 0 0\n",
-                    "Name": "BoxCollision",
-                    "Type": 7
-                },
-                {
-                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n0\n0\n0\n100\n",
+                    "Data": "70\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n1\n1\n1\n0\n0\n0\n100\n",
                     "Name": "RigidBody",
                     "Type": 6
+                },
+                {
+                    "Data": "ScriptName Player\nPropertyCount 18\nProperty aimAnimationIndex 2\nProperty aimCameraSensitivity 5\nProperty aimRadius 0.9\nProperty aimRotationSpeedMultiplier 2\nProperty aimRotationThreshold 0.5\nProperty aimTransitionSpeed 10\nProperty aimWalkSpeed 2\nProperty cameraSensitivity 10\nProperty cameraVerticalAngleDegMax 35\nProperty cameraVerticalAngleDegMin -70\nProperty defaultRadius 1.8\nProperty idleAnimationIndex 0\nProperty normalRotationThreshold 5\nProperty playerRotationSpeed 8\nProperty runAnimationIndex 1\nProperty runSpeed 6\nProperty shootAnimationSpeed 1.5\nProperty walkSpeed 3\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
                 }
             ],
-            "Name": "ContainerABA",
+            "Name": "Player",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    2.700000047683716,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "\u0001\u0000\u0000\u0000\t\u0000\u0000\u0000reticleIn\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\t\u0000\u0000\u0000",
+                    "Name": "Animator2DComponent",
+                    "Type": 9
+                }
+            ],
+            "Name": "UI",
+            "Parent": "Player",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "0.0200044 0.504511 -1.72831 3.14159 0.261799 7.94536e-43 0.02 0.038637 0.0103528 0 1 0 1.0472 1.77778 0.1 1000 1.8 0 0 1 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "Camera",
+            "Parent": "Player",
+            "Transform": {
+                "Position": [
+                    0.5,
+                    1.399999976158142,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "ScriptName PropertyCount\nPropertyCount 0\n",
+                    "Name": "ScripComponent",
+                    "Type": 3
+                }
+            ],
+            "Name": "Stage",
             "Parent": "",
             "Transform": {
                 "Position": [
@@ -152,10 +236,756 @@
                     1.0
                 ]
             }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n45 0 -15\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/Ground.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-15 0 45\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "90 1 90 0 -0.5 0 0 0 1\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "Ground",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "Object",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "Actor",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "MapActor2",
+            "Parent": "Actor",
+            "Transform": {
+                "Position": [
+                    38.0,
+                    0.0,
+                    -38.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "MapActor1",
+            "Parent": "Actor",
+            "Transform": {
+                "Position": [
+                    -38.0,
+                    0.0,
+                    38.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-55 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-70 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -20\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -40\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-35 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-20 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-50 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n10 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n30 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n35 0 -60\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                }
+            ],
+            "Name": "BackGround",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-55 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-70 0 20\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -20\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingB.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-45 0 -40\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-35 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-20 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingC.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-50 0 -55\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n10 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingD.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n30 0 -60\n1 1 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/BuildingA.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n35 0 -60\n1 1 1\n-1.5708 1.5708 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                }
+            ],
+            "Name": "BackGround1",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    -3.1415927410125732,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "MetalFence",
+            "Parent": "Stage",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 0\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 36\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender10",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender11",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -36\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender12",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -40\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender13",
+                    "Type": 4
+                },
+                {
+                    "Data": "0.5 2.5 80 -40 1.25 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "MetalFence3",
+            "Parent": "MetalFence",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    3.1415927410125732,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 0\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 36\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender10",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender11",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -36\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender12",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -40\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender13",
+                    "Type": 4
+                },
+                {
+                    "Data": "0.5 2.5 80 -40 1.25 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "MetalFence0",
+            "Parent": "MetalFence",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 0\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 36\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender10",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender11",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -36\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender12",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -40\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender13",
+                    "Type": 4
+                },
+                {
+                    "Data": "0.5 2.5 80 -40 1.25 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "MetalFence1",
+            "Parent": "MetalFence",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    1.5707963705062866,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 0\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender1",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender2",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender3",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender4",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender5",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 36\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender6",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -6\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender7",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -12\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender8",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -18\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender9",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -24\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender10",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -30\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender11",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -36\n2 2 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender12",
+                    "Type": 4
+                },
+                {
+                    "Data": "3DModel/MetalFence.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n-40 0 -40\n2 1.4 1\n-1.5708 0 0\n1\n3DModel/Textures/T_Industrial_Textures.png\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender13",
+                    "Type": 4
+                },
+                {
+                    "Data": "0.5 2.5 80 -40 1.25 0 0 0 0\n",
+                    "Name": "BoxCollision",
+                    "Type": 7
+                },
+                {
+                    "Data": "0\n0\n1\n0.5\n0\n0\n0.05\n0\n0\n0\n0\n0\n1\n0\n0\n100\n",
+                    "Name": "RigidBody",
+                    "Type": 6
+                }
+            ],
+            "Name": "MetalFence2",
+            "Parent": "MetalFence",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    -1.5707963705062866,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
         }
     ],
     "SceneSettings": {
-        "MainCameraNumber": 0,
+        "MainCameraNumber": 1,
         "Name": "Prefab"
     }
 }

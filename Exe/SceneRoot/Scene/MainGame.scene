@@ -1,0 +1,158 @@
+{
+    "Layers": [
+        {
+            "layerIndex": 0,
+            "name": "Layer 0",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 1,
+            "name": "Layer 1",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 2,
+            "name": "Layer 2",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 3,
+            "name": "Layer 3",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 4,
+            "name": "Layer 4",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 5,
+            "name": "Layer 5",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 6,
+            "name": "Layer 6",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 7,
+            "name": "Layer 7",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 8,
+            "name": "Layer 8",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 9,
+            "name": "Layer 9",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        }
+    ],
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "3.02982 -1.3077 9.44496 0.309999 -0.13 0 0.00498249 -0.0113623 0.00197689 0 1 0 1.0472 1.77778 0.1 1000 10 0 0 0 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "EditorCamera",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/SkyBox/uploads_files_4381654_LightBlueSky.glb\n1 1 1 1\nVS_ModelStatic\nPS_ModelBasic\n0\n0 0 0\n1 1 1\n0 0 0\n2\nTexture/skybox-light-blue-sky-3d-model-bad93c2d7f.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                }
+            ],
+            "Name": "SkyBox",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [],
+            "Name": "Player",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "MainGame"
+    }
+}

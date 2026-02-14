@@ -23,6 +23,7 @@ public:
 	void SetAnimator(Animator2D* animator) { animator_ = animator; }
 	KeyFrame* GetSelectedKeyFrame() const { return selectedKeyFrame_; }
 	void SetSelectedKeyFrame(KeyFrame* keyframe) { selectedKeyFrame_ = keyframe; }
+	CameraComponent* GetEditorCamera() const { return editorCamera_; }
 private:
 	void DrawTimeline();
 	void DrawView();
@@ -33,6 +34,7 @@ private:
 	Animator2D* animator_ = nullptr;
 	KeyFrame* selectedKeyFrame_ = nullptr;
 	TimelineEditor* timelineEditor_ = nullptr;
+	CameraComponent* editorCamera_ = nullptr;  // ’Ç‰Á
 	bool isPlaying_ = false;
 	bool wantOpenTexturePopup_ = false;
 private:
