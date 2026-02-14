@@ -13,71 +13,94 @@ private:
     void PlayerMovement(float DeltaTime);
     void AnimationUpdate(float DeltaTime);
     void ShootUpdate(float DeltaTime);
-    void ReticleUpdate(float DeltaTime);  // 追加
+    void ReticleUpdate(float DeltaTime);
+    void CameraCollisionUpdate(float DeltaTime);
+    void FireBullet();
+    void CreateBulletTrail(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end);
+    void CreateImpactEffect(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& normal);
+    void ShowHitMarker(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& normal);
+
 public:
     Object* CameraObject = nullptr;
     Camera* playerCamera = nullptr;
     Rigidbody* playerRigidbody = nullptr;
     Animation* playerAnimation = nullptr;
 
-    Object* ReticleInPrefab = nullptr;   // エイムインアニメーションのプレハブ
-    Object* ReticleOutPrefab = nullptr;  // エイムアウトアニメーションのプレハブ
-    Object* ReticlePrefab = nullptr;     // エイム中のレティクルプレハブ
+    Object* ReticleInPrefab = nullptr;
+    Object* ReticleOutPrefab = nullptr;
+    Object* ReticlePrefab = nullptr;
 
-    Object* SpawnedReticleIn = nullptr;   // 召喚されたReticleInインスタンス
-    Object* SpawnedReticleOut = nullptr;  // 召喚されたReticleOutインスタンス
-    Object* SpawnedReticle = nullptr;     // 召喚されたReticleインスタンス
+    Object* SpawnedReticleIn = nullptr;
+    Object* SpawnedReticleOut = nullptr;
+    Object* SpawnedReticle = nullptr;
 
-    // エイム関連
+    Object* BulletTrailPrefab = nullptr;
+    Object* BulletImpactPrefab = nullptr;
+    Object* HitMarkerPrefab = nullptr;
+    Object* SpawnedHitMarker = nullptr;
+    float hitMarkerTimer = 0.0f;
+    float hitMarkerDuration = 0.2f;
+
     bool isAiming = false;
-    bool wasAiming = false;         // 前フレームのエイム状態
-    bool isShooting = false;        // 射撃中フラグ
-    bool canShoot = true;           // 射撃可能フラグ
-    float shootAnimationTimer = 0.0f; // 射撃アニメーションタイマー
+    bool wasAiming = false;
+    bool isShooting = false;
+    bool canShoot = true;
+    float shootAnimationTimer = 0.0f;
     float currentRadius = 1.8f;
     DirectX::XMFLOAT3 currentCameraOffset;
     DirectX::XMFLOAT3 defaultCameraOffset;
 
-    // エイム時のカメラ設定
-    float defaultRadius = 1.8f;      // 通常時のRadius
-    float aimRadius = 0.9f;          // エイム時のRadius
-    DirectX::XMFLOAT3 aimCameraOffset = DirectX::XMFLOAT3(0.5f, 1.4f, 0.0f); // エイム時のオフセット
-    float aimTransitionSpeed = 10.0f; // エイムの遷移速度
+    float cameraCollisionRadius = 0.3f;
+    float cameraCollisionMinDistance = 0.5f;
+    float cameraCollisionSmoothSpeed = 10.0f;
+    float currentCameraDistance = 1.8f;
+    bool enableCameraCollision = true;
 
-    // プレイヤー回転関連
-    float cameraYaw = 0.0f;          // カメラの水平回転角度
-    float playerYaw = 0.0f;          // プレイヤーの水平回転角度
-    float playerRotationSpeed = 8.0f; // プレイヤーの回転速度
-    bool isMoving = false;           // 移動中フラグ
+    float defaultRadius = 1.8f;
+    float aimRadius = 0.9f;
+    DirectX::XMFLOAT3 aimCameraOffset = DirectX::XMFLOAT3(0.5f, 1.4f, 0.0f);
+    float aimTransitionSpeed = 10.0f;
+
+    float cameraYaw = 0.0f;
+    float playerYaw = 0.0f;
+    float playerRotationSpeed = 8.0f;
+    bool isMoving = false;
     bool isRunning = false;
 
-    // 移動関連
-    float walkSpeed = 3.0f;          // 歩行速度
-    float runSpeed = 6.0f;           // 走行速度
-    float aimWalkSpeed = 2.0f;       // エイム時の歩行速度
-    DirectX::XMFLOAT3 moveDirection; // 移動方向
+    float walkSpeed = 3.0f;
+    float runSpeed = 6.0f;
+    float aimWalkSpeed = 2.0f;
+    DirectX::XMFLOAT3 moveDirection;
 
-    // カメラ設定
-    float cameraVerticalAngleDegMin = -70.0f; // カメラ上下角度の最小値（度）
-    float cameraVerticalAngleDegMax = 35.0f;  // カメラ上下角度の最大値（度）
-    float cameraSensitivity = 10.0f;          // カメラ感度（度/秒）
-    float aimCameraSensitivity = 5.0f;        // エイム時カメラ感度（度/秒）
+    float cameraVerticalAngleDegMin = -70.0f;
+    float cameraVerticalAngleDegMax = 35.0f;
+    float cameraSensitivity = 10.0f;
+    float aimCameraSensitivity = 5.0f;
 
-    // プレイヤー回転設定
-    float normalRotationThreshold = 5.0f;     // 通常時の回転開始閾値（度）
-    float aimRotationThreshold = 0.5f;        // エイム時の回転開始閾値（度）
-    float aimRotationSpeedMultiplier = 2.0f;  // エイム時の回転速度倍率
+    float normalRotationThreshold = 5.0f;
+    float aimRotationThreshold = 0.5f;
+    float aimRotationSpeedMultiplier = 2.0f;
 
-    // アニメーション設定
-    int idleAnimationIndex = 0;      // 待機アニメーション番号
-    int runAnimationIndex = 1;       // 走行アニメーション番号
-    int aimAnimationIndex = 2;       // エイム射撃アニメーション番号
-    int currentAnimationIndex = -1;  // 現在再生中のアニメーション番号
-    float shootAnimationSpeed = 1.5f; // 射撃アニメーション速度
+    int idleAnimationIndex = 0;
+    int runAnimationIndex = 1;
+    int aimAnimationIndex = 2;
+    int currentAnimationIndex = -1;
+    float shootAnimationSpeed = 1.5f;
 
-    std::string ReticleInName = "ReticleIn";   // エイムインアニメーションの名前
-    std::string ReticleOutName = "ReticleOut"; // エイムアウトアニメーションの名前
-    std::string ReticleName = "Reticle";       // エイム中のレティクルオブジェクトの名前
+    float bulletMaxRange = 100.0f;
+    float bulletDamage = 25.0f;
+    float bulletSpread = 0.01f;
+    float hipFireSpread = 0.05f;
+
+    float muzzleOffsetX = 0.3f;
+    float muzzleOffsetY = 1.5f;
+    float muzzleOffsetZ = 0.5f;
+    std::string ReticleInName = "ReticleIn";
+    std::string ReticleOutName = "ReticleOut";
+    std::string ReticleName = "Reticle";
+    std::string BulletTrailName = "BulletTrail";
+    std::string BulletImpactName = "BulletImpact";
+    std::string HitMarkerName = "HitMarker"; 
 
 public:
 #define PROPERTY_LIST(ACTION) \
@@ -96,12 +119,27 @@ public:
     ACTION(FLOAT, aimRotationThreshold) \
     ACTION(FLOAT, aimRotationSpeedMultiplier) \
     ACTION(FLOAT, shootAnimationSpeed) \
+    ACTION(FLOAT, cameraCollisionRadius) \
+    ACTION(FLOAT, cameraCollisionMinDistance) \
+    ACTION(FLOAT, cameraCollisionSmoothSpeed) \
+    ACTION(FLOAT, bulletMaxRange) \
+    ACTION(FLOAT, bulletDamage) \
+    ACTION(FLOAT, bulletSpread) \
+    ACTION(FLOAT, hipFireSpread) \
+    ACTION(FLOAT, hitMarkerDuration) \
+    ACTION(FLOAT, muzzleOffsetX) \
+    ACTION(FLOAT, muzzleOffsetY) \
+    ACTION(FLOAT, muzzleOffsetZ) \
     ACTION(INT, idleAnimationIndex) \
     ACTION(INT, runAnimationIndex) \
     ACTION(INT, aimAnimationIndex) \
+    ACTION(BOOL, enableCameraCollision) \
     ACTION(STRING, ReticleInName) \
     ACTION(STRING, ReticleOutName) \
-    ACTION(STRING, ReticleName)
+    ACTION(STRING, ReticleName) \
+    ACTION(STRING, BulletTrailName) \
+    ACTION(STRING, BulletImpactName) \
+    ACTION(STRING, HitMarkerName)
 
     DECLARE_SCRIPT_PROPERTIES()
 #undef PROPERTY_LIST

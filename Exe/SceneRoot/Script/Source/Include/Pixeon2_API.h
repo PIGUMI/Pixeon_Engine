@@ -24,6 +24,63 @@ class Script;
 class Keyframe;
 
 // ========================================
+// Physics Helper Namespace
+// ========================================
+namespace Physics {
+	inline bool Raycast(
+		const DirectX::XMFLOAT3& origin,
+		const DirectX::XMFLOAT3& direction,
+		float maxDistance,
+		RayHit& outHit)
+	{
+		scene currentScene;
+		if (GetCurrentScene(&currentScene) != PN_SUCCESS) {
+			return false;
+		}
+
+		Float3 orig = { origin.x, origin.y, origin.z };
+		Float3 dir = { direction.x, direction.y, direction.z };
+
+		return ::Raycast(currentScene, orig, dir, maxDistance, &outHit) == PN_SUCCESS && outHit.bHit;
+	}
+
+	inline bool RaycastIgnoreTriggers(
+		const DirectX::XMFLOAT3& origin,
+		const DirectX::XMFLOAT3& direction,
+		float maxDistance,
+		RayHit& outHit)
+	{
+		scene currentScene;
+		if (GetCurrentScene(&currentScene) != PN_SUCCESS) {
+			return false;
+		}
+
+		Float3 orig = { origin.x, origin.y, origin.z };
+		Float3 dir = { direction.x, direction.y, direction.z };
+
+		return ::RaycastIgnoreTriggers(currentScene, orig, dir, maxDistance, &outHit) == PN_SUCCESS && outHit.bHit;
+	}
+
+	inline bool SphereCast(
+		const DirectX::XMFLOAT3& origin,
+		const DirectX::XMFLOAT3& direction,
+		float radius,
+		float maxDistance,
+		RayHit& outHit)
+	{
+		scene currentScene;
+		if (GetCurrentScene(&currentScene) != PN_SUCCESS) {
+			return false;
+		}
+
+		Float3 orig = { origin.x, origin.y, origin.z };
+		Float3 dir = { direction.x, direction.y, direction.z };
+
+		return ::SphereCast(currentScene, orig, dir, radius, maxDistance, &outHit) == PN_SUCCESS && outHit.bHit;
+	}
+}
+
+// ========================================
 // Wrapper for Object
 // ========================================
 class PIXEON_API Object {
@@ -79,8 +136,6 @@ template<> PIXEON_API Boxcollision* Object::GetComponent<Boxcollision>(const std
 template<> PIXEON_API Effect* Object::GetComponent<Effect>(const std::string& componentName);
 template<> PIXEON_API Script* Object::GetComponent<Script>(const std::string& componentName);
 template<> PIXEON_API Animator2d* Object::GetComponent<Animator2d>(const std::string& componentName);
-
-// (以下、Scene、Componentクラスなどは既存のまま)
 
 // ========================================
 // Wrapper for Scene
@@ -152,8 +207,6 @@ public:
 	void SetChangeCalculation(bool isChange);
 	int GetCameraNumber();
 };
-
-// (以下、残りのクラスは既存のまま)
 
 // ========================================
 // Light Component
