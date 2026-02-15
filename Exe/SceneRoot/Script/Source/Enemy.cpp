@@ -195,7 +195,7 @@ void Script_Enemy::SmoothRotateToTarget(const DirectX::XMFLOAT3& targetPos, floa
     while (angleDiff > M_PI) angleDiff -= 2.0f * M_PI;
     while (angleDiff < -M_PI) angleDiff += 2.0f * M_PI;
 
-    if (std::abs(angleDiff) < 0.05f) {
+    if (std::abs(angleDiff) < 0.1f) {
         myRot.y = targetYaw;
         isRotating = false;
     }
@@ -286,13 +286,6 @@ void Script_Enemy::UpdatePatrol(float deltaTime) {
         return;
     }
 
-    SmoothRotateToTarget(targetPosition, deltaTime);
-
-    if (isRotating) {
-        SetAnimation(AnimState::Idle);
-        return;
-    }
-
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
     float dx = targetPosition.x - myPos.x;
     float dz = targetPosition.z - myPos.z;
@@ -305,6 +298,8 @@ void Script_Enemy::UpdatePatrol(float deltaTime) {
         stuckCheckPosition = myPos;
         return;
     }
+
+    SmoothRotateToTarget(targetPosition, deltaTime);
 
     DirectX::XMFLOAT3 moveDir = GetAvoidanceDirection();
 
@@ -342,7 +337,28 @@ void Script_Enemy::UpdateChase(float deltaTime) {
 
         SmoothRotateToTarget(playerPos, deltaTime);
 
-        if (!isRotating) {
+        DirectX::XMFLOAT3 moveDir = GetAvoidanceDirection();
+
+        if (moveDir.x == 0.0f && moveDir.z == 0.0f) {
+            currentState = EnemyState::Idle;
+            stateTimer = 0.0f;
+            stuckTimer = 0.0f;
+            stuckCheckPosition = myPos;
+            return;
+        }
+
+        SetAnimation(AnimState::Move);
+        MoveInDirection(moveDir, deltaTime);
+    }
+    else {
+        DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
+        float dx = lastKnownPlayerPosition.x - myPos.x;
+        float dz = lastKnownPlayerPosition.z - myPos.z;
+        float distToLastKnown = sqrtf(dx * dx + dz * dz);
+
+        if (distToLastKnown > 1.0f) {
+            SmoothRotateToTarget(lastKnownPlayerPosition, deltaTime);
+
             DirectX::XMFLOAT3 moveDir = GetAvoidanceDirection();
 
             if (moveDir.x == 0.0f && moveDir.z == 0.0f) {
@@ -355,37 +371,6 @@ void Script_Enemy::UpdateChase(float deltaTime) {
 
             SetAnimation(AnimState::Move);
             MoveInDirection(moveDir, deltaTime);
-        }
-        else {
-            SetAnimation(AnimState::Idle);
-        }
-    }
-    else {
-        DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-        float dx = lastKnownPlayerPosition.x - myPos.x;
-        float dz = lastKnownPlayerPosition.z - myPos.z;
-        float distToLastKnown = sqrtf(dx * dx + dz * dz);
-
-        if (distToLastKnown > 1.0f) {
-            SmoothRotateToTarget(lastKnownPlayerPosition, deltaTime);
-
-            if (!isRotating) {
-                DirectX::XMFLOAT3 moveDir = GetAvoidanceDirection();
-
-                if (moveDir.x == 0.0f && moveDir.z == 0.0f) {
-                    currentState = EnemyState::Idle;
-                    stateTimer = 0.0f;
-                    stuckTimer = 0.0f;
-                    stuckCheckPosition = myPos;
-                    return;
-                }
-
-                SetAnimation(AnimState::Move);
-                MoveInDirection(moveDir, deltaTime);
-            }
-            else {
-                SetAnimation(AnimState::Idle);
-            }
         }
         else {
             currentState = EnemyState::Search;
