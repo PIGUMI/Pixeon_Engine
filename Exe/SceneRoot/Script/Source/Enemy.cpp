@@ -9,17 +9,20 @@
 void Script_Enemy::BeginPlay() {
     IScript::BeginPlay();
 
-    // プレイヤーオブジェクトを検索
     playerObject = _parentScene->FindObject("Player");
+    animationComponent = _parentObject->GetComponent<Animation>("Animation");
 
-    if (!playerObject) {
-        // プレイヤーが見つからない場合、タグで検索を試みる
-        // ここでは名前で検索していますが、必要に応じて変更してください
+    currentState = EnemyState::Idle;
+    currentAnimState = AnimState::Idle;
+    stateTimer = 0.0f;
+    stuckTimer = 0.0f;
+    lastPosition = _parentObject->GetPosition();
+    stuckCheckPosition = lastPosition;
+
+    if (animationComponent) {
+        animationComponent->SetClip(0);
+        animationComponent->Play();
     }
-
-    // 初期状態を巡回に設定
-    currentState = EnemyState::Patrol;
-    patrolTimer = 0.0f;
 }
 
 void Script_Enemy::Update(float DeltaTime) {
@@ -29,8 +32,16 @@ void Script_Enemy::Update(float DeltaTime) {
         return;
     }
 
-    // 現在の状態に応じた処理
+    CheckAndResolveStuck(DeltaTime);
+
+    if (attackCooldown > 0.0f) {
+        attackCooldown -= DeltaTime;
+    }
+
     switch (currentState) {
+    case EnemyState::Idle:
+        UpdateIdle(DeltaTime);
+        break;
     case EnemyState::Patrol:
         UpdatePatrol(DeltaTime);
         break;
@@ -50,47 +61,62 @@ void Script_Enemy::EndPlay() {
     IScript::EndPlay();
 }
 
-// 視界判定用レイキャスト
-bool Script_Enemy::CheckVisionRaycast(const DirectX::XMFLOAT3& direction, float distance, RayHit& outHit) {
-    DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-    myPos.y += 1.0f; // 目の高さに調整
+void Script_Enemy::SetAnimation(AnimState newAnimState) {
+    if (currentAnimState == newAnimState || !animationComponent) {
+        return;
+    }
 
-    return _parentScene->Raycast(myPos, direction, distance, &outHit);
+    currentAnimState = newAnimState;
+
+    switch (newAnimState) {
+    case AnimState::Idle:
+        animationComponent->SetClip(0);
+        break;
+    case AnimState::Move:
+        animationComponent->SetClip(1);
+        break;
+    }
 }
 
-// プレイヤーが視界内にいるか確認（3本のレイキャスト）
-bool Script_Enemy::IsPlayerInSight(float& outDistance) {
+void Script_Enemy::SetNewRandomTarget() {
+    float randomAngle = (rand() % 628) * 0.01f;
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-    DirectX::XMFLOAT3 myRot = _parentObject->GetRotation();
-
-    // 前方向ベクトルを計算
-    float yaw = myRot.y * (M_PI / 180.0f);
-    DirectX::XMFLOAT3 forward = {
-        sinf(yaw),
-        0.0f,
-        cosf(yaw)
+    targetPosition = {
+        myPos.x + cosf(randomAngle) * 10.0f,
+        myPos.y,
+        myPos.z + sinf(randomAngle) * 10.0f
     };
+}
 
-    // 現在の状態に応じた視界範囲を設定
+bool Script_Enemy::IsPlayerVisible(DirectX::XMFLOAT3& outPlayerPos) {
+    DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
+    myPos.y += 1.0f;
+
+    DirectX::XMFLOAT3 forward = GetForwardVector();
     float currentRange = (currentState == EnemyState::Chase) ? chaseRange : detectionRange;
 
-    // 3本のレイキャストを45度ずつずらして発射
     float angles[] = { -visionAngle, 0.0f, visionAngle };
 
-    for (float angle : angles) {
-        DirectX::XMFLOAT3 rayDirection = RotateVectorY(forward, angle);
-        RayHit hit;
+    for (float angleOffset : angles) {
+        float cosA = cosf(angleOffset);
+        float sinA = sinf(angleOffset);
 
-        if (CheckVisionRaycast(rayDirection, currentRange, hit)) {
-            // ヒットしたオブジェクトがプレイヤーか確認
-            if (hit.hitObject == playerObject->GetHandle()) {
-                DirectX::XMFLOAT3 playerPos = playerObject->GetPosition();
-                DirectX::XMFLOAT3 diff = {
-                    playerPos.x - myPos.x,
-                    playerPos.y - myPos.y,
-                    playerPos.z - myPos.z
-                };
-                outDistance = VectorLength(diff);
+        DirectX::XMFLOAT3 rayDir = {
+            forward.x * cosA - forward.z * sinA,
+            0.0f,
+            forward.x * sinA + forward.z * cosA
+        };
+
+        float len = sqrtf(rayDir.x * rayDir.x + rayDir.z * rayDir.z);
+        if (len > 0.001f) {
+            rayDir.x /= len;
+            rayDir.z /= len;
+        }
+
+        RayHit hit;
+        if (_parentScene->Raycast(myPos, rayDir, currentRange, &hit)) {
+            if (hit.bHit && std::string(hit.hitObjectName) == "Player") {
+                outPlayerPos = playerObject->GetPosition();
                 return true;
             }
         }
@@ -99,266 +125,359 @@ bool Script_Enemy::IsPlayerInSight(float& outDistance) {
     return false;
 }
 
-// 障害物回避（4方向のレイキャスト）
-DirectX::XMFLOAT3 Script_Enemy::AvoidObstacles() {
+bool Script_Enemy::CheckObstacleInDirection(const DirectX::XMFLOAT3& direction, float distance) {
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-    DirectX::XMFLOAT3 myRot = _parentObject->GetRotation();
+    myPos.y += 0.5f;
 
-    float yaw = myRot.y * (M_PI / 180.0f);
-    DirectX::XMFLOAT3 forward = {
-        sinf(yaw),
-        0.0f,
-        cosf(yaw)
-    };
+    float len = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    if (len < 0.001f) return false;
 
-    DirectX::XMFLOAT3 avoidanceVector = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 dir = { direction.x / len, direction.y, direction.z / len };
 
-    // 4方向（前、右、後、左）
-    float checkAngles[] = { 0.0f, 90.0f, 180.0f, -90.0f };
-    float weights[] = { 2.0f, 1.0f, 0.5f, 1.0f }; // 前方を重視
+    RayHit hit;
+    return _parentScene->RaycastIgnoreTriggers(myPos, dir, distance, &hit) && hit.bHit;
+}
 
-    for (int i = 0; i < 4; i++) {
-        DirectX::XMFLOAT3 checkDir = RotateVectorY(forward, checkAngles[i]);
-        RayHit hit;
+DirectX::XMFLOAT3 Script_Enemy::GetAvoidanceDirection() {
+    DirectX::XMFLOAT3 forward = GetForwardVector();
+    DirectX::XMFLOAT3 right = GetRightVector();
 
-        myPos.y += 0.5f; // 腰の高さでチェック
-        if (_parentScene->RaycastIgnoreTriggers(myPos, checkDir, obstacleAvoidDistance, &hit)) {
-            if (hit.bHit && hit.distance < obstacleAvoidDistance) {
-                // 障害物があった場合、反対方向に回避ベクトルを追加
-                float avoidStrength = (1.0f - hit.distance / obstacleAvoidDistance) * weights[i];
-                avoidanceVector.x -= checkDir.x * avoidStrength;
-                avoidanceVector.z -= checkDir.z * avoidStrength;
-            }
-        }
-        myPos.y -= 0.5f;
+    if (!CheckObstacleInDirection(forward, obstacleCheckDistance)) {
+        return forward;
     }
 
-    return avoidanceVector;
-}
-
-// 目標地点への移動
-void Script_Enemy::MoveTowards(const DirectX::XMFLOAT3& targetPosition, float deltaTime) {
-    DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-
-    // 目標方向を計算
-    DirectX::XMFLOAT3 direction = {
-        targetPosition.x - myPos.x,
+    const float cos45 = 0.707f;
+    DirectX::XMFLOAT3 forwardRight = {
+        forward.x * cos45 + right.x * cos45,
         0.0f,
-        targetPosition.z - myPos.z
+        forward.z * cos45 + right.z * cos45
     };
-
-    // 障害物回避ベクトルを追加
-    DirectX::XMFLOAT3 avoidance = AvoidObstacles();
-    direction.x += avoidance.x;
-    direction.z += avoidance.z;
-
-    // 正規化
-    float length = VectorLength(direction);
-    if (length > 0.001f) {
-        direction.x /= length;
-        direction.z /= length;
-
-        // 移動
-        myPos.x += direction.x * moveSpeed * deltaTime;
-        myPos.z += direction.z * moveSpeed * deltaTime;
-
-        _parentObject->SetPosition(myPos);
-
-        // 移動方向を向く
-        RotateTowards(targetPosition, deltaTime);
+    if (!CheckObstacleInDirection(forwardRight, obstacleCheckDistance)) {
+        return forwardRight;
     }
+
+    DirectX::XMFLOAT3 forwardLeft = {
+        forward.x * cos45 - right.x * cos45,
+        0.0f,
+        forward.z * cos45 - right.z * cos45
+    };
+    if (!CheckObstacleInDirection(forwardLeft, obstacleCheckDistance)) {
+        return forwardLeft;
+    }
+
+    if (!CheckObstacleInDirection(right, obstacleCheckDistance)) {
+        return right;
+    }
+
+    DirectX::XMFLOAT3 left = { -right.x, 0.0f, -right.z };
+    if (!CheckObstacleInDirection(left, obstacleCheckDistance)) {
+        return left;
+    }
+
+    return { 0.0f, 0.0f, 0.0f };
 }
 
-// 目標方向への回転
-void Script_Enemy::RotateTowards(const DirectX::XMFLOAT3& targetPosition, float deltaTime) {
+void Script_Enemy::SmoothRotateToTarget(const DirectX::XMFLOAT3& targetPos, float deltaTime) {
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-    DirectX::XMFLOAT3 myRot = _parentObject->GetRotation();
 
-    // 目標への角度を計算
-    float dx = targetPosition.x - myPos.x;
-    float dz = targetPosition.z - myPos.z;
-    float targetYaw = atan2f(dx, dz) * (180.0f / M_PI);
+    float dx = targetPos.x - myPos.x;
+    float dz = targetPos.z - myPos.z;
 
-    // 現在の角度との差分を計算
-    float angleDiff = targetYaw - myRot.y;
-
-    // -180 ~ 180 の範囲に正規化
-    while (angleDiff > 180.0f) angleDiff -= 360.0f;
-    while (angleDiff < -180.0f) angleDiff += 360.0f;
-
-    // 滑らかに回転
-    float rotationAmount = std::min(std::abs(angleDiff), rotationSpeed * deltaTime);
-    if (angleDiff < 0) rotationAmount = -rotationAmount;
-
-    myRot.y += rotationAmount;
-
-    // 0 ~ 360 の範囲に正規化
-    while (myRot.y >= 360.0f) myRot.y -= 360.0f;
-    while (myRot.y < 0.0f) myRot.y += 360.0f;
-
-    _parentObject->SetRotation(myRot);
-}
-
-// 巡回状態の更新
-void Script_Enemy::UpdatePatrol(float deltaTime) {
-    patrolTimer += deltaTime;
-
-    // プレイヤーを発見したか確認
-    float distanceToPlayer;
-    if (IsPlayerInSight(distanceToPlayer)) {
-        currentState = EnemyState::Chase;
-        lastKnownPlayerPosition = playerObject->GetPosition();
+    if (dx * dx + dz * dz < 0.01f) {
+        isRotating = false;
         return;
     }
 
-    // 一定時間ごとに巡回方向を変更
-    if (patrolTimer > 3.0f) {
-        patrolTimer = 0.0f;
-        float randomAngle = (rand() % 360) * (M_PI / 180.0f);
-        patrolDirection = {
-            sinf(randomAngle),
-            0.0f,
-            cosf(randomAngle)
-        };
+    DirectX::XMFLOAT3 myRot = _parentObject->GetRotation();
+    float targetYaw = atan2f(dx, dz);
+    float angleDiff = targetYaw - myRot.y;
+
+    while (angleDiff > M_PI) angleDiff -= 2.0f * M_PI;
+    while (angleDiff < -M_PI) angleDiff += 2.0f * M_PI;
+
+    if (std::abs(angleDiff) < 0.05f) {
+        myRot.y = targetYaw;
+        isRotating = false;
+    }
+    else {
+        isRotating = true;
+        float maxRotation = rotationSpeed * deltaTime;
+        float rotation = (std::abs(angleDiff) < maxRotation) ? angleDiff :
+            (angleDiff < 0 ? -maxRotation : maxRotation);
+        myRot.y += rotation;
     }
 
-    // 巡回移動
-    DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-    DirectX::XMFLOAT3 targetPos = {
-        myPos.x + patrolDirection.x * 5.0f,
-        myPos.y,
-        myPos.z + patrolDirection.z * 5.0f
-    };
-
-    MoveTowards(targetPos, deltaTime);
+    myRot.y = NormalizeAngle(myRot.y);
+    _parentObject->SetRotation(myRot);
 }
 
-// 追跡状態の更新
+void Script_Enemy::MoveInDirection(const DirectX::XMFLOAT3& direction, float deltaTime) {
+    float len = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    if (len < 0.001f) return;
+
+    DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
+    myPos.x += (direction.x / len) * moveSpeed * deltaTime;
+    myPos.z += (direction.z / len) * moveSpeed * deltaTime;
+    _parentObject->SetPosition(myPos);
+}
+
+void Script_Enemy::CheckAndResolveStuck(float deltaTime) {
+    DirectX::XMFLOAT3 currentPos = _parentObject->GetPosition();
+
+    if (currentState == EnemyState::Patrol || currentState == EnemyState::Chase) {
+        stuckTimer += deltaTime;
+
+        if (stuckTimer >= 0.5f) {
+            float dx = currentPos.x - stuckCheckPosition.x;
+            float dz = currentPos.z - stuckCheckPosition.z;
+            float movedDistance = sqrtf(dx * dx + dz * dz);
+
+            if (movedDistance < 0.5f) {
+                currentState = EnemyState::Idle;
+                stateTimer = 0.0f;
+                stuckTimer = 0.0f;
+                stuckCheckPosition = currentPos;
+            }
+            else {
+                stuckCheckPosition = currentPos;
+                stuckTimer = 0.0f;
+            }
+        }
+    }
+    else {
+        stuckTimer = 0.0f;
+        stuckCheckPosition = currentPos;
+    }
+
+    lastPosition = currentPos;
+}
+
+void Script_Enemy::UpdateIdle(float deltaTime) {
+    SetAnimation(AnimState::Idle);
+    stateTimer += deltaTime;
+
+    DirectX::XMFLOAT3 playerPos;
+    if (IsPlayerVisible(playerPos)) {
+        currentState = EnemyState::Chase;
+        lastKnownPlayerPosition = playerPos;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = _parentObject->GetPosition();
+        return;
+    }
+
+    if (stateTimer >= idleTime) {
+        currentState = EnemyState::Patrol;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = _parentObject->GetPosition();
+        SetNewRandomTarget();
+    }
+}
+
+void Script_Enemy::UpdatePatrol(float deltaTime) {
+    DirectX::XMFLOAT3 playerPos;
+    if (IsPlayerVisible(playerPos)) {
+        currentState = EnemyState::Chase;
+        lastKnownPlayerPosition = playerPos;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = _parentObject->GetPosition();
+        return;
+    }
+
+    SmoothRotateToTarget(targetPosition, deltaTime);
+
+    if (isRotating) {
+        SetAnimation(AnimState::Idle);
+        return;
+    }
+
+    DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
+    float dx = targetPosition.x - myPos.x;
+    float dz = targetPosition.z - myPos.z;
+    float distToTarget = sqrtf(dx * dx + dz * dz);
+
+    if (distToTarget < 1.0f) {
+        currentState = EnemyState::Idle;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = myPos;
+        return;
+    }
+
+    DirectX::XMFLOAT3 moveDir = GetAvoidanceDirection();
+
+    if (moveDir.x == 0.0f && moveDir.z == 0.0f) {
+        currentState = EnemyState::Idle;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = myPos;
+        return;
+    }
+
+    SetAnimation(AnimState::Move);
+    MoveInDirection(moveDir, deltaTime);
+}
+
 void Script_Enemy::UpdateChase(float deltaTime) {
-    float distanceToPlayer;
+    DirectX::XMFLOAT3 playerPos;
+    bool canSeePlayer = IsPlayerVisible(playerPos);
 
-    // プレイヤーが視界内にいる場合
-    if (IsPlayerInSight(distanceToPlayer)) {
-        lastKnownPlayerPosition = playerObject->GetPosition();
+    if (canSeePlayer) {
+        lastKnownPlayerPosition = playerPos;
 
-        // 攻撃範囲内なら攻撃状態へ
-        if (distanceToPlayer <= attackRange) {
+        DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
+        float dx = playerPos.x - myPos.x;
+        float dz = playerPos.z - myPos.z;
+        float distToPlayer = sqrtf(dx * dx + dz * dz);
+
+        if (distToPlayer <= attackRange) {
             currentState = EnemyState::Attack;
+            stateTimer = 0.0f;
+            stuckTimer = 0.0f;
+            stuckCheckPosition = myPos;
             return;
         }
 
-        // プレイヤーに向かって移動
-        MoveTowards(lastKnownPlayerPosition, deltaTime);
+        SmoothRotateToTarget(playerPos, deltaTime);
+
+        if (!isRotating) {
+            DirectX::XMFLOAT3 moveDir = GetAvoidanceDirection();
+
+            if (moveDir.x == 0.0f && moveDir.z == 0.0f) {
+                currentState = EnemyState::Idle;
+                stateTimer = 0.0f;
+                stuckTimer = 0.0f;
+                stuckCheckPosition = myPos;
+                return;
+            }
+
+            SetAnimation(AnimState::Move);
+            MoveInDirection(moveDir, deltaTime);
+        }
+        else {
+            SetAnimation(AnimState::Idle);
+        }
     }
     else {
-        // 視界から外れた場合、最後の位置へ移動して探索モードへ
         DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-        float distToLastKnown = VectorLength({
-            lastKnownPlayerPosition.x - myPos.x,
-            0.0f,
-            lastKnownPlayerPosition.z - myPos.z
-            });
+        float dx = lastKnownPlayerPosition.x - myPos.x;
+        float dz = lastKnownPlayerPosition.z - myPos.z;
+        float distToLastKnown = sqrtf(dx * dx + dz * dz);
 
         if (distToLastKnown > 1.0f) {
-            MoveTowards(lastKnownPlayerPosition, deltaTime);
+            SmoothRotateToTarget(lastKnownPlayerPosition, deltaTime);
+
+            if (!isRotating) {
+                DirectX::XMFLOAT3 moveDir = GetAvoidanceDirection();
+
+                if (moveDir.x == 0.0f && moveDir.z == 0.0f) {
+                    currentState = EnemyState::Idle;
+                    stateTimer = 0.0f;
+                    stuckTimer = 0.0f;
+                    stuckCheckPosition = myPos;
+                    return;
+                }
+
+                SetAnimation(AnimState::Move);
+                MoveInDirection(moveDir, deltaTime);
+            }
+            else {
+                SetAnimation(AnimState::Idle);
+            }
         }
         else {
-            // 最後の位置に到達したら探索モードへ
             currentState = EnemyState::Search;
-            searchTimer = 0.0f;
+            stateTimer = 0.0f;
+            stuckTimer = 0.0f;
+            stuckCheckPosition = myPos;
         }
     }
 }
 
-// 探索状態の更新
 void Script_Enemy::UpdateSearch(float deltaTime) {
-    searchTimer += deltaTime;
+    SetAnimation(AnimState::Idle);
+    stateTimer += deltaTime;
 
-    // プレイヤーを再発見したか確認
-    float distanceToPlayer;
-    if (IsPlayerInSight(distanceToPlayer)) {
+    DirectX::XMFLOAT3 playerPos;
+    if (IsPlayerVisible(playerPos)) {
         currentState = EnemyState::Chase;
-        lastKnownPlayerPosition = playerObject->GetPosition();
+        lastKnownPlayerPosition = playerPos;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = _parentObject->GetPosition();
         return;
     }
 
-    // 周囲を見回す（回転）
     DirectX::XMFLOAT3 myRot = _parentObject->GetRotation();
-    myRot.y += rotationSpeed * deltaTime * 0.5f; // ゆっくり回転
-
-    while (myRot.y >= 360.0f) myRot.y -= 360.0f;
+    myRot.y += rotationSpeed * 0.3f * deltaTime;
+    myRot.y = NormalizeAngle(myRot.y);
     _parentObject->SetRotation(myRot);
 
-    // 一定時間経過したら巡回モードに戻る
-    if (searchTimer >= searchTime) {
-        currentState = EnemyState::Patrol;
-        patrolTimer = 0.0f;
+    if (stateTimer >= searchTime) {
+        currentState = EnemyState::Idle;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = _parentObject->GetPosition();
     }
 }
 
-// 攻撃状態の更新
 void Script_Enemy::UpdateAttack(float deltaTime) {
-    float distanceToPlayer = GetDistanceToPlayer();
+    SetAnimation(AnimState::Idle);
+    DirectX::XMFLOAT3 playerPos;
 
-    // プレイヤーの方を向く
-    RotateTowards(playerObject->GetPosition(), deltaTime);
+    if (IsPlayerVisible(playerPos)) {
+        DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
+        float dx = playerPos.x - myPos.x;
+        float dz = playerPos.z - myPos.z;
+        float distToPlayer = sqrtf(dx * dx + dz * dz);
 
-    // 攻撃範囲外なら追跡モードに戻る
-    if (distanceToPlayer > attackRange) {
-        float visionDist;
-        if (IsPlayerInSight(visionDist)) {
+        SmoothRotateToTarget(playerPos, deltaTime);
+
+        if (distToPlayer > attackRange * 1.3f) {
             currentState = EnemyState::Chase;
+            stuckTimer = 0.0f;
+            stuckCheckPosition = myPos;
+            return;
         }
-        else {
-            currentState = EnemyState::Search;
-            searchTimer = 0.0f;
+
+        if (attackCooldown <= 0.0f && !isRotating) {
+            attackCooldown = 2.0f;
         }
-        return;
     }
-
-    // ここに攻撃処理を追加
-    // 例: アニメーション再生、ダメージ処理など
+    else {
+        currentState = EnemyState::Search;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = _parentObject->GetPosition();
+    }
 }
 
-// プレイヤーまでの距離を取得
-float Script_Enemy::GetDistanceToPlayer() {
-    if (!playerObject) return 9999.0f;
-
-    DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
-    DirectX::XMFLOAT3 playerPos = playerObject->GetPosition();
-
-    DirectX::XMFLOAT3 diff = {
-        playerPos.x - myPos.x,
-        playerPos.y - myPos.y,
-        playerPos.z - myPos.z
-    };
-
-    return VectorLength(diff);
+DirectX::XMFLOAT3 Script_Enemy::GetForwardVector() {
+    DirectX::XMFLOAT3 rot = _parentObject->GetRotation();
+    return { sinf(rot.y), 0.0f, cosf(rot.y) };
 }
 
-// ベクトルの正規化
+DirectX::XMFLOAT3 Script_Enemy::GetRightVector() {
+    DirectX::XMFLOAT3 rot = _parentObject->GetRotation();
+    return { cosf(rot.y), 0.0f, -sinf(rot.y) };
+}
+
 DirectX::XMFLOAT3 Script_Enemy::NormalizeVector(const DirectX::XMFLOAT3& v) {
-    float length = VectorLength(v);
+    float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
     if (length < 0.001f) {
         return { 0.0f, 0.0f, 0.0f };
     }
     return { v.x / length, v.y / length, v.z / length };
 }
 
-// ベクトルの長さを計算
 float Script_Enemy::VectorLength(const DirectX::XMFLOAT3& v) {
     return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
-// Y軸周りにベクトルを回転
-DirectX::XMFLOAT3 Script_Enemy::RotateVectorY(const DirectX::XMFLOAT3& v, float angleDeg) {
-    float angleRad = angleDeg * (M_PI / 180.0f);
-    float cosA = cosf(angleRad);
-    float sinA = sinf(angleRad);
-
-    return {
-        v.x * cosA - v.z * sinA,
-        v.y,
-        v.x * sinA + v.z * cosA
-    };
+float Script_Enemy::NormalizeAngle(float angle) {
+    while (angle > M_PI) angle -= 2.0f * M_PI;
+    while (angle < -M_PI) angle += 2.0f * M_PI;
+    return angle;
 }
