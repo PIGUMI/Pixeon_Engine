@@ -17,6 +17,7 @@
 #include <algorithm>
 #include "BoneNodeMapping.h"
 #include <functional>
+#include "DirectXTex/DirectXTex.h"
 #include "MatrixUtil.h"
 
 #if _MSC_VER >= 1930
@@ -256,7 +257,9 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 
 	for (unsigned int i = 0; i < scene->mNumTextures; ++i) {
 		aiTexture* tex = scene->mTextures[i];
-		std::string texKey = modelName + ":: *" + std::to_string(i);
+
+		// キーを統一: スペースなしで "*" + 数字
+		std::string texKey = modelName + "::*" + std::to_string(i);
 
 		// 既に処理済みならスキップ
 		if (_embeddedTextures.find(texKey) != _embeddedTextures.end()) {
@@ -266,25 +269,131 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
 
 		if (tex->mHeight == 0) {
-			// 圧縮フォーマット (PNG, JPGなど)
-			D3D11_SUBRESOURCE_DATA initData{};
-			initData.pSysMem = tex->pcData;
-			initData.SysMemPitch = tex->mWidth;
-
-			// DirectXTexやWICを使って読み込むのが理想だが、
-			// ここでは簡易的にRAWデータとして扱う
-			// 実際のプロジェクトではDirectXTex:: CreateTextureFromMemoryなどを使用推奨
-
+			// 圧縮フォーマット (PNG, JPG, DDS など)
 #ifdef _DEBUG
-			OutputDebugStringA(("[ModelManager] Embedded compressed texture detected:  " + texKey +
-				" format=" + std::string(tex->achFormatHint) + "\n").c_str());
+			OutputDebugStringA(("[ModelManager] Embedded compressed texture detected: " + texKey +
+				" format=" + std::string(tex->achFormatHint) +
+				" size=" + std::to_string(tex->mWidth) + " bytes\n").c_str());
 #endif
-			// TODO: DirectXTexを使った実装
-			// 現状はスキップ
-			continue;
+
+			// DirectXTexを使用して圧縮テクスチャを読み込む
+			DirectX::TexMetadata metadata;
+			DirectX::ScratchImage image;
+			HRESULT hr = E_FAIL;
+
+			// フォーマットヒントから適切な読み込み方法を選択
+			std::string formatHint = tex->achFormatHint;
+
+			// バッファポインタをuint8_t*にキャスト
+			const uint8_t* buffer = reinterpret_cast<const uint8_t*>(tex->pcData);
+			size_t bufferSize = static_cast<size_t>(tex->mWidth);
+
+			if (formatHint == "png" || formatHint == "jpg" || formatHint == "jpeg" ||
+				formatHint == "bmp" || formatHint == "tiff" || formatHint == "gif" ||
+				formatHint == "tga") {
+				// WIC経由で読み込み (PNG, JPG, BMP, TIFFなど)
+				hr = DirectX::LoadFromWICMemory(
+					buffer,
+					bufferSize,
+					DirectX::WIC_FLAGS_NONE,
+					&metadata,
+					image
+				);
+
+				if (FAILED(hr)) {
+#ifdef _DEBUG
+					OutputDebugStringA(("[ModelManager] WIC load failed, trying as TGA: " + texKey + "\n").c_str());
+#endif
+					// WICで失敗した場合、TGAとして試行
+					hr = DirectX::LoadFromTGAMemory(
+						buffer,
+						bufferSize,
+						&metadata,
+						image
+					);
+				}
+			}
+			else if (formatHint == "dds") {
+				// DDS形式
+				hr = DirectX::LoadFromDDSMemory(
+					buffer,
+					bufferSize,
+					DirectX::DDS_FLAGS_NONE,
+					&metadata,
+					image
+				);
+			}
+			else {
+				// 不明な形式の場合はWICで試行
+				hr = DirectX::LoadFromWICMemory(
+					buffer,
+					bufferSize,
+					DirectX::WIC_FLAGS_NONE,
+					&metadata,
+					image
+				);
+
+				// WICで失敗したらTGAを試行
+				if (FAILED(hr)) {
+					hr = DirectX::LoadFromTGAMemory(
+						buffer,
+						bufferSize,
+						&metadata,
+						image
+					);
+				}
+
+				// それでも失敗したらDDSを試行
+				if (FAILED(hr)) {
+					hr = DirectX::LoadFromDDSMemory(
+						buffer,
+						bufferSize,
+						DirectX::DDS_FLAGS_NONE,
+						&metadata,
+						image
+					);
+				}
+			}
+
+			if (SUCCEEDED(hr)) {
+				// SRV作成
+				hr = DirectX::CreateShaderResourceView(
+					device,
+					image.GetImages(),
+					image.GetImageCount(),
+					metadata,
+					srv.GetAddressOf()
+				);
+
+				if (SUCCEEDED(hr)) {
+					_embeddedTextures[texKey] = srv;
+#ifdef _DEBUG
+					OutputDebugStringA(("[ModelManager] Embedded texture loaded successfully: " +
+						texKey + " (" + std::to_string(metadata.width) + "x" +
+						std::to_string(metadata.height) + ")\n").c_str());
+#endif
+				}
+				else {
+#ifdef _DEBUG
+					OutputDebugStringA(("[ModelManager] Failed to create SRV for embedded texture: " +
+						texKey + "\n").c_str());
+#endif
+				}
+			}
+			else {
+#ifdef _DEBUG
+				OutputDebugStringA(("[ModelManager] Failed to load embedded texture from memory: " +
+					texKey + " format=" + formatHint + "\n").c_str());
+#endif
+			}
 		}
 		else {
 			// 非圧縮RGBA
+#ifdef _DEBUG
+			OutputDebugStringA(("[ModelManager] Embedded uncompressed texture: " + texKey +
+				" size=" + std::to_string(tex->mWidth) + "x" + std::to_string(tex->mHeight) + "\n").c_str());
+#endif
+
 			D3D11_TEXTURE2D_DESC desc{};
 			desc.Width = tex->mWidth;
 			desc.Height = tex->mHeight;
@@ -312,7 +421,7 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 				if (SUCCEEDED(device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf()))) {
 					_embeddedTextures[texKey] = srv;
 #ifdef _DEBUG
-					OutputDebugStringA(("[ModelManager] Embedded texture loaded: " + texKey + "\n").c_str());
+					OutputDebugStringA(("[ModelManager] Embedded uncompressed texture loaded: " + texKey + "\n").c_str());
 #endif
 				}
 			}
@@ -330,19 +439,36 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelManager::GetEmbeddedTexture(
 	const std::string& modelName, const std::string& texturePath)
 {
-	// テクスチャパスが "*数字" 形式なら埋め込みテクスチャ
 	if (texturePath.empty() || texturePath[0] != '*') {
 		return nullptr;
 	}
 
-	std::string key = modelName + "::" + texturePath;
+	// スペースを完全除去
+	std::string normalizedPath = texturePath;
+	normalizedPath.erase(
+		std::remove_if(normalizedPath.begin(), normalizedPath.end(), ::isspace),
+		normalizedPath.end()
+	);
+
+	std::string key = modelName + "::" + normalizedPath;
+
+	// Release環境でもログ出力
+	static std::ofstream debugLog("embedded_texture_log.txt", std::ios::app);
+	debugLog << "Searching: " << key << std::endl;
+
 	auto it = _embeddedTextures.find(key);
 	if (it != _embeddedTextures.end()) {
+		debugLog << "  -> FOUND!" << std::endl;
 		return it->second;
 	}
+
+	debugLog << "  -> NOT FOUND. Available keys:" << std::endl;
+	for (const auto& kv : _embeddedTextures) {
+		debugLog << "    - " << kv.first << std::endl;
+	}
+
 	return nullptr;
 }
-
 /*
 * 関数名　: ProcessNode
 * 引　数  : aiNode* node : 現在のノード
@@ -523,7 +649,8 @@ void ModelManager::ProcessMesh(aiMesh* mesh, const aiScene* scene,
 * 説　明　: マテリアルを処理し、テクスチャパスなどを抽出する
 */
 void ModelManager::ProcessMaterials(const aiScene* scene,
-	std::shared_ptr<ModelSharedResource> shared) {
+	std::shared_ptr<ModelSharedResource> shared)
+{
 	for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
 		aiMaterial* mat = scene->mMaterials[i];
 		MaterialShared ms;
@@ -534,13 +661,19 @@ void ModelManager::ProcessMaterials(const aiScene* scene,
 		if (AI_SUCCESS == mat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath)) {
 			std::string path = texPath.C_Str();
 
+			// ログ出力
+			std::ofstream log("material_process_log.txt", std::ios::app);
+			log << "[Material " << i << "] Texture path: \"" << path << "\"" << std::endl;
+
 			if (!path.empty() && path[0] == '*') {
 				ms.baseColorTex = path;
 				ms.isEmbedded = true;
+				log << "  -> Marked as EMBEDDED" << std::endl;
 			}
 			else {
 				ms.baseColorTex = ResolveTexturePath(shared->source, path);
 				ms.isEmbedded = false;
+				log << "  -> External file" << std::endl;
 			}
 		}
 

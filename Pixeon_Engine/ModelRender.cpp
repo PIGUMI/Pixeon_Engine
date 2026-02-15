@@ -58,30 +58,64 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 void ModelRenderComponent::RefreshMaterialCache() {
 	m_materials.clear();
 	if (!m_model) return;
+
 	m_materials.reserve(m_model->materials.size());
-	for (auto& m : m_model->materials) {
+
+	for (size_t idx = 0; idx < m_model->materials.size(); ++idx) {
+		const auto& modelMat = m_model->materials[idx];
 		MaterialRuntime rt;
-		rt.texName = m.baseColorTex;
-		rt.color = m.baseColor;
+
+		rt.texName = modelMat.baseColorTex;
+		rt.color = modelMat.baseColor;
 		rt.meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		rt.meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-		rt.cullMode = CullMode::Back; // デフォルトは裏面カリング
+		rt.cullMode = CullMode::Back;
 
-		if (!m.baseColorTex.empty()) {
-			if (m.isEmbedded && m.baseColorTex[0] == '*') {
-				auto srv = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, m.baseColorTex);
+		// テクスチャの読み込み
+		if (!modelMat.baseColorTex.empty()) {
+			if (modelMat.isEmbedded && modelMat.baseColorTex[0] == '*') {
+				// 埋め込みテクスチャを取得
+				auto srv = ModelManager::Instance()->GetEmbeddedTexture(
+					m_modelPath,
+					modelMat.baseColorTex
+				);
+
 				if (srv) {
 					auto texRes = std::make_shared<TextureResource>();
 					texRes->srv = srv;
-					texRes->width = 0;
-					texRes->height = 0;
+
+					// SRVから実際のテクスチャサイズを取得
+					Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+					srv->GetResource(resource.GetAddressOf());
+
+					Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
+					if (SUCCEEDED(resource.As(&tex2D))) {
+						D3D11_TEXTURE2D_DESC desc;
+						tex2D->GetDesc(&desc);
+						texRes->width = desc.Width;
+						texRes->height = desc.Height;
+					}
+
 					rt.tex = texRes;
+
+					// ログ出力
+					std::ofstream log("material_cache_log.txt", std::ios::app);
+					log << "[Mat " << idx << "] Embedded texture SET: "
+						<< modelMat.baseColorTex << std::endl;
+				}
+				else {
+					// 失敗ログ
+					std::ofstream log("material_cache_log.txt", std::ios::app);
+					log << "[Mat " << idx << "] FAILED to get embedded texture: "
+						<< modelMat.baseColorTex << std::endl;
 				}
 			}
 			else {
-				rt.tex = TextureManager::Instance()->LoadOrGet(m.baseColorTex);
+				// 通常のファイルテクスチャ
+				rt.tex = TextureManager::Instance()->LoadOrGet(modelMat.baseColorTex);
 			}
 		}
+
 		m_materials.push_back(rt);
 	}
 }
