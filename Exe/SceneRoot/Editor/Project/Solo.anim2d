@@ -1,15 +1,15 @@
 {
     "KeyFrames": [
         {
-            "Active": true,
+            "Active": false,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
                     0.0
                 ],
                 "ControlPoint2": [
-                    0.25233644247055054,
-                    0.28738316893577576
+                    1.0,
+                    0.0
                 ],
                 "EndPoint": [
                     1.0,
@@ -105,7 +105,7 @@
             }
         },
         {
-            "Active": true,
+            "Active": false,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -209,7 +209,7 @@
             }
         },
         {
-            "Active": false,
+            "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,
@@ -313,7 +313,7 @@
             }
         },
         {
-            "Active": false,
+            "Active": true,
             "CurveInfo": {
                 "ControlPoint1": [
                     0.0,

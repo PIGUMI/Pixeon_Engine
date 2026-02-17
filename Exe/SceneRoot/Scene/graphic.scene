@@ -8,11 +8,11 @@
                 {
                     "enabled": true,
                     "params": {
-                        "brightness": 0.0,
-                        "contrast": 1.0,
+                        "brightness": 0.019999999552965164,
+                        "contrast": 1.0299999713897705,
                         "gamma": 1.0,
                         "hueShift": 0.0,
-                        "saturation": 1.9900000095367432,
+                        "saturation": 2.0,
                         "temperature": -0.8700000047683716,
                         "tint": 0.0
                     },
@@ -26,23 +26,7 @@
             "layerIndex": 1,
             "name": "Layer 1",
             "opacity": 1.0,
-            "postEffects": [
-                {
-                    "enabled": true,
-                    "params": {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "intensity": 0.2199999988079071,
-                        "pixelSize": 32.0
-                    },
-                    "priority": 0,
-                    "type": 3
-                }
-            ],
+            "postEffects": [],
             "visible": true
         },
         {
@@ -56,7 +40,23 @@
             "layerIndex": 3,
             "name": "Layer 3",
             "opacity": 1.0,
-            "postEffects": [],
+            "postEffects": [
+                {
+                    "enabled": true,
+                    "params": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "intensity": 1.0,
+                        "pixelSize": 11.100000381469727
+                    },
+                    "priority": 0,
+                    "type": 3
+                }
+            ],
             "visible": true
         },
         {
@@ -106,7 +106,7 @@
         {
             "Components": [
                 {
-                    "Data": "-0.200055 4.12728 -6.18878 9.72 0.129999 6.33678e-39 2.68492 2.83095 3.29787 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
+                    "Data": "-1.92955 3.90924 -2.08646 9.71 0.189999 6.33678e-39 0.833521 2.02066 7.33685 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -215,7 +215,7 @@
                 ],
                 "Rotation": [
                     -1.3875014781951904,
-                    0.5550146698951721,
+                    -0.7487462759017944,
                     0.0
                 ],
                 "Scale": [
@@ -343,6 +343,39 @@
                 "Rotation": [
                     0.0,
                     0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Components": [
+                {
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n3\n0 0 0\n0.02 0.02 0.02\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1.1 1 1.1\n2\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Name": "ModelRender",
+                    "Type": 4
+                },
+                {
+                    "Data": "2 1 1 1 1 10 20 35 1 0 0 0.4 2.9 0.509636 0 0 ",
+                    "Name": "Light",
+                    "Type": 1
+                }
+            ],
+            "Name": "Model1",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    -2.4000000953674316,
+                    1.2000000476837158,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    3.370178461074829,
                     0.0
                 ],
                 "Scale": [
