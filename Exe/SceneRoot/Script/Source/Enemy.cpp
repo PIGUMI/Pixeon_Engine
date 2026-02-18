@@ -1,6 +1,11 @@
+/*
+* Enemy AI Script
+*/
+
 #include "Enemy.h"
 #include <cmath>
 #include <algorithm>
+
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -61,6 +66,12 @@ void Script_Enemy::EndPlay() {
     IScript::EndPlay();
 }
 
+/*
+* 関数名： SetAnimation
+* 引　数： newAnimState - 新しいアニメーション状態
+* 戻り値：なし
+* 説　明： アニメーション状態を切り替える関数。現在の状態と同じ場合やアニメーションコンポーネントがない場合は何もしない。
+*/
 void Script_Enemy::SetAnimation(AnimState newAnimState) {
     if (currentAnimState == newAnimState || !animationComponent) {
         return;
@@ -78,6 +89,12 @@ void Script_Enemy::SetAnimation(AnimState newAnimState) {
     }
 }
 
+/*
+* 関数名： SetNewRandomTarget
+* 引　数：なし
+* 戻り値：なし
+* 説　明： パトロール状態で新しいランダムな目的地を設定する関数。現在の位置から半径10の範囲内でランダムな点を生成する。
+*/
 void Script_Enemy::SetNewRandomTarget() {
     float randomAngle = (rand() % 628) * 0.01f;
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
@@ -88,6 +105,12 @@ void Script_Enemy::SetNewRandomTarget() {
     };
 }
 
+/*
+* 関数名： IsPlayerVisible
+* 引　数：outPlayerPos - プレイヤーの位置を出力する参照変数
+* 戻り値：プレイヤーが視界内にいる場合はtrue、そうでない場合はfalse
+* 説　明： プレイヤーが敵の視界内にいるかどうかを判定する関数。敵の前方に複数のレイを飛ばして、プレイヤーが見えるかどうかをチェックする。
+*/
 bool Script_Enemy::IsPlayerVisible(DirectX::XMFLOAT3& outPlayerPos) {
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
     myPos.y += 1.0f;
@@ -125,6 +148,12 @@ bool Script_Enemy::IsPlayerVisible(DirectX::XMFLOAT3& outPlayerPos) {
     return false;
 }
 
+/*
+* 関数名： CheckObstacleInDirection
+* 引　数：direction - チェックする方向のベクトル、distance - チェックする距離
+* 戻り値：指定した方向に障害物がある場合はtrue、そうでない場合はfalse
+* 説　明： 指定した方向に障害物があるかどうかを判定する関数。敵の位置から指定した距離までレイを飛ばして、障害物があるかどうかをチェックする。
+*/
 bool Script_Enemy::CheckObstacleInDirection(const DirectX::XMFLOAT3& direction, float distance) {
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
     myPos.y += 0.5f;
@@ -138,6 +167,12 @@ bool Script_Enemy::CheckObstacleInDirection(const DirectX::XMFLOAT3& direction, 
     return _parentScene->RaycastIgnoreTriggers(myPos, dir, distance, &hit) && hit.bHit;
 }
 
+/*
+* 関数名： GetAvoidanceDirection
+* 引　数：なし
+* 戻り値：障害物を回避するための移動方向のベクトル
+* 説　明： 障害物を回避するための移動方向を計算する関数。
+*/
 DirectX::XMFLOAT3 Script_Enemy::GetAvoidanceDirection() {
     DirectX::XMFLOAT3 forward = GetForwardVector();
     DirectX::XMFLOAT3 right = GetRightVector();
@@ -177,6 +212,12 @@ DirectX::XMFLOAT3 Script_Enemy::GetAvoidanceDirection() {
     return { 0.0f, 0.0f, 0.0f };
 }
 
+/*
+* 関数名： SmoothRotateToTarget
+* 引　数：targetPos - 回転して向くべき目標位置、deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： 目標位置に向かってスムーズに回転する関数。現在の回転と目標位置への角度を計算し、回転速度に基づいて少しずつ回転させる。
+*/
 void Script_Enemy::SmoothRotateToTarget(const DirectX::XMFLOAT3& targetPos, float deltaTime) {
     DirectX::XMFLOAT3 myPos = _parentObject->GetPosition();
 
@@ -211,6 +252,12 @@ void Script_Enemy::SmoothRotateToTarget(const DirectX::XMFLOAT3& targetPos, floa
     _parentObject->SetRotation(myRot);
 }
 
+/*
+* 関数名： MoveInDirection
+* 引　数：direction - 移動する方向のベクトル、deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： 指定した方向に移動する関数。移動速度と経過時間に基づいて、敵の位置を更新する。
+*/
 void Script_Enemy::MoveInDirection(const DirectX::XMFLOAT3& direction, float deltaTime) {
     float len = sqrtf(direction.x * direction.x + direction.z * direction.z);
     if (len < 0.001f) return;
@@ -221,6 +268,12 @@ void Script_Enemy::MoveInDirection(const DirectX::XMFLOAT3& direction, float del
     _parentObject->SetPosition(myPos);
 }
 
+/*
+* 関数名： CheckAndResolveStuck
+* 引　数：deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： 敵が移動中にスタックしているかどうかをチェックし、スタックしている場合は状態をアイドルに切り替える関数。一定時間同じ位置にいる場合はスタックと判断する。
+*/
 void Script_Enemy::CheckAndResolveStuck(float deltaTime) {
     DirectX::XMFLOAT3 currentPos = _parentObject->GetPosition();
 
@@ -252,6 +305,12 @@ void Script_Enemy::CheckAndResolveStuck(float deltaTime) {
     lastPosition = currentPos;
 }
 
+/*
+* 関数名： UpdateIdle
+* 引　数：deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： アイドル状態の更新関数。プレイヤーが視界内に入った場合はチェイス状態に切り替える。一定時間アイドル状態が続いた場合はパトロール状態に切り替える。
+*/
 void Script_Enemy::UpdateIdle(float deltaTime) {
     SetAnimation(AnimState::Idle);
     stateTimer += deltaTime;
@@ -275,6 +334,12 @@ void Script_Enemy::UpdateIdle(float deltaTime) {
     }
 }
 
+/*
+* 関数名： UpdatePatrol
+* 引　数：deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： パトロール状態の更新関数。プレイヤーが視界内に入った場合はチェイス状態に切り替える。
+*/
 void Script_Enemy::UpdatePatrol(float deltaTime) {
     DirectX::XMFLOAT3 playerPos;
     if (IsPlayerVisible(playerPos)) {
@@ -315,6 +380,12 @@ void Script_Enemy::UpdatePatrol(float deltaTime) {
     MoveInDirection(moveDir, deltaTime);
 }
 
+/*
+* 関数名： UpdateChase
+* 引　数：deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： チェイス状態の更新関数。プレイヤーが視界内にいる場合は追跡を続ける。攻撃範囲内に入った場合は攻撃状態に切り替える.
+*/
 void Script_Enemy::UpdateChase(float deltaTime) {
     DirectX::XMFLOAT3 playerPos;
     bool canSeePlayer = IsPlayerVisible(playerPos);
@@ -381,6 +452,12 @@ void Script_Enemy::UpdateChase(float deltaTime) {
     }
 }
 
+/*
+* 関数名： UpdateSearch
+* 引　数：deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： サーチ状態の更新関数。プレイヤーが視界内に入った場合はチェイス状態に切り替える。一定時間サーチ状態が続いた場合はアイドル状態に切り替える。
+*/
 void Script_Enemy::UpdateSearch(float deltaTime) {
     SetAnimation(AnimState::Idle);
     stateTimer += deltaTime;
@@ -408,6 +485,12 @@ void Script_Enemy::UpdateSearch(float deltaTime) {
     }
 }
 
+/*
+* 関数名： UpdateAttack
+* 引　数：deltaTime - 前回のフレームからの経過時間
+* 戻り値：なし
+* 説　明： アタック状態の更新関数。プレイヤーが視界内にいる場合は攻撃を続ける。視界外に出た場合はサーチ状態に切り替える。
+*/
 void Script_Enemy::UpdateAttack(float deltaTime) {
     SetAnimation(AnimState::Idle);
     DirectX::XMFLOAT3 playerPos;
@@ -439,16 +522,34 @@ void Script_Enemy::UpdateAttack(float deltaTime) {
     }
 }
 
+/*
+* 関数名： GetForwardVector
+* 引　数：なし
+* 戻り値：敵の前方方向を表すベクトル
+* 説　明： 敵の前方方向を計算して返す関数。敵の回転から前方ベクトルを計算する。
+*/
 DirectX::XMFLOAT3 Script_Enemy::GetForwardVector() {
     DirectX::XMFLOAT3 rot = _parentObject->GetRotation();
     return { sinf(rot.y), 0.0f, cosf(rot.y) };
 }
 
+/*
+* 関数名： GetRightVector
+* 引　数：なし
+* 戻り値：敵の右方向を表すベクトル
+* 説　明： 敵の右方向を計算して返す関数。敵の回転から右ベクトルを計算する。
+*/
 DirectX::XMFLOAT3 Script_Enemy::GetRightVector() {
     DirectX::XMFLOAT3 rot = _parentObject->GetRotation();
     return { cosf(rot.y), 0.0f, -sinf(rot.y) };
 }
 
+/*
+* 関数名： NormalizeVector
+* 引　数：v - 正規化するベクトル
+* 戻り値：正規化されたベクトル
+* 説　明： ベクトルを正規化して返す関数。長さが0に近い場合はゼロベクトルを返す。
+*/
 DirectX::XMFLOAT3 Script_Enemy::NormalizeVector(const DirectX::XMFLOAT3& v) {
     float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
     if (length < 0.001f) {
@@ -457,10 +558,22 @@ DirectX::XMFLOAT3 Script_Enemy::NormalizeVector(const DirectX::XMFLOAT3& v) {
     return { v.x / length, v.y / length, v.z / length };
 }
 
+/*
+* 関数名： VectorLength
+* 引　数：v - 長さを計算するベクトル
+* 戻り値：ベクトルの長さ
+* 説　明： ベクトルの長さを計算して返す関数。ベクトルの各成分の二乗の和の平方根を計算する。
+*/
 float Script_Enemy::VectorLength(const DirectX::XMFLOAT3& v) {
     return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+/*
+* 関数名： NormalizeAngle
+* 引　数：angle - 正規化する角度（ラジアン）
+* 戻り値：正規化された角度（-πからπの範囲）
+* 説　明： 角度を-πからπの範囲に正規化して返す関数。角度がπを超える場合は2πを引き、-π未満の場合は2πを加えることで正規化する。
+*/
 float Script_Enemy::NormalizeAngle(float angle) {
     while (angle > M_PI) angle -= 2.0f * M_PI;
     while (angle < -M_PI) angle += 2.0f * M_PI;

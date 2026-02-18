@@ -13,7 +13,8 @@ private:
         Patrol,
         Chase,
         Search,
-        Attack
+        Attack,
+		Dead
     };
 
     enum class AnimState {
