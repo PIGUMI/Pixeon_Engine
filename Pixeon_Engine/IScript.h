@@ -21,6 +21,7 @@ public:
     virtual ~IScript();
     virtual void BeginPlay();
     virtual void Update(float DeltaTime);
+    virtual void FixedUpdate(float DeleteTime);
     virtual void EndPlay();
 
     virtual void CallCustom(const std::string& functionName);

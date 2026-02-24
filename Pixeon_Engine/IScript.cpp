@@ -89,6 +89,11 @@ void IScript::Update(float DeltaTime)
     // 継承先で実装
 }
 
+void IScript::FixedUpdate(float DeleteTime)
+{
+	// 継承先で実装
+}
+
 void IScript::EndPlay()
 {
     // 自動的にすべてのリソースを解放

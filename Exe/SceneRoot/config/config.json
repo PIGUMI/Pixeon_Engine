@@ -9,7 +9,7 @@
         1.0
     ],
     "ExternelTool": "SceneRoot/Tool/IN/",
-    "MouseSensitivity": 0.009999999776482582,
+    "MouseSensitivity": 0.04800000041723251,
     "PixelPostEffect": false,
     "SceneFilePath": "SceneRoot/Scene/",
     "VcpkgFilePath": "C:/vcpkg",

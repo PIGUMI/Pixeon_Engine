@@ -233,7 +233,8 @@ void EngineFrame::GameViewWindow()
 				// 前方向ベクトル
 				DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
 
-				float scrollSpeed = 2.0f;
+				float scrollSpeed = SettingManager::GetInstance()->GetMouseSensitivity();
+				scrollSpeed *= 10.0f;
 				float forwardNotches = MouseWheelForward();
 				float backwardNotches = MouseWheelBackward();
 
@@ -261,6 +262,8 @@ void EngineFrame::GameViewWindow()
 				{
 					float MoveX = (float)MouseMoveX() * SettingManager::GetInstance()->GetMouseSensitivity();
 					float MoveY = (float)MouseMoveY() * SettingManager::GetInstance()->GetMouseSensitivity();
+					MoveX *= 0.1f;
+					MoveY *= 0.1f;
 
 					DirectX::XMFLOAT3 up = Cam->GetUpVector();
 
@@ -275,6 +278,8 @@ void EngineFrame::GameViewWindow()
 					float MoveY = (float)MouseMoveY();
 					MoveX = MoveX * SettingManager::GetInstance()->GetMouseSensitivity();
 					MoveY = MoveY * SettingManager::GetInstance()->GetMouseSensitivity();
+					MoveX *= 0.1f;
+					MoveY *= 0.1f;
 					DirectX::XMFLOAT3 Rot;
 					Rot = Cam->GetRotation();
 					Rot.x += MoveX;
