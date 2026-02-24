@@ -446,7 +446,7 @@ void EngineFrame::ContentWindow()
 
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("コンテンツドロワー").c_str());
 
-	// フォルダ階層表示（戻るボタン）
+	// フォルダ階層表示
 	if (currentDir.has_parent_path()) {
 		if (ImGui::Button("..")) {
 			currentDir = currentDir.parent_path();
@@ -464,7 +464,6 @@ void EngineFrame::ContentWindow()
 		selectedExt = filterExts[filterIndex];
 	}
 
-	// フォルダ・ファイル一覧を取得
 	std::vector<std::filesystem::directory_entry> entries;
 	for (auto& entry : std::filesystem::directory_iterator(currentDir)) {
 		if (entry.is_directory() || selectedExt.empty() || entry.path().extension() == selectedExt) {
@@ -474,7 +473,6 @@ void EngineFrame::ContentWindow()
 
 	ImGui::BeginChild("assets_grid", ImVec2(0, 0), true);
 
-	// 右クリック処理
 	if (ImGui::BeginPopupContextWindow("assets_context", ImGuiMouseButton_Right)) {
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("新しいフォルダを作成").c_str())) {
 			std::filesystem::path newFolderPath = currentDir / "NewFolder";
@@ -491,16 +489,15 @@ void EngineFrame::ContentWindow()
 		ImGui::EndPopup();
 	}
 
-	float iconFontSize = 32.0f; // FontAwesomeアイコン用のサイズ
+	// フォント準備（大きいFontAwesomeを使う。添字2が48pxアイコン用フォント）
+	ImFont* fontAwesomeBig = ImGui::GetIO().Fonts->Fonts[1];
+	float iconFontSize = 48.0f;
 	float itemWidth = 96.0f;
-	float itemHeight = 80.0f;
-	float availWidth = ImGui::GetContentRegionAvail().x;
-	int columns = static_cast<int>(availWidth / itemWidth);
+	int columns = static_cast<int>(ImGui::GetContentRegionAvail().x / itemWidth);
 	if (columns < 1) columns = 1;
 	ImGui::Columns(columns, nullptr, false);
 
-	static std::filesystem::path selectedEntryPath; // 選択中のパス
-
+	static std::filesystem::path selectedEntryPath;
 	int index = 0;
 
 	for (const auto& entry : entries) {
@@ -509,27 +506,21 @@ void EngineFrame::ContentWindow()
 		std::string fileName = entry.path().filename().string();
 		bool isDir = entry.is_directory();
 
-		// FontAwesomeアイコンを取得
-		std::string iconLabel;
-		if (isDir) {
-			iconLabel = ICON_FA_FOLDER;
-		}
-		else {
-			iconLabel = EngineFrame::GetInstance()->GetAssetIconLabel(fileName);
-		}
-
+		std::string iconLabel = isDir ? ICON_FA_FOLDER : EngineFrame::GetInstance()->GetAssetIconLabel(fileName);
 		std::string displayName = AbbreviateName(fileName, 12);
 		std::string idName = fileName + "##" + std::to_string(index++);
 
 		float groupX = ImGui::GetCursorPosX();
 
-		// アイコンをセンタリング
+		// アイコンを大きなフォントで中央に表示
 		ImGui::SetCursorPosX(groupX + (itemWidth - iconFontSize) * 0.5f);
-		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+
+		
+		ImGui::PushFont(fontAwesomeBig);
 		ImGui::TextColored(ImVec4(0.86f, 0.86f, 0.86f, 1.0f), "%s", iconLabel.c_str());
 		ImGui::PopFont();
 
-		// テキストもセンタリング
+		// ファイル名ラベルも中央に
 		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
 		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
@@ -540,7 +531,6 @@ void EngineFrame::ContentWindow()
 			entry.path() == selectedEntryPath, 0, ImVec2(itemWidth, 0)
 		);
 
-		// 右クリック（コンテキストメニュー）
 		if (ImGui::BeginPopupContextItem("context")) {
 			if (!isDir) {
 				HandleAssetContextMenu(entry.path());
@@ -554,7 +544,6 @@ void EngineFrame::ContentWindow()
 		}
 		ImGui::PopID();
 
-		// クリック判定
 		if (nameClicked) {
 			selectedEntryPath = entry.path();
 			if (isDir) {
@@ -601,10 +590,11 @@ void EngineFrame::PrefabWindow() {
 
 	ImGui::BeginChild("prefab_grid", ImVec2(0, 0), true);
 
-	float iconFontSize = 32.0f; // FontAwesome用
+	// 大きいFontAwesomeフォントを利用
+	ImFont* fontAwesomeBig = ImGui::GetIO().Fonts->Fonts[1];
+	float iconFontSize = 48.0f;
 	float itemWidth = 96.0f;
-	float availWidth = ImGui::GetContentRegionAvail().x;
-	int columns = static_cast<int>(availWidth / itemWidth);
+	int columns = static_cast<int>(ImGui::GetContentRegionAvail().x / itemWidth);
 	if (columns < 1) columns = 1;
 	ImGui::Columns(columns, nullptr, false);
 
@@ -622,13 +612,12 @@ void EngineFrame::PrefabWindow() {
 
 		float groupX = ImGui::GetCursorPosX();
 
-		// Prefab（立方体アイコンに決定！）
+		// 立方体アイコンを中央＋大サイズ
 		ImGui::SetCursorPosX(groupX + (itemWidth - iconFontSize) * 0.5f);
-		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+		ImGui::PushFont(fontAwesomeBig);
 		ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), ICON_FA_CUBE);
 		ImGui::PopFont();
 
-		// テキストもセンタリング
 		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
 		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);

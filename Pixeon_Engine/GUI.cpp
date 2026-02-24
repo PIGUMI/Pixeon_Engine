@@ -68,16 +68,6 @@ void GUI::Init()
 		icons_ranges
 	);
 
-	ImFontConfig iconsConfigBig;
-	iconsConfigBig.MergeMode = true;
-	iconsConfigBig.PixelSnapH = true;
-	ImFont* fontAwesomeBig = io.Fonts->AddFontFromFileTTF(
-		"SceneRoot/Editor/font/fa-solid-900.ttf",
-		48.0f,
-		&iconsConfigBig,
-		icons_ranges
-	);
-
 	io.Fonts->Build();
 
 	ImGui_ImplWin32_Init(MainFrame::GetInstance()->GetWindowHandle());
