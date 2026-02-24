@@ -51,6 +51,8 @@ private:
 	void SceneRenameWindow();
 	void HandleAssetContextMenu(const std::filesystem::path& path);
 	void DrawObjectNode(AbstractObject* obj);
+	void StatusBarWindow();
+	void ToolbarWindow();
 	ImTextureID GetAssetIcon(const std::string& name);
 private:
 	bool bInGame_ = false;

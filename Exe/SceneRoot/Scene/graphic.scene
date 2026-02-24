@@ -106,7 +106,7 @@
         {
             "Components": [
                 {
-                    "Data": "-5.39953 2.1571 -0.964469 10.56 -0.0400013 6.33678e-39 3.6595 2.55701 3.25146 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
+                    "Data": "-2.25386 3.61537 -7.87049 9.85 0.679999 6.33678e-39 0.953812 -2.67255 -0.787209 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -315,67 +315,6 @@
                 "Rotation": [
                     0.0,
                     -3.1415927410125732,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "Effect/00_Basic/Simple_Distortion.efkefc 1 1 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0\n",
-                    "Name": "EffectComponent",
-                    "Type": 10
-                }
-            ],
-            "Name": "effect",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    -9.300000190734863,
-                    3.200000047683716,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n3\n0 0 0\n0.02 0.02 0.02\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1.1 1 1.1\n2\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
-                    "Name": "ModelRender",
-                    "Type": 4
-                },
-                {
-                    "Data": "2 1 1 1 1 10 20 35 1 0 0 0.4 2.9 0.509636 0 0 ",
-                    "Name": "Light",
-                    "Type": 1
-                }
-            ],
-            "Name": "Model1",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    -2.4000000953674316,
-                    1.2000000476837158,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    3.370178461074829,
                     0.0
                 ],
                 "Scale": [
