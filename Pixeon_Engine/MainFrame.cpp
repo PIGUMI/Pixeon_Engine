@@ -64,7 +64,7 @@ void MainFrame::DeleteInstance() {
 */
 int MainFrame::Init(const EngineConfig& InPut)
 {
-	_targetFrameTime = 1000.0f / 70.0f;
+	_targetFrameTime = 1000.0f / 1000.0f;
 	_lastUpdateTime = timeGetTime();
 	_wnd = InPut.wnd;
 	_updateDraw = false;;

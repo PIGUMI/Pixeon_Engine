@@ -134,7 +134,7 @@ void EngineFrame::DrawGUI()
 	static bool EngineFrame_dock_init = false;
 	if (!EngineFrame_dock_init) {
 		EngineFrame_dock_init = true;
-		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceリセット
+		ImGui::DockBuilderRemoveNode(DockSpace);
 		ImGui::DockBuilderAddNode(DockSpace, ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_DockSpace);
 		ImGui::DockBuilderSetNodeSize(DockSpace, viewport->Size);
 
