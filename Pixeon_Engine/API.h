@@ -153,6 +153,7 @@ extern "C" {
 	PIXEON_API APIResult SetObjectTransform(object Object, const transform* inTransform);
 	PIXEON_API APIResult CountChildObjects(object Object, int* outCount);
 	PIXEON_API APIResult FindComponent(object Object, const char* componentName, component* outComponent);
+	PIXEON_API APIResult RemoveComponent(object object, component comp);
 };
 
 extern "C" {

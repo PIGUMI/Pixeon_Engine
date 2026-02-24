@@ -1,7 +1,6 @@
 #include "Pixeon2_API.h"
 #include <stdexcept>
 #include <unordered_map>
-
 // ========================================
 // Object Implementation
 // ========================================
@@ -105,6 +104,11 @@ int Object::GetChildCount()
 void Object::AddChildObject(Object* child)
 {
 	ObjectParenthood(child->GetHandle(), m_Handle);
+}
+
+void Object::RemoveComponent(Component* component)
+{
+	::RemoveComponent(m_Handle, component->GetHandle());
 }
 
 int Object::GetInt(const std::string& varName)

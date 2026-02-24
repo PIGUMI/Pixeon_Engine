@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include <cmath>
 #include <algorithm>
+#include <Windows.h>
 
 
 #ifndef M_PI
@@ -16,6 +17,7 @@ void Script_Enemy::BeginPlay() {
 
     playerObject = _parentScene->FindObject("Player");
     animationComponent = _parentObject->GetComponent<Animation>("Animation");
+	rigidbodyComponent = _parentObject->GetComponent<Rigidbody>("RigidBody");
 
     currentState = EnemyState::Idle;
     currentAnimState = AnimState::Idle;
@@ -73,10 +75,7 @@ void Script_Enemy::CallCustom(const std::string& functionName)
 {
     if(functionName == "Die") {
         currentState = EnemyState::Dead;
-        stateTimer = 0.0f;
-        stuckTimer = 0.0f;
-        stuckCheckPosition = _parentObject->GetPosition();
-	}
+	}    
 }
 
 /*
@@ -100,8 +99,10 @@ void Script_Enemy::SetAnimation(AnimState newAnimState) {
         animationComponent->SetClip(1);
         break;
 	case AnimState::Dead:
+        _parentObject->RemoveComponent(rigidbodyComponent);
         animationComponent->SetLoop(false);
         animationComponent->SetClip(2);
+		animationComponent->Play();
 		break;
     }
 }

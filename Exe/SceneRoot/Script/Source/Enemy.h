@@ -73,6 +73,7 @@ private:
     AnimState currentAnimState = AnimState::Idle;
     Object* playerObject = nullptr;
     Animation* animationComponent = nullptr;
+	Rigidbody* rigidbodyComponent = nullptr;
 
     DirectX::XMFLOAT3 targetPosition = { 0.0f, 0.0f, 0.0f };
     DirectX::XMFLOAT3 lastKnownPlayerPosition = { 0.0f, 0.0f, 0.0f };

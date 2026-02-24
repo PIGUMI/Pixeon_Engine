@@ -109,6 +109,7 @@ public:
 	// Generic template method
 	template<typename T>
 	T* GetComponent(const std::string& componentName);
+	void RemoveComponent(Component* component);
 
 	int GetInt(const std::string& varName);
 	void SetInt(const std::string& varName, int value);

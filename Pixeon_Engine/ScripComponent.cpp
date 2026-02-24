@@ -189,7 +189,12 @@ void ScripComponent::CallFunction(const std::string& functionName)
 		{
 			_StopOnError = true;
 			std::cerr << "[ScripComponent] Exception in CallCustom of script " << _scriptName << ": " << functionName << std::endl;
+			MessageBox(nullptr, ("Exception in CallCustom of script " + _scriptName + ": " + functionName).c_str(), "Error", MB_OK | MB_ICONERROR);
 		}
+	}
+	else
+	{
+		MessageBox(nullptr, "No script loaded or script is in error state.", "Error", MB_OK | MB_ICONERROR);
 	}
 }
 

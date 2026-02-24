@@ -931,6 +931,22 @@ extern "C" {
 		*outComponent = reinterpret_cast<component>(comp);
 		return PN_SUCCESS;
 	}
+	PIXEON_API APIResult RemoveComponent(object object, component comp)
+	{
+		if (!comp) {
+			return PN_ERROR_INVALID_PARAMETER;
+		}
+		AbstractObject* objPtr = nullptr;
+		if (!ValidateHandle<AbstractObject>(object, &objPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		AbstractComponent* compPtr = nullptr;
+		if (!ValidateHandle<AbstractComponent>(comp, &compPtr)) {
+			return PN_ERROR_INVALID_HANDLE;
+		}
+		objPtr->RemoveComponent(compPtr);
+		return PN_SUCCESS;
+	}
 	PIXEON_API APIResult CountChildObjects(object object, int* outCount)
 	{
 		if (!outCount) {
