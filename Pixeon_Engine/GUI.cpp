@@ -15,6 +15,7 @@
 
 #include "SceneManger.h"
 #include "Scene.h"
+#include "IconsFontAwesome5.h"
 
 GUI* GUI::instance = nullptr;
 
@@ -47,21 +48,27 @@ void GUI::Init()
 
 	io.IniFilename = nullptr;
 
-	// 【重要】フォント設定を明示的にUTF-8対応にする
 	ImFontConfig config;
 	config.OversampleH = 2;
 	config.OversampleV = 1;
 	config.PixelSnapH = true;
 
-	// 日本語フォントをUTF-8として読み込む
-	io.Fonts->AddFontFromFileTTF(
-		"C:/Windows/Fonts/meiryo.ttc",
-		18.0f,
-		&config,
-		io.Fonts->GetGlyphRangesJapanese()
+	ImFont* font = io.Fonts->AddFontFromFileTTF(
+		"C:/Windows/Fonts/meiryo.ttc", 18.0f, &config, io.Fonts->GetGlyphRangesJapanese()
 	);
 
-	// フォントビルド
+	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	ImFontConfig iconsConfig;
+	iconsConfig.MergeMode = true;
+	iconsConfig.PixelSnapH = true;
+	io.Fonts->AddFontFromFileTTF(
+		"SceneRoot/Editor/font/fa-solid-900.ttf",
+		18.0f,
+		&iconsConfig,
+		icons_ranges
+	);
+
+	
 	io.Fonts->Build();
 
 	ImGui_ImplWin32_Init(MainFrame::GetInstance()->GetWindowHandle());

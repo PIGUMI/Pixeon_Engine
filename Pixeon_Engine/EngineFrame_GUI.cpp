@@ -7,6 +7,7 @@
 #include "Object.h"
 #include "SettingManager.h"
 #include "ChatWindow.h"
+#include "IconsFontAwesome5.h"
 #include <filesystem>
 #include <vector>
 #include <string>
@@ -1066,7 +1067,6 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 	}
 }
 
-
 void EngineFrame::ToolbarWindow()
 {
 	ImGuiWindowFlags flags =
@@ -1086,18 +1086,18 @@ void EngineFrame::ToolbarWindow()
 
 			// 再生ボタン
 			ImGui::PushStyleColor(ImGuiCol_Button,bInGame_ ? ImVec4(0.2f, 0.5f, 0.2f, 1.0f): ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-			if (ImGui::Button("  |>  ")) {
+			if (ImGui::Button(ICON_FA_PLAY "##Play", ImVec2(50, 0))) {
 				SetInGame(!bInGame_);
 				SetShowGUI(bInGame_ ? false : true);
 			}
 			ImGui::PopStyleColor();
 
 			ImGui::SameLine();
-			if (ImGui::Button("  ||  ") && bInGame_) {
+			if (ImGui::Button(ICON_FA_PAUSE "##Stop", ImVec2(70, 0))) {
 				bShowGUI_ = !bShowGUI_;
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("  |>> ") && bInGame_) {
+			if (ImGui::Button(ICON_FA_STEP_FORWARD "##Step", ImVec2(70, 0))) {
 				bInGame_ = false;
 				bShowGUI_ = true;
 			}
