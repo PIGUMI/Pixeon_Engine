@@ -52,20 +52,25 @@ void OpenWithVisualStudio(const std::string& filepath) {
 	);
 }
 
-ImTextureID EngineFrame::GetAssetIcon(const std::string& name)
+const char* EngineFrame::GetAssetIconLabel(const std::string& name)
 {
 	size_t dot = name.find_last_of('.');
 	std::string ext = (dot != std::string::npos) ? name.substr(dot) : "";
-	if (ext == ".png" || ext == ".jpg") return (ImTextureID)ImgIcon_;
-	if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") return (ImTextureID)SoundIcon_;
-	if (ext == ".fbx" || ext == ".obj") return (ImTextureID)FbxIcon_;
-	if (ext == ".scene") return (ImTextureID)SceneIcon_;
-	if (ext == ".hlsl" || ext == ".fx") return (ImTextureID)ShaderIcon_;
-	if (ext == ".cpp" || ext == ".h" || ext == ".cs") return (ImTextureID)ScriptIcon_;
-	if (ext == ".json") return (ImTextureID)JsonIcon_;
-	if (ext == ".PixAssets") return (ImTextureID)ArchiveIcon_;
-	if (ext == ".exe") return (ImTextureID)ExeIcon_;
-	return (ImTextureID)nullptr;
+
+	// 拡張子ごとにFontAwesomeアイコンを割り当て
+	if (ext == ".png" || ext == ".jpg")      return ICON_FA_IMAGE;
+	if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") return ICON_FA_MUSIC;
+	if (ext == ".fbx" || ext == ".obj")      return ICON_FA_CUBE;
+	if (ext == ".scene")                     return ICON_FA_CLONE;
+	if (ext == ".hlsl" || ext == ".fx")      return ICON_FA_CODE;
+	if (ext == ".cpp" || ext == ".h" || ext == ".cs") return ICON_FA_FILE_CODE;
+	if (ext == ".json")                      return ICON_FA_FILE_ALT;
+	if (ext == ".PixAssets")                 return ICON_FA_ARCHIVE;
+	if (ext == ".exe")                       return ICON_FA_COG;
+	if (ext == ".txt")                       return ICON_FA_FILE_ALT;
+	if (ext == ".folder" || ext == "")       return ICON_FA_FOLDER;
+	// その他はファイルアイコン
+	return ICON_FA_FILE;
 }
 
 std::string AbbreviateName(const std::string& name, size_t maxBaseLen)
@@ -328,7 +333,6 @@ void EngineFrame::HierarchyWindow()
 	if (currentScene) {
 		std::vector<AbstractObject*> objects = currentScene->GetObjects();
 
-		// ルートオブジェクト（親がいないオブジェクト）のみを表示
 		for (size_t i = 0; i < objects.size(); ++i) {
 			AbstractObject* obj = objects[i];
 			if (obj->GetParent() == nullptr) {
@@ -433,7 +437,7 @@ void  EngineFrame::InspectorWindow()
 	ImGui::End();
 }
 
-void  EngineFrame::ContentWindow()
+void EngineFrame::ContentWindow()
 {
 	if (currentDir.empty()) {
 		std::string assetsPath = "SceneRoot/";
@@ -460,7 +464,7 @@ void  EngineFrame::ContentWindow()
 		selectedExt = filterExts[filterIndex];
 	}
 
-	// フォルダ・ファイル一覧
+	// フォルダ・ファイル一覧を取得
 	std::vector<std::filesystem::directory_entry> entries;
 	for (auto& entry : std::filesystem::directory_iterator(currentDir)) {
 		if (entry.is_directory() || selectedExt.empty() || entry.path().extension() == selectedExt) {
@@ -483,12 +487,11 @@ void  EngineFrame::ContentWindow()
 		}
 		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("シーンの作成").c_str())) {
 			GUI::GetInstance()->bSceneCreateWindow_ = true;
-		};
-
+		}
 		ImGui::EndPopup();
 	}
 
-	float iconSize = 48.0f;
+	float iconFontSize = 32.0f; // FontAwesomeアイコン用のサイズ
 	float itemWidth = 96.0f;
 	float itemHeight = 80.0f;
 	float availWidth = ImGui::GetContentRegionAvail().x;
@@ -503,52 +506,30 @@ void  EngineFrame::ContentWindow()
 	for (const auto& entry : entries) {
 		ImGui::BeginGroup();
 
-		std::string fileName = entry.path().filename().string(); // "PS_SSAO.hlsl"
+		std::string fileName = entry.path().filename().string();
 		bool isDir = entry.is_directory();
-		ImTextureID icon = isDir ? (ImTextureID)FolderIcon_ : EngineFrame::GetInstance()->GetAssetIcon(fileName);
 
-		// 表示文字列と ID を分離
+		// FontAwesomeアイコンを取得
+		std::string iconLabel;
+		if (isDir) {
+			iconLabel = ICON_FA_FOLDER;
+		}
+		else {
+			iconLabel = EngineFrame::GetInstance()->GetAssetIconLabel(fileName);
+		}
+
 		std::string displayName = AbbreviateName(fileName, 12);
-		std::string idName = fileName + "##" + std::to_string(index++); // ImGui ID
+		std::string idName = fileName + "##" + std::to_string(index++);
 
 		float groupX = ImGui::GetCursorPosX();
 
-		// アイコンを横方向センタリング
-		float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
-		ImGui::SetCursorPosX(cursorX);
+		// アイコンをセンタリング
+		ImGui::SetCursorPosX(groupX + (itemWidth - iconFontSize) * 0.5f);
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+		ImGui::TextColored(ImVec4(0.86f, 0.86f, 0.86f, 1.0f), "%s", iconLabel.c_str());
+		ImGui::PopFont();
 
-		bool isSelected = (entry.path() == selectedEntryPath);
-
-		// ボタン色
-		if (!isSelected) {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
-		}
-		else {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.6f, 1.0f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 1.0f, 0.7f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.5f, 1.0f, 1.0f));
-		}
-
-		bool iconClicked = false;
-		if (icon) {
-			iconClicked = ImGui::ImageButton(
-				(std::string("icon_") + idName).c_str(),   // ID は idName を使う
-				icon,
-				ImVec2(iconSize, iconSize)
-			);
-		}
-		else {
-			iconClicked = ImGui::Button(
-				(std::string("btn_") + idName).c_str(),
-				ImVec2(iconSize, iconSize)
-			);
-		}
-
-		ImGui::PopStyleColor(3);
-
-		// テキストを横方向センタリング（表示文字列で幅計算）
+		// テキストもセンタリング
 		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
 		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
@@ -556,17 +537,15 @@ void  EngineFrame::ContentWindow()
 		ImGui::PushID(idName.c_str());
 		bool nameClicked = ImGui::Selectable(
 			textUTF8.c_str(),
-			isSelected, 0, ImVec2(itemWidth, 0)
+			entry.path() == selectedEntryPath, 0, ImVec2(itemWidth, 0)
 		);
 
-		// 右クリック（コンテキストメニュー）：BeginPopupContextItem を利用
+		// 右クリック（コンテキストメニュー）
 		if (ImGui::BeginPopupContextItem("context")) {
-			// エントリに対する右クリックメニューを表示
 			if (!isDir) {
 				HandleAssetContextMenu(entry.path());
 			}
 			else {
-				// ディレクトリに対するメニュー（例）
 				if (ImGui::MenuItem("Open")) {
 					currentDir = entry.path();
 				}
@@ -576,13 +555,12 @@ void  EngineFrame::ContentWindow()
 		ImGui::PopID();
 
 		// クリック判定
-		if (iconClicked || nameClicked) {
+		if (nameClicked) {
 			selectedEntryPath = entry.path();
 			if (isDir) {
 				currentDir = entry.path();
 			}
-			else
-			{
+			else {
 				HandleAssetClick(entry.path());
 			}
 		}
@@ -623,9 +601,8 @@ void EngineFrame::PrefabWindow() {
 
 	ImGui::BeginChild("prefab_grid", ImVec2(0, 0), true);
 
-	float iconSize = 48.0f;
+	float iconFontSize = 32.0f; // FontAwesome用
 	float itemWidth = 96.0f;
-	float itemHeight = 80.0f;
 	float availWidth = ImGui::GetContentRegionAvail().x;
 	int columns = static_cast<int>(availWidth / itemWidth);
 	if (columns < 1) columns = 1;
@@ -644,40 +621,14 @@ void EngineFrame::PrefabWindow() {
 		std::string idName = prefabName + "##prefab_" + std::to_string(index++);
 
 		float groupX = ImGui::GetCursorPosX();
-		float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
-		ImGui::SetCursorPosX(cursorX);
 
-		bool isSelected = (prefab == selectedPrefab);
+		// Prefab（立方体アイコンに決定！）
+		ImGui::SetCursorPosX(groupX + (itemWidth - iconFontSize) * 0.5f);
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+		ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), ICON_FA_CUBE);
+		ImGui::PopFont();
 
-		if (!isSelected) {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
-		}
-		else {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.6f, 1.0f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 1.0f, 0.7f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.5f, 1.0f, 1.0f));
-		}
-
-		bool iconClicked = false;
-		ImTextureID icon = (ImTextureID)ObjectIcon_;
-		if (icon) {
-			iconClicked = ImGui::ImageButton(
-				(std::string("prefab_icon_") + idName).c_str(),
-				icon,
-				ImVec2(iconSize, iconSize)
-			);
-		}
-		else {
-			iconClicked = ImGui::Button(
-				(std::string("prefab_btn_") + idName).c_str(),
-				ImVec2(iconSize, iconSize)
-			);
-		}
-
-		ImGui::PopStyleColor(3);
-
+		// テキストもセンタリング
 		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
 		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
@@ -685,7 +636,7 @@ void EngineFrame::PrefabWindow() {
 		ImGui::PushID(idName.c_str());
 		bool nameClicked = ImGui::Selectable(
 			textUTF8.c_str(),
-			isSelected, 0, ImVec2(itemWidth, 0)
+			prefab == selectedPrefab, 0, ImVec2(itemWidth, 0)
 		);
 
 		if (ImGui::BeginPopupContextItem("prefab_item_context")) {
@@ -741,7 +692,7 @@ void EngineFrame::PrefabWindow() {
 		}
 		ImGui::PopID();
 
-		if (iconClicked || nameClicked) {
+		if (nameClicked) {
 			selectedPrefab = prefab;
 
 			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
@@ -948,7 +899,7 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 	bool nodeOpen = ImGui::TreeNodeEx(
 		(void*)(intptr_t)obj,
 		flags,
-		GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str()
+		ICON_FA_CUBE " %s", GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str()
 	);
 
 	// クリックで選択

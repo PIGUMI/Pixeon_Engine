@@ -40,18 +40,6 @@ void EngineFrame::Init()
 	ChatWindow::GetInstance()->Initialize();
 	ChatWindow::GetInstance()->SetVisible(true);
 	LoadPrefabs();
-
-	ImgIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/img.png", DirectX11::GetInstance()->GetDevice());
-	SoundIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Sound.png", DirectX11::GetInstance()->GetDevice());
-	FolderIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/File.png", DirectX11::GetInstance()->GetDevice());
-	ShaderIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/HLSL.png", DirectX11::GetInstance()->GetDevice());
-	ScriptIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Script.png", DirectX11::GetInstance()->GetDevice());
-	JsonIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Json.png", DirectX11::GetInstance()->GetDevice());
-	ArchiveIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Archive.png", DirectX11::GetInstance()->GetDevice());
-	ExeIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Exe.png", DirectX11::GetInstance()->GetDevice());
-	ObjectIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Object.png", DirectX11::GetInstance()->GetDevice());
-	FbxIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/fbx.png", DirectX11::GetInstance()->GetDevice());
-	SceneIcon_ = GUI::GetInstance()->LoadImg(L"SceneRoot/Editor/texture/Scene.png", DirectX11::GetInstance()->GetDevice());
 }
 
 void EngineFrame::Update()
@@ -86,61 +74,6 @@ void EngineFrame::Draw(int Layer)
 
 void EngineFrame::UnInit()
 {
-	if (ImgIcon_)
-	{
-		ImgIcon_->Release();
-		ImgIcon_ = nullptr;
-	}
-	if (SoundIcon_)
-	{
-		SoundIcon_->Release();
-		SoundIcon_ = nullptr;
-	}
-	if (FbxIcon_)
-	{
-		FbxIcon_->Release();
-		FbxIcon_ = nullptr;
-	}
-	if (SceneIcon_)
-	{
-		SceneIcon_->Release();
-		SceneIcon_ = nullptr;
-	}
-	if (FolderIcon_)
-	{
-		FolderIcon_->Release();
-		FolderIcon_ = nullptr;
-	}
-	if (ShaderIcon_)
-	{
-		ShaderIcon_->Release();
-		ShaderIcon_ = nullptr;
-	}
-	if (ScriptIcon_)
-	{
-		ScriptIcon_->Release();
-		ScriptIcon_ = nullptr;
-	}
-	if (JsonIcon_)
-	{
-		JsonIcon_->Release();
-		JsonIcon_ = nullptr;
-	}
-	if (ArchiveIcon_)
-	{
-		ArchiveIcon_->Release();
-		ArchiveIcon_ = nullptr;
-	}
-	if (ExeIcon_)
-	{
-		ExeIcon_->Release();
-		ExeIcon_ = nullptr;
-	}
-	if (ObjectIcon_)
-	{
-		ObjectIcon_->Release();
-		ObjectIcon_ = nullptr;
-	}
 	SavePrefabs();
 	for (auto prefab : prefabs_) {
 		if (prefab) {

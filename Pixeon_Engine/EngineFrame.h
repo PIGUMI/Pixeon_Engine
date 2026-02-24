@@ -52,7 +52,7 @@ private:
 	void HandleAssetContextMenu(const std::filesystem::path& path);
 	void DrawObjectNode(AbstractObject* obj);
 	void StatusBarWindow();
-	ImTextureID GetAssetIcon(const std::string& name);
+	const char* GetAssetIconLabel(const std::string& name);
 private:
 	bool bInGame_ = false;
 	bool bShowGUI_ = true;
@@ -65,17 +65,6 @@ private:
 	AbstractObject* SelectedObject = nullptr;
 	std::string selectedExt = "";
 	std::filesystem::path currentDir;
-	ID3D11ShaderResourceView* ImgIcon_;
-	ID3D11ShaderResourceView* SoundIcon_;
-	ID3D11ShaderResourceView* FbxIcon_;
-	ID3D11ShaderResourceView* SceneIcon_;
-	ID3D11ShaderResourceView* FolderIcon_;
-	ID3D11ShaderResourceView* ShaderIcon_;
-	ID3D11ShaderResourceView* ScriptIcon_;
-	ID3D11ShaderResourceView* JsonIcon_;
-	ID3D11ShaderResourceView* ArchiveIcon_;
-	ID3D11ShaderResourceView* ExeIcon_;
-	ID3D11ShaderResourceView* ObjectIcon_;
 	Layer* selectedLayer_ = nullptr;
 private:
 	EngineFrame() = default;
