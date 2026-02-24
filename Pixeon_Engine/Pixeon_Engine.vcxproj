@@ -164,6 +164,7 @@
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EngineFrame.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="IconsFontAwesome5.h" />
     <ClInclude Include="ImageUtils.h" />
     <ClInclude Include="IZANAGI.h" />
     <ClInclude Include="LayerSettings.h" />

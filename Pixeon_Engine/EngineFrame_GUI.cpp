@@ -1,4 +1,4 @@
-#include "EngineFrame.h"
+ï»¿#include "EngineFrame.h"
 #include "MainFrame.h"
 #include "GUI.h"
 #include "Input.h"
@@ -7,6 +7,7 @@
 #include "Object.h"
 #include "SettingManager.h"
 #include "ChatWindow.h"
+#include "IconsFontAwesome5.h"
 #include <filesystem>
 #include <vector>
 #include <string>
@@ -21,7 +22,7 @@ void EngineFrame::HandleAssetContextMenu(const std::filesystem::path& path)
 	std::string fullPath = path.string();
 
 	if (ext == ".AbstractScene") {
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("–¼‘O•ÏX").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("åå‰å¤‰æ›´").c_str())) {
 			SceneRenameNewName_ = path.stem().string();
 			ShowSceneRename = true;
 			selectedLayer_ = nullptr;
@@ -35,7 +36,7 @@ void OpenWithVisualStudio(const std::string& filepath) {
 		strncpy_s(fullPathBuf, filepath.c_str(), MAX_PATH - 1);
 	}
 	if (GetFileAttributesA(fullPathBuf) == INVALID_FILE_ATTRIBUTES) {
-		MessageBoxA(NULL, "w’è‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚Ü‚¹‚ñB", "Visual Studio", MB_OK | MB_ICONERROR);
+		MessageBoxA(NULL, "æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ã¾ã›ã‚“ã€‚", "Visual Studio", MB_OK | MB_ICONERROR);
 		return;
 	}
 
@@ -51,20 +52,25 @@ void OpenWithVisualStudio(const std::string& filepath) {
 	);
 }
 
-ImTextureID EngineFrame::GetAssetIcon(const std::string& name)
+const char* EngineFrame::GetAssetIconLabel(const std::string& name)
 {
 	size_t dot = name.find_last_of('.');
 	std::string ext = (dot != std::string::npos) ? name.substr(dot) : "";
-	if (ext == ".png" || ext == ".jpg") return (ImTextureID)ImgIcon_;
-	if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") return (ImTextureID)SoundIcon_;
-	if (ext == ".fbx" || ext == ".obj") return (ImTextureID)FbxIcon_;
-	if (ext == ".scene") return (ImTextureID)SceneIcon_;
-	if (ext == ".hlsl" || ext == ".fx") return (ImTextureID)ShaderIcon_;
-	if (ext == ".cpp" || ext == ".h" || ext == ".cs") return (ImTextureID)ScriptIcon_;
-	if (ext == ".json") return (ImTextureID)JsonIcon_;
-	if (ext == ".PixAssets") return (ImTextureID)ArchiveIcon_;
-	if (ext == ".exe") return (ImTextureID)ExeIcon_;
-	return (ImTextureID)nullptr;
+
+	// æ‹¡å¼µå­ã”ã¨ã«FontAwesomeã‚¢ã‚¤ã‚³ãƒ³ã‚’å‰²ã‚Šå½“ã¦
+	if (ext == ".png" || ext == ".jpg")      return ICON_FA_IMAGE;
+	if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") return ICON_FA_MUSIC;
+	if (ext == ".fbx" || ext == ".obj")      return ICON_FA_CUBE;
+	if (ext == ".scene")                     return ICON_FA_CLONE;
+	if (ext == ".hlsl" || ext == ".fx")      return ICON_FA_CODE;
+	if (ext == ".cpp" || ext == ".h" || ext == ".cs") return ICON_FA_FILE_CODE;
+	if (ext == ".json")                      return ICON_FA_FILE_ALT;
+	if (ext == ".PixAssets")                 return ICON_FA_ARCHIVE;
+	if (ext == ".exe")                       return ICON_FA_COG;
+	if (ext == ".txt")                       return ICON_FA_FILE_ALT;
+	if (ext == ".folder" || ext == "")       return ICON_FA_FOLDER;
+	// ãã®ä»–ã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¤ã‚³ãƒ³
+	return ICON_FA_FILE;
 }
 
 std::string AbbreviateName(const std::string& name, size_t maxBaseLen)
@@ -100,22 +106,22 @@ std::wstring ToWideACP(const std::string& s) {
 void  EngineFrame::HandleAssetClick(const std::filesystem::path& path)
 {
 	std::string ext = path.extension().string();
-	// ‘å•¶š¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢‚æ‚¤‚É¬•¶š‰»
+	// å¤§æ–‡å­—å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ã‚ˆã†ã«å°æ–‡å­—åŒ–
 	std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
 	std::string fullPath = path.string();
 
 	if (ext == ".cpp" || ext == ".h" || ext == ".cs" || ext == ".hlsl" || ext == ".fx" || ext == ".json") {
-		// ƒ\[ƒXƒR[ƒh‚âƒVƒF[ƒ_‚Í Visual Studio ‚ÅŠJ‚­idevenv ‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ä‚¢‚éê‡j
+		// ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã‚„ã‚·ã‚§ãƒ¼ãƒ€ã¯ Visual Studio ã§é–‹ãï¼ˆdevenv ãŒã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¦ã„ã‚‹å ´åˆï¼‰
 		OpenWithVisualStudio(fullPath);
 	}
 
-	// ƒV[ƒ“ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	// ã‚·ãƒ¼ãƒ³ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	if (ext == ".scene")
 	{
-		// Šg’£q‚ğœ‚¢‚½–¼‘O‚ğæ“¾
+		// æ‹¡å¼µå­ã‚’é™¤ã„ãŸåå‰ã‚’å–å¾—
 		std::string sceneName = path.stem().string();
 		std::vector<std::string> sceneList = SceneManger::GetInstance()->GetSceneList();
-		// ƒV[ƒ“ƒŠƒXƒg‚É‘¶İ‚·‚éê‡‚Ì‚İØ‚è‘Ö‚¦
+		// ã‚·ãƒ¼ãƒ³ãƒªã‚¹ãƒˆã«å­˜åœ¨ã™ã‚‹å ´åˆã®ã¿åˆ‡ã‚Šæ›¿ãˆ
 		SceneManger::GetInstance()->ChangeScene(sceneName);
 		SelectedObject = nullptr;
 	}
@@ -123,6 +129,9 @@ void  EngineFrame::HandleAssetClick(const std::filesystem::path& path)
 
 void EngineFrame::DrawGUI()
 {
+	StatusBarWindow();
+
+
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGuiID DockSpace = ImGui::GetID("EngineFrameDockSpace");
 	ImGui::DockSpace(DockSpace, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
@@ -130,7 +139,7 @@ void EngineFrame::DrawGUI()
 	static bool EngineFrame_dock_init = false;
 	if (!EngineFrame_dock_init) {
 		EngineFrame_dock_init = true;
-		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceƒŠƒZƒbƒg
+		ImGui::DockBuilderRemoveNode(DockSpace);
 		ImGui::DockBuilderAddNode(DockSpace, ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_DockSpace);
 		ImGui::DockBuilderSetNodeSize(DockSpace, viewport->Size);
 
@@ -139,23 +148,23 @@ void EngineFrame::DrawGUI()
 		ImGuiID dock_id_bottom;
 		ImGuiID dock_id_left;
 
-		// ‰E‚ÉInspector
+		// å³ã«Inspector
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_main_id);
-		// ‰º‚ÉContentDrawer
+		// ä¸‹ã«ContentDrawer
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.4f, &dock_id_bottom, &dock_main_id);
-		// ¶‚ÉHierarchy
+		// å·¦ã«Hierarchy
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.18f, &dock_id_left, &dock_main_id);
 
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒQ[ƒ€ƒrƒ…[").c_str(), dock_main_id);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒCƒ“ƒXƒyƒNƒ^[").c_str(), dock_id_right);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("AIƒ`ƒƒƒbƒg[IZANAGI]").c_str(), dock_id_right);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒRƒ“ƒ\[ƒ‹").c_str(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ã‚²ãƒ¼ãƒ ãƒ“ãƒ¥ãƒ¼").c_str(), dock_main_id);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼").c_str(), dock_id_right);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("AIãƒãƒ£ãƒƒãƒˆ[IZANAGI]").c_str(), dock_id_right);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ã‚³ãƒ³ã‚½ãƒ¼ãƒ«").c_str(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Prefab").c_str(), dock_id_bottom);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒRƒ“ƒeƒ“ƒcƒhƒƒ[").c_str(), dock_id_bottom);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒRƒ“ƒeƒ“ƒcƒhƒƒ[").c_str(), dock_id_bottom);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒqƒGƒ‰ƒ‹ƒL[").c_str(), dock_id_left);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒŒƒCƒ„[").c_str(), dock_id_left);
-		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ƒŒƒCƒ„[İ’è").c_str(), dock_id_right);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ãƒ‰ãƒ­ãƒ¯ãƒ¼").c_str(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ãƒ‰ãƒ­ãƒ¯ãƒ¼").c_str(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ãƒ’ã‚¨ãƒ©ãƒ«ã‚­ãƒ¼").c_str(), dock_id_left);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ãƒ¬ã‚¤ãƒ¤ãƒ¼").c_str(), dock_id_left);
+		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("ãƒ¬ã‚¤ãƒ¤ãƒ¼è¨­å®š").c_str(), dock_id_right);
 
 		ImGui::DockBuilderFinish(DockSpace);
 	}
@@ -177,36 +186,14 @@ void EngineFrame::DrawGUI()
 
 void EngineFrame::GameViewWindow()
 {
-	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ƒQ[ƒ€ƒrƒ…[").c_str());
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ã‚²ãƒ¼ãƒ ãƒ“ãƒ¥ãƒ¼").c_str());
 
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
-
-	if (!EngineFrame::GetInstance()->IsInGame()) {
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ä¶").c_str(), ImVec2(70, 0)))
-		{
-			EngineFrame::GetInstance()->SetInGame(true);
-			EngineFrame::GetInstance()->SetShowGUI(false);
-		}
+	ImGui::PushStyleColor(ImGuiCol_Button, bInGame_ ? ImVec4(0.2f, 0.5f, 0.2f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+	if (ImGui::Button(ICON_FA_PLAY "##Play", ImVec2(50, 0))) {
+		SetInGame(!bInGame_);
+		SetShowGUI(bInGame_ ? false : true);
 	}
-	else {
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("’â~").c_str(), ImVec2(70, 0)))
-		{
-			EngineFrame::GetInstance()->SetInGame(false);
-			EngineFrame::GetInstance()->SetShowGUI(true);
-			SelectedObject = nullptr;
-		}
-	}
-
-	ImGui::SameLine();
-	if (SceneManger::GetInstance()->GetCurrentScene())
-	{
-		std::string msg = "NowCameraNumber" + std::to_string(SceneManger::GetInstance()->GetCurrentScene()->GetMainCameraNumber());
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str());
-	}
-	ImGui::PopStyleVar(2);
-
-	ImGui::Separator();
+	ImGui::PopStyleColor();
 
 	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
 	ImVec2 size = ImGui::GetContentRegionAvail();
@@ -224,7 +211,7 @@ void EngineFrame::GameViewWindow()
 	if (srv)
 		ImGui::Image((ImTextureID)srv, size);
 	else
-		ImGui::Text("SRV‚ªNull‚Å‚·");
+		ImGui::Text("SRVãŒNullã§ã™");
 
 	bool active = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 
@@ -241,9 +228,9 @@ void EngineFrame::GameViewWindow()
 			Cam = Temp->GetMainCamera();
 			if (Cam)
 			{
-				// ‰E•ûŒüƒxƒNƒgƒ‹
+				// å³æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 				DirectX::XMFLOAT3 right = Cam->GetRightVector();
-				// ‘O•ûŒüƒxƒNƒgƒ‹
+				// å‰æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 				DirectX::XMFLOAT3 forward = Cam->GetForwardVector();
 
 				float scrollSpeed = 2.0f;
@@ -257,13 +244,13 @@ void EngineFrame::GameViewWindow()
 				else {
 					pos = Cam->GetFixation();
 				}
-				// ‘O•ûŒü‚ÉˆÚ“®
+				// å‰æ–¹å‘ã«ç§»å‹•
 				if (forwardNotches > 0.0f) {
 					pos.x -= forward.x * forwardNotches * scrollSpeed;
 					pos.y -= forward.y * forwardNotches * scrollSpeed;
 					pos.z -= forward.z * forwardNotches * scrollSpeed;
 				}
-				// Œã•ûŒü‚ÉˆÚ“®
+				// å¾Œæ–¹å‘ã«ç§»å‹•
 				if (backwardNotches > 0.0f) {
 					pos.x += forward.x * backwardNotches * scrollSpeed;
 					pos.y += forward.y * backwardNotches * scrollSpeed;
@@ -277,7 +264,7 @@ void EngineFrame::GameViewWindow()
 
 					DirectX::XMFLOAT3 up = Cam->GetUpVector();
 
-					// ‰E•ûŒü~MoveX { Up•ûŒü~MoveY
+					// å³æ–¹å‘Ã—MoveX ï¼‹ Upæ–¹å‘Ã—MoveY
 					pos.x += right.x * MoveX + up.x * MoveY;
 					pos.y += right.y * MoveX + up.y * MoveY;
 					pos.z += right.z * MoveX + up.z * MoveY;
@@ -307,18 +294,18 @@ void EngineFrame::GameViewWindow()
 
 void EngineFrame::HierarchyWindow()
 {
-	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ƒqƒGƒ‰ƒ‹ƒL[").c_str());
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ãƒ’ã‚¨ãƒ©ãƒ«ã‚­ãƒ¼").c_str());
 
 	AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒV[ƒ“:  ").c_str());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ã‚·ãƒ¼ãƒ³:  ").c_str());
 	ImGui::SameLine();
 	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(currentScene ? currentScene->GetName() : "No AbstractScene").c_str());
 	ImGui::Separator();
 
-	// ‰EƒNƒŠƒbƒN‚ÅƒRƒ“ƒeƒLƒXƒgƒƒjƒ…[•\¦
+	// å³ã‚¯ãƒªãƒƒã‚¯ã§ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
 	if (ImGui::BeginPopupContextWindow("HierarchyContextMenu", ImGuiPopupFlags_MouseButtonRight))
 	{
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Á").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¿½åŠ ").c_str())) {
 			AbstractObject* newObj = new AbstractObject();
 			int suffix = 1;
 			std::string baseName = "NewObject";
@@ -346,7 +333,6 @@ void EngineFrame::HierarchyWindow()
 	if (currentScene) {
 		std::vector<AbstractObject*> objects = currentScene->GetObjects();
 
-		// ƒ‹[ƒgƒIƒuƒWƒFƒNƒgie‚ª‚¢‚È‚¢ƒIƒuƒWƒFƒNƒgj‚Ì‚İ‚ğ•\¦
 		for (size_t i = 0; i < objects.size(); ++i) {
 			AbstractObject* obj = objects[i];
 			if (obj->GetParent() == nullptr) {
@@ -359,20 +345,20 @@ void EngineFrame::HierarchyWindow()
 
 void  EngineFrame::InspectorWindow()
 {
-	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ƒCƒ“ƒXƒyƒNƒ^[").c_str());
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼").c_str());
 	if (SelectedObject) {
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒIƒuƒWƒFƒNƒg–¼:").c_str());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå:").c_str());
 		ImGui::SameLine();
 		char buf[256];
 		strcpy_s(buf, SelectedObject->GetObjectName().c_str());
-		if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("##ƒIƒuƒWƒFƒNƒg–¼").c_str(), buf, sizeof(buf))) {
+		if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("##ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå").c_str(), buf, sizeof(buf))) {
 			SelectedObject->SetObjectName(buf);
 		}
 		ImGui::Separator();
 		ImGui::BeginChild("InspectorChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 		if (ImGui::CollapsingHeader(GUI::GetInstance()->ShiftJISToUTF8("Transform").c_str())) {
 			Transform TempTransform = SelectedObject->GetTransform();
-			if (ImGui::DragFloat3(GUI::GetInstance()->ShiftJISToUTF8("ˆÊ’u").c_str(), &TempTransform.position.x, 0.1f)) {
+			if (ImGui::DragFloat3(GUI::GetInstance()->ShiftJISToUTF8("ä½ç½®").c_str(), &TempTransform.position.x, 0.1f)) {
 				SelectedObject->SetPosition(TempTransform.position.x, TempTransform.position.y, TempTransform.position.z);
 			}
 
@@ -381,14 +367,14 @@ void  EngineFrame::InspectorWindow()
 			rot.y = DirectX::XMConvertToDegrees(TempTransform.rotation.y);
 			rot.z = DirectX::XMConvertToDegrees(TempTransform.rotation.z);
 
-			if (ImGui::DragFloat3(GUI::GetInstance()->ShiftJISToUTF8("‰ñ“]").c_str(), &rot.x, 0.1f)) {
+			if (ImGui::DragFloat3(GUI::GetInstance()->ShiftJISToUTF8("å›è»¢").c_str(), &rot.x, 0.1f)) {
 				TempTransform.rotation.x = DirectX::XMConvertToRadians(rot.x);
 				TempTransform.rotation.y = DirectX::XMConvertToRadians(rot.y);
 				TempTransform.rotation.z = DirectX::XMConvertToRadians(rot.z);
 
 				SelectedObject->SetRotation(TempTransform.rotation.x, TempTransform.rotation.y, TempTransform.rotation.z);
 			}
-			if (ImGui::DragFloat3(GUI::GetInstance()->ShiftJISToUTF8("ƒXƒP[ƒ‹").c_str(), &TempTransform.scale.x, 0.1f)) {
+			if (ImGui::DragFloat3(GUI::GetInstance()->ShiftJISToUTF8("ã‚¹ã‚±ãƒ¼ãƒ«").c_str(), &TempTransform.scale.x, 0.1f)) {
 				SelectedObject->SetScale(TempTransform.scale.x, TempTransform.scale.y, TempTransform.scale.z);
 			}
 		}
@@ -403,13 +389,13 @@ void  EngineFrame::InspectorWindow()
 			{
 				comp->DrawInspector();
 
-				// ƒRƒ“ƒ|[ƒlƒ“ƒg‚²‚Æ‚É‰EƒNƒŠƒbƒNƒ|ƒbƒvƒAƒbƒv‚ğŠ„‚è“–‚Ä
+				// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã”ã¨ã«å³ã‚¯ãƒªãƒƒã‚¯ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ã‚’å‰²ã‚Šå½“ã¦
 				if (ImGui::BeginPopupContextItem(comp->GetComponentName().c_str())) {
-					ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒRƒ“ƒ|[ƒlƒ“ƒg:").c_str());
+					ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ:").c_str());
 					ImGui::SameLine();
 					ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(comp->GetComponentName()).c_str());
 					ImGui::Separator();
-					if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("•¡»").c_str())) {
+					if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è¤‡è£½").c_str())) {
 						AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(SelectedObject, comp->GetComponentType());
 						std::stringstream ss;
 						comp->SaveToFile(ss);
@@ -417,7 +403,7 @@ void  EngineFrame::InspectorWindow()
 						ImGui::CloseCurrentPopup();
 					}
 					ImGui::SameLine();
-					if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("íœ").c_str())) {
+					if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("å‰Šé™¤").c_str())) {
 						SelectedObject->RemoveComponent(comp);
 						removeComponentIndex = i;
 						ImGui::CloseCurrentPopup();
@@ -427,39 +413,40 @@ void  EngineFrame::InspectorWindow()
 			}
 		}
 
-		// íœˆ—
-		if (removeComponentIndex >= 0) {
+		// å‰Šé™¤å‡¦ç†
+		if (removeComponentIndex >= 0 && removeComponentIndex < (int)components.size()) {
+			SelectedObject->RemoveComponent(components[removeComponentIndex]);
 		}
 
-		//@ƒRƒ“ƒ|[ƒlƒ“ƒg’Ç‰ÁUI
+		//ã€€ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆè¿½åŠ UI
 		std::string ComponentList[(int)ComponentManager::COMPONENT_TYPE::MAX];
 		for (int i = 0; i < (int)ComponentManager::COMPONENT_TYPE::MAX; i++) {
 			ComponentList[i] = ComponentManager::GetInstance()->GetComponentName((ComponentManager::COMPONENT_TYPE)i);
 		}
 		static int CurrentComponent = 0;
-		ImGui::Combo(GUI::GetInstance()->ShiftJISToUTF8("##Component’Ç‰Á").c_str(), &CurrentComponent, [](void* data, int idx, const char** out_text) {
+		ImGui::Combo(GUI::GetInstance()->ShiftJISToUTF8("##Componentè¿½åŠ ").c_str(), &CurrentComponent, [](void* data, int idx, const char** out_text) {
 			std::string* items = (std::string*)data;
 			if (out_text) { *out_text = items[idx].c_str(); }
 			return true;
 			}, ComponentList, IM_ARRAYSIZE(ComponentList), IM_ARRAYSIZE(ComponentList));
 		ImGui::SameLine();
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("’Ç‰Á").c_str())) ComponentManager::GetInstance()->AddComponent(SelectedObject, (ComponentManager::COMPONENT_TYPE)CurrentComponent);
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è¿½åŠ ").c_str())) ComponentManager::GetInstance()->AddComponent(SelectedObject, (ComponentManager::COMPONENT_TYPE)CurrentComponent);
 
 		ImGui::EndChild();
 	}
 	ImGui::End();
 }
 
-void  EngineFrame::ContentWindow()
+void EngineFrame::ContentWindow()
 {
 	if (currentDir.empty()) {
 		std::string assetsPath = "SceneRoot/";
 		currentDir = assetsPath;
 	}
 
-	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ƒRƒ“ƒeƒ“ƒcƒhƒƒ[").c_str());
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ãƒ‰ãƒ­ãƒ¯ãƒ¼").c_str());
 
-	// ƒtƒHƒ‹ƒ_ŠK‘w•\¦i–ß‚éƒ{ƒ^ƒ“j
+	// ãƒ•ã‚©ãƒ«ãƒ€éšå±¤è¡¨ç¤ºï¼ˆæˆ»ã‚‹ãƒœã‚¿ãƒ³ï¼‰
 	if (currentDir.has_parent_path()) {
 		if (ImGui::Button("..")) {
 			currentDir = currentDir.parent_path();
@@ -468,16 +455,16 @@ void  EngineFrame::ContentWindow()
 		ImGui::Text("%s", currentDir.string().c_str());
 	}
 
-	// Šg’£qƒtƒBƒ‹ƒ^[
+	// æ‹¡å¼µå­ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼
 	static const char* filterExts[] = { "", ".png", ".jpg", ".obj", ".txt", ".fbx", ".wav", ".mp3", ".ogg", ".hlsl", ".AbstractScene", ".cpp", ".h", ".cs" };
 	static int filterIndex = 0;
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒtƒBƒ‹ƒ^[:").c_str());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼:").c_str());
 	ImGui::SameLine();
 	if (ImGui::Combo("##ExtFilter", &filterIndex, filterExts, IM_ARRAYSIZE(filterExts))) {
 		selectedExt = filterExts[filterIndex];
 	}
 
-	// ƒtƒHƒ‹ƒ_Eƒtƒ@ƒCƒ‹ˆê——
+	// ãƒ•ã‚©ãƒ«ãƒ€ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ä¸€è¦§ã‚’å–å¾—
 	std::vector<std::filesystem::directory_entry> entries;
 	for (auto& entry : std::filesystem::directory_iterator(currentDir)) {
 		if (entry.is_directory() || selectedExt.empty() || entry.path().extension() == selectedExt) {
@@ -487,9 +474,9 @@ void  EngineFrame::ContentWindow()
 
 	ImGui::BeginChild("assets_grid", ImVec2(0, 0), true);
 
-	// ‰EƒNƒŠƒbƒNˆ—
+	// å³ã‚¯ãƒªãƒƒã‚¯å‡¦ç†
 	if (ImGui::BeginPopupContextWindow("assets_context", ImGuiMouseButton_Right)) {
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("V‚µ‚¢ƒtƒHƒ‹ƒ_‚ğì¬").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("æ–°ã—ã„ãƒ•ã‚©ãƒ«ãƒ€ã‚’ä½œæˆ").c_str())) {
 			std::filesystem::path newFolderPath = currentDir / "NewFolder";
 			int suffix = 1;
 			while (std::filesystem::exists(newFolderPath)) {
@@ -498,14 +485,13 @@ void  EngineFrame::ContentWindow()
 			}
 			std::filesystem::create_directory(newFolderPath);
 		}
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ƒV[ƒ“‚Ìì¬").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ã‚·ãƒ¼ãƒ³ã®ä½œæˆ").c_str())) {
 			GUI::GetInstance()->bSceneCreateWindow_ = true;
-		};
-
+		}
 		ImGui::EndPopup();
 	}
 
-	float iconSize = 48.0f;
+	float iconFontSize = 32.0f; // FontAwesomeã‚¢ã‚¤ã‚³ãƒ³ç”¨ã®ã‚µã‚¤ã‚º
 	float itemWidth = 96.0f;
 	float itemHeight = 80.0f;
 	float availWidth = ImGui::GetContentRegionAvail().x;
@@ -513,59 +499,37 @@ void  EngineFrame::ContentWindow()
 	if (columns < 1) columns = 1;
 	ImGui::Columns(columns, nullptr, false);
 
-	static std::filesystem::path selectedEntryPath; // ‘I‘ğ’†‚ÌƒpƒX
+	static std::filesystem::path selectedEntryPath; // é¸æŠä¸­ã®ãƒ‘ã‚¹
 
 	int index = 0;
 
 	for (const auto& entry : entries) {
 		ImGui::BeginGroup();
 
-		std::string fileName = entry.path().filename().string(); // "PS_SSAO.hlsl"
+		std::string fileName = entry.path().filename().string();
 		bool isDir = entry.is_directory();
-		ImTextureID icon = isDir ? (ImTextureID)FolderIcon_ : EngineFrame::GetInstance()->GetAssetIcon(fileName);
 
-		// •\¦•¶š—ñ‚Æ ID ‚ğ•ª—£
+		// FontAwesomeã‚¢ã‚¤ã‚³ãƒ³ã‚’å–å¾—
+		std::string iconLabel;
+		if (isDir) {
+			iconLabel = ICON_FA_FOLDER;
+		}
+		else {
+			iconLabel = EngineFrame::GetInstance()->GetAssetIconLabel(fileName);
+		}
+
 		std::string displayName = AbbreviateName(fileName, 12);
-		std::string idName = fileName + "##" + std::to_string(index++); // ImGui ID
+		std::string idName = fileName + "##" + std::to_string(index++);
 
 		float groupX = ImGui::GetCursorPosX();
 
-		// ƒAƒCƒRƒ“‚ğ‰¡•ûŒüƒZƒ“ƒ^ƒŠƒ“ƒO
-		float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
-		ImGui::SetCursorPosX(cursorX);
+		// ã‚¢ã‚¤ã‚³ãƒ³ã‚’ã‚»ãƒ³ã‚¿ãƒªãƒ³ã‚°
+		ImGui::SetCursorPosX(groupX + (itemWidth - iconFontSize) * 0.5f);
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+		ImGui::TextColored(ImVec4(0.86f, 0.86f, 0.86f, 1.0f), "%s", iconLabel.c_str());
+		ImGui::PopFont();
 
-		bool isSelected = (entry.path() == selectedEntryPath);
-
-		// ƒ{ƒ^ƒ“F
-		if (!isSelected) {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
-		}
-		else {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.6f, 1.0f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 1.0f, 0.7f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.5f, 1.0f, 1.0f));
-		}
-
-		bool iconClicked = false;
-		if (icon) {
-			iconClicked = ImGui::ImageButton(
-				(std::string("icon_") + idName).c_str(),   // ID ‚Í idName ‚ğg‚¤
-				icon,
-				ImVec2(iconSize, iconSize)
-			);
-		}
-		else {
-			iconClicked = ImGui::Button(
-				(std::string("btn_") + idName).c_str(),
-				ImVec2(iconSize, iconSize)
-			);
-		}
-
-		ImGui::PopStyleColor(3);
-
-		// ƒeƒLƒXƒg‚ğ‰¡•ûŒüƒZƒ“ƒ^ƒŠƒ“ƒOi•\¦•¶š—ñ‚Å•ŒvZj
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚‚ã‚»ãƒ³ã‚¿ãƒªãƒ³ã‚°
 		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
 		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
@@ -573,17 +537,15 @@ void  EngineFrame::ContentWindow()
 		ImGui::PushID(idName.c_str());
 		bool nameClicked = ImGui::Selectable(
 			textUTF8.c_str(),
-			isSelected, 0, ImVec2(itemWidth, 0)
+			entry.path() == selectedEntryPath, 0, ImVec2(itemWidth, 0)
 		);
 
-		// ‰EƒNƒŠƒbƒNiƒRƒ“ƒeƒLƒXƒgƒƒjƒ…[jFBeginPopupContextItem ‚ğ—˜—p
+		// å³ã‚¯ãƒªãƒƒã‚¯ï¼ˆã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ï¼‰
 		if (ImGui::BeginPopupContextItem("context")) {
-			// ƒGƒ“ƒgƒŠ‚É‘Î‚·‚é‰EƒNƒŠƒbƒNƒƒjƒ…[‚ğ•\¦
 			if (!isDir) {
 				HandleAssetContextMenu(entry.path());
 			}
 			else {
-				// ƒfƒBƒŒƒNƒgƒŠ‚É‘Î‚·‚éƒƒjƒ…[i—áj
 				if (ImGui::MenuItem("Open")) {
 					currentDir = entry.path();
 				}
@@ -592,14 +554,13 @@ void  EngineFrame::ContentWindow()
 		}
 		ImGui::PopID();
 
-		// ƒNƒŠƒbƒN”»’è
-		if (iconClicked || nameClicked) {
+		// ã‚¯ãƒªãƒƒã‚¯åˆ¤å®š
+		if (nameClicked) {
 			selectedEntryPath = entry.path();
 			if (isDir) {
 				currentDir = entry.path();
 			}
-			else
-			{
+			else {
 				HandleAssetClick(entry.path());
 			}
 		}
@@ -620,17 +581,17 @@ void EngineFrame::PrefabWindow() {
 
 	if (prefabs.empty()) {
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-			GUI::GetInstance()->ShiftJISToUTF8("Prefab‚ª‚ ‚è‚Ü‚¹‚ñ").c_str());
+			GUI::GetInstance()->ShiftJISToUTF8("PrefabãŒã‚ã‚Šã¾ã›ã‚“").c_str());
 		ImGui::TextWrapped(
 			GUI::GetInstance()->ShiftJISToUTF8(
-				"ƒqƒGƒ‰ƒ‹ƒL[‚ÅƒIƒuƒWƒFƒNƒg‚ğ‰EƒNƒŠƒbƒN‚µ‚ÄuPrefab‚Æ‚µ‚Ä•Û‘¶v‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B"
+				"ãƒ’ã‚¨ãƒ©ãƒ«ã‚­ãƒ¼ã§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å³ã‚¯ãƒªãƒƒã‚¯ã—ã¦ã€ŒPrefabã¨ã—ã¦ä¿å­˜ã€ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚"
 			).c_str());
 		ImGui::End();
 		return;
 	}
 
 	if (ImGui::BeginPopupContextWindow("prefab_context", ImGuiMouseButton_Right)) {
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("‚·‚×‚ÄƒNƒŠƒA").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ã™ã¹ã¦ã‚¯ãƒªã‚¢").c_str())) {
 			for (auto prefab : prefabs) {
 				EngineFrame::GetInstance()->RemovePrefab(prefab);
 			}
@@ -640,9 +601,8 @@ void EngineFrame::PrefabWindow() {
 
 	ImGui::BeginChild("prefab_grid", ImVec2(0, 0), true);
 
-	float iconSize = 48.0f;
+	float iconFontSize = 32.0f; // FontAwesomeç”¨
 	float itemWidth = 96.0f;
-	float itemHeight = 80.0f;
 	float availWidth = ImGui::GetContentRegionAvail().x;
 	int columns = static_cast<int>(availWidth / itemWidth);
 	if (columns < 1) columns = 1;
@@ -661,40 +621,14 @@ void EngineFrame::PrefabWindow() {
 		std::string idName = prefabName + "##prefab_" + std::to_string(index++);
 
 		float groupX = ImGui::GetCursorPosX();
-		float cursorX = groupX + (itemWidth - iconSize) * 0.5f;
-		ImGui::SetCursorPosX(cursorX);
 
-		bool isSelected = (prefab == selectedPrefab);
+		// Prefabï¼ˆç«‹æ–¹ä½“ã‚¢ã‚¤ã‚³ãƒ³ã«æ±ºå®šï¼ï¼‰
+		ImGui::SetCursorPosX(groupX + (itemWidth - iconFontSize) * 0.5f);
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+		ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), ICON_FA_CUBE);
+		ImGui::PopFont();
 
-		if (!isSelected) {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
-		}
-		else {
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.6f, 1.0f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 1.0f, 0.7f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.5f, 1.0f, 1.0f));
-		}
-
-		bool iconClicked = false;
-		ImTextureID icon = (ImTextureID)ObjectIcon_;
-		if (icon) {
-			iconClicked = ImGui::ImageButton(
-				(std::string("prefab_icon_") + idName).c_str(),
-				icon,
-				ImVec2(iconSize, iconSize)
-			);
-		}
-		else {
-			iconClicked = ImGui::Button(
-				(std::string("prefab_btn_") + idName).c_str(),
-				ImVec2(iconSize, iconSize)
-			);
-		}
-
-		ImGui::PopStyleColor(3);
-
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚‚ã‚»ãƒ³ã‚¿ãƒªãƒ³ã‚°
 		std::string textUTF8 = GUI::GetInstance()->ShiftJISToUTF8(displayName);
 		float textWidth = ImGui::CalcTextSize(textUTF8.c_str()).x;
 		ImGui::SetCursorPosX(groupX + (itemWidth - textWidth) * 0.5f);
@@ -702,14 +636,14 @@ void EngineFrame::PrefabWindow() {
 		ImGui::PushID(idName.c_str());
 		bool nameClicked = ImGui::Selectable(
 			textUTF8.c_str(),
-			isSelected, 0, ImVec2(itemWidth, 0)
+			prefab == selectedPrefab, 0, ImVec2(itemWidth, 0)
 		);
 
 		if (ImGui::BeginPopupContextItem("prefab_item_context")) {
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Prefab:  %s").c_str(), prefabName.c_str());
 			ImGui::Separator();
 
-			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ƒV[ƒ“‚É’Ç‰Á").c_str())) {
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ã‚·ãƒ¼ãƒ³ã«è¿½åŠ ").c_str())) {
 				AbstractScene* currentScene = SceneManger::GetInstance()->GetCurrentScene();
 				if (currentScene) {
 					AbstractObject* newObj = prefab->Clone();
@@ -747,7 +681,7 @@ void EngineFrame::PrefabWindow() {
 				}
 			}
 
-			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("íœ").c_str())) {
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("å‰Šé™¤").c_str())) {
 				EngineFrame::GetInstance()->RemovePrefab(prefab);
 				if (selectedPrefab == prefab) {
 					selectedPrefab = nullptr;
@@ -758,7 +692,7 @@ void EngineFrame::PrefabWindow() {
 		}
 		ImGui::PopID();
 
-		if (iconClicked || nameClicked) {
+		if (nameClicked) {
 			selectedPrefab = prefab;
 
 			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
@@ -811,7 +745,7 @@ void EngineFrame::PrefabWindow() {
 
 void EngineFrame::LayerWindow()
 {
-	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ƒŒƒCƒ„[").c_str());
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ãƒ¬ã‚¤ãƒ¤ãƒ¼").c_str());
 
 	for (int i = 0; i < MAX_LAYER_COUNT; i++) {
 		if (SceneManger::GetInstance() == nullptr) return;
@@ -854,10 +788,10 @@ void EngineFrame::LayerWindow()
 
 void EngineFrame::LayerInspectorWindow()
 {
-	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ƒŒƒCƒ„[İ’è").c_str());
+	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ãƒ¬ã‚¤ãƒ¤ãƒ¼è¨­å®š").c_str());
 
 	if (selectedLayer_) {
-		// Šî–{İ’è
+		// åŸºæœ¬è¨­å®š
 		char nameBuf[128];
 		strcpy_s(nameBuf, selectedLayer_->name.c_str());
 		if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
@@ -870,7 +804,7 @@ void EngineFrame::LayerInspectorWindow()
 		ImGui::Separator();
 		ImGui::Text("Post Effects:");
 
-		// ƒ|ƒXƒgƒGƒtƒFƒNƒgˆê——
+		// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆä¸€è¦§
 		for (size_t i = 0; i < selectedLayer_->postEffects.size(); i++) {
 			auto& effect = selectedLayer_->postEffects[i];
 
@@ -888,7 +822,7 @@ void EngineFrame::LayerInspectorWindow()
 
 		ImGui::Separator();
 
-		// ƒGƒtƒFƒNƒg’Ç‰ÁUI
+		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¿½åŠ UI
 		static int currentEffect = 0;
 		const char* effectNames[] = {
 			"Bloom", "Blur", "Pixelate", "Color Grading",
@@ -904,7 +838,7 @@ void EngineFrame::LayerInspectorWindow()
 	}
 	else {
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-			GUI::GetInstance()->ShiftJISToUTF8("ƒŒƒCƒ„[‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢").c_str());
+			GUI::GetInstance()->ShiftJISToUTF8("ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’é¸æŠã—ã¦ãã ã•ã„").c_str());
 	}
 
 	ImGui::End();
@@ -915,32 +849,32 @@ void EngineFrame::SceneRenameWindow()
 	if (!ShowSceneRename)return;
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
-	if (ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ƒV[ƒ“ƒŠƒl[ƒ€").c_str(), &ShowSceneRename, flags))
+	if (ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ã‚·ãƒ¼ãƒ³ãƒªãƒãƒ¼ãƒ ").c_str(), &ShowSceneRename, flags))
 	{
 		static char oldSceneName[128] = "";
 		static char newSceneName[128] = "";
 
-		// string‚ğchar”z—ñ‚É•ÏŠ·
+		// stringã‚’charé…åˆ—ã«å¤‰æ›
 		std::string currentSceneName = SceneRenameNewName_;
 		strncpy_s(oldSceneName, currentSceneName.c_str(), sizeof(oldSceneName));
 
-		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("Œ»İ‚ÌƒV[ƒ“–¼").c_str(), oldSceneName, sizeof(oldSceneName));
-		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("V‚µ‚¢ƒV[ƒ“–¼").c_str(), newSceneName, sizeof(newSceneName));
+		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³å").c_str(), oldSceneName, sizeof(oldSceneName));
+		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("æ–°ã—ã„ã‚·ãƒ¼ãƒ³å").c_str(), newSceneName, sizeof(newSceneName));
 		ImGui::Separator();
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("à–¾").c_str());
-		ImGui::TextWrapped(GUI::GetInstance()->ShiftJISToUTF8("ƒV[ƒ“–¼‚ğ•ÏX‚µ‚Ü‚·BŒ»İ‚ÌƒV[ƒ“–¼‚ÆV‚µ‚¢ƒV[ƒ“–¼‚ğ“ü—Í‚µ‚ÄƒŠƒl[ƒ€ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢B").c_str());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("èª¬æ˜").c_str());
+		ImGui::TextWrapped(GUI::GetInstance()->ShiftJISToUTF8("ã‚·ãƒ¼ãƒ³åã‚’å¤‰æ›´ã—ã¾ã™ã€‚ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³åã¨æ–°ã—ã„ã‚·ãƒ¼ãƒ³åã‚’å…¥åŠ›ã—ã¦ãƒªãƒãƒ¼ãƒ ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ãã ã•ã„ã€‚").c_str());
 		ImGui::Separator();
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ƒŠƒl[ƒ€Às").c_str(), ImVec2(120, 0))) {
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ãƒªãƒãƒ¼ãƒ å®Ÿè¡Œ").c_str(), ImVec2(120, 0))) {
 			bool OK = SceneManger::GetInstance()->RenameFileInDirectory(oldSceneName, newSceneName);
 			if (OK) {
-				MessageBoxA(NULL, "ƒV[ƒ“–¼‚Ì•ÏX‚É¬Œ÷‚µ‚Ü‚µ‚½B", "¬Œ÷", MB_OK | MB_ICONINFORMATION);
-				// –¼‘O‚Ì‰Šú‰»
+				MessageBoxA(NULL, "ã‚·ãƒ¼ãƒ³åã®å¤‰æ›´ã«æˆåŠŸã—ã¾ã—ãŸã€‚", "æˆåŠŸ", MB_OK | MB_ICONINFORMATION);
+				// åå‰ã®åˆæœŸåŒ–
 				strcpy_s(oldSceneName, "");
 				strcpy_s(newSceneName, "");
 				SceneRenameNewName_ = "";
 			}
 			else {
-				MessageBoxA(NULL, "ƒV[ƒ“–¼‚Ì•ÏX‚É¸”s‚µ‚Ü‚µ‚½B", "¸”s", MB_OK | MB_ICONERROR);
+				MessageBoxA(NULL, "ã‚·ãƒ¼ãƒ³åã®å¤‰æ›´ã«å¤±æ•—ã—ã¾ã—ãŸã€‚", "å¤±æ•—", MB_OK | MB_ICONERROR);
 			}
 		}
 		ImGui::End();
@@ -953,7 +887,7 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	// qƒIƒuƒWƒFƒNƒg‚ª‚È‚¢ê‡‚Í—tƒm[ƒh
+	// å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒãªã„å ´åˆã¯è‘‰ãƒãƒ¼ãƒ‰
 	if (obj->GetChildren().empty()) {
 		flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 	}
@@ -965,27 +899,27 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 	bool nodeOpen = ImGui::TreeNodeEx(
 		(void*)(intptr_t)obj,
 		flags,
-		GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str()
+		ICON_FA_CUBE " %s", GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str()
 	);
 
-	// ƒNƒŠƒbƒN‚Å‘I‘ğ
+	// ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠ
 	if (ImGui::IsItemClicked()) {
 		SelectedObject = obj;
 	}
 
-	// ƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒ\[ƒX
+	// ãƒ‰ãƒ©ãƒƒã‚°&ãƒ‰ãƒ­ãƒƒãƒ—ã‚½ãƒ¼ã‚¹
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
 		ImGui::SetDragDropPayload("HIERARCHY_OBJECT", &obj, sizeof(AbstractObject*));
 		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(obj->GetObjectName()).c_str());
 		ImGui::EndDragDropSource();
 	}
 
-	// ƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒ^[ƒQƒbƒg
+	// ãƒ‰ãƒ©ãƒƒã‚°&ãƒ‰ãƒ­ãƒƒãƒ—ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 	if (ImGui::BeginDragDropTarget()) {
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_OBJECT")) {
 			AbstractObject* draggedObj = *(AbstractObject**)payload->Data;
 			if (draggedObj && draggedObj != obj) {
-				// zŠÂQÆƒ`ƒFƒbƒN
+				// å¾ªç’°å‚ç…§ãƒã‚§ãƒƒã‚¯
 				bool isCircular = false;
 				AbstractObject* parent = obj;
 				while (parent) {
@@ -1004,16 +938,16 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 		ImGui::EndDragDropTarget();
 	}
 
-	// ‰EƒNƒŠƒbƒN‚ÅƒRƒ“ƒeƒLƒXƒgƒƒjƒ…[•\¦
+	// å³ã‚¯ãƒªãƒƒã‚¯ã§ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
 	std::string popupLabel = "ObjectContextMenu_" + std::to_string((intptr_t)obj);
 	if (ImGui::BeginPopupContextItem(popupLabel.c_str(), ImGuiPopupFlags_MouseButtonRight))
 	{
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("•¡»").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("è¤‡è£½").c_str())) {
 			AbstractObject* newObj = obj->Clone();
 			int suffix = 1;
 			std::string baseName = obj->GetObjectName();
 			std::string newName = baseName;
-			// –¼‘O‚Ìd•¡ƒ`ƒFƒbƒN
+			// åå‰ã®é‡è¤‡ãƒã‚§ãƒƒã‚¯
 			AbstractScene* AbstractScene = SceneManger::GetInstance()->GetCurrentScene();
 			bool nameExists = true;
 			while (nameExists) {
@@ -1037,13 +971,13 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 			newObj->SetObjectName(newName);
 			AbstractScene->AddObjectLocal(newObj);
 		}
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("qƒIƒuƒWƒFƒNƒg‚ğì¬").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆ").c_str())) {
 			AbstractObject* newChild = new AbstractObject();
 			int suffix = 1;
 			std::string baseName = "ChildObject";
 			std::string newName = baseName;
 
-			// –¼‘O‚Ìd•¡ƒ`ƒFƒbƒN
+			// åå‰ã®é‡è¤‡ãƒã‚§ãƒƒã‚¯
 			AbstractScene* AbstractScene = SceneManger::GetInstance()->GetCurrentScene();
 			bool nameExists = true;
 			while (nameExists) {
@@ -1065,27 +999,53 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 			AbstractScene->AddObjectLocal(newChild);
 		}
 
-		if (obj->GetParent() && ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("e‚©‚çØ‚è—£‚·").c_str())) {
+		if (obj->GetParent() && ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("è¦ªã‹ã‚‰åˆ‡ã‚Šé›¢ã™").c_str())) {
 			obj->RemoveParent();
 		}
 
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("Prefab‚Æ‚µ‚Ä•Û‘¶").c_str())) {
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("Prefabã¨ã—ã¦ä¿å­˜").c_str())) {
 			EngineFrame::GetInstance()->AddPrefab(obj);
 		}
 
-		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("íœ").c_str())) {
-			// qƒIƒuƒWƒFƒNƒg‚àŠÜ‚ß‚Äíœ
+		if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("å‰Šé™¤").c_str())) {
+			// å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚‚å«ã‚ã¦å‰Šé™¤
 			SceneManger::GetInstance()->GetCurrentScene()->RemoveObject(obj);
 			SelectedObject = nullptr;
 		}
 		ImGui::EndPopup();
 	}
 
-	// ƒcƒŠ[ƒm[ƒh‚ªŠJ‚¢‚Ä‚¢‚éê‡AqƒIƒuƒWƒFƒNƒg‚ğ•\¦
+	// ãƒ„ãƒªãƒ¼ãƒãƒ¼ãƒ‰ãŒé–‹ã„ã¦ã„ã‚‹å ´åˆã€å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¡¨ç¤º
 	if (nodeOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 		for (auto child : obj->GetChildren()) {
 			DrawObjectNode(child);
 		}
 		ImGui::TreePop();
+	}
+}
+
+void EngineFrame::StatusBarWindow()
+{
+	ImGuiWindowFlags flags =
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_MenuBar;
+
+	float height = ImGui::GetFrameHeight();
+	if (ImGui::BeginViewportSideBar("##StatusBar", ImGui::GetMainViewport(),
+		ImGuiDir_Down, height, flags))
+	{
+		if (ImGui::BeginMenuBar())
+		{
+			// FPSè¡¨ç¤º
+			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+			ImGui::Separator();
+
+			int CameraNumber = SceneManger::GetInstance()->GetCurrentScene()->GetMainCamera()->GetCameraNumber();
+			ImGui::Text(ICON_FA_CAMERA " Camera: %d", CameraNumber);
+
+			ImGui::EndMenuBar();
+		}
+		ImGui::End();
 	}
 }
