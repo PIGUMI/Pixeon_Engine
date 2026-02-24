@@ -59,11 +59,24 @@ void Script_Enemy::Update(float DeltaTime) {
     case EnemyState::Attack:
         UpdateAttack(DeltaTime);
         break;
+    case EnemyState::Dead :
+		SetAnimation(AnimState::Dead);
+        break;
     }
 }
 
 void Script_Enemy::EndPlay() {
     IScript::EndPlay();
+}
+
+void Script_Enemy::CallCustom(const std::string& functionName)
+{
+    if(functionName == "Die") {
+        currentState = EnemyState::Dead;
+        stateTimer = 0.0f;
+        stuckTimer = 0.0f;
+        stuckCheckPosition = _parentObject->GetPosition();
+	}
 }
 
 /*
@@ -86,6 +99,10 @@ void Script_Enemy::SetAnimation(AnimState newAnimState) {
     case AnimState::Move:
         animationComponent->SetClip(1);
         break;
+	case AnimState::Dead:
+        animationComponent->SetLoop(false);
+        animationComponent->SetClip(2);
+		break;
     }
 }
 

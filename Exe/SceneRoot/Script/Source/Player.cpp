@@ -403,16 +403,12 @@ void Script_Player::AimUpdate(float DeltaTime)
 
     currentRadius = Lerp(currentRadius, targetRadius, t);
     currentCameraOffset = LerpFloat3(currentCameraOffset, targetOffset, t);
-
-    // この時点ではまだカメラ位置を設定しない
-    // CameraCollisionUpdate()で最終的な位置を決定する
 }
 
 void Script_Player::CameraCollisionUpdate(float DeltaTime)
 {
     if (!CameraObject || !playerCamera || !_parentObject) return;
     if (!enableCameraCollision) {
-        // コリジョン無効時は通常のカメラ位置を設定
         CameraTransform camTransform = playerCamera->GetTransform();
         float currentLength = sqrtf(
             camTransform.position.x * camTransform.position.x +
@@ -726,8 +722,16 @@ void Script_Player::FireBullet()
         ShowHitMarker(hitPoint, hitNormal);
 
         if (hit.hitObject) {
-            // TODO: ここでヒットしたオブジェクトにダメージを与える処理を追加
-            // 例: hit.hitObject->ApplyDamage(bulletDamage);
+			Object* hitObject = new Object(hit.hitObject);
+			Script* hitScript = hitObject->GetComponent<Script>("ScripComponent");
+            if (hitScript)
+            {
+                hitScript->CallFunction("Die");
+				delete hitScript;
+				hitScript = nullptr;
+            }
+			delete hitObject;
+			hitObject = nullptr;
         }
     }
     else {

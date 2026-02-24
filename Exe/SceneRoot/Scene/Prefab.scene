@@ -75,7 +75,7 @@
         {
             "Components": [
                 {
-                    "Data": "0.51619 1.38244 3.34079 0.26 0.13 6.33678e-39 -2.03292 0.0860986 -6.24156 0 1 0 1.0472 1.77778 0.1 1000 10 1 1 0 0 ",
+                    "Data": "0.516523 1.37252 3.34204 0.26 0.13 6.33678e-39 -2.03259 0.0761786 -6.24031 0 1 0 1.0472 1.77778 0.1 1000 10 1 1 0 0 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 },
@@ -128,7 +128,7 @@
                     "Type": 4
                 },
                 {
-                    "Data": "0\n1\n1\n1\nAnimation/Zombie Running.fbx\n",
+                    "Data": "2\n1\n1\n2\nAnimation/Zombie Running.fbx\nAnimation/Zombie Death.fbx\n",
                     "Name": "Animation",
                     "Type": 5
                 }

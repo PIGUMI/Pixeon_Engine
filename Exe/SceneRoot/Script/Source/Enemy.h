@@ -6,6 +6,7 @@ public:
     void BeginPlay() override;
     void Update(float DeltaTime) override;
     void EndPlay() override;
+	void CallCustom(const std::string& functionName) override;
 
 private:
     enum class EnemyState {
@@ -19,7 +20,8 @@ private:
 
     enum class AnimState {
         Idle,
-        Move
+        Move,
+        Dead,
     };
 
     bool IsPlayerVisible(DirectX::XMFLOAT3& outPlayerPos);
