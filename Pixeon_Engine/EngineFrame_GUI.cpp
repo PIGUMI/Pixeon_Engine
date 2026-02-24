@@ -124,7 +124,6 @@ void  EngineFrame::HandleAssetClick(const std::filesystem::path& path)
 
 void EngineFrame::DrawGUI()
 {
-	ToolbarWindow();
 	StatusBarWindow();
 
 
@@ -183,6 +182,13 @@ void EngineFrame::DrawGUI()
 void EngineFrame::GameViewWindow()
 {
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("ゲームビュー").c_str());
+
+	ImGui::PushStyleColor(ImGuiCol_Button, bInGame_ ? ImVec4(0.2f, 0.5f, 0.2f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+	if (ImGui::Button(ICON_FA_PLAY "##Play", ImVec2(50, 0))) {
+		SetInGame(!bInGame_);
+		SetShowGUI(bInGame_ ? false : true);
+	}
+	ImGui::PopStyleColor();
 
 	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
 	ImVec2 size = ImGui::GetContentRegionAvail();
@@ -1067,47 +1073,6 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 	}
 }
 
-void EngineFrame::ToolbarWindow()
-{
-	ImGuiWindowFlags flags =
-		ImGuiWindowFlags_NoScrollbar |
-		ImGuiWindowFlags_NoSavedSettings |
-		ImGuiWindowFlags_MenuBar;
-
-	float height = ImGui::GetFrameHeight();
-	if (ImGui::BeginViewportSideBar("##Toolbar", ImGui::GetMainViewport(),
-		ImGuiDir_Up, height, flags))
-	{
-		if (ImGui::BeginMenuBar())
-		{
-			// 中央に再生ボタン群
-			float windowWidth = ImGui::GetWindowWidth();
-			ImGui::SetCursorPosX(windowWidth * 0.5f - 80.0f);
-
-			// 再生ボタン
-			ImGui::PushStyleColor(ImGuiCol_Button,bInGame_ ? ImVec4(0.2f, 0.5f, 0.2f, 1.0f): ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-			if (ImGui::Button(ICON_FA_PLAY "##Play", ImVec2(50, 0))) {
-				SetInGame(!bInGame_);
-				SetShowGUI(bInGame_ ? false : true);
-			}
-			ImGui::PopStyleColor();
-
-			ImGui::SameLine();
-			if (ImGui::Button(ICON_FA_PAUSE "##Stop", ImVec2(70, 0))) {
-				bShowGUI_ = !bShowGUI_;
-			}
-			ImGui::SameLine();
-			if (ImGui::Button(ICON_FA_STEP_FORWARD "##Step", ImVec2(70, 0))) {
-				bInGame_ = false;
-				bShowGUI_ = true;
-			}
-
-			ImGui::EndMenuBar();
-		}
-		ImGui::End();
-	}
-}
-
 void EngineFrame::StatusBarWindow()
 {
 	ImGuiWindowFlags flags =
@@ -1124,6 +1089,9 @@ void EngineFrame::StatusBarWindow()
 			// FPS表示
 			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 			ImGui::Separator();
+
+			int CameraNumber = SceneManger::GetInstance()->GetCurrentScene()->GetMainCamera()->GetCameraNumber();
+			ImGui::Text(ICON_FA_CAMERA " Camera: %d", CameraNumber);
 
 			ImGui::EndMenuBar();
 		}
