@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 /Exe/SceneRoot/Scene/SampleScene.scene
 /Exe/SceneRoot/Assets/EditorLog.txt
+/Exe/SceneRoot/Tool/IZANAGI/qwen2.5-7b-instruct-q3_k_m.gguf
+/Exe/embedded_texture_log.txt
+/Exe/material_cache_log.txt
+/Exe/material_process_log.txt
