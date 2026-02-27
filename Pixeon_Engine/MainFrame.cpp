@@ -269,12 +269,30 @@ void MainFrame::Draw()
 
 			// ポストエフェクト適用判定
 			if (layerSettings && !layerSettings->postEffects.empty()) {
+				// 深度SRVとカメラ行列を取得 (SSAO用)
+				ID3D11ShaderResourceView* depthSRV = layerRT->GetDepthShaderResourceView();
+				DirectX::XMMATRIX proj = DirectX::XMMatrixIdentity();
+				DirectX::XMMATRIX invProj = DirectX::XMMatrixIdentity();
+				if (_softwareMode == SoftWareMode::ENGINE)
+				{
+					if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
+					{
+						if (auto cam = scene->GetMainCamera())
+						{
+							proj = cam->GetProjection();
+							invProj = DirectX::XMMatrixInverse(nullptr, proj);
+						}
+					}
+				}
 				// ポストエフェクトを最終出力に直接適用
 				layerSettings->ApplyPostEffectsToScreen(
 					layerRT->GetShaderResourceView(),
 					_engineConfig.screenWidth,
 					_engineConfig.screenHeight,
-					opacity
+					opacity,
+					depthSRV,
+					&proj,
+					&invProj
 				);
 			}
 			else {

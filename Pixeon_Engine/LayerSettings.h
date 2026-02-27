@@ -18,6 +18,7 @@ enum class PostEffectType {
 	COLOR_GRADING,
 	VIGNETTE,
 	CHROMATIC_ABERRATION,
+	SSAO,
 	MAX
 };
 
@@ -56,7 +57,10 @@ public:
 	void AddPostEffect(PostEffectType type);
 	void ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 		int width, int height,
-		float opacity);
+		float opacity,
+		ID3D11ShaderResourceView* depthSRV = nullptr,
+		const DirectX::XMMATRIX* proj = nullptr,
+		const DirectX::XMMATRIX* invProj = nullptr);
 	void RemovePostEffect(int index);
 	void MovePostEffect(int fromIndex, int toIndex);
 	void ApplyPostEffects(ID3D11ShaderResourceView* input,

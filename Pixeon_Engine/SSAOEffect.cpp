@@ -1,0 +1,419 @@
+// SSAOEffect.cpp
+#include "SSAOEffect.h"
+#include "System.h"
+#include "ShaderManager.h"
+#include "GUI.h"
+#include "IMGUI/imgui.h"
+#include "ImageUtils.h"
+#include <random>
+
+using namespace DirectX;
+using Microsoft::WRL::ComPtr;
+
+// ============================================================
+// コンストラクタ
+// ============================================================
+SSAOEffect::SSAOEffect()
+{
+    EnsureKernel();
+    EnsureNoise();
+}
+
+// ============================================================
+// Clone
+// ============================================================
+PostEffectBase* SSAOEffect::Clone() const
+{
+    SSAOEffect* c = new SSAOEffect();
+    c->radius = radius;
+    c->bias = bias;
+    c->power = power;
+    c->aoStrength = aoStrength;
+    c->enabled = enabled;
+    c->priority = priority;
+    return c;
+}
+
+// ============================================================
+// Apply
+// input  = カラーバッファ SRV (layerRT の色テクスチャ)
+// output = 最終出力 RTV
+// ============================================================
+void SSAOEffect::Apply(
+    ID3D11ShaderResourceView* input,
+    ID3D11RenderTargetView* output,
+    int width, int height)
+{
+    auto* dx = DirectX11::GetInstance();
+    auto* ctx = dx->GetContext();
+    auto* sm = ShaderManager::GetInstance();
+
+    // シェーダー取得
+    ID3D11VertexShader* fullscreenVS = sm->GetVertexShader("VS_Fullscreen");
+    ID3D11PixelShader* ssaoPS = sm->GetPixelShader("PS_SSAO");
+    ID3D11PixelShader* blurPS = sm->GetPixelShader("PS_SSAOBlur");
+    ID3D11PixelShader* compositePS = sm->GetPixelShader("PS_SSAOComposite");
+
+    // 深度 SRV かシェーダーが揃っていない → カラーをそのままコピーして終了
+    if (!depthSRV_ || !fullscreenVS || !ssaoPS || !blurPS || !compositePS)
+    {
+        if (input && output)
+        {
+            ComPtr<ID3D11RenderTargetView> oldRTV;
+            ComPtr<ID3D11DepthStencilView> oldDSV;
+            ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
+            ctx->OMSetRenderTargets(1, &output, nullptr);
+            D3D11_VIEWPORT vp{};
+            vp.Width = (float)width; vp.Height = (float)height; vp.MaxDepth = 1.0f;
+            ctx->RSSetViewports(1, &vp);
+            ImageUtils::DrawSRV(input, 0.0f, 0.0f, (float)width, (float)height,
+                DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMFLOAT4(0, 0, 1, 1), true, 1.0f);
+            ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
+        }
+        depthSRV_ = nullptr;
+        return;
+    }
+
+    // 遅延初期化
+    if (!EnsureRenderTargets(width, height)) { depthSRV_ = nullptr; return; }
+    EnsureSamplers();
+    EnsureDepthStencilState();
+    EnsureConstantBuffers();
+
+    // 現在の RT / DepthStencil State / BlendState を退避
+    ComPtr<ID3D11RenderTargetView>   oldRTV;
+    ComPtr<ID3D11DepthStencilView>   oldDSV;
+    ComPtr<ID3D11DepthStencilState>  oldDSS;
+    ComPtr<ID3D11BlendState>         oldBlend;
+    FLOAT oldBlendFactor[4] = {};
+    UINT  oldSampleMask = 0;
+    UINT  oldStencilRef = 0;
+    D3D11_VIEWPORT oldVP;
+    UINT numVP = 1;
+
+    ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
+    ctx->OMGetDepthStencilState(oldDSS.GetAddressOf(), &oldStencilRef);
+    ctx->OMGetBlendState(oldBlend.GetAddressOf(), oldBlendFactor, &oldSampleMask);
+    ctx->RSGetViewports(&numVP, &oldVP);
+
+    // 深度テスト OFF
+    ctx->OMSetDepthStencilState(dsOff_.Get(), 0);
+
+    // VS をセット (全パス共通)
+    ctx->VSSetShader(fullscreenVS, nullptr, 0);
+
+    // InputLayout / 頂点バッファは VS_Fullscreen では不要
+    ctx->IASetInputLayout(nullptr);
+    ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // --------------------------------------------------------
+    // [パス 1] SSAO  (深度 → AO値 R8)
+    // --------------------------------------------------------
+    {
+        SSAO_Params cb{};
+        cb.proj = XMMatrixTranspose(proj_);
+        cb.invProj = XMMatrixTranspose(invProj_);
+        cb.resolution = { (float)width, (float)height };
+        cb.radius = radius;
+        cb.bias = bias;
+        cb.power = power;
+        ctx->UpdateSubresource(ssaoCB_.Get(), 0, nullptr, &cb, 0, 0);
+
+        KernelCB kcb{};
+        for (int k = 0; k < 64; ++k) kcb.kernel[k] = kernel_[k];
+        ctx->UpdateSubresource(kernelCB_.Get(), 0, nullptr, &kcb, 0, 0);
+
+        ID3D11Buffer* cbs[] = { ssaoCB_.Get(), kernelCB_.Get() };
+        ctx->PSSetConstantBuffers(1, 2, cbs); // b1, b2
+
+        // t1=深度, t2=ノイズ
+        ID3D11ShaderResourceView* srvs[] = { nullptr, depthSRV_, noiseSRV_.Get() };
+        ctx->PSSetShaderResources(0, 3, srvs);
+
+        ID3D11SamplerState* smps[] = { pointClampSmp_.Get(), pointWrapSmp_.Get() };
+        ctx->PSSetSamplers(0, 2, smps);
+
+        DrawFullscreen(ssaoPS, nullptr, 0, 0, nullptr, 0, 0, ssaoRTV_.Get(), width, height);
+    }
+
+    // SRV 解除
+    ID3D11ShaderResourceView* null3[3] = {};
+    ctx->PSSetShaderResources(0, 3, null3);
+
+    // --------------------------------------------------------
+    // [パス 2] ブラー  (生AO  スムーズAO R8)
+    // --------------------------------------------------------
+    {
+        BlurParams bcb{};
+        bcb.texelSize = { 1.0f / width, 1.0f / height };
+        ctx->UpdateSubresource(blurCB_.Get(), 0, nullptr, &bcb, 0, 0);
+
+        ID3D11Buffer* cbs[] = { blurCB_.Get() };
+        ctx->PSSetConstantBuffers(1, 1, cbs); // b1
+
+        ID3D11ShaderResourceView* srvs[] = { ssaoSRV_.Get() };
+        ctx->PSSetShaderResources(0, 1, srvs);
+
+        ID3D11SamplerState* smps[] = { pointClampSmp_.Get() };
+        ctx->PSSetSamplers(0, 1, smps);
+
+        DrawFullscreen(blurPS, nullptr, 0, 0, nullptr, 0, 0, blurRTV_.Get(), width, height);
+    }
+
+    ID3D11ShaderResourceView* null1[1] = {};
+    ctx->PSSetShaderResources(0, 1, null1);
+
+    // --------------------------------------------------------
+    // [パス 3] 合成  (カラー  AO  output)
+    // --------------------------------------------------------
+    {
+        CompositeParams ccb{};
+        ccb.aoStrength = aoStrength;
+        ctx->UpdateSubresource(compositeCB_.Get(), 0, nullptr, &ccb, 0, 0);
+
+        ID3D11Buffer* cbs[] = { compositeCB_.Get() };
+        ctx->PSSetConstantBuffers(1, 1, cbs); // b1
+
+        ID3D11ShaderResourceView* srvs[] = { input, blurSRV_.Get() };
+        ctx->PSSetShaderResources(0, 2, srvs);
+
+        ID3D11SamplerState* smps[] = { linearSmp_.Get() };
+        ctx->PSSetSamplers(0, 1, smps);
+
+        DrawFullscreen(compositePS, nullptr, 0, 0, nullptr, 0, 0, output, width, height);
+    }
+
+    // SRV 解除
+    ID3D11ShaderResourceView* null2[2] = {};
+    ctx->PSSetShaderResources(0, 2, null2);
+
+    // --------------------------------------------------------
+    // 状態復元
+    // --------------------------------------------------------
+    ctx->OMSetDepthStencilState(oldDSS.Get(), oldStencilRef);
+    ctx->OMSetBlendState(oldBlend.Get(), oldBlendFactor, oldSampleMask);
+    ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
+    ctx->RSSetViewports(1, &oldVP);
+
+    // 使い捨てフラグをリセット
+    depthSRV_ = nullptr;
+}
+
+// ============================================================
+// DrawFullscreen  (VS_Fullscreen の SV_VertexID 方式)
+// 頂点バッファ不要: Draw(3, 0) で fullscreen triangle を描画
+// ============================================================
+void SSAOEffect::DrawFullscreen(
+    ID3D11PixelShader* ps,
+    ID3D11ShaderResourceView* const* srvs,
+    UINT                              srvCount,
+    UINT                              srvSlot,
+    ID3D11Buffer* const* psCBs,
+    UINT                              cbCount,
+    UINT                              cbSlot,
+    ID3D11RenderTargetView* rtv,
+    int width, int height)
+{
+    auto ctx = DirectX11::GetInstance()->GetContext();
+
+    ctx->PSSetShader(ps, nullptr, 0);
+
+    if (srvs && srvCount > 0)
+        ctx->PSSetShaderResources(srvSlot, srvCount, srvs);
+    if (psCBs && cbCount > 0)
+        ctx->PSSetConstantBuffers(cbSlot, cbCount, psCBs);
+
+    ctx->OMSetRenderTargets(1, &rtv, nullptr);
+
+    D3D11_VIEWPORT vp{};
+    vp.Width = (float)width; vp.Height = (float)height; vp.MaxDepth = 1.0f;
+    ctx->RSSetViewports(1, &vp);
+
+    ctx->Draw(3, 0); // VS_Fullscreen は頂点バッファ不要
+}
+
+// ============================================================
+// EnsureRenderTargets
+// ============================================================
+bool SSAOEffect::EnsureRenderTargets(int width, int height)
+{
+    if (cachedWidth_ == width && cachedHeight_ == height && ssaoRTV_) return true;
+
+    cachedWidth_ = width;
+    cachedHeight_ = height;
+
+    ssaoTex_.Reset(); ssaoRTV_.Reset(); ssaoSRV_.Reset();
+    blurTex_.Reset(); blurRTV_.Reset(); blurSRV_.Reset();
+
+    auto dev = DirectX11::GetInstance()->GetDevice();
+
+    D3D11_TEXTURE2D_DESC td{};
+    td.Width = width; td.Height = height;
+    td.MipLevels = 1; td.ArraySize = 1;
+    td.Format = DXGI_FORMAT_R8_UNORM; // AO 値は 1ch 8bit で十分
+    td.SampleDesc.Count = 1;
+    td.Usage = D3D11_USAGE_DEFAULT;
+    td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+    if (FAILED(dev->CreateTexture2D(&td, nullptr, ssaoTex_.GetAddressOf()))) return false;
+    dev->CreateRenderTargetView(ssaoTex_.Get(), nullptr, ssaoRTV_.GetAddressOf());
+    dev->CreateShaderResourceView(ssaoTex_.Get(), nullptr, ssaoSRV_.GetAddressOf());
+
+    if (FAILED(dev->CreateTexture2D(&td, nullptr, blurTex_.GetAddressOf()))) return false;
+    dev->CreateRenderTargetView(blurTex_.Get(), nullptr, blurRTV_.GetAddressOf());
+    dev->CreateShaderResourceView(blurTex_.Get(), nullptr, blurSRV_.GetAddressOf());
+
+    return ssaoRTV_ && blurRTV_;
+}
+
+// ============================================================
+// EnsureKernel  (半球サンプル 64 点を生成)
+// ============================================================
+void SSAOEffect::EnsureKernel()
+{
+    if (!kernel_.empty()) return;
+
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+    std::default_random_engine rng(42);
+
+    kernel_.resize(64);
+    for (int i = 0; i < 64; ++i)
+    {
+        XMFLOAT3 s(dist(rng) * 2.0f - 1.0f,
+            dist(rng) * 2.0f - 1.0f,
+            dist(rng)); // z は 0?1 (半球)
+        XMVECTOR v = XMVector3Normalize(XMLoadFloat3(&s));
+        v = XMVectorScale(v, dist(rng));
+
+        // 内側に集中させる加速補間
+        float scale = (float)i / 64.0f;
+        scale = 0.1f + scale * scale * 0.9f;
+        v = XMVectorScale(v, scale);
+
+        XMFLOAT3 r;
+        XMStoreFloat3(&r, v);
+        kernel_[i] = { r.x, r.y, r.z, 0.0f };
+    }
+}
+
+// ============================================================
+// EnsureNoise  (4x4 ランダム回転ノイズを生成)
+// ============================================================
+void SSAOEffect::EnsureNoise()
+{
+    if (noiseSRV_) return;
+
+    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+    std::default_random_engine rng(123);
+
+    uint8_t data[4 * 4 * 4]; // RGBA8
+    for (int i = 0; i < 16; ++i)
+    {
+        float x = dist(rng), y = dist(rng);
+        float len = sqrtf(x * x + y * y);
+        if (len > 0.0001f) { x /= len; y /= len; }
+        data[i * 4 + 0] = (uint8_t)((x * 0.5f + 0.5f) * 255.0f);
+        data[i * 4 + 1] = (uint8_t)((y * 0.5f + 0.5f) * 255.0f);
+        data[i * 4 + 2] = 0;
+        data[i * 4 + 3] = 255;
+    }
+
+    auto dev = DirectX11::GetInstance()->GetDevice();
+    D3D11_TEXTURE2D_DESC td{};
+    td.Width = 4; td.Height = 4; td.MipLevels = 1; td.ArraySize = 1;
+    td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    td.SampleDesc.Count = 1;
+    td.Usage = D3D11_USAGE_IMMUTABLE;
+    td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+    D3D11_SUBRESOURCE_DATA init{ data, 4 * 4, 0 };
+    dev->CreateTexture2D(&td, &init, noiseTex_.GetAddressOf());
+    dev->CreateShaderResourceView(noiseTex_.Get(), nullptr, noiseSRV_.GetAddressOf());
+}
+
+// ============================================================
+// EnsureSamplers
+// ============================================================
+void SSAOEffect::EnsureSamplers()
+{
+    if (pointClampSmp_) return;
+
+    auto dev = DirectX11::GetInstance()->GetDevice();
+    D3D11_SAMPLER_DESC sd{};
+    sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    sd.MaxLOD = D3D11_FLOAT32_MAX;
+
+    sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    dev->CreateSamplerState(&sd, pointClampSmp_.GetAddressOf());
+
+    sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    dev->CreateSamplerState(&sd, pointWrapSmp_.GetAddressOf());
+
+    sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    dev->CreateSamplerState(&sd, linearSmp_.GetAddressOf());
+}
+
+// ============================================================
+// EnsureDepthStencilState  (深度テスト OFF)
+// ============================================================
+void SSAOEffect::EnsureDepthStencilState()
+{
+    if (dsOff_) return;
+
+    D3D11_DEPTH_STENCIL_DESC dsd{};
+    dsd.DepthEnable = FALSE;
+    dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+    dsd.StencilEnable = FALSE;
+    DirectX11::GetInstance()->GetDevice()->CreateDepthStencilState(&dsd, dsOff_.GetAddressOf());
+}
+
+// ============================================================
+// EnsureConstantBuffers
+// ============================================================
+void SSAOEffect::EnsureConstantBuffers()
+{
+    if (ssaoCB_) return;
+
+    auto dev = DirectX11::GetInstance()->GetDevice();
+    D3D11_BUFFER_DESC bd{};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    bd.ByteWidth = sizeof(SSAO_Params);     dev->CreateBuffer(&bd, nullptr, ssaoCB_.GetAddressOf());
+    bd.ByteWidth = sizeof(KernelCB);        dev->CreateBuffer(&bd, nullptr, kernelCB_.GetAddressOf());
+    bd.ByteWidth = sizeof(BlurParams);      dev->CreateBuffer(&bd, nullptr, blurCB_.GetAddressOf());
+    bd.ByteWidth = sizeof(CompositeParams); dev->CreateBuffer(&bd, nullptr, compositeCB_.GetAddressOf());
+}
+
+// ============================================================
+// DrawInspector
+// ============================================================
+void SSAOEffect::DrawInspector()
+{
+    ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("半径").c_str(), &radius, 0.01f, 0.05f, 2.0f, "%.3f");
+    ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("バイアス").c_str(), &bias, 0.001f, 0.001f, 0.1f, "%.4f");
+    ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("強度").c_str(), &power, 0.05f, 0.5f, 5.0f, "%.2f");
+    ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("適用強度").c_str(), &aoStrength, 0.01f, 0.0f, 1.0f, "%.2f");
+}
+
+// ============================================================
+// JSON 保存 / 読み込み
+// ============================================================
+void SSAOEffect::SaveToJson(nlohmann::json& j) const
+{
+    j["radius"] = radius;
+    j["bias"] = bias;
+    j["power"] = power;
+    j["aoStrength"] = aoStrength;
+}
+
+void SSAOEffect::LoadFromJson(const nlohmann::json& j)
+{
+    radius = j.value("radius", 0.5f);
+    bias = j.value("bias", 0.025f);
+    power = j.value("power", 2.0f);
+    aoStrength = j.value("aoStrength", 0.8f);
+}

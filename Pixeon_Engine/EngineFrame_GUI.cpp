@@ -831,7 +831,7 @@ void EngineFrame::LayerInspectorWindow()
 		static int currentEffect = 0;
 		const char* effectNames[] = {
 			"Bloom", "Blur", "Pixelate", "Color Grading",
-			"Vignette", "Chromatic Aberration"
+			"Vignette", "Chromatic Aberration", "SSAO"
 		};
 
 		ImGui::Combo("##EffectType", &currentEffect, effectNames,

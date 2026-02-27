@@ -7,6 +7,7 @@
 #include "PixelateEffect.h"
 #include "BloomEffect.h"
 #include "ColorGradingEffect.h"
+#include "SSAOEffect.h"
 
 Layer::Layer() {
 }
@@ -32,7 +33,10 @@ void Layer::AddPostEffect(PostEffectType type) {
 
 void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 	int width, int height,
-	float opacity) {
+	float opacity,
+	ID3D11ShaderResourceView* depthSRV,
+	const DirectX::XMMATRIX* proj,
+	const DirectX::XMMATRIX* invProj) {
 	if (!input) return;
 
 	auto* dx = DirectX11::GetInstance();
@@ -80,6 +84,12 @@ void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 
 	// エフェクトを順次適用
 	for (size_t i = 0; i < activeEffects.size(); i++) {
+		// SSAOエフェクトなら深度SRVとカメラ行列をセット
+		if (auto* ssao = dynamic_cast<SSAOEffect*>(activeEffects[i].get()))
+		{
+			if (depthSRV)  ssao->SetDepthSRV(depthSRV);
+			if (proj && invProj) ssao->SetCameraMatrices(*proj, *invProj);
+		}
 		bool isLastEffect = (i == activeEffects.size() - 1);
 
 		if (isLastEffect) {
@@ -441,7 +451,8 @@ std::shared_ptr<PostEffectBase> Layer::CreatePostEffect(PostEffectType type) {
 		return std::make_shared<BloomEffect>();
 	case PostEffectType::COLOR_GRADING:
 		return std::make_shared<ColorGradingEffect>();
-
+	case PostEffectType::SSAO:
+		return std::make_shared<SSAOEffect>();
 	default:
 		return nullptr;
 	}

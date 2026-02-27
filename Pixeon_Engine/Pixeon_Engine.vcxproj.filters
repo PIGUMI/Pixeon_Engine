@@ -33,9 +33,6 @@
     <Filter Include="ソース ファイル\1_MainFrame\App">
       <UniqueIdentifier>{d95ae04f-911c-4eef-b41d-a1c2a2310a79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\1_MainFrame\AssetManager">
-      <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\1_MainFrame\Component">
       <UniqueIdentifier>{27dfb793-5b5a-4ad2-aafd-2cbf1dbe4f30}</UniqueIdentifier>
     </Filter>
@@ -53,9 +50,6 @@
     </Filter>
     <Filter Include="ソース ファイル\2_Engine">
       <UniqueIdentifier>{a59b5566-e94c-496d-af17-e8f4177691e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\2_Engine\Manager">
-      <UniqueIdentifier>{a767e929-0ea9-4db3-922d-cf813b1b6179}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\2_Engine\Frame">
       <UniqueIdentifier>{fd38ca51-27e2-45b8-82e5-7b9eef7346a6}</UniqueIdentifier>
@@ -84,6 +78,9 @@
     <Filter Include="ソース ファイル\4_IZANAGI">
       <UniqueIdentifier>{621dd858-4c7d-46f4-b883-a65b8060d49f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\Manager">
+      <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -91,9 +88,6 @@
     </ClCompile>
     <ClCompile Include="System.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManger.cpp">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui.cpp">
       <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
@@ -122,44 +116,29 @@
     <ClCompile Include="GameRenderTarget.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
-    <ClCompile Include="SettingManager.cpp">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentManager.cpp">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="HashUtill.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys\Archive</Filter>
     </ClCompile>
     <ClCompile Include="ModelManager.cpp">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceService.cpp">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptManager.cpp">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClCompile>
     <ClCompile Include="AnimationComponent.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
@@ -216,7 +195,7 @@
       <Filter>ソース ファイル\3_Animator2DEditor\Animator2D</Filter>
     </ClCompile>
     <ClCompile Include="Animator2DManager.cpp">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClCompile>
     <ClCompile Include="Math.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
@@ -249,7 +228,7 @@
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClCompile>
     <ClCompile Include="EffectManager.cpp">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClCompile>
     <ClCompile Include="EffectComponent.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
@@ -272,6 +251,27 @@
     <ClCompile Include="LightComponent.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentManager.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManger.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptManager.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingManager.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAOEffect.cpp">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -282,9 +282,6 @@
     </ClInclude>
     <ClInclude Include="System.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManger.h">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imstb_truetype.h">
       <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
@@ -316,15 +313,6 @@
     <ClInclude Include="GameRenderTarget.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
-    <ClInclude Include="SettingManager.h">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentManager.h">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="Struct.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
     </ClInclude>
@@ -335,31 +323,28 @@
       <Filter>ソース ファイル\1_MainFrame\Sys\Archive</Filter>
     </ClInclude>
     <ClInclude Include="ModelManager.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="ResourceService.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="AssetTypes.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="File.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptManager.h">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="BoneNodeMapping.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
@@ -369,9 +354,6 @@
     </ClInclude>
     <ClInclude Include="MatrixUtil.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>ソース ファイル\2_Engine\Manager</Filter>
     </ClInclude>
     <ClInclude Include="AnimationComponent.h">
       <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
@@ -422,7 +404,7 @@
       <Filter>ソース ファイル\3_Animator2DEditor\Animator2D</Filter>
     </ClInclude>
     <ClInclude Include="Animator2DManager.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
@@ -458,7 +440,7 @@
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
     <ClInclude Include="EffectManager.h">
-      <Filter>ソース ファイル\1_MainFrame\AssetManager</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
     </ClInclude>
     <ClInclude Include="EffectComponent.h">
       <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
@@ -486,6 +468,27 @@
     </ClInclude>
     <ClInclude Include="LightComponent.h">
       <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentManager.h">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManger.h">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptManager.h">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingManager.h">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SSAOEffect.h">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
