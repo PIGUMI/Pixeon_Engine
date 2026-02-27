@@ -406,8 +406,8 @@ void AbstractScene::PlayUpdate() {
 }
 
 void AbstractScene::Draw(int Layer) {
-	RenderShadowMap();
 
+	RenderShadowMap();
 	UploadLightsToGPU();
 
 	auto ctx = DirectX11::GetInstance()->GetContext();
