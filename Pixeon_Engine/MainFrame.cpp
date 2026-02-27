@@ -98,7 +98,7 @@ int MainFrame::Init(const EngineConfig& InPut)
 	for (int layer = 0; layer < MAX_LAYER_COUNT; layer++)
 	{
 		GameRenderTarget* Layer = new GameRenderTarget();
-		Layer->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+		Layer->InitWithDepthSRV(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
 		Layer->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 		_layerRenderTargets.push_back(Layer);
 	}

@@ -1,4 +1,4 @@
-// ColorGradingEffect.cpp
+ï»¿// ColorGradingEffect.cpp
 #include "ColorGradingEffect.h"
 #include "ImageUtils.h"
 #include "System.h"
@@ -15,15 +15,15 @@ void ColorGradingEffect::Apply(ID3D11ShaderResourceView* input,
 	ID3D11DeviceContext* ctx = dx->GetContext();
 	if (!ctx) return;
 
-	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ð•Û‘¶
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ä¿å­˜
 	ID3D11RenderTargetView* oldRTV = nullptr;
 	ID3D11DepthStencilView* oldDSV = nullptr;
 	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
 
-	// o—Íæ‚ðÝ’è
+	// å‡ºåŠ›å…ˆã‚’è¨­å®š
 	ctx->OMSetRenderTargets(1, &output, nullptr);
 
-	// ƒrƒ…[ƒ|[ƒgÝ’è
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¨­å®š
 	D3D11_VIEWPORT vp = {};
 	vp.Width = (FLOAT)width;
 	vp.Height = (FLOAT)height;
@@ -33,7 +33,7 @@ void ColorGradingEffect::Apply(ID3D11ShaderResourceView* input,
 	vp.TopLeftY = 0;
 	ctx->RSSetViewports(1, &vp);
 
-	// ColorGradingƒVƒF[ƒ_[‚Å•`‰æ
+	// ColorGradingã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã§æç”»
 	ImageUtils::DrawSRVColorGrading(
 		input,
 		0.0f, 0.0f,
@@ -47,11 +47,11 @@ void ColorGradingEffect::Apply(ID3D11ShaderResourceView* input,
 		gamma
 	);
 
-	// SRVƒoƒCƒ“ƒh‰ðœ
+	// SRVãƒã‚¤ãƒ³ãƒ‰è§£é™¤
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	ctx->PSSetShaderResources(0, 1, nullSRV);
 
-	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ð•œŒ³
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å¾©å…ƒ
 	ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
 
 	if (oldRTV) oldRTV->Release();
@@ -59,40 +59,40 @@ void ColorGradingEffect::Apply(ID3D11ShaderResourceView* input,
 }
 
 void ColorGradingEffect::DrawInspector() {
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Šî–{’²®").c_str());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("åŸºæœ¬èª¿æ•´").c_str());
 	ImGui::Separator();
 
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("–¾“x").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("æ˜Žåº¦").c_str(),
 		&brightness, 0.01f, -1.0f, 1.0f);
 
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ƒRƒ“ƒgƒ‰ƒXƒg").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ã‚³ãƒ³ãƒˆãƒ©ã‚¹ãƒˆ").c_str(),
 		&contrast, 0.01f, 0.0f, 2.0f);
 
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("Ê“x").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("å½©åº¦").c_str(),
 		&saturation, 0.01f, 0.0f, 2.0f);
 
 	ImGui::Spacing();
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("F’²®").c_str());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("è‰²èª¿æ•´").c_str());
 	ImGui::Separator();
 
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("F‘ŠƒVƒtƒg").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("è‰²ç›¸ã‚·ãƒ•ãƒˆ").c_str(),
 		&hueShift, 1.0f, 0.0f, 360.0f);
 
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("F‰·“x").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("è‰²æ¸©åº¦").c_str(),
 		&temperature, 0.01f, -1.0f, 1.0f);
 
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("F‡‚¢").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("è‰²åˆã„").c_str(),
 		&tint, 0.01f, -1.0f, 1.0f);
 
 	ImGui::Spacing();
-	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("‚»‚Ì‘¼").c_str());
+	ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãã®ä»–").c_str());
 	ImGui::Separator();
 
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ƒKƒ“ƒ}•â³").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ã‚¬ãƒ³ãƒžè£œæ­£").c_str(),
 		&gamma, 0.01f, 0.1f, 3.0f);
 
 	ImGui::Spacing();
-	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ƒŠƒZƒbƒg").c_str(), ImVec2(100, 0))) {
+	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ãƒªã‚»ãƒƒãƒˆ").c_str(), ImVec2(100, 0))) {
 		brightness = 0.0f;
 		contrast = 1.0f;
 		saturation = 1.0f;

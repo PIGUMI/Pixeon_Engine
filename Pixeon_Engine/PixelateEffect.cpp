@@ -1,4 +1,4 @@
-// PixelateEffect.cpp
+ï»¿// PixelateEffect.cpp
 #include "PixelateEffect.h"
 #include "ImageUtils.h"
 #include "System.h"
@@ -47,11 +47,11 @@ void PixelateEffect::Apply(ID3D11ShaderResourceView* input,
 }
 
 void PixelateEffect::DrawInspector() {
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ƒsƒNƒZƒ‹ƒTƒCƒY").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ãƒ”ã‚¯ã‚»ãƒ«ã‚µã‚¤ã‚º").c_str(),
 		&pixelSize, 0.1f, 1.0f, 64.0f);
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("‹­“x").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("å¼·åº¦").c_str(),
 		&intensity, 0.01f, 0.0f, 1.0f);
-	ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("ƒJƒ‰[").c_str(), &color.x);
+	ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("ã‚«ãƒ©ãƒ¼").c_str(), &color.x);
 }
 
 void PixelateEffect::SaveToJson(nlohmann::json& j) const {

@@ -1,4 +1,4 @@
-// Layer.cpp
+ï»¿// Layer.cpp
 #include "LayerSettings.h"
 #include "System.h"
 #include "ImageUtils.h"
@@ -15,13 +15,13 @@ Layer::~Layer() {
 	ReleaseTempBuffers();
 }
 
-// ƒ|ƒXƒgƒGƒtƒFƒNƒg‚ğ’Ç‰Á
+// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’è¿½åŠ 
 void Layer::AddPostEffect(PostEffectType type) {
 	auto effect = CreatePostEffect(type);
 	if (effect) {
 		postEffects.push_back(effect);
 
-		// —Dæ“x‡‚Éƒ\[ƒg
+		// å„ªå…ˆåº¦é †ã«ã‚½ãƒ¼ãƒˆ
 		std::sort(postEffects.begin(), postEffects.end(),
 			[](const std::shared_ptr<PostEffectBase>& a,
 				const std::shared_ptr<PostEffectBase>& b) {
@@ -41,7 +41,7 @@ void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 	ID3D11DeviceContext* ctx = dx->GetContext();
 	if (!ctx) return;
 
-	// —LŒø‚ÈƒGƒtƒFƒNƒg‚ğ’Šo
+	// æœ‰åŠ¹ãªã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’æŠ½å‡º
 	std::vector<std::shared_ptr<PostEffectBase>> activeEffects;
 	for (auto& effect : postEffects) {
 		if (effect && effect->enabled) {
@@ -50,7 +50,7 @@ void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 	}
 
 	if (activeEffects.empty()) {
-		// ƒGƒtƒFƒNƒg‚È‚µ: ’Êí•`‰æ
+		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãªã—: é€šå¸¸æç”»
 		ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
 			DirectX::XMFLOAT4(1, 1, 1, 1),
 			DirectX::XMFLOAT4(0, 0, 1, 1),
@@ -58,11 +58,11 @@ void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 		return;
 	}
 
-	// ’†ŠÔƒoƒbƒtƒ@‚ğ€”õ
+	// ä¸­é–“ãƒãƒƒãƒ•ã‚¡ã‚’æº–å‚™
 	CreateTempBuffers(width, height);
 
 	if (!tempRTV1_ || !tempSRV1_) {
-		// ƒoƒbƒtƒ@ì¬¸”s:  ’Êí•`‰æ‚ÉƒtƒH[ƒ‹ƒoƒbƒN
+		// ãƒãƒƒãƒ•ã‚¡ä½œæˆå¤±æ•—:  é€šå¸¸æç”»ã«ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯
 		ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
 			DirectX::XMFLOAT4(1, 1, 1, 1),
 			DirectX::XMFLOAT4(0, 0, 1, 1),
@@ -70,24 +70,24 @@ void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 		return;
 	}
 
-	// Œ»İ‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ğ•Û‘¶
+	// ç¾åœ¨ã®ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ä¿å­˜
 	ID3D11RenderTargetView* oldRTV = nullptr;
 	ID3D11DepthStencilView* oldDSV = nullptr;
 	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
 
-	// “ü—Íƒ\[ƒX
+	// å…¥åŠ›ã‚½ãƒ¼ã‚¹
 	ID3D11ShaderResourceView* currentInput = input;
 
-	// ƒGƒtƒFƒNƒg‚ğ‡Ÿ“K—p
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’é †æ¬¡é©ç”¨
 	for (size_t i = 0; i < activeEffects.size(); i++) {
 		bool isLastEffect = (i == activeEffects.size() - 1);
 
 		if (isLastEffect) {
-			// ÅŒã‚ÌƒGƒtƒFƒNƒg‚ÍŒ»İ‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgi‰æ–Êj‚É’¼Ú•`‰æ
+			// æœ€å¾Œã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã¯ç¾åœ¨ã®ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆç”»é¢ï¼‰ã«ç›´æ¥æç”»
 			activeEffects[i]->Apply(currentInput, oldRTV, width, height);
 		}
 		else {
-			// ’†ŠÔƒoƒbƒtƒ@‚É•`‰æ
+			// ä¸­é–“ãƒãƒƒãƒ•ã‚¡ã«æç”»
 			ID3D11RenderTargetView* tempTarget = (i % 2 == 0) ? tempRTV1_ : tempRTV2_;
 			ID3D11ShaderResourceView* tempSource = (i % 2 == 0) ? tempSRV1_ : tempSRV2_;
 
@@ -96,30 +96,30 @@ void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 
 			activeEffects[i]->Apply(currentInput, tempTarget, width, height);
 
-			// SRVƒoƒCƒ“ƒh‰ğœ
+			// SRVãƒã‚¤ãƒ³ãƒ‰è§£é™¤
 			ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 			ctx->PSSetShaderResources(0, 1, nullSRV);
 
-			// Ÿ‚Ì“ü—Í‚ğİ’è
+			// æ¬¡ã®å…¥åŠ›ã‚’è¨­å®š
 			currentInput = tempSource;
 		}
 	}
 
-	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ğ•œŒ³
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å¾©å…ƒ
 	ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
 
 	if (oldRTV) oldRTV->Release();
 	if (oldDSV) oldDSV->Release();
 }
 
-// ƒ|ƒXƒgƒGƒtƒFƒNƒg‚ğíœ
+// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤
 void Layer::RemovePostEffect(int index) {
 	if (index >= 0 && index < postEffects.size()) {
 		postEffects.erase(postEffects.begin() + index);
 	}
 }
 
-// ƒ|ƒXƒgƒGƒtƒFƒNƒg‚Ì‡˜‚ğ•ÏX
+// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®é †åºã‚’å¤‰æ›´
 void Layer::MovePostEffect(int fromIndex, int toIndex) {
 	if (fromIndex < 0 || fromIndex >= postEffects.size() ||
 		toIndex < 0 || toIndex >= postEffects.size()) {
@@ -130,13 +130,13 @@ void Layer::MovePostEffect(int fromIndex, int toIndex) {
 	postEffects.erase(postEffects.begin() + fromIndex);
 	postEffects.insert(postEffects.begin() + toIndex, effect);
 
-	// —Dæ“x‚ğXV
+	// å„ªå…ˆåº¦ã‚’æ›´æ–°
 	for (size_t i = 0; i < postEffects.size(); i++) {
 		postEffects[i]->priority = (int)i;
 	}
 }
 
-// ’†ŠÔƒoƒbƒtƒ@‚ğì¬
+// ä¸­é–“ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 void Layer::CreateTempBuffers(int width, int height) {
 	auto* dx = DirectX11::GetInstance();
 	if (!dx) return;
@@ -144,38 +144,38 @@ void Layer::CreateTempBuffers(int width, int height) {
 	ID3D11Device* device = dx->GetDevice();
 	if (!device) return;
 
-	// ‚·‚Å‚É“¯‚¶ƒTƒCƒY‚Ìƒoƒbƒtƒ@‚ª‚ ‚ê‚Î‰½‚à‚µ‚È‚¢
+	// ã™ã§ã«åŒã˜ã‚µã‚¤ã‚ºã®ãƒãƒƒãƒ•ã‚¡ãŒã‚ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (tempTexture1_ && bufferWidth_ == width && bufferHeight_ == height) {
 		return;
 	}
 
-	// ŒÃ‚¢ƒoƒbƒtƒ@‚ğ‰ğ•ú
+	// å¤ã„ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
 	ReleaseTempBuffers();
 
 	bufferWidth_ = width;
 	bufferHeight_ = height;
 
-	// ƒeƒNƒXƒ`ƒƒì¬—p‚Ìİ’è
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆç”¨ã®è¨­å®š
 	D3D11_TEXTURE2D_DESC texDesc = {};
 	texDesc.Width = width;
 	texDesc.Height = height;
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; // HDR‘Î‰
+	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; // HDRå¯¾å¿œ
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
 	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	texDesc.CPUAccessFlags = 0;
 
-	// ƒoƒbƒtƒ@1ì¬
+	// ãƒãƒƒãƒ•ã‚¡1ä½œæˆ
 	HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, &tempTexture1_);
 	if (SUCCEEDED(hr)) {
 		device->CreateRenderTargetView(tempTexture1_, nullptr, &tempRTV1_);
 		device->CreateShaderResourceView(tempTexture1_, nullptr, &tempSRV1_);
 	}
 
-	// ƒoƒbƒtƒ@2ì¬
+	// ãƒãƒƒãƒ•ã‚¡2ä½œæˆ
 	hr = device->CreateTexture2D(&texDesc, nullptr, &tempTexture2_);
 	if (SUCCEEDED(hr)) {
 		device->CreateRenderTargetView(tempTexture2_, nullptr, &tempRTV2_);
@@ -183,7 +183,7 @@ void Layer::CreateTempBuffers(int width, int height) {
 	}
 }
 
-// ’†ŠÔƒoƒbƒtƒ@‚ğ‰ğ•ú
+// ä¸­é–“ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
 void Layer::ReleaseTempBuffers() {
 	if (tempSRV1_) { tempSRV1_->Release(); tempSRV1_ = nullptr; }
 	if (tempSRV2_) { tempSRV2_->Release(); tempSRV2_ = nullptr; }
@@ -196,7 +196,7 @@ void Layer::ReleaseTempBuffers() {
 	bufferHeight_ = 0;
 }
 
-// ƒ|ƒXƒgƒGƒtƒFƒNƒg‚ğ“K—p
+// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’é©ç”¨
 void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
 	ID3D11RenderTargetView* output,
 	int width, int height) {
@@ -210,14 +210,14 @@ void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
 	ID3D11DeviceContext* ctx = dx->GetContext();
 	if (!ctx) return;
 
-	// ’†ŠÔƒoƒbƒtƒ@‚ğ€”õ
+	// ä¸­é–“ãƒãƒƒãƒ•ã‚¡ã‚’æº–å‚™
 	CreateTempBuffers(width, height);
 
 	if (!tempRTV1_ || !tempRTV2_ || !tempSRV1_ || !tempSRV2_) {
 		return;
 	}
 
-	// —LŒø‚ÈƒGƒtƒFƒNƒg‚Ì‚İ‚ğ’Šo
+	// æœ‰åŠ¹ãªã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ã¿ã‚’æŠ½å‡º
 	std::vector<std::shared_ptr<PostEffectBase>> activeEffects;
 	for (auto& effect : postEffects) {
 		if (effect && effect->enabled) {
@@ -226,15 +226,15 @@ void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
 	}
 
 	if (activeEffects.empty()) {
-		return; // ƒGƒtƒFƒNƒg‚ª‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+		return; // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	}
 
-	// ŒÃ‚¢ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgó‘Ô‚ğ•Û‘¶
+	// å¤ã„ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆçŠ¶æ…‹ã‚’ä¿å­˜
 	ID3D11RenderTargetView* oldRTV = nullptr;
 	ID3D11DepthStencilView* oldDSV = nullptr;
 	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
 
-	// Ping-Pongƒoƒbƒtƒ@ƒŠƒ“ƒO‚ÅƒGƒtƒFƒNƒg‚ğ‡Ÿ“K—p
+	// Ping-Pongãƒãƒƒãƒ•ã‚¡ãƒªãƒ³ã‚°ã§ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’é †æ¬¡é©ç”¨
 	ID3D11ShaderResourceView* currentInput = input;
 	ID3D11RenderTargetView* currentOutput = nullptr;
 	ID3D11ShaderResourceView* nextInput = nullptr;
@@ -243,57 +243,57 @@ void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
 		bool isLastEffect = (i == activeEffects.size() - 1);
 
 		if (isLastEffect) {
-			// ÅŒã‚ÌƒGƒtƒFƒNƒg‚ÍŒ³‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚É•`‰æ
+			// æœ€å¾Œã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã¯å…ƒã®ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«æç”»
 			currentOutput = output;
 		}
 		else {
-			// ’†ŠÔƒoƒbƒtƒ@‚ÉPing-Pong
+			// ä¸­é–“ãƒãƒƒãƒ•ã‚¡ã«Ping-Pong
 			currentOutput = (i % 2 == 0) ? tempRTV1_ : tempRTV2_;
 			nextInput = (i % 2 == 0) ? tempSRV1_ : tempSRV2_;
 		}
 
-		// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ğƒNƒŠƒA
+		// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ã‚¯ãƒªã‚¢
 		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		ctx->ClearRenderTargetView(currentOutput, clearColor);
 
-		// ƒGƒtƒFƒNƒg‚ğ“K—p
+		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’é©ç”¨
 		activeEffects[i]->Apply(currentInput, currentOutput, width, height);
 
-		// SRV‚ÌƒoƒCƒ“ƒh‚ğ‰ğœid—vIj
+		// SRVã®ãƒã‚¤ãƒ³ãƒ‰ã‚’è§£é™¤ï¼ˆé‡è¦ï¼ï¼‰
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		ctx->PSSetShaderResources(0, 1, nullSRV);
 
-		// Ÿ‚Ìƒ‹[ƒv‚Ì“ü—Í‚ğİ’è
+		// æ¬¡ã®ãƒ«ãƒ¼ãƒ—ã®å…¥åŠ›ã‚’è¨­å®š
 		if (!isLastEffect) {
 			currentInput = nextInput;
 		}
 	}
 
-	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgó‘Ô‚ğ•œŒ³
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆçŠ¶æ…‹ã‚’å¾©å…ƒ
 	ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
 
 	if (oldRTV) oldRTV->Release();
 	if (oldDSV) oldDSV->Release();
 }
 
-// Inspector—p‚ÌGUI‚ğ•`‰æ
+// Inspectorç”¨ã®GUIã‚’æç”»
 void Layer::DrawInspector() {
 	ImGui::PushID(this);
 
-	// Šî–{İ’è
+	// åŸºæœ¬è¨­å®š
 	char nameBuf[128];
 	strcpy_s(nameBuf, name.c_str());
-	if (ImGui::InputText("–¼‘O", nameBuf, sizeof(nameBuf))) {
+	if (ImGui::InputText("åå‰", nameBuf, sizeof(nameBuf))) {
 		name = nameBuf;
 	}
 
-	ImGui::Checkbox("•\¦", &visible);
-	ImGui::DragFloat("•s“§–¾“x", &opacity, 0.01f, 0.0f, 1.0f);
+	ImGui::Checkbox("è¡¨ç¤º", &visible);
+	ImGui::DragFloat("ä¸é€æ˜åº¦", &opacity, 0.01f, 0.0f, 1.0f);
 
 	ImGui::Separator();
-	ImGui::Text("ƒ|ƒXƒgƒGƒtƒFƒNƒg (%dŒÂ)", (int)postEffects.size());
+	ImGui::Text("ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆ (%då€‹)", (int)postEffects.size());
 
-	// ƒ|ƒXƒgƒGƒtƒFƒNƒgˆê——
+	// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆä¸€è¦§
 	int removeIndex = -1;
 	int moveFromIndex = -1;
 	int moveToIndex = -1;
@@ -304,11 +304,11 @@ void Layer::DrawInspector() {
 
 		ImGui::PushID((int)i);
 
-		// ƒGƒtƒFƒNƒg–¼‚ÆON/OFFƒgƒOƒ‹
+		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆåã¨ON/OFFãƒˆã‚°ãƒ«
 		std::string header = effect->GetName() + " ##header" + std::to_string(i);
 		bool headerOpen = ImGui::CollapsingHeader(header.c_str());
 
-		// ƒhƒ‰ƒbƒO&ƒhƒƒbƒv‚Å•À‚Ñ‘Ö‚¦
+		// ãƒ‰ãƒ©ãƒƒã‚°&ãƒ‰ãƒ­ãƒƒãƒ—ã§ä¸¦ã³æ›¿ãˆ
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
 			ImGui::SetDragDropPayload("POSTEFFECT_REORDER", &i, sizeof(int));
 			ImGui::Text("%s", effect->GetName().c_str());
@@ -327,18 +327,18 @@ void Layer::DrawInspector() {
 		if (headerOpen) {
 			ImGui::Indent();
 
-			ImGui::Checkbox("—LŒø", &effect->enabled);
-			ImGui::DragInt("—Dæ“x", &effect->priority);
+			ImGui::Checkbox("æœ‰åŠ¹", &effect->enabled);
+			ImGui::DragInt("å„ªå…ˆåº¦", &effect->priority);
 
 			ImGui::Separator();
 
-			// ƒGƒtƒFƒNƒgŒÅ—L‚Ìƒpƒ‰ƒ[ƒ^
+			// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå›ºæœ‰ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 			effect->DrawInspector();
 
 			ImGui::Separator();
 
-			// íœƒ{ƒ^ƒ“
-			if (ImGui::Button("íœ", ImVec2(100, 0))) {
+			// å‰Šé™¤ãƒœã‚¿ãƒ³
+			if (ImGui::Button("å‰Šé™¤", ImVec2(100, 0))) {
 				removeIndex = (int)i;
 			}
 
@@ -348,19 +348,19 @@ void Layer::DrawInspector() {
 		ImGui::PopID();
 	}
 
-	// íœˆ—
+	// å‰Šé™¤å‡¦ç†
 	if (removeIndex >= 0) {
 		RemovePostEffect(removeIndex);
 	}
 
-	// ˆÚ“®ˆ—
+	// ç§»å‹•å‡¦ç†
 	if (moveFromIndex >= 0 && moveToIndex >= 0) {
 		MovePostEffect(moveFromIndex, moveToIndex);
 	}
 
 	ImGui::Separator();
 
-	// ƒGƒtƒFƒNƒg’Ç‰ÁUI
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¿½åŠ UI
 	static const char* effectNames[] = {
 		"Bloom",
 		"Blur",
@@ -373,14 +373,14 @@ void Layer::DrawInspector() {
 
 	ImGui::Combo("##EffectType", &currentEffect, effectNames, IM_ARRAYSIZE(effectNames));
 	ImGui::SameLine();
-	if (ImGui::Button("ƒGƒtƒFƒNƒg’Ç‰Á", ImVec2(120, 0))) {
+	if (ImGui::Button("ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¿½åŠ ", ImVec2(120, 0))) {
 		AddPostEffect((PostEffectType)(currentEffect + 1));
 	}
 
 	ImGui::PopID();
 }
 
-// JSON‚É•Û‘¶
+// JSONã«ä¿å­˜
 void Layer::SaveToJson(nlohmann::json& j) const {
 	j["layerIndex"] = layerIndex;
 	j["name"] = name;
@@ -405,7 +405,7 @@ void Layer::SaveToJson(nlohmann::json& j) const {
 	j["postEffects"] = effectsArray;
 }
 
-// JSON‚©‚ç“Ç‚İ‚İ
+// JSONã‹ã‚‰èª­ã¿è¾¼ã¿
 void Layer::LoadFromJson(const nlohmann::json& j) {
 	layerIndex = j.value("layerIndex", 0);
 	name = j.value("name", "Layer");
@@ -432,7 +432,7 @@ void Layer::LoadFromJson(const nlohmann::json& j) {
 	}
 }
 
-// ƒ|ƒXƒgƒGƒtƒFƒNƒg‚ğ¶¬
+// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
 std::shared_ptr<PostEffectBase> Layer::CreatePostEffect(PostEffectType type) {
 	switch (type) {
 	case PostEffectType::PIXELATE:

@@ -1,4 +1,4 @@
-// BloomEffect.cpp
+ï»¿// BloomEffect.cpp
 #include "BloomEffect.h"
 #include "ImageUtils.h"
 #include "System.h"
@@ -14,7 +14,7 @@ namespace {
 		float uv[2];
 	};
 
-	// ’¸“_ƒoƒbƒtƒ@‚ÆƒŠƒ\[ƒX‚ÌÃ“IŠÇ—
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¨ãƒªã‚½ãƒ¼ã‚¹ã®é™çš„ç®¡ç†
 	static ComPtr<ID3D11Buffer> s_vb;
 	static ComPtr<ID3D11InputLayout> s_layout;
 	static ComPtr<ID3D11Buffer> s_cbVS;
@@ -38,7 +38,7 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 
 	ShaderManager* sm = ShaderManager::GetInstance();
 
-	// ƒVƒF[ƒ_[æ“¾
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å–å¾—
 	static ID3D11VertexShader* vs = nullptr;
 	static ID3D11PixelShader* ps = nullptr;
 
@@ -52,7 +52,7 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	}
 
 	if (!vs || !ps) {
-		// ƒVƒF[ƒ_[‚ª‚È‚¢ê‡‚Í’Êí•`‰æ
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒãªã„å ´åˆã¯é€šå¸¸æç”»
 		ID3D11RenderTargetView* oldRTV = nullptr;
 		ID3D11DepthStencilView* oldDSV = nullptr;
 		ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
@@ -66,14 +66,14 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 		return;
 	}
 
-	// ƒŠƒ\[ƒX‰Šú‰»
+	// ãƒªã‚½ãƒ¼ã‚¹åˆæœŸåŒ–
 	InitializeResources(dev, vs, sm);
 
-	// ˆêƒoƒbƒtƒ@ì¬
+	// ä¸€æ™‚ãƒãƒƒãƒ•ã‚¡ä½œæˆ
 	CreateTempBuffer(width, height);
 	if (!tempRTV_ || !tempSRV_) return;
 
-	// š Œ»İ‚Ìó‘Ô‚ğ•Û‘¶i[“xƒXƒe[ƒg‚àŠÜ‚Şj
+	// â˜… ç¾åœ¨ã®çŠ¶æ…‹ã‚’ä¿å­˜ï¼ˆæ·±åº¦ã‚¹ãƒ†ãƒ¼ãƒˆã‚‚å«ã‚€ï¼‰
 	ID3D11RenderTargetView* oldRTV = nullptr;
 	ID3D11DepthStencilView* oldDSV = nullptr;
 	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
@@ -87,7 +87,7 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	UINT oldStencilRef = 0;
 	ctx->OMGetDepthStencilState(&oldDSS, &oldStencilRef);
 
-	// ƒrƒ…[ƒ|[ƒgİ’è
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¨­å®š
 	D3D11_VIEWPORT vp = {};
 	vp.Width = (FLOAT)width;
 	vp.Height = (FLOAT)height;
@@ -97,16 +97,16 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	vp.TopLeftY = 0;
 
 	// ========================================
-	// Pass 1: ‹P“x’Šo + ƒuƒ‰[i[“xƒeƒXƒg–³Œøj
+	// Pass 1: è¼åº¦æŠ½å‡º + ãƒ–ãƒ©ãƒ¼ï¼ˆæ·±åº¦ãƒ†ã‚¹ãƒˆç„¡åŠ¹ï¼‰
 	// ========================================
-	ctx->OMSetRenderTargets(1, &tempRTV_, nullptr);  // [“xƒoƒbƒtƒ@‚È‚µ
+	ctx->OMSetRenderTargets(1, &tempRTV_, nullptr);  // æ·±åº¦ãƒãƒƒãƒ•ã‚¡ãªã—
 	ctx->RSSetViewports(1, &vp);
-	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // [“xƒeƒXƒg–³Œø
+	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // æ·±åº¦ãƒ†ã‚¹ãƒˆç„¡åŠ¹
 
 	float clearColor[4] = { 0, 0, 0, 0 };
 	ctx->ClearRenderTargetView(tempRTV_, clearColor);
 
-	// ’è”ƒoƒbƒtƒ@İ’è
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡è¨­å®š
 	struct BloomParams {
 		float threshold;
 		float intensity;
@@ -123,35 +123,35 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	params.blurRadius = blurSize;
 	params.screenWidth = (float)width;
 	params.screenHeight = (float)height;
-	params.passType = 1; // ƒuƒ‰[ƒpƒX
+	params.passType = 1; // ãƒ–ãƒ©ãƒ¼ãƒ‘ã‚¹
 
-	// ’è”ƒoƒbƒtƒ@XV
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡æ›´æ–°
 	ctx->UpdateSubresource(s_cbPS.Get(), 0, nullptr, &params, 0, 0);
 
-	// ƒNƒAƒbƒh•`‰æ
+	// ã‚¯ã‚¢ãƒƒãƒ‰æç”»
 	DrawQuad(ctx, vs, ps, input, 0.0f, 0.0f, (float)width, (float)height, width, height);
 
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	ctx->PSSetShaderResources(0, 1, nullSRV);
 
 	// ========================================
-	// Pass 2: Œ³‰æ‘œ‚Æƒuƒ‹[ƒ€‚ğ‡¬i[“xƒeƒXƒg–³Œøj
+	// Pass 2: å…ƒç”»åƒã¨ãƒ–ãƒ«ãƒ¼ãƒ ã‚’åˆæˆï¼ˆæ·±åº¦ãƒ†ã‚¹ãƒˆç„¡åŠ¹ï¼‰
 	// ========================================
-	ctx->OMSetRenderTargets(1, &output, nullptr);  // [“xƒoƒbƒtƒ@‚È‚µ
+	ctx->OMSetRenderTargets(1, &output, nullptr);  // æ·±åº¦ãƒãƒƒãƒ•ã‚¡ãªã—
 	ctx->RSSetViewports(1, &vp);
-	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // [“xƒeƒXƒg–³Œø
+	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // æ·±åº¦ãƒ†ã‚¹ãƒˆç„¡åŠ¹
 
-	// 2-1: Œ³‰æ‘œ‚ğ•`‰æ
+	// 2-1: å…ƒç”»åƒã‚’æç”»
 	ctx->OMSetBlendState(s_blendAlpha.Get(), oldBlendFactor, 0xFFFFFFFF);
 	ImageUtils::DrawSRV(input, 0.0f, 0.0f, (float)width, (float)height,
 		DirectX::XMFLOAT4(1, 1, 1, 1),
 		DirectX::XMFLOAT4(0, 0, 1, 1),
 		true, 1.0f);
 
-	// 2-2: ƒuƒ‹[ƒ€¬•ª‚ğ‰ÁZ‡¬
+	// 2-2: ãƒ–ãƒ«ãƒ¼ãƒ æˆåˆ†ã‚’åŠ ç®—åˆæˆ
 	ctx->OMSetBlendState(s_blendAdd.Get(), oldBlendFactor, 0xFFFFFFFF);
 
-	params.passType = 2; // ‡¬ƒpƒX
+	params.passType = 2; // åˆæˆãƒ‘ã‚¹
 	ctx->UpdateSubresource(s_cbPS.Get(), 0, nullptr, &params, 0, 0);
 
 	DrawQuad(ctx, vs, ps, tempSRV_, 0.0f, 0.0f, (float)width, (float)height,
@@ -160,7 +160,7 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	ctx->PSSetShaderResources(0, 1, nullSRV);
 
 	// ========================================
-	// š ó‘Ô‚ğŠ®‘S‚É•œŒ³
+	// â˜… çŠ¶æ…‹ã‚’å®Œå…¨ã«å¾©å…ƒ
 	// ========================================
 	ctx->OMSetDepthStencilState(oldDSS, oldStencilRef);
 	if (oldDSS) oldDSS->Release();
@@ -304,7 +304,7 @@ void BloomEffect::DrawQuad(ID3D11DeviceContext* ctx, ID3D11VertexShader* vs, ID3
 
 	ctx->PSSetShaderResources(0, 1, &srv);
 
-	// š [“xƒXƒe[ƒg‚Í Apply() “à‚Åİ’è‚·‚é‚½‚ßA‚±‚±‚Å‚Íİ’è‚µ‚È‚¢
+	// â˜… æ·±åº¦ã‚¹ãƒ†ãƒ¼ãƒˆã¯ Apply() å†…ã§è¨­å®šã™ã‚‹ãŸã‚ã€ã“ã“ã§ã¯è¨­å®šã—ãªã„
 
 	auto* dx = DirectX11::GetInstance();
 	dx->SetSamplerState(SAMPLER_LINEAR);
@@ -313,13 +313,13 @@ void BloomEffect::DrawQuad(ID3D11DeviceContext* ctx, ID3D11VertexShader* vs, ID3
 }
 
 void BloomEffect::DrawInspector() {
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("‹P“xè‡’l").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("è¼åº¦é–¾å€¤").c_str(),
 		&threshold, 0.01f, 0.0f, 2.0f);
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("‹­“x").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("å¼·åº¦").c_str(),
 		&intensity, 0.01f, 0.0f, 5.0f);
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ƒuƒ‰[ƒTƒCƒY").c_str(),
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ãƒ–ãƒ©ãƒ¼ã‚µã‚¤ã‚º").c_str(),
 		&blurSize, 0.1f, 0.5f, 10.0f);
-	ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("F’²®").c_str(), &tint.x);
+	ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("è‰²èª¿æ•´").c_str(), &tint.x);
 }
 
 void BloomEffect::SaveToJson(nlohmann::json& j) const {

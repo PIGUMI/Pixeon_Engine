@@ -1,4 +1,4 @@
-// PixelateEffect.h
+﻿// PixelateEffect.h
 #pragma once
 #include "LayerSettings.h"
 

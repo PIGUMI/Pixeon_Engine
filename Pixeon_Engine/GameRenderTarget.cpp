@@ -1,10 +1,10 @@
-#include "GameRenderTarget.h"
+ï»¿#include "GameRenderTarget.h"
 #include "System.h"
 #include "SettingManager.h"
 
 void GameRenderTarget::Init(ID3D11Device* device, int width, int height)
 {
-	// Šù‘¶‚ÌÀ‘•‚ğ‚»‚Ì‚Ü‚ÜˆÛ
+	// æ—¢å­˜ã®å®Ÿè£…ã‚’ãã®ã¾ã¾ç¶­æŒ
 	if (!device || width <= 0 || height <= 0)
 	{
 		return;
@@ -45,7 +45,7 @@ void GameRenderTarget::Init(ID3D11Device* device, int width, int height)
 	m_viewport.TopLeftX = 0;
 	m_viewport.TopLeftY = 0;
 
-	// [“xƒoƒbƒtƒ@ì¬i’Êí”Åj
+	// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ä½œæˆï¼ˆé€šå¸¸ç‰ˆï¼‰
 	D3D11_TEXTURE2D_DESC depthDesc = {};
 	depthDesc.Width = width;
 	depthDesc.Height = height;
@@ -71,13 +71,13 @@ void GameRenderTarget::Init(ID3D11Device* device, int width, int height)
 
 void GameRenderTarget::InitWithDepthSRV(ID3D11Device* device, int width, int height)
 {
-	// DoF—p‚Ì‰Šú‰»i[“xƒoƒbƒtƒ@‚àSRV‚Æ‚µ‚Äg—p‰Â”\j
+	// DoFç”¨ã®åˆæœŸåŒ–ï¼ˆæ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚‚SRVã¨ã—ã¦ä½¿ç”¨å¯èƒ½ï¼‰
 	if (!device || width <= 0 || height <= 0)
 	{
 		return;
 	}
 
-	// ƒJƒ‰[ƒeƒNƒXƒ`ƒƒ‚Ìì¬
+	// ã‚«ãƒ©ãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ä½œæˆ
 	D3D11_TEXTURE2D_DESC texDesc = {};
 	texDesc.Width = width;
 	texDesc.Height = height;
@@ -106,7 +106,7 @@ void GameRenderTarget::InitWithDepthSRV(ID3D11Device* device, int width, int hei
 		return;
 	}
 
-	// ƒrƒ…[ƒ|[ƒgİ’è
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¨­å®š
 	m_viewport.Width = (FLOAT)width;
 	m_viewport.Height = (FLOAT)height;
 	m_viewport.MinDepth = 0.0f;
@@ -114,13 +114,13 @@ void GameRenderTarget::InitWithDepthSRV(ID3D11Device* device, int width, int hei
 	m_viewport.TopLeftX = 0;
 	m_viewport.TopLeftY = 0;
 
-	// [“xƒoƒbƒtƒ@‚ğSRV‚Æ‚µ‚Ä‚àg—p‚Å‚«‚é‚æ‚¤‚Éì¬
+	// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’SRVã¨ã—ã¦ã‚‚ä½¿ç”¨ã§ãã‚‹ã‚ˆã†ã«ä½œæˆ
 	D3D11_TEXTURE2D_DESC depthDesc = {};
 	depthDesc.Width = width;
 	depthDesc.Height = height;
 	depthDesc.MipLevels = 1;
 	depthDesc.ArraySize = 1;
-	depthDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // SRV‚ÆDSV‚Ì—¼•û‚Åg—p‰Â”\
+	depthDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // SRVã¨DSVã®ä¸¡æ–¹ã§ä½¿ç”¨å¯èƒ½
 	depthDesc.SampleDesc.Count = 1;
 	depthDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
@@ -131,7 +131,7 @@ void GameRenderTarget::InitWithDepthSRV(ID3D11Device* device, int width, int hei
 		return;
 	}
 
-	// DSVì¬
+	// DSVä½œæˆ
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -141,7 +141,7 @@ void GameRenderTarget::InitWithDepthSRV(ID3D11Device* device, int width, int hei
 		return;
 	}
 
-	// SRVì¬i[“xƒeƒNƒXƒ`ƒƒ—pj
+	// SRVä½œæˆï¼ˆæ·±åº¦ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”¨ï¼‰
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

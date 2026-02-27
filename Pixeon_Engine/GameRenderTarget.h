@@ -1,4 +1,4 @@
-// GameRenderTarget.h ‚Ö‚ÌC³
+ï»¿// GameRenderTarget.h ã¸ã®ä¿®æ­£
 #pragma once
 #include<d3d11.h>
 
@@ -6,13 +6,13 @@ class GameRenderTarget
 {
 public:
 	void Init(ID3D11Device* device, int width, int height);
-	void InitWithDepthSRV(ID3D11Device* device, int width, int height); // DoF—p‚Ì‰Šú‰»
+	void InitWithDepthSRV(ID3D11Device* device, int width, int height); // DoFç”¨ã®åˆæœŸåŒ–
 	void Begin(ID3D11DeviceContext* context, bool clearTarget = true);
 	void End();
 	void Clear(ID3D11DeviceContext* context, float r, float g, float b, float a);
 	ID3D11ShaderResourceView* GetShaderResourceView() const { return m_pSRV; }
 	ID3D11RenderTargetView* GetRenderTargetView() { return m_pRTV; }
-	ID3D11ShaderResourceView* GetDepthShaderResourceView() const { return m_pDepthSRV; } // DoF—p
+	ID3D11ShaderResourceView* GetDepthShaderResourceView() const { return m_pDepthSRV; } // DoFç”¨
 
 	void SetRenderZBuffer(bool isRenderZBuffer) { m_isRenderZBuffer = isRenderZBuffer; }
 	bool IsRenderZBuffer() const { return m_isRenderZBuffer; }

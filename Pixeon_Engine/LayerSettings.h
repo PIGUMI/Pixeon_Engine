@@ -1,4 +1,4 @@
-// Layer.h
+ï»¿// Layer.h
 #pragma once
 #include <vector>
 #include <string>
@@ -21,7 +21,7 @@ enum class PostEffectType {
 	MAX
 };
 
-// ƒ|ƒXƒgƒGƒtƒFƒNƒg‚ÌŠî’êƒNƒ‰ƒX
+// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®åŸºåº•ã‚¯ãƒ©ã‚¹
 class PostEffectBase {
 public:
 	virtual ~PostEffectBase() = default;
@@ -49,10 +49,10 @@ public:
 	bool visible = true;
 	float opacity = 1.0f;
 
-	// ƒ|ƒXƒgƒGƒtƒFƒNƒgŠÇ—
+	// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆç®¡ç†
 	std::vector<std::shared_ptr<PostEffectBase>> postEffects;
 
-	// ŠÖ”
+	// é–¢æ•°
 	void AddPostEffect(PostEffectType type);
 	void ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 		int width, int height,

@@ -1,28 +1,28 @@
-// ColorGradingEffect.h
+ï»¿// ColorGradingEffect.h
 #pragma once
 #include "LayerSettings.h"
 
 class ColorGradingEffect : public PostEffectBase {
 public:
-	// –¾“x’²® (-1.0 ~ 1.0)
+	// æ˜åº¦èª¿æ•´ (-1.0 ~ 1.0)
 	float brightness = 0.0f;
 
-	// ƒRƒ“ƒgƒ‰ƒXƒg’²® (0.0 ~ 2.0)
+	// ã‚³ãƒ³ãƒˆãƒ©ã‚¹ãƒˆèª¿æ•´ (0.0 ~ 2.0)
 	float contrast = 1.0f;
 
-	// Ê“x’²® (0.0 ~ 2.0)
+	// å½©åº¦èª¿æ•´ (0.0 ~ 2.0)
 	float saturation = 1.0f;
 
-	// F‘ŠƒVƒtƒg (0.0 ~ 360.0 “x)
+	// è‰²ç›¸ã‚·ãƒ•ãƒˆ (0.0 ~ 360.0 åº¦)
 	float hueShift = 0.0f;
 
-	// F‰·“x (-1.0 ~ 1.0)
+	// è‰²æ¸©åº¦ (-1.0 ~ 1.0)
 	float temperature = 0.0f;
 
-	// F‡‚¢ (-1.0 ~ 1.0)
+	// è‰²åˆã„ (-1.0 ~ 1.0)
 	float tint = 0.0f;
 
-	// ƒKƒ“ƒ}•â³ (0.1 ~ 3.0)
+	// ã‚¬ãƒ³ãƒè£œæ­£ (0.1 ~ 3.0)
 	float gamma = 1.0f;
 
 	void Apply(ID3D11ShaderResourceView* input,
