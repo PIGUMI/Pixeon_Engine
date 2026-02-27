@@ -10,6 +10,7 @@
 #include "LightComponent.h"
 #include "EffectComponent.h"
 #include "RigidBody.h"
+#include "_Geometry.h"
 #include <thread>
 #include <mutex>
 #include <nlohmann/json.hpp>
@@ -439,31 +440,22 @@ void AbstractScene::Draw(int Layer) {
 	ID3D11SamplerState* samplers[] = { m_shadowSampler.Get() };
 	ctx->PSSetSamplers(1, 1, samplers);
 
-	std::vector<AbstractObject*> sortedList;
+	if (Layer == 0) {
+		DirectX::XMFLOAT4X4 view, proj;
+		DirectX::XMFLOAT3 Pos = { 0,0,0 };
+		if (_MainCamera) {
+			view = _MainCamera->GetViewMatrix();
+			proj = _MainCamera->GetProjectionMatrix();
+			Pos = _MainCamera->GetWorldPosition();
+		}
+		else {
+			view = DirectX::XMFLOAT4X4();
+			proj = DirectX::XMFLOAT4X4();
+		}
+		Draw1mGrid(20.0f, view, proj,Pos);
+	}
 
 	for (auto& obj : _objects) {
-		if (obj && obj->GetParent() == nullptr) {
-			sortedList.push_back(obj);
-		}
-	}
-
-	if (_MainCamera) {
-		std::sort(sortedList.begin(), sortedList.end(), [this](AbstractObject* a, AbstractObject* b) {
-			if (!a || !b) return false;
-			DirectX::XMFLOAT3 camPos = _MainCamera->GetPosition();
-			DirectX::XMFLOAT3 posA = a->GetWorldPosition();
-			DirectX::XMFLOAT3 posB = b->GetWorldPosition();
-			float distA = (camPos.x - posA.x) * (camPos.x - posA.x) +
-				(camPos.y - posA.y) * (camPos.y - posA.y) +
-				(camPos.z - posA.z) * (camPos.z - posA.z);
-			float distB = (camPos.x - posB.x) * (camPos.x - posB.x) +
-				(camPos.y - posB.y) * (camPos.y - posB.y) +
-				(camPos.z - posB.z) * (camPos.z - posB.z);
-			return distA > distB;
-			});
-	}
-
-	for (auto& obj : sortedList) {
 		if (obj) {
 			obj->Draw(Layer);
 		}
@@ -1011,7 +1003,7 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 
 	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
 
-	float size = 120.0f;  // 描画範囲: 120x120
+	float size = 20.0f;
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
 		size, size,
 		0.5f,    // ニアクリップ

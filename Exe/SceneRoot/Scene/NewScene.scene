@@ -1,0 +1,108 @@
+{
+    "Layers": [
+        {
+            "layerIndex": 0,
+            "name": "Layer 0",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 1,
+            "name": "Layer 1",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 2,
+            "name": "Layer 2",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 3,
+            "name": "Layer 3",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 4,
+            "name": "Layer 4",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 5,
+            "name": "Layer 5",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 6,
+            "name": "Layer 6",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 7,
+            "name": "Layer 7",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 8,
+            "name": "Layer 8",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        },
+        {
+            "layerIndex": 9,
+            "name": "Layer 9",
+            "opacity": 1.0,
+            "postEffects": [],
+            "visible": true
+        }
+    ],
+    "Objects": [
+        {
+            "Components": [
+                {
+                    "Data": "-8.86466 6.29302 9.15956 5.59185 0.628771 0 -3.70832 0.411505 2.929 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 1 ",
+                    "Name": "CameraComponent",
+                    "Type": 0
+                }
+            ],
+            "Name": "NewObject",
+            "Parent": "",
+            "Transform": {
+                "Position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "SceneSettings": {
+        "MainCameraNumber": 0,
+        "Name": "NewScene"
+    }
+}
