@@ -193,17 +193,32 @@ bool ModelRenderComponent::EnsureInputLayout(const void* vsBytecode, size_t size
 }
 
 bool ModelRenderComponent::EnsureConstantBuffer() {
-	if (m_cb) return true;
 	auto dev = DirectX11::GetInstance()->GetDevice();
-	D3D11_BUFFER_DESC bd{};
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.ByteWidth = sizeof(CBData);
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	HRESULT hr = dev->CreateBuffer(&bd, nullptr, m_cb.GetAddressOf());
-	if (FAILED(hr)) {
-		OutputDebugStringA("[ModelRenderComponent] 定数バッファ作成失敗\n");
-		return false;
+
+	if (!m_cb) {
+		D3D11_BUFFER_DESC bd{};
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bd.ByteWidth = sizeof(CBData);
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		HRESULT hr = dev->CreateBuffer(&bd, nullptr, m_cb.GetAddressOf());
+		if (FAILED(hr)) {
+			OutputDebugStringA("[ModelRenderComponent] 定数バッファ作成失敗\n");
+			return false;
+		}
 	}
+
+	if (!m_cameraCb) {
+		D3D11_BUFFER_DESC bd{};
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bd.ByteWidth = sizeof(CameraCBData);
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		HRESULT hr = dev->CreateBuffer(&bd, nullptr, m_cameraCb.GetAddressOf());
+		if (FAILED(hr)) {
+			OutputDebugStringA("[ModelRenderComponent] カメラ定数バッファ作成失敗\n");
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -682,6 +697,9 @@ void ModelRenderComponent::Draw(int Layer) {
 	XMMATRIX view = cam->GetView();
 	XMMATRIX proj = cam->GetProjection();
 
+	// カメラ位置を取得
+	XMFLOAT3 camPos = cam->GetPosition();
+
 	auto ctx = DirectX11::GetInstance()->GetContext();
 
 	UINT stride = sizeof(ModelVertex);
@@ -781,6 +799,14 @@ void ModelRenderComponent::Draw(int Layer) {
 		ID3D11Buffer* cbs[] = { m_cb.Get() };
 		ctx->VSSetConstantBuffers(0, 1, cbs);
 		ctx->PSSetConstantBuffers(0, 1, cbs);
+
+		// カメラ位置をb4に送信
+		CameraCBData camCbd;
+		camCbd.CameraPos = camPos;
+		camCbd._pad = 0.0f;
+		ctx->UpdateSubresource(m_cameraCb.Get(), 0, nullptr, &camCbd, 0, 0);
+		ID3D11Buffer* camCbs[] = { m_cameraCb.Get() };
+		ctx->PSSetConstantBuffers(4, 1, camCbs);
 
 		ctx->PSSetShaderResources(0, 1, &srv);
 		ctx->DrawIndexed(sm.indexCount, sm.indexOffset, 0);

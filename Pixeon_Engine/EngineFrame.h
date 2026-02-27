@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 
-// V‚µ‚¢ƒGƒ“ƒWƒ“ƒ}ƒl[ƒWƒƒ[ƒNƒ‰ƒX
-// ƒGƒ“ƒWƒ“‹@”\‚ÌŠÇ—A§Œä‚ğ’S“–
-// Prefab‚àŠÇ—
+// æ–°ã—ã„ã‚¨ãƒ³ã‚¸ãƒ³ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚¯ãƒ©ã‚¹
+// ã‚¨ãƒ³ã‚¸ãƒ³æ©Ÿèƒ½ã®ç®¡ç†ã€åˆ¶å¾¡ã‚’æ‹…å½“
+// Prefabã‚‚ç®¡ç†
 
 #include "GUI.h"
 #include "LayerSettings.h"
@@ -17,17 +17,17 @@ class AbstractObject;
 
 class EngineFrame
 {
-public: // ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“
+public: // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³
 	static EngineFrame* GetInstance();
 	static void DestroyInstance();
-public: // 4‘åˆ—
+public: // 4å¤§å‡¦ç†
 	void Init();
 	void Update();
 	void Draw(int Layer);
 	void UnInit();
 public: // GUI
 	void DrawGUI();
-public: // PrefabŠÇ—
+public: // Prefabç®¡ç†
 	bool AddPrefab(AbstractObject* prefab);
 	std::vector<AbstractObject*> GetPrefabs() { return prefabs_; }
 	AbstractObject* GetPrefabByName(const std::string& name);

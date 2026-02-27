@@ -1,4 +1,4 @@
-#include "LightComponent.h"
+ï»¿#include "LightComponent.h"
 #include "Object.h"
 #include "Scene.h"
 #include "GUI.h"
@@ -10,14 +10,14 @@ void LightComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
 	_ComponentName = "Light";
 	_Type = ComponentManager::COMPONENT_TYPE::LIGHT;
-	// Scene ‚Ö“o˜^
+	// Scene ã¸ç™»éŒ²
 	if (owner && owner->GetParentScene()) {
 		owner->GetParentScene()->RegisterLight(this);
 	}
 }
 
 void LightComponent::UInit() {
-	// Scene ‚©‚çœ‹
+	// Scene ã‹ã‚‰é™¤å»
 	if (_Parent && _Parent->GetParentScene())
 		_Parent->GetParentScene()->UnregisterLight(this);
 }
@@ -45,7 +45,7 @@ DirectX::XMFLOAT3 LightComponent::GetWorldPosition() const {
 	if (!_Parent) return { 0,0,0 };
 	Transform t = _Parent->GetWorldTransform();
 
-	// ƒIƒtƒZƒbƒg‚ğ‰ñ“]‚É‰‚¶‚Ä“K—p
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å›è»¢ã«å¿œã˜ã¦é©ç”¨
 	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
 		t.rotation.x, t.rotation.y, t.rotation.z
 	);
@@ -104,11 +104,11 @@ void LightComponent::DrawInspector() {
 		ImGui::ColorEdit3("Color", (float*)&m_color);
 		ImGui::DragFloat("Intensity", &m_intensity, 0.01f, 0.0f, 100.0f);
 
-		// ˆÊ’uƒIƒtƒZƒbƒg
-		ImGui::Text(SJ("ˆÊ’uƒIƒtƒZƒbƒg").c_str());
+		// ä½ç½®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+		ImGui::Text(SJ("ä½ç½®ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 		ImGui::DragFloat3("##Offset", (float*)&m_offset, 0.1f);
 
-		ImGui::Text(SJ("‰ñ“]ƒIƒtƒZƒbƒg").c_str());
+		ImGui::Text(SJ("å›è»¢ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 		DirectX::XMFLOAT3 rotOffsetDeg = {
 			DirectX::XMConvertToDegrees(m_rotationOffset.x),
 			DirectX::XMConvertToDegrees(m_rotationOffset.y),
@@ -121,7 +121,7 @@ void LightComponent::DrawInspector() {
 		}
 
 		ImGui::Checkbox("Enabled", &m_enabled);
-		ImGui::Checkbox(SJ("ƒfƒoƒbƒO•`‰æ").c_str(), &m_debugDraw);
+		ImGui::Checkbox(SJ("ãƒ‡ãƒãƒƒã‚°æç”»").c_str(), &m_debugDraw);
 		if (m_type != LightType::Directional) {
 			ImGui::DragFloat("Range", &m_range, 0.1f, 0.1f, 1000.0f);
 		}
@@ -169,7 +169,7 @@ void LightComponent::DrawDirectionalLight() {
 	float iconSize = 0.5f;
 	DirectX::XMFLOAT4 color(m_color.x, m_color.y, m_color.z, 1.0f);
 
-	// ’†S‚©‚ç8•ûŒü‚É’Zü‚ğ•`‰æi‘¾—zƒ}[ƒN•—j
+	// ä¸­å¿ƒã‹ã‚‰8æ–¹å‘ã«çŸ­ç·šã‚’æç”»ï¼ˆå¤ªé™½ãƒãƒ¼ã‚¯é¢¨ï¼‰
 	DirectX::XMFLOAT3 axes[] = {
 		{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0},
 		{0, 0, 1}, {0, 0, -1}, {0.7f, 0.7f, 0}, {-0.7f, -0.7f, 0}
@@ -185,7 +185,7 @@ void LightComponent::DrawDirectionalLight() {
 		LineRenderer::GetInstance()->DrawLine(start, end, color, world, view, proj, 0.02f);
 	}
 
-	// Œõ‚Ì•ûŒü‚ğ¦‚·–îˆó
+	// å…‰ã®æ–¹å‘ã‚’ç¤ºã™çŸ¢å°
 	float arrowLength = 2.0f;
 	DirectX::XMFLOAT3 arrowEnd = {
 		pos.x + dir.x * arrowLength,
@@ -194,7 +194,7 @@ void LightComponent::DrawDirectionalLight() {
 	};
 	LineRenderer::GetInstance()->DrawLine(pos, arrowEnd, color, world, view, proj, 0.05f);
 
-	// –î‚Ìæ’[
+	// çŸ¢ã®å…ˆç«¯
 	DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&dir);
 	DirectX::XMVECTOR upVec = DirectX::XMVectorSet(0, 1, 0, 0);
 	if (fabsf(dir.y) > 0.99f) {
@@ -236,7 +236,7 @@ void LightComponent::DrawPointLight() {
 	int segments = 16;
 	float radius = m_range;
 
-	// XY•½–Ê‚Ì‰~
+	// XYå¹³é¢ã®å††
 	for (int i = 0; i < segments; i++) {
 		float angle1 = DirectX::XM_2PI * i / segments;
 		float angle2 = DirectX::XM_2PI * (i + 1) / segments;
@@ -253,7 +253,7 @@ void LightComponent::DrawPointLight() {
 		LineRenderer::GetInstance()->DrawLine(p1, p2, color, world, view, proj, 0.02f);
 	}
 
-	// XZ•½–Ê‚Ì‰~
+	// XZå¹³é¢ã®å††
 	for (int i = 0; i < segments; i++) {
 		float angle1 = DirectX::XM_2PI * i / segments;
 		float angle2 = DirectX::XM_2PI * (i + 1) / segments;
@@ -270,7 +270,7 @@ void LightComponent::DrawPointLight() {
 		LineRenderer::GetInstance()->DrawLine(p1, p2, color, world, view, proj, 0.02f);
 	}
 
-	// YZ•½–Ê‚Ì‰~
+	// YZå¹³é¢ã®å††
 	for (int i = 0; i < segments; i++) {
 		float angle1 = DirectX::XM_2PI * i / segments;
 		float angle2 = DirectX::XM_2PI * (i + 1) / segments;
@@ -287,7 +287,7 @@ void LightComponent::DrawPointLight() {
 		LineRenderer::GetInstance()->DrawLine(p1, p2, color, world, view, proj, 0.02f);
 	}
 
-	// ’†Sƒ}[ƒJ[i\šü•\¦j
+	// ä¸­å¿ƒãƒãƒ¼ã‚«ãƒ¼ï¼ˆåå­—ç·šè¡¨ç¤ºï¼‰
 	float markerSize = 0.3f;
 	DirectX::XMFLOAT3 axes[] = {
 		{markerSize, 0, 0}, {-markerSize, 0, 0},
@@ -315,41 +315,41 @@ void LightComponent::DrawSpotLight() {
 	DirectX::XMFLOAT3 dir = GetWorldDirection();
 	DirectX::XMFLOAT4 color(m_color.x, m_color.y, m_color.z, 1.0f);
 
-	// ƒXƒ|ƒbƒgƒ‰ƒCƒg‚ÌƒR[ƒ“Œ`ó
+	// ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã®ã‚³ãƒ¼ãƒ³å½¢çŠ¶
 	float outerAngle = DirectX::XMConvertToRadians(m_spotOuterDeg);
 	float innerAngle = DirectX::XMConvertToRadians(m_spotInnerDeg);
 	float outerRadius = m_range * tanf(outerAngle * 0.5f);
 	float innerRadius = m_range * tanf(innerAngle * 0.5f);
 
-	// Œõü‚ÌI“_
+	// å…‰ç·šã®çµ‚ç‚¹
 	DirectX::XMFLOAT3 endPos = {
 		pos.x + dir.x * m_range,
 		pos.y + dir.y * m_range,
 		pos.z + dir.z * m_range
 	};
 
-	// DirectXMath‚ğg—p‚µ‚Ä‚’¼ƒxƒNƒgƒ‹‚ğ³Šm‚ÉŒvZ
+	// DirectXMathã‚’ä½¿ç”¨ã—ã¦å‚ç›´ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£ç¢ºã«è¨ˆç®—
 	DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&dir);
 	DirectX::XMVECTOR upVec = DirectX::XMVectorSet(0, 1, 0, 0);
 
-	// dir‚ª‚Ù‚ÚãŒü‚«‚Ü‚½‚Í‰ºŒü‚«‚Ìê‡A•Ê‚ÌŠî€ƒxƒNƒgƒ‹‚ğg—p
+	// dirãŒã»ã¼ä¸Šå‘ãã¾ãŸã¯ä¸‹å‘ãã®å ´åˆã€åˆ¥ã®åŸºæº–ãƒ™ã‚¯ãƒˆãƒ«ã‚’ä½¿ç”¨
 	if (fabsf(dir.y) > 0.99f) {
 		upVec = DirectX::XMVectorSet(1, 0, 0, 0);
 	}
 
-	// ‰E•ûŒüƒxƒNƒgƒ‹‚ğŒvZ
+	// å³æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—
 	DirectX::XMVECTOR rightVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(upVec, dirVec));
-	// ã•ûŒüƒxƒNƒgƒ‹‚ğÄŒvZi’¼Œğ«‚ğ•ÛØj
+	// ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’å†è¨ˆç®—ï¼ˆç›´äº¤æ€§ã‚’ä¿è¨¼ï¼‰
 	DirectX::XMVECTOR realUpVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(dirVec, rightVec));
 
 	int segments = 16;
 
-	// ŠO‘¤‚ÌƒR[ƒ“‰~
+	// å¤–å´ã®ã‚³ãƒ¼ãƒ³å††
 	for (int i = 0; i < segments; i++) {
 		float angle1 = DirectX::XM_2PI * i / segments;
 		float angle2 = DirectX::XM_2PI * (i + 1) / segments;
 
-		// ‰~üã‚Ì“_‚ğŒvZ
+		// å††å‘¨ä¸Šã®ç‚¹ã‚’è¨ˆç®—
 		DirectX::XMVECTOR offset1 = DirectX::XMVectorAdd(
 			DirectX::XMVectorScale(rightVec, cosf(angle1) * outerRadius),
 			DirectX::XMVectorScale(realUpVec, sinf(angle1) * outerRadius)

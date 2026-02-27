@@ -1046,7 +1046,10 @@ void EngineFrame::StatusBarWindow()
 			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 			ImGui::Separator();
 
-			int CameraNumber = SceneManger::GetInstance()->GetCurrentScene()->GetMainCamera()->GetCameraNumber();
+			int CameraNumber = 0;
+			if (SceneManger::GetInstance() && SceneManger::GetInstance()->GetCurrentScene() && SceneManger::GetInstance()->GetCurrentScene()->GetMainCamera()) {
+				CameraNumber = SceneManger::GetInstance()->GetCurrentScene()->GetMainCamera()->GetCameraNumber();
+			}
 			ImGui::Text(ICON_FA_CAMERA " Camera: %d", CameraNumber);
 
 			ImGui::EndMenuBar();

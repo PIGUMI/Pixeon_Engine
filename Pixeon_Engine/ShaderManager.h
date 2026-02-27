@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -7,7 +7,7 @@
 #include <d3d11.h>
 
 // memo
-// WriteBuffer‚ğ”½Ë‹@”\‚ÅÀ‘•
+// WriteBufferã‚’åå°„æ©Ÿèƒ½ã§å®Ÿè£…
 
 enum class ShaderStage { VS, PS };
 
@@ -32,10 +32,10 @@ public:
 
 	std::vector<std::string> GetShaderList(const std::string& type) const;
 
-	// “ü—ÍƒŒƒCƒAƒEƒg—p‚ÉVSƒoƒCƒgƒR[ƒhæ“¾
+	// å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆç”¨ã«VSãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰å–å¾—
 	bool GetVSBytecode(const std::string& name, const void** ppData, size_t* pSize) const;
 
-	// ‚±‚±‚©‚ç’Ç‰Á: ”½Ë/‰Â•ÏCBŠÇ—
+	// ã“ã“ã‹ã‚‰è¿½åŠ : åå°„/å¯å¤‰CBç®¡ç†
 	struct VariableDesc {
 		std::string name;
 		UINT        offset = 0;
@@ -44,35 +44,35 @@ public:
 	struct CBufferRuntime {
 		std::string                     name;
 		UINT                            bindPoint = 0;  // register(bX)
-		UINT                            size = 0;  // 16‚Ì”{”
+		UINT                            size = 0;  // 16ã®å€æ•°
 		ID3D11Buffer* gpuBuffer = nullptr;
 		std::vector<uint8_t>            cpuData;
 		bool                            dirty = false;
 		std::unordered_map<std::string, VariableDesc> varsByName;
 	};
 	struct ShaderReflectionData {
-		std::vector<CBufferRuntime> cbuffers; // •¡”‘¶İ‚µ‚¤‚é
-		// –¼‘O -> index ‚ÌŒŸõx‰‡
+		std::vector<CBufferRuntime> cbuffers; // è¤‡æ•°å­˜åœ¨ã—ã†ã‚‹
+		// åå‰ -> index ã®æ¤œç´¢æ”¯æ´
 		std::unordered_map<std::string, size_t> cbufIndexByName;
 	};
 
-	// ”½Ëî•ñæ“¾
+	// åå°„æƒ…å ±å–å¾—
 	const ShaderReflectionData* GetReflection(ShaderStage stage, const std::string& shaderName) const;
 
-	// •Ï”–¼‚ÅƒZƒbƒgi‘¶İ‚µ‚½ê‡‚Ì‚İ‘‚«‚Şj
+	// å¤‰æ•°åã§ã‚»ãƒƒãƒˆï¼ˆå­˜åœ¨ã—ãŸå ´åˆã®ã¿æ›¸ãè¾¼ã‚€ï¼‰
 	bool SetCBufferVariable(ShaderStage stage,
 		const std::string& shaderName,
 		const std::string& cbName,
 		const std::string& varName,
 		const void* data, UINT size);
 
-	// cbuffer‘S‘Ì‚ğ‘‚«‚İiƒTƒCƒYˆê’v‚É—LŒøj
+	// cbufferå…¨ä½“ã‚’æ›¸ãè¾¼ã¿ï¼ˆã‚µã‚¤ã‚ºä¸€è‡´æ™‚ã«æœ‰åŠ¹ï¼‰
 	bool SetCBufferRaw(ShaderStage stage,
 		const std::string& shaderName,
 		const std::string& cbName,
 		const void* data, UINT size);
 
-	// •ÏX‚Ì“ü‚Á‚½cbuffer‚ğ‚·‚×‚ÄUpdateSubresource‚µA“KØ‚ÈBindPoint‚ÉƒoƒCƒ“ƒh
+	// å¤‰æ›´ã®å…¥ã£ãŸcbufferã‚’ã™ã¹ã¦UpdateSubresourceã—ã€é©åˆ‡ãªBindPointã«ãƒã‚¤ãƒ³ãƒ‰
 	bool CommitAndBind(ShaderStage stage, const std::string& shaderName);
 
 private:
@@ -82,7 +82,7 @@ private:
 	bool CompileHLSL(const std::string& hlslPath, const std::string& entry, const std::string& target, const std::string& csoPath);
 	bool LoadCSO(const std::string& csoPath, const std::string& type, const std::string& name);
 
-	// ”½Ë‚ÌÀ‘Ì
+	// åå°„ã®å®Ÿä½“
 	bool ReflectShader(ShaderStage stage, const std::string& shaderName, const void* bytecode, size_t size);
 
 	ID3D11Device* m_device = nullptr;
@@ -90,14 +90,14 @@ private:
 	std::unordered_map<std::string, ID3D11VertexShader*> m_vsShaders;
 	std::unordered_map<std::string, ID3D11PixelShader*>  m_psShaders;
 
-	// ’è”ƒoƒbƒtƒ@i]—ˆ‚ÌŒÅ’èƒL[”Åj
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ï¼ˆå¾“æ¥ã®å›ºå®šã‚­ãƒ¼ç‰ˆï¼‰
 	std::unordered_map<std::string, std::vector<ID3D11Buffer*>> m_constantBuffers;
 
-	// VS/PSƒoƒCƒgƒR[ƒh•Ûi“ü—ÍƒŒƒCƒAƒEƒgE”½Ë‚Ég—pj
+	// VS/PSãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ä¿æŒï¼ˆå…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆãƒ»åå°„ã«ä½¿ç”¨ï¼‰
 	std::unordered_map<std::string, std::vector<char>> m_vsBytecodes;
 	std::unordered_map<std::string, std::vector<char>> m_psBytecodes;
 
-	// ”½Ëƒf[ƒ^
+	// åå°„ãƒ‡ãƒ¼ã‚¿
 	std::unordered_map<std::string, ShaderReflectionData> m_vsRef;
 	std::unordered_map<std::string, ShaderReflectionData> m_psRef;
 

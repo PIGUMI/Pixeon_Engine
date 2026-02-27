@@ -164,9 +164,6 @@
     <ClCompile Include="AnimationComponent.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
     </ClCompile>
-    <ClCompile Include="ModelRender.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
-    </ClCompile>
     <ClCompile Include="RigidBody.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClCompile>
@@ -236,9 +233,6 @@
     <ClCompile Include="IScript.cpp">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClCompile>
-    <ClCompile Include="LightComponent.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Component\Other</Filter>
-    </ClCompile>
     <ClCompile Include="Builder.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
@@ -271,6 +265,12 @@
     </ClCompile>
     <ClCompile Include="ChatWindow.cpp">
       <Filter>ソース ファイル\4_IZANAGI</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelRender.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -376,9 +376,6 @@
     <ClInclude Include="AnimationComponent.h">
       <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
     </ClInclude>
-    <ClInclude Include="ModelRender.h">
-      <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
-    </ClInclude>
     <ClInclude Include="RigidBody.h">
       <Filter>ソース ファイル\1_MainFrame\Component\physics</Filter>
     </ClInclude>
@@ -442,9 +439,6 @@
     <ClInclude Include="IScript.h">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClInclude>
-    <ClInclude Include="LightComponent.h">
-      <Filter>ソース ファイル\1_MainFrame\Component\Other</Filter>
-    </ClInclude>
     <ClInclude Include="Builder.h">
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
@@ -486,6 +480,12 @@
     </ClInclude>
     <ClInclude Include="IconsFontAwesome5.h">
       <Filter>ソース ファイル\1_MainFrame\GUI\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRender.h">
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="LightComponent.h">
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

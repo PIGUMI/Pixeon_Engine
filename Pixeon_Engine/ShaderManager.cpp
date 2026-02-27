@@ -1,4 +1,4 @@
-#include <d3d11shader.h>
+ï»¿#include <d3d11shader.h>
 #include "ShaderManager.h"
 #include "SettingManager.h"
 #include <fstream>
@@ -95,7 +95,7 @@ bool ShaderManager::CreateHLSLTemplate(const std::string& shaderName, const std:
 			"    float4 color : COLOR0;\n"
 			"};\n"
 			"float4 main(PS_INPUT input) : SV_Target {\n"
-			"    // ’¸“_F‚ÆMaterialF‚ÌæZ—á\n"
+			"    // é ‚ç‚¹è‰²ã¨Materialè‰²ã®ä¹—ç®—ä¾‹\n"
 			"    return input.color * LineColor;\n"
 			"}\n";
 	}
@@ -171,7 +171,7 @@ bool ShaderManager::LoadCSO(const std::string& csoPath, const std::string& type,
 		hr = m_device->CreateVertexShader(buffer.data(), size, nullptr, &vs);
 		if (SUCCEEDED(hr)) {
 			m_vsShaders[name] = vs;
-			m_vsBytecodes[name] = buffer; // ƒoƒCƒgƒR[ƒh•Û
+			m_vsBytecodes[name] = buffer; // ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ä¿æŒ
 			ReflectShader(ShaderStage::VS, name, buffer.data(), buffer.size());
 		}
 	}
@@ -262,7 +262,7 @@ bool ShaderManager::ReflectShader(ShaderStage stage, const std::string& shaderNa
 
 	ShaderReflectionData refData;
 
-	// cbuffer‚ÆBindPoint‚Ì‘Î‰‚ğE‚¤‚½‚ß‚ÉAƒŠƒ\[ƒXƒoƒCƒ“ƒfƒBƒ“ƒO‚©‚çŒŸõ‚·‚é
+	// cbufferã¨BindPointã®å¯¾å¿œã‚’æ‹¾ã†ãŸã‚ã«ã€ãƒªã‚½ãƒ¼ã‚¹ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‹ã‚‰æ¤œç´¢ã™ã‚‹
 	std::unordered_map<std::string, UINT> bindPointByCBufferName;
 	for (UINT r = 0; r < sdesc.BoundResources; ++r) {
 		D3D11_SHADER_INPUT_BIND_DESC bindDesc = {};
@@ -283,7 +283,7 @@ bool ShaderManager::ReflectShader(ShaderStage stage, const std::string& shaderNa
 		auto itBP = bindPointByCBufferName.find(runtime.name);
 		runtime.bindPoint = (itBP != bindPointByCBufferName.end()) ? itBP->second : 0;
 
-		// •Ï”
+		// å¤‰æ•°
 		for (UINT v = 0; v < cbdesc.Variables; ++v) {
 			ID3D11ShaderReflectionVariable* var = cb->GetVariableByIndex(v);
 			D3D11_SHADER_VARIABLE_DESC vdesc = {};
@@ -296,7 +296,7 @@ bool ShaderManager::ReflectShader(ShaderStage stage, const std::string& shaderNa
 			runtime.varsByName[vd.name] = vd;
 		}
 
-		// GPUƒoƒbƒtƒ@ì¬
+		// GPUãƒãƒƒãƒ•ã‚¡ä½œæˆ
 		D3D11_BUFFER_DESC bd = {};
 		bd.ByteWidth = runtime.size;
 		bd.Usage = D3D11_USAGE_DEFAULT;
@@ -314,7 +314,7 @@ bool ShaderManager::ReflectShader(ShaderStage stage, const std::string& shaderNa
 	}
 
 	if (stage == ShaderStage::VS) {
-		// Šù‘¶‚ª‚ ‚ê‚ÎGPUƒoƒbƒtƒ@‰ğ•ú
+		// æ—¢å­˜ãŒã‚ã‚Œã°GPUãƒãƒƒãƒ•ã‚¡è§£æ”¾
 		auto itOld = m_vsRef.find(shaderName);
 		if (itOld != m_vsRef.end()) {
 			for (auto& cb : itOld->second.cbuffers) if (cb.gpuBuffer) cb.gpuBuffer->Release();
@@ -353,7 +353,7 @@ bool ShaderManager::SetCBufferVariable(ShaderStage stage, const std::string& sha
 	auto itCB = ref->cbufIndexByName.find(cbName);
 	if (itCB == ref->cbufIndexByName.end()) return false;
 
-	// const_cast‚ÅXVi–{—ˆ‚ÍmutableŠÇ—‚ğ•ª‚¯‚éİŒv‚ªãY—íj
+	// const_castã§æ›´æ–°ï¼ˆæœ¬æ¥ã¯mutableç®¡ç†ã‚’åˆ†ã‘ã‚‹è¨­è¨ˆãŒç¶ºéº—ï¼‰
 	auto& refMap = (stage == ShaderStage::VS) ? m_vsRef : m_psRef;
 	auto& runtime = refMap[shaderName].cbuffers[itCB->second];
 
@@ -404,7 +404,7 @@ bool ShaderManager::CommitAndBind(ShaderStage stage, const std::string& shaderNa
 			ctx->UpdateSubresource(cb.gpuBuffer, 0, nullptr, cb.cpuData.data(), 0, 0);
 			cb.dirty = false;
 		}
-		// ƒoƒCƒ“ƒhibindPoint‚Éj
+		// ãƒã‚¤ãƒ³ãƒ‰ï¼ˆbindPointã«ï¼‰
 		if (stage == ShaderStage::VS) {
 			ctx->VSSetConstantBuffers(cb.bindPoint, 1, &cb.gpuBuffer);
 		}

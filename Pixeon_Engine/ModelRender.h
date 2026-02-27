@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
@@ -77,19 +77,19 @@ public:
 
 	std::shared_ptr<ModelSharedResource> GetModel() const { return m_model; }
 
-	// ƒ{[ƒ“”‚ğæ“¾
+	// ãƒœãƒ¼ãƒ³æ•°ã‚’å–å¾—
 	size_t GetBoneCount() const { return m_model ? m_model->bones.size() : 0; }
 
-	// ƒ{[ƒ“–¼‚©‚çƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	// ãƒœãƒ¼ãƒ³åã‹ã‚‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	int GetBoneIndexByName(const std::string& boneName) const;
 
-	// ƒCƒ“ƒfƒbƒNƒX‚©‚çƒ{[ƒ“–¼‚ğæ“¾
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰ãƒœãƒ¼ãƒ³åã‚’å–å¾—
 	std::string GetBoneNameByIndex(int boneIndex) const;
 
-	// ƒ{[ƒ“‚Ìƒ[ƒ‹ƒhs—ñ‚ğæ“¾
+	// ãƒœãƒ¼ãƒ³ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’å–å¾—
 	DirectX::XMMATRIX GetBoneWorldMatrix(int boneIndex) const;
 
-	// ƒ{[ƒ“‚Ìƒ[ƒ‹ƒhˆÊ’u‚ğæ“¾
+	// ãƒœãƒ¼ãƒ³ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®ã‚’å–å¾—
 	DirectX::XMFLOAT3 GetBoneWorldPosition(int boneIndex) const;
 
 	DirectX::XMFLOAT4 GetBoneWorldRotationQuaternion(int boneIndex) const;
@@ -102,13 +102,13 @@ public:
 	DirectX::XMFLOAT3 GetBoneLocalRotation(int boneIndex) const;
 	DirectX::XMFLOAT3 GetBoneLocalRotationDegrees(int boneIndex) const;
 
-	// ‚·‚×‚Ä‚Ìƒ{[ƒ“î•ñ‚ğæ“¾
+	// ã™ã¹ã¦ã®ãƒœãƒ¼ãƒ³æƒ…å ±ã‚’å–å¾—
 	const std::vector<Bone>* GetBones() const { return m_model ? &m_model->bones : nullptr; }
 
-	// ƒ{[ƒ“‚ÌeƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	// ãƒœãƒ¼ãƒ³ã®è¦ªã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	int GetBoneParentIndex(int boneIndex) const;
 
-	// ƒ{[ƒ“‚Ìqƒ{[ƒ“ƒŠƒXƒg‚ğæ“¾
+	// ãƒœãƒ¼ãƒ³ã®å­ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆã‚’å–å¾—
 	std::vector<int> GetBoneChildren(int boneIndex) const;
 
 private:
@@ -117,6 +117,11 @@ private:
 		DirectX::XMMATRIX View;
 		DirectX::XMMATRIX Proj;
 		DirectX::XMFLOAT4 BaseColor;
+	};
+
+	struct CameraCBData {
+		DirectX::XMFLOAT3 CameraPos;
+		float _pad;
 	};
 	struct MaterialRuntime {
 		std::string                          texName;
@@ -160,6 +165,7 @@ private:
 	DirectX::XMFLOAT4 m_color{ 1,1,1,1 };
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>        m_cb;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>        m_cameraCb;
 
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>  m_vs;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>   m_ps;
@@ -172,7 +178,7 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  s_whiteTexSRV;
 	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  s_magentaTexSRV;
 
-	// ƒ‰ƒXƒ^ƒ‰ƒCƒU[ƒXƒe[ƒg
+	// ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆ
 	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>     s_rasterizerCullBack;
 	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>     s_rasterizerCullFront;
 	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>     s_rasterizerCullNone;
@@ -190,15 +196,15 @@ private:
 	DirectX::XMFLOAT3 m_globalScale{ 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 m_globalRotation{ 0.0f, 0.0f, 0.0f };
 
-	// ƒ{[ƒ“•\¦—p‚Ìó‘ÔŠÇ—
+	// ãƒœãƒ¼ãƒ³è¡¨ç¤ºç”¨ã®çŠ¶æ…‹ç®¡ç†
 	bool m_showBoneHierarchy = false;
-	std::unordered_map<int, bool> m_boneTreeOpenState;  // ƒ{[ƒ“ƒcƒŠ[‚ÌŠJ•Âó‘Ô
-	int m_selectedBoneIndex = -1;  // ‘I‘ğ’†‚Ìƒ{[ƒ“
-	char m_boneFilterBuffer[128] = "";  // ƒ{[ƒ“ƒtƒBƒ‹ƒ^—pƒoƒbƒtƒ@
+	std::unordered_map<int, bool> m_boneTreeOpenState;  // ãƒœãƒ¼ãƒ³ãƒ„ãƒªãƒ¼ã®é–‹é–‰çŠ¶æ…‹
+	int m_selectedBoneIndex = -1;  // é¸æŠä¸­ã®ãƒœãƒ¼ãƒ³
+	char m_boneFilterBuffer[128] = "";  // ãƒœãƒ¼ãƒ³ãƒ•ã‚£ãƒ«ã‚¿ç”¨ãƒãƒƒãƒ•ã‚¡
 
-	// ƒ{[ƒ“ŠK‘w•\¦‚ÌÄ‹AŠÖ”
+	// ãƒœãƒ¼ãƒ³éšå±¤è¡¨ç¤ºã®å†å¸°é–¢æ•°
 	void DrawBoneHierarchyRecursive(int boneIndex, int depth = 0);
 
-	// ƒ{[ƒ“î•ñ‚ÌÚ×•\¦
+	// ãƒœãƒ¼ãƒ³æƒ…å ±ã®è©³ç´°è¡¨ç¤º
 	void DrawBoneDetails(int boneIndex);
 };

@@ -30,6 +30,14 @@
 #define SAFE_DELETE_ARRAY(p)	do{if(p){delete[] p; p = nullptr;}}while(0)
 #define SAFE_RELEASE(p)			do{if(p){p->Release(); p = nullptr;}}while(0)
 
+enum CullMode
+{
+	CULL_NONE,
+	CULL_FRONT,
+	CULL_BACK,
+	CULL_MAX
+};
+
 enum BlendMode
 {
 	BLEND_NONE,
@@ -121,13 +129,13 @@ public:
 	void EndDraw();
 
 	void OnResize(UINT width, UINT height);
-	ID3D11Device* GetDevice() { return g_pDevice; }
-	ID3D11DeviceContext* GetContext() { return g_pContext; }
-	IDXGISwapChain* GetSwapChain() { return g_pSwapChain; }
+	ID3D11Device* GetDevice() { return g_pDevice.Get(); }
+	ID3D11DeviceContext* GetContext() { return g_pContext.Get(); }
+	IDXGISwapChain* GetSwapChain() { return g_pSwapChain.Get(); }
 	RenderTarget* GetDefaultRTV() { return g_pRTV; }
 	DepthStencil* GetDefaultDSV() { return g_pDSV; }
 	void SetRenderTargets(UINT num, RenderTarget** ppViews, DepthStencil* pView);
-	void SetCullingMode(D3D11_CULL_MODE cull);
+	void SetCullingMode(CullMode cull);
 	void SetBlendMode(BlendMode blend);
 	void SetSamplerState(SamplerState state);
 	ID3D11Buffer* CreateVertexBuffer(void* vtxData, UINT vtxNum);
@@ -142,15 +150,15 @@ public:
 private:
 	static DirectX11* instance;
 
-	ID3D11Device* g_pDevice;
-	ID3D11DeviceContext* g_pContext;
-	IDXGISwapChain* g_pSwapChain;
+	Microsoft::WRL::ComPtr<ID3D11Device> g_pDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> g_pContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> g_pSwapChain;
 	RenderTarget* g_pRTV;
 	DepthStencil* g_pDSV;
-	ID3D11RasterizerState* g_pRasterizerState[3];
-	ID3D11BlendState* g_pBlendState[BLEND_MAX];
-	ID3D11SamplerState* g_pSamplerState[SAMPLER_MAX];
-	ID3D11Debug* g_Debug;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> g_pRasterizerState[CULL_MAX];
+	Microsoft::WRL::ComPtr<ID3D11BlendState> g_pBlendState[BLEND_MAX];
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> g_pSamplerState[SAMPLER_MAX];
+	Microsoft::WRL::ComPtr<ID3D11Debug> g_Debug;
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> _hdrTexture;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _hdrRTV;

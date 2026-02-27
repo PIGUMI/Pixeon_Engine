@@ -6,7 +6,6 @@ cbuffer ModelCB : register(b0)
     float4 gBaseColor;
 };
 
-// 新規追加：ライトビュープロジェクション
 cbuffer ShadowCB : register(b3)
 {
     matrix gLightViewProj;
@@ -37,10 +36,16 @@ cbuffer LightCountCB : register(b2)
     float3 _padLC;
 };
 
+cbuffer CameraCB : register(b4)
+{
+    float3 gCameraPos;
+    float _padCam;
+};
+
 Texture2D gBaseTex : register(t0);
-Texture2D gShadowMap : register(t1); // 新規追加
+Texture2D gShadowMap : register(t1);
 SamplerState gLinear : register(s0);
-SamplerComparisonState gShadowSampler : register(s1); // 新規追加
+SamplerComparisonState gShadowSampler : register(s1);
 
 struct PS_INPUT
 {
@@ -67,30 +72,26 @@ float SpotFactor(float3 L, float3 dir, float innerCos, float outerCos)
     return saturate(t);
 }
 
-// シャドウ計算関数
 float CalculateShadow(float3 worldPos)
 {
-    // ライト空間に変換
     float4 lightSpacePos = mul(float4(worldPos, 1.0f), gLightViewProj);
     
-    // 透視除算
     lightSpacePos.xyz /= lightSpacePos.w;
     
-    // NDC空間 [-1, 1] からテクスチャ座標 [0, 1] に変換
     float2 shadowTexCoord;
     shadowTexCoord.x = lightSpacePos.x * 0.5f + 0.5f;
     shadowTexCoord.y = -lightSpacePos.y * 0.5f + 0.5f;
     
-    // 範囲外チェック
+
     if (shadowTexCoord.x < 0.0f || shadowTexCoord.x > 1.0f ||
         shadowTexCoord.y < 0.0f || shadowTexCoord.y > 1.0f)
         return 1.0f;
     
     float currentDepth = lightSpacePos.z;
     
-    // PCF (Percentage Closer Filtering) でソフトシャドウ
+  
     float shadow = 0.0f;
-    float bias = 0.001f; // 0.005f から 0.001f に変更（より小さく）
+    float bias = 0.001f;
     
     [unroll]
     for (int x = -1; x <= 1; ++x)
@@ -98,11 +99,11 @@ float CalculateShadow(float3 worldPos)
         [unroll]
         for (int y = -1; y <= 1; ++y)
         {
-            float2 offset = float2(x, y) * (1.0f / 2048.0f);
+            float2 offset = float2(x, y) * (1.0f / 4096.0f);
             shadow += gShadowMap.SampleCmpLevelZero(
                 gShadowSampler,
                 shadowTexCoord + offset,
-                currentDepth - bias // バイアスを適用
+                currentDepth - bias
             );
         }
     }
@@ -111,7 +112,7 @@ float CalculateShadow(float3 worldPos)
     return shadow;
 }
 
-float3 ApplyLight(LightGPU l, float3 P, float3 N, float shadow)
+float3 ApplyLight(LightGPU l, float3 P, float3 N, float3 V, float shadow)
 {
     if (l.enabled < 0.5)
         return 0;
@@ -122,7 +123,12 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N, float shadow)
     {
         float3 L = -normalize(l.direction);
         float ndl = saturate(dot(N, L));
-        result = l.color * (ndl * l.intensity * shadow); // 影を適用
+        
+        // Blinn-Phong スペキュラー
+        float3 H = normalize(L + V);
+        float spec = pow(saturate(dot(N, H)), 32.0f) * 0.5f;
+        
+        result = l.color * l.intensity * shadow * (ndl + spec);
     }
     else
     {
@@ -146,7 +152,11 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N, float shadow)
                 return 0;
         }
         
-        result = l.color * (ndl * l.intensity * att);
+        // Blinn-Phong スペキュラー
+        float3 H = normalize(L + V);
+        float spec = pow(saturate(dot(N, H)), 32.0f) * 0.5f;
+        
+        result = l.color * l.intensity * att * (ndl + spec);
     }
     
     return result;
@@ -158,20 +168,21 @@ float4 main(PS_INPUT i) : SV_TARGET
     float3 N = normalize(i.normal);
     float3 P = i.worldPos;
 
-    // 影の計算
     float shadow = CalculateShadow(P);
+
+    float3 V = normalize(gCameraPos - P);
 
     float3 lighting = 0;
     [unroll]
     for (int li = 0; li < gLightCount; ++li)
     {
-        // ディレクショナルライトの場合のみ影を適用
         float shadowFactor = (gLights[li].type == 0) ? shadow : 1.0f;
-        lighting += ApplyLight(gLights[li], P, N, shadowFactor);
+        lighting += ApplyLight(gLights[li], P, N, V, shadowFactor);
     }
 
-    float3 ambient = 0.1 * gBaseColor.rgb;
-    float3 color = (ambient + lighting) * texCol.rgb * gBaseColor.rgb;
+    float3 baseColor = texCol.rgb * gBaseColor.rgb;
+    float3 ambient = 0.1 * baseColor;
+    float3 color = ambient + lighting * baseColor;
     
     return float4(color, texCol.a * gBaseColor.a);
 }

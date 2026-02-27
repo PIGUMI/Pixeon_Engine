@@ -1,4 +1,4 @@
-#include "EngineFrame.h"
+ï»¿#include "EngineFrame.h"
 #include "MainFrame.h"
 #include "SettingManager.h"
 
@@ -106,7 +106,7 @@ bool EngineFrame::AddPrefab(AbstractObject* prefab)
 	}
 	catch (...)
 	{
-		MessageBox(nullptr, "Prefab‚Ì’Ç‰Á‚É¸”s‚µ‚Ü‚µ‚½", "Error", MB_OK);
+		MessageBox(nullptr, "Prefabã®è¿½åŠ ã«å¤±æ•—ã—ã¾ã—ãŸ", "Error", MB_OK);
 		return false;
 	}
 }
@@ -124,7 +124,7 @@ AbstractObject* EngineFrame::GetPrefabByName(const std::string& name)
 	}
 	catch (...)
 	{
-		MessageBox(nullptr, "Prefab‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½", "Error", MB_OK);
+		MessageBox(nullptr, "Prefabã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸ", "Error", MB_OK);
 		return nullptr;
 	}
 }
@@ -139,7 +139,7 @@ void EngineFrame::RemovePrefab(AbstractObject* ptr)
 	}
 	catch (...)
 	{
-		MessageBox(nullptr, "Prefab‚Ìíœ‚É¸”s‚µ‚Ü‚µ‚½", "Error", MB_OK);
+		MessageBox(nullptr, "Prefabã®å‰Šé™¤ã«å¤±æ•—ã—ã¾ã—ãŸ", "Error", MB_OK);
 	}
 }
 
@@ -230,7 +230,7 @@ void EngineFrame::SavePrefabs()
 		outFile.close();
 	}
 	else {
-		MessageBox(nullptr, ("Prefabƒtƒ@ƒCƒ‹‚Ì•Û‘¶‚É¸”s:   " + File).c_str(), "Error", MB_OK);
+		MessageBox(nullptr, ("Prefabãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜ã«å¤±æ•—:   " + File).c_str(), "Error", MB_OK);
 	}
 }
 
@@ -249,7 +249,7 @@ void EngineFrame::LoadPrefabs()
 		inFile.close();
 
 		if (!sceneData.contains("Objects")) {
-			MessageBox(nullptr, "Prefabƒtƒ@ƒCƒ‹‚ª•s³‚Å‚·(Objects ‚ªŠÜ‚Ü‚ê‚Ü‚¹‚ñ)", "Error", MB_OK);
+			MessageBox(nullptr, "Prefabãƒ•ã‚¡ã‚¤ãƒ«ãŒä¸æ­£ã§ã™(Objects ãŒå«ã¾ã‚Œã¾ã›ã‚“)", "Error", MB_OK);
 			return;
 		}
 
@@ -315,11 +315,11 @@ void EngineFrame::LoadPrefabs()
 		}
 	}
 	catch (const std::exception& e) {
-		MessageBox(nullptr, ("Prefab“Ç‚İ‚İƒGƒ‰[:   " + std::string(e.what())).c_str(), "Error", MB_OK);
+		MessageBox(nullptr, ("Prefabèª­ã¿è¾¼ã¿ã‚¨ãƒ©ãƒ¼:   " + std::string(e.what())).c_str(), "Error", MB_OK);
 		inFile.close();
 	}
 	catch (...) {
-		MessageBox(nullptr, "Prefab“Ç‚İ‚İ’†‚É•s–¾‚ÈƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½", "Error", MB_OK);
+		MessageBox(nullptr, "Prefabèª­ã¿è¾¼ã¿ä¸­ã«ä¸æ˜ãªã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ", "Error", MB_OK);
 		inFile.close();
 	}
 }

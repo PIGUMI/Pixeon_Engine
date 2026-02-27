@@ -42,7 +42,6 @@ HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
 	sd.Windowed = fullScreen ? FALSE : TRUE;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	// ドライバの種類
 	D3D_DRIVER_TYPE driverTypes[] = {
 		D3D_DRIVER_TYPE_HARDWARE,
 		D3D_DRIVER_TYPE_WARP,
@@ -77,10 +76,10 @@ HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
 			numFeatureLevels,
 			D3D11_SDK_VERSION,
 			&sd,
-			&g_pSwapChain,
-			&g_pDevice,
+			g_pSwapChain.GetAddressOf(),
+			g_pDevice.GetAddressOf(),
 			&featureLevel,
-			&g_pContext);
+			g_pContext.GetAddressOf());
 		if (SUCCEEDED(result)) {
 			break;
 		}
@@ -103,13 +102,13 @@ HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
 	};
 	rasterizer.FillMode = D3D11_FILL_SOLID;
 	rasterizer.FrontCounterClockwise = false;
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < CULL_MAX; ++i)
 	{
 		rasterizer.CullMode = cull[i];
-		result = g_pDevice->CreateRasterizerState(&rasterizer, &g_pRasterizerState[i]);
+		result = g_pDevice->CreateRasterizerState(&rasterizer, g_pRasterizerState[i].GetAddressOf());
 		if (FAILED(result)) { return result; }
 	}
-	SetCullingMode(D3D11_CULL_BACK);
+	SetCullingMode(CULL_BACK);
 
 	D3D11_BLEND_DESC blendDesc = {};
 	blendDesc.AlphaToCoverageEnable = FALSE;
@@ -132,7 +131,7 @@ HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
 	{
 		blendDesc.RenderTarget[0].SrcBlend = blend[i][0];
 		blendDesc.RenderTarget[0].DestBlend = blend[i][1];
-		result = g_pDevice->CreateBlendState(&blendDesc, &g_pBlendState[i]);
+		result = g_pDevice->CreateBlendState(&blendDesc, g_pBlendState[i].GetAddressOf());
 		if (FAILED(result)) { return result; }
 	}
 	SetBlendMode(BLEND_ALPHA);
@@ -148,12 +147,12 @@ HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
 	for (int i = 0; i < SAMPLER_MAX; ++i)
 	{
 		samplerDesc.Filter = filter[i];
-		result = g_pDevice->CreateSamplerState(&samplerDesc, &g_pSamplerState[i]);
+		result = g_pDevice->CreateSamplerState(&samplerDesc, g_pSamplerState[i].GetAddressOf());
 		if (FAILED(result)) { return result; }
 	}
 	SetSamplerState(SAMPLER_LINEAR);
 
-	g_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&g_Debug));
+	g_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(g_Debug.GetAddressOf()));
 
 	return S_OK;
 }
@@ -162,7 +161,6 @@ void DirectX11::InitializeHDRPipeline(UINT width, UINT height)
 {
 	HRESULT hr;
 
-	// HDRテクスチャ作成
 	D3D11_TEXTURE2D_DESC hdrTexDesc = {};
 	hdrTexDesc.Width = width;
 	hdrTexDesc.Height = height;
@@ -194,7 +192,6 @@ void DirectX11::InitializeHDRPipeline(UINT width, UINT height)
 		return;
 	}
 
-	// トーンマッピング用定数バッファ作成
 	D3D11_BUFFER_DESC cbDesc = {};
 	cbDesc.Usage = D3D11_USAGE_DEFAULT;
 	cbDesc.ByteWidth = sizeof(TonemapParams);
@@ -223,8 +220,6 @@ void DirectX11::ApplyToneMappingPass()
 	g_pContext->UpdateSubresource(_tonemapCB.Get(), 0, nullptr, &params, 0, 0);
 	g_pContext->PSSetConstantBuffers(0, 1, _tonemapCB.GetAddressOf());
 
-	// トーンマッピングシェーダー設定
-	// ※シェーダーはShaderManagerから取得する想定
 	ShaderManager* sm = ShaderManager::GetInstance();
 	ID3D11VertexShader* vs = sm->GetVertexShader("VS_Fullscreen");
 	ID3D11PixelShader* ps = sm->GetPixelShader("PS_Tonemap");
@@ -232,32 +227,25 @@ void DirectX11::ApplyToneMappingPass()
 	if (vs && ps) {
 		g_pContext->VSSetShader(vs, nullptr, 0);
 		g_pContext->PSSetShader(ps, nullptr, 0);
-		// HDRテクスチャをシェーダーにバインド
+		// HDRテクスチャをピクセルシェーダーにセット
 		g_pContext->PSSetShaderResources(0, 1, _hdrSRV.GetAddressOf());
 
-		// フルスクリーンクアッド描画（ImageUtilsを使用）
-		// この部分は既存のImageUtils::DrawSRVを活用
 	}
 }
 
 void DirectX11::Uninit()
 {
-	SAFE_DELETE(g_pDSV);
-	SAFE_DELETE(g_pRTV);
+	delete g_pDSV;
+	g_pDSV = nullptr;
+	delete g_pRTV;
+	g_pRTV = nullptr;
 
-	for (int i = 0; i < SAMPLER_MAX; ++i)
-		SAFE_RELEASE(g_pSamplerState[i]);
-	for (int i = 0; i < BLEND_MAX; ++i)
-		SAFE_RELEASE(g_pBlendState[i]);
-	for (int i = 0; i < 3; ++i)
-		SAFE_RELEASE(g_pRasterizerState[i]);
+	// ComPtrは自動解放されるため明示的なReleaseは不要
+	// ただしContextのClearStateとSwapChainのフルスクリーン解除は必要
 	if (g_pContext)
 		g_pContext->ClearState();
-	SAFE_RELEASE(g_pContext);
 	if (g_pSwapChain)
 		g_pSwapChain->SetFullscreenState(false, NULL);
-	SAFE_RELEASE(g_pSwapChain);
-	SAFE_RELEASE(g_pDevice);
 }
 
 void DirectX11::BeginDraw()
@@ -275,38 +263,32 @@ void DirectX11::EndDraw()
 void DirectX11::OnResize(UINT width, UINT height) {
 	if (width == 0 || height == 0) return;
 
-	// ImGui:  デバイスオブジェクト無効化
 	ImGui_ImplDX11_InvalidateDeviceObjects();
 
-	// HDRリソース解放
 	_hdrSRV.Reset();
 	_hdrRTV.Reset();
 	_hdrTexture.Reset();
 
-	// 既存のリソース削除
-	SAFE_DELETE(g_pRTV);
-	SAFE_DELETE(g_pDSV);
+	delete g_pRTV;
+	g_pRTV = nullptr;
+	delete g_pDSV;
+	g_pDSV = nullptr;
 
-	// スワップチェーンのリサイズ
 	HRESULT hr = g_pSwapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
 	if (FAILED(hr)) {
 		MessageBox(nullptr, "ResizeBuffers Failed", "Error", MB_OK);
 		return;
 	}
 
-	// 新しいRTV/DSVの生成
 	g_pRTV = new RenderTarget();
 	g_pRTV->CreateFromScreen();
 	g_pDSV = new DepthStencil();
 	g_pDSV->Create(g_pRTV->GetWidth(), g_pRTV->GetHeight(), false);
 
-	// ビューポート再設定
 	SetRenderTargets(1, &g_pRTV, g_pDSV);
 
-	// HDRパイプライン再作成
 	InitializeHDRPipeline(width, height);
 
-	// ImGui: デバイスオブジェクト再生成
 	ImGui_ImplDX11_CreateDeviceObjects();
 }
 
@@ -319,7 +301,6 @@ void DirectX11::SetRenderTargets(UINT num, RenderTarget** ppViews, DepthStencil*
 		rtvs[i] = ppViews[i]->GetView();
 	g_pContext->OMSetRenderTargets(num, rtvs, pView ? pView->GetView() : nullptr);
 
-	// ビューポートの設定
 	D3D11_VIEWPORT vp;
 	vp.TopLeftX = 0.0f;
 	vp.TopLeftY = 0.0f;
@@ -330,42 +311,37 @@ void DirectX11::SetRenderTargets(UINT num, RenderTarget** ppViews, DepthStencil*
 	g_pContext->RSSetViewports(1, &vp);
 }
 
-void DirectX11::SetCullingMode(D3D11_CULL_MODE cull)
+void DirectX11::SetCullingMode(CullMode cull)
 {
-	switch (cull)
-	{
-	case D3D11_CULL_NONE: g_pContext->RSSetState(g_pRasterizerState[0]); break;
-	case D3D11_CULL_FRONT: g_pContext->RSSetState(g_pRasterizerState[1]); break;
-	case D3D11_CULL_BACK: g_pContext->RSSetState(g_pRasterizerState[2]); break;
-	}
+	if (cull < 0 || cull >= CULL_MAX) return;
+	g_pContext->RSSetState(g_pRasterizerState[cull].Get());
 }
 
 void DirectX11::SetBlendMode(BlendMode blend)
 {
 	if (blend < 0 || blend >= BLEND_MAX) return;
 	FLOAT blendFactor[4] = { D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO };
-	g_pContext->OMSetBlendState(g_pBlendState[blend], blendFactor, 0xffffffff);
+	g_pContext->OMSetBlendState(g_pBlendState[blend].Get(), blendFactor, 0xffffffff);
 }
 
 void DirectX11::SetSamplerState(SamplerState state)
 {
 	if (state < 0 || state >= SAMPLER_MAX) return;
-	g_pContext->PSSetSamplers(0, 1, &g_pSamplerState[state]);
+	g_pContext->PSSetSamplers(0, 1, g_pSamplerState[state].GetAddressOf());
 }
 
 ID3D11Buffer* DirectX11::CreateVertexBuffer(void* vtxData, UINT vtxNum)
 {
-	// バッファ情報 設定
 	D3D11_BUFFER_DESC vtxBufDesc;
 	ZeroMemory(&vtxBufDesc, sizeof(vtxBufDesc));
-	vtxBufDesc.ByteWidth = sizeof(Vertex) * vtxNum; // バッファの大きさ
-	vtxBufDesc.Usage = D3D11_USAGE_DEFAULT; // メモリ上での管理方法
-	vtxBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // GPU上での利用方法
-	// バッファ初期データ 設定
+	vtxBufDesc.ByteWidth = sizeof(Vertex) * vtxNum;
+	vtxBufDesc.Usage = D3D11_USAGE_DEFAULT;
+	vtxBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
 	D3D11_SUBRESOURCE_DATA vtxSubResource;
 	ZeroMemory(&vtxSubResource, sizeof(vtxSubResource));
-	vtxSubResource.pSysMem = vtxData; // バッファに流し込むデータ
-	// 作成
+	vtxSubResource.pSysMem = vtxData;
+
 	HRESULT hr;
 	ID3D11Buffer* pVtxBuf;
 	hr = GetDevice()->CreateBuffer(&vtxBufDesc, &vtxSubResource, &pVtxBuf);
@@ -384,8 +360,8 @@ Render::Render()
 
 Render::~Render()
 {
-	SAFE_RELEASE(m_pSRV);
-	SAFE_RELEASE(m_pTex);
+	if (m_pSRV) { m_pSRV->Release(); m_pSRV = nullptr; }
+	if (m_pTex) { m_pTex->Release(); m_pTex = nullptr; }
 }
 
 HRESULT Render::Create(const char* fileName)
@@ -451,14 +427,12 @@ HRESULT Render::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
 {
 	HRESULT hr = E_FAIL;
 
-	// テクスチャ作成
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = pData;
 	data.SysMemPitch = desc.Width * 4;
 	hr = DirectX11::GetInstance()->GetDevice()->CreateTexture2D(&desc, pData ? &data : nullptr, &m_pTex);
 	if (FAILED(hr)) { return hr; }
 
-	// 設定
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	switch (desc.Format)
 	{
@@ -467,7 +441,7 @@ HRESULT Render::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
 	}
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
-	// 生成
+
 	hr = DirectX11::GetInstance()->GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
 	if (SUCCEEDED(hr))
 	{
@@ -486,7 +460,7 @@ RenderTarget::RenderTarget()
 
 RenderTarget::~RenderTarget()
 {
-	SAFE_RELEASE(m_pRTV);
+	if (m_pRTV) { m_pRTV->Release(); m_pRTV = nullptr; }
 }
 
 void RenderTarget::Clear()
@@ -511,12 +485,10 @@ HRESULT RenderTarget::CreateFromScreen()
 {
 	HRESULT hr;
 
-	// バックバッファのポインタを取得
 	ID3D11Texture2D* pBackBuffer = NULL;
 	hr = DirectX11::GetInstance()->GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_pTex);
 	if (FAILED(hr)) { return hr; }
 
-	// バックバッファへのポインタを指定してレンダーターゲットビューを作成
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -539,16 +511,13 @@ ID3D11RenderTargetView* RenderTarget::GetView() const
 
 HRESULT RenderTarget::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
 {
-	// テクスチャリソース作成
 	HRESULT hr = Render::CreateResource(desc, nullptr);
 	if (FAILED(hr)) { return hr; }
 
-	// 設定
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 	rtvDesc.Format = desc.Format;
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-	// 生成
 	return DirectX11::GetInstance()->GetDevice()->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
 }
 
@@ -561,7 +530,7 @@ DepthStencil::DepthStencil()
 
 DepthStencil::~DepthStencil()
 {
-	SAFE_RELEASE(m_pDSV);
+	if (m_pDSV) { m_pDSV->Release(); m_pDSV = nullptr; }
 }
 
 void DepthStencil::Clear()
@@ -583,19 +552,15 @@ ID3D11DepthStencilView* DepthStencil::GetView() const
 
 HRESULT DepthStencil::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
 {
-	// ステンシル使用判定
 	bool useStencil = (desc.Format == DXGI_FORMAT_R24G8_TYPELESS);
 
-	// リソース生成
 	desc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
 	HRESULT hr = Render::CreateResource(desc, nullptr);
 	if (FAILED(hr)) { return hr; }
 
-	// 設定
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = useStencil ? DXGI_FORMAT_D24_UNORM_S8_UINT : DXGI_FORMAT_D32_FLOAT;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-	// 生成
 	return DirectX11::GetInstance()->GetDevice()->CreateDepthStencilView(m_pTex, &dsvDesc, &m_pDSV);
 }

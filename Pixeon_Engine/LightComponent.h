@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 #include<DirectXMath.h>
 
@@ -20,7 +20,7 @@ public:
 	void Draw(int Layer) override;
 	void DrawInspector() override;
 
-	// ƒ‰ƒCƒg‚ÌŠî–{ƒpƒ‰ƒ[ƒ^
+	// ãƒ©ã‚¤ãƒˆã®åŸºæœ¬ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	void SetType(LightType t) { m_type = t; }
 	LightType GetType() const { return m_type; }
 
@@ -50,11 +50,11 @@ public:
 	void SetRotationOffset(const DirectX::XMFLOAT3& rotOffset) { m_rotationOffset = rotOffset; }
 	DirectX::XMFLOAT3 GetRotationOffset() const { return m_rotationOffset; }
 
-	// ŒvZ•â•
+	// è¨ˆç®—è£œåŠ©
 	DirectX::XMFLOAT3 GetWorldPosition() const;
 	DirectX::XMFLOAT3 GetWorldDirection() const;
 
-	// •Û‘¶ / “Ç
+	// ä¿å­˜ / èª­è¾¼
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
@@ -72,5 +72,5 @@ private:
 	bool                m_enabled = true;
 	bool                m_debugDraw = true;
 	DirectX::XMFLOAT3   m_offset{ 0, 0, 0 };
-	DirectX::XMFLOAT3   m_rotationOffset{ 0, 0, 0 };  // š’Ç‰Á: ??“]ƒIƒtƒZƒbƒgiƒ‰ƒWƒAƒ“j
+	DirectX::XMFLOAT3   m_rotationOffset{ 0, 0, 0 };  // â˜…è¿½åŠ : ??è»¢ã‚ªãƒ•ã‚»ãƒƒãƒˆï¼ˆãƒ©ã‚¸ã‚¢ãƒ³ï¼‰
 };
