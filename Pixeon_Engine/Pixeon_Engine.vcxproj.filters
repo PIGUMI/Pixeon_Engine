@@ -81,6 +81,9 @@
     <Filter Include="ソース ファイル\1_MainFrame\Manager">
       <UniqueIdentifier>{e7c5ffb3-dad8-4d73-89f5-e4b021d0524c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\Sys\Rendering">
+      <UniqueIdentifier>{0763985c-db9f-4949-8cde-3876e4cd49b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -112,9 +115,6 @@
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRenderTarget.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="HashUtill.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys\Archive</Filter>
@@ -203,9 +203,6 @@
     <ClCompile Include="EasingGraph.cpp">
       <Filter>ソース ファイル\3_Animator2DEditor\Animator2D</Filter>
     </ClCompile>
-    <ClCompile Include="ImageUtils.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
-    </ClCompile>
     <ClCompile Include="API.cpp">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClCompile>
@@ -272,8 +269,17 @@
     <ClCompile Include="SSAOEffect.cpp">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClCompile>
+    <ClCompile Include="GameRenderTarget.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
+    </ClCompile>
     <ClCompile Include="GBuffer.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageUtils.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="LightingPass.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -312,9 +318,6 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
-    </ClInclude>
-    <ClInclude Include="GameRenderTarget.h">
-      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="Struct.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
@@ -415,9 +418,6 @@
     <ClInclude Include="EasingGraph.h">
       <Filter>ソース ファイル\3_Animator2DEditor\Animator2D</Filter>
     </ClInclude>
-    <ClInclude Include="ImageUtils.h">
-      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
-    </ClInclude>
     <ClInclude Include="API.h">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClInclude>
@@ -493,8 +493,17 @@
     <ClInclude Include="SSAOEffect.h">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
+    <ClInclude Include="GameRenderTarget.h">
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
+    </ClInclude>
     <ClInclude Include="GBuffer.h">
-      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageUtils.h">
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="LightingPass.h">
+      <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

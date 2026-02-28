@@ -169,6 +169,7 @@
     <ClInclude Include="ImageUtils.h" />
     <ClInclude Include="IZANAGI.h" />
     <ClInclude Include="LayerSettings.h" />
+    <ClInclude Include="LightingPass.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GameRenderTarget.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="ImageUtils.cpp" />
     <ClCompile Include="IZANAGI.cpp" />
     <ClCompile Include="LayerSettings.cpp" />
+    <ClCompile Include="LightingPass.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameRenderTarget.cpp" />

@@ -9,8 +9,10 @@
 #include <d3d11.h>
 #include <chrono>
 #include <list>
+#include <vector>
 
 class GameRenderTarget;
+class GBuffer;
 
 enum class SoftWareMode {
 	ENGINE,
@@ -47,6 +49,9 @@ public:
 	void fixedMouseCursor(bool fixedCursor) { _fixedMouseCursorFlag = fixedCursor; }
 	bool isPixelated() const { return _PixelatedFlag; }
 	void setPixelated(bool pixelated) { _PixelatedFlag = pixelated; }
+
+	GBuffer* GetGBuffer(int layerIndex) const;
+
 private:
 	DWORD _lastUpdateTime;
 	bool _updateDraw;
@@ -54,15 +59,19 @@ private:
 	float _deltaTime;
 
 	HWND _wnd;
-	GameRenderTarget* _finalRenderTarget;
+	GameRenderTarget* _finalRenderTarget = nullptr;
 	std::list<GameRenderTarget*> _layerRenderTargets;
+
+	std::vector<GBuffer*> _gBuffers;
 
 	SoftWareMode _softwareMode;
 	EngineConfig _engineConfig;
 
 	bool _fixedMouseCursorFlag = false;
-
 	bool _PixelatedFlag = false;
+
+	void DrawGeometryPass(int layerIndex, GBuffer* gbuffer);
+
 private:
 	MainFrame() = default;
 	~MainFrame() = default;
