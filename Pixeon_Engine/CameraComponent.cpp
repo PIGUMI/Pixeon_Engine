@@ -1,4 +1,4 @@
-#include <fstream>
+ï»¿#include <fstream>
 #include <sstream>
 #include <iostream>
 #include "CameraComponent.h"
@@ -23,7 +23,7 @@ void CameraComponent::Init(AbstractObject* Prt) {
 }
 
 void CameraComponent::EditUpdate() {
-	// eƒIƒuƒWƒFƒNƒg‚ª‚È‚¢ê‡‚ÍƒXƒLƒbƒv
+	// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒãªã„å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—
 	if (!_Parent) return;
 
 	auto trans = _Parent->GetWorldTransform();
@@ -43,7 +43,7 @@ void CameraComponent::EditUpdate() {
 }
 
 void CameraComponent::InGameUpdate() {
-	// eƒIƒuƒWƒFƒNƒg‚ª‚È‚¢ê‡‚ÍƒXƒLƒbƒv
+	// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒãªã„å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—
 	if (!_Parent) return;
 
 	auto trans = _Parent->GetWorldTransform();
@@ -80,13 +80,13 @@ void CameraComponent::DrawCameraVisualization() {
 	DirectX::XMFLOAT3 camPos = GetWorldPosition();
 	DirectX::XMFLOAT3 fixPos = GetWorldFixation();
 
-	// ³‚µ‚¢‘O•ûŒü‚ğŒvZi’‹“_•ûŒüj
+	// æ­£ã—ã„å‰æ–¹å‘ã‚’è¨ˆç®—ï¼ˆæ³¨è¦–ç‚¹æ–¹å‘ï¼‰
 	DirectX::XMFLOAT3 forward;
-	forward.x = fixPos.x - camPos.x;  // C³
-	forward.y = fixPos.y - camPos.y;  // C³
-	forward.z = fixPos.z - camPos.z;  // C³
+	forward.x = fixPos.x - camPos.x;  // ä¿®æ­£
+	forward.y = fixPos.y - camPos.y;  // ä¿®æ­£
+	forward.z = fixPos.z - camPos.z;  // ä¿®æ­£
 
-	// ³‹K‰»
+	// æ­£è¦åŒ–
 	float len = sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
 	if (len > 0.0001f) {
 		forward.x /= len;
@@ -193,13 +193,13 @@ void CameraComponent::DrawFrustum() {
 	DirectX::XMFLOAT3 camPos = GetWorldPosition();
 	DirectX::XMFLOAT3 fixPos = GetWorldFixation();
 
-	// ³‚µ‚¢‘O•ûŒü‚ğŒvZi’‹“_•ûŒüj
+	// æ­£ã—ã„å‰æ–¹å‘ã‚’è¨ˆç®—ï¼ˆæ³¨è¦–ç‚¹æ–¹å‘ï¼‰
 	DirectX::XMFLOAT3 forward;
-	forward.x = fixPos.x - camPos.x;  // C³
-	forward.y = fixPos.y - camPos.y;  // C³
-	forward.z = fixPos.z - camPos.z;  // C³
+	forward.x = fixPos.x - camPos.x;  // ä¿®æ­£
+	forward.y = fixPos.y - camPos.y;  // ä¿®æ­£
+	forward.z = fixPos.z - camPos.z;  // ä¿®æ­£
 
-	// ³‹K‰»
+	// æ­£è¦åŒ–
 	float len = sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
 	if (len > 0.0001f) {
 		forward.x /= len;
@@ -333,7 +333,7 @@ void CameraComponent::DrawInspector() {
 			ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##IsChangeCalculation", &_IsChangeCalculation);
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ƒfƒoƒbƒO•`‰æ").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ãƒ‡ãƒãƒƒã‚°æç”»").c_str());
 			ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##DebugDraw", &_debugDraw);
 
 			ImGui::TableNextRow();
@@ -349,7 +349,7 @@ void CameraComponent::DrawInspector() {
 			}
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("Œ»İ‚ÌƒJƒƒ‰‚ÉØ‚è‘Ö‚¦‚é").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("ç¾åœ¨ã®ã‚«ãƒ¡ãƒ©ã«åˆ‡ã‚Šæ›¿ãˆã‚‹").c_str());
 			ImGui::TableSetColumnIndex(1);
 			if (ImGui::Button("Set Main Camera")) {
 				_Parent->GetParentScene()->SetMainCamera(this);
@@ -390,21 +390,21 @@ DirectX::XMFLOAT3 CameraComponent::GetWorldPosition() const {
 
 	Transform trans = _Parent->GetWorldTransform();
 
-	// eƒIƒuƒWƒFƒNƒg‚Ì‰ñ“]s—ñ‚ğì¬
+	// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å›è»¢è¡Œåˆ—ã‚’ä½œæˆ
 	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
 		trans.rotation.x,
 		trans.rotation.y,
 		trans.rotation.z
 	);
 
-	// ƒIƒtƒZƒbƒg‚ğe‚Ì‰ñ“]‚É‰‚¶‚Ä•ÏŠ·
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è¦ªã®å›è»¢ã«å¿œã˜ã¦å¤‰æ›
 	DirectX::XMVECTOR offsetVec = DirectX::XMLoadFloat3(&_PositionOffset);
 	DirectX::XMVECTOR rotatedOffset = DirectX::XMVector3Transform(offsetVec, rotMat);
 
 	DirectX::XMFLOAT3 rotatedOffsetF3;
 	DirectX::XMStoreFloat3(&rotatedOffsetF3, rotatedOffset);
 
-	// e‚ÌˆÊ’u‚É‰ñ“]Ï‚İƒIƒtƒZƒbƒg‚ğ‰ÁZ
+	// è¦ªã®ä½ç½®ã«å›è»¢æ¸ˆã¿ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’åŠ ç®—
 	DirectX::XMFLOAT3 worldPos;
 	worldPos.x = trans.position.x + rotatedOffsetF3.x;
 	worldPos.y = trans.position.y + rotatedOffsetF3.y;
@@ -418,21 +418,21 @@ DirectX::XMFLOAT3 CameraComponent::GetWorldFixation() const {
 
 	Transform trans = _Parent->GetWorldTransform();
 
-	// eƒIƒuƒWƒFƒNƒg‚Ì‰ñ“]s—ñ‚ğì¬
+	// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å›è»¢è¡Œåˆ—ã‚’ä½œæˆ
 	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(
 		trans.rotation.x,
 		trans.rotation.y,
 		trans.rotation.z
 	);
 
-	// ƒIƒtƒZƒbƒg‚ğe‚Ì‰ñ“]‚É‰‚¶‚Ä•ÏŠ·
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è¦ªã®å›è»¢ã«å¿œã˜ã¦å¤‰æ›
 	DirectX::XMVECTOR offsetVec = DirectX::XMLoadFloat3(&_FixationOffset);
 	DirectX::XMVECTOR rotatedOffset = DirectX::XMVector3Transform(offsetVec, rotMat);
 
 	DirectX::XMFLOAT3 rotatedOffsetF3;
 	DirectX::XMStoreFloat3(&rotatedOffsetF3, rotatedOffset);
 
-	// e‚ÌˆÊ’u‚É‰ñ“]Ï‚İƒIƒtƒZƒbƒg‚ğ‰ÁZ
+	// è¦ªã®ä½ç½®ã«å›è»¢æ¸ˆã¿ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’åŠ ç®—
 	DirectX::XMFLOAT3 worldFix;
 	worldFix.x = trans.position.x + rotatedOffsetF3.x;
 	worldFix.y = trans.position.y + rotatedOffsetF3.y;

@@ -272,6 +272,9 @@
     <ClCompile Include="SSAOEffect.cpp">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -489,6 +492,9 @@
     </ClInclude>
     <ClInclude Include="SSAOEffect.h">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

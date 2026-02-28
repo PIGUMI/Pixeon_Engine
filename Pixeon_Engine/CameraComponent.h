@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 
 class CameraComponent : public AbstractComponent
@@ -25,11 +25,11 @@ public:
 	DirectX::XMFLOAT3 GetRightVector();
 	DirectX::XMFLOAT3 GetUpVector();
 
-	// ƒ[ƒ‹ƒhÀ•W‚Ìæ“¾
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã®å–å¾—
 	DirectX::XMFLOAT3 GetWorldPosition() const;
 	DirectX::XMFLOAT3 GetWorldFixation() const;
 
-	// ƒIƒtƒZƒbƒg’l‚Ìæ“¾Eİ’è
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆå€¤ã®å–å¾—ãƒ»è¨­å®š
 	DirectX::XMFLOAT3 GetPosition() const { return _PositionOffset; }
 	DirectX::XMFLOAT3 GetRotation() const { return _Rotation; }
 	void SetPosition(DirectX::XMFLOAT3 pos) { _PositionOffset = pos; }
@@ -57,7 +57,7 @@ public:
 	void SetDebugDraw(bool draw) { _debugDraw = draw; }
 	bool IsDebugDraw() const { return _debugDraw; }
 
-	// ƒvƒƒWƒFƒNƒVƒ‡ƒ“İ’è—p‚Ì•Ö—˜ƒƒ\ƒbƒhi’Ç‰Áj
+	// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¨­å®šç”¨ã®ä¾¿åˆ©ãƒ¡ã‚½ãƒƒãƒ‰ï¼ˆè¿½åŠ ï¼‰
 	void SetProjectionValues(float fov, float aspect, float nearPlane, float farPlane) {
 		_FOV = fov;
 		_AspectRatio = aspect;
@@ -65,26 +65,26 @@ public:
 		_FarPlane = farPlane;
 	}
 
-	// Transformİ’è—pƒƒ\ƒbƒhi’Ç‰Áj
+	// Transformè¨­å®šç”¨ãƒ¡ã‚½ãƒƒãƒ‰ï¼ˆè¿½åŠ ï¼‰
 	void SetTransform(const Transform& transform) {
 		_PositionOffset = transform.position;
 		_Rotation = transform.rotation;
 	}
 
-	// ƒrƒ…[s—ñXV—pƒƒ\ƒbƒhi’Ç‰Áj
+	// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—æ›´æ–°ç”¨ãƒ¡ã‚½ãƒƒãƒ‰ï¼ˆè¿½åŠ ï¼‰
 	void UpdateViewMatrix() {
-		// •K—v‚É‰‚¶‚Ä“à•”ó‘Ô‚ğXV
-		// Œ»İ‚ÌÀ‘•‚Å‚Í“Á‚É‰½‚à‚·‚é•K—v‚Í‚È‚¢
+		// å¿…è¦ã«å¿œã˜ã¦å†…éƒ¨çŠ¶æ…‹ã‚’æ›´æ–°
+		// ç¾åœ¨ã®å®Ÿè£…ã§ã¯ç‰¹ã«ä½•ã‚‚ã™ã‚‹å¿…è¦ã¯ãªã„
 	}
 
 private:
-	// ƒfƒoƒbƒO•`‰æ—pƒƒ\ƒbƒh
+	// ãƒ‡ãƒãƒƒã‚°æç”»ç”¨ãƒ¡ã‚½ãƒƒãƒ‰
 	void DrawCameraVisualization();
 	void DrawFrustum();
 
-	AbstractObject* _Parent = nullptr;  // ‰Šú‰»‚ğ’Ç‰Á
+	AbstractObject* _Parent = nullptr;  // åˆæœŸåŒ–ã‚’è¿½åŠ 
 	DirectX::XMFLOAT3 _PositionOffset;
-	DirectX::XMFLOAT3 _Rotation = { 0.0f, 0.0f, 0.0f };  // ‰Šú‰»‚ğ’Ç‰Á
+	DirectX::XMFLOAT3 _Rotation = { 0.0f, 0.0f, 0.0f };  // åˆæœŸåŒ–ã‚’è¿½åŠ 
 	DirectX::XMFLOAT3 _FixationOffset;
 	DirectX::XMFLOAT3 _Up;
 	float _FOV;

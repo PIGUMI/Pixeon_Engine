@@ -163,6 +163,7 @@
     <ClInclude Include="EffectComponent.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EngineFrame.h" />
+    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="IconsFontAwesome5.h" />
     <ClInclude Include="ImageUtils.h" />
@@ -234,6 +235,7 @@
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EngineFrame.cpp" />
     <ClCompile Include="EngineFrame_GUI.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="ImageUtils.cpp" />
     <ClCompile Include="IZANAGI.cpp" />

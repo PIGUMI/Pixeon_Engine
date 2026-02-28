@@ -1,11 +1,6 @@
 // =======================================================
-// VS_ModelSkinned.hlsl
-// ƒ{[ƒ“ƒXƒLƒjƒ“ƒO‘Î‰ƒ‚ƒfƒ‹—p’¸“_ƒVƒF[ƒ_
-// “ü—Í—v‘f: POSITION, NORMAL, TANGENT, TEXCOORD, BLENDINDICES, BLENDWEIGHT
-// ’è”ƒoƒbƒtƒ@ b0: World / View / Proj / BaseColor
-// ’è”ƒoƒbƒtƒ@ b1: Bone s—ñ”z—ñifinal = InverseBindPose * CurrentGlobalj
-//   CPU‘¤‚ÅŠù‚É final s—ñ‚ğŒvZ‚µ gBones[i] ‚É“]’u‚¹‚¸Ši”[ ¨ ‚±‚±‚Å“]’u•s—v
-//   ‚à‚µ CPU ‘¤‚Å“]’uÏ‚İ‚ğ“n‚µ‚Ä‚¢‚éê‡‚Í‚»‚Ì‚Ü‚Ü mul ‚µ‚Ä–â‘è‚È‚µ
+// VS_Animator.hlsl
+// ãƒœãƒ¼ãƒ³ã‚¹ã‚­ãƒ‹ãƒ³ã‚°å¯¾å¿œãƒ¢ãƒ‡ãƒ«ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
 // =======================================================
 
 cbuffer CBFrame : register(b0)
@@ -13,10 +8,9 @@ cbuffer CBFrame : register(b0)
     float4x4 gWorld;
     float4x4 gView;
     float4x4 gProj;
-    float4 gBaseColor;
+    float4   gBaseColor;
 };
 
-// 256 –{‚Ü‚Å‘z’èi•K—v‚È‚çk¬ / Šg’£j
 cbuffer CBBones : register(b1)
 {
     float4x4 gBones[256];
@@ -24,29 +18,27 @@ cbuffer CBBones : register(b1)
 
 struct VSInput
 {
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float4 tangent : TANGENT;
-    float2 uv : TEXCOORD0;
-    uint4 boneIndices : BLENDINDICES;
-    float4 boneWeights : BLENDWEIGHT;
+    float3 position     : POSITION;
+    float3 normal       : NORMAL;
+    float4 tangent      : TANGENT;
+    float2 uv           : TEXCOORD0;
+    uint4  boneIndices  : BLENDINDICES;
+    float4 boneWeights  : BLENDWEIGHT;
 };
 
 struct VSOutput
 {
-    float4 svPos : SV_POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD0;
-    float4 worldPos : POSITION0;
-    float4 color : COLOR0;
+    float4 svPos      : SV_POSITION;
+    float3 normal     : NORMAL;       // ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“æ³•ç·š (æ—¢å­˜ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨)
+    float2 uv         : TEXCOORD0;
+    float4 worldPos   : POSITION0;
+    float4 color      : COLOR0;
+    float3 viewNormal : VIEWNORMAL;   // â˜…è¿½åŠ : ãƒ“ãƒ¥ãƒ¼ç©ºé–“æ³•ç·š (GBuffer/SSAOç”¨)
 };
 
 float3x3 InverseTranspose3x3(float4x4 M)
 {
-    // ”ñˆê—lƒXƒP[ƒ‹‚Ì–@ü•â³iGPUƒRƒXƒg‹–—e‚È‚çg—pj
     float3x3 A = (float3x3) M;
-    // s—ñ‚Ì‹t“]’u
-    // ’¼Ú inverse(A) ‚ğŒvZ‚·‚éŠÈˆÕ”Å
     float3 a0 = A[0];
     float3 a1 = A[1];
     float3 a2 = A[2];
@@ -56,7 +48,6 @@ float3x3 InverseTranspose3x3(float4x4 M)
     float3 c2 = cross(a0, a1);
 
     float det = dot(a0, c0);
-    // det ‚ª‹É’[‚É¬‚³‚¢‚Í‚»‚Ì‚Ü‚Üi”j’]–h~j
     if (abs(det) < 1e-8f)
         return A;
 
@@ -66,7 +57,6 @@ float3x3 InverseTranspose3x3(float4x4 M)
     inv[1] = c1 * invDet;
     inv[2] = c2 * invDet;
 
-    // ‹t“]’u‚È‚Ì‚ÅÅŒã‚É“]’u
     float3x3 invT;
     invT[0] = float3(inv[0].x, inv[1].x, inv[2].x);
     invT[1] = float3(inv[0].y, inv[1].y, inv[2].y);
@@ -78,8 +68,7 @@ VSOutput main(VSInput IN)
 {
     VSOutput OUT;
 
-    // --- ƒ{[ƒ“‡¬s—ñiüŒ`ƒuƒŒƒ“ƒhj---
-    // d‚İ‚ª‘S‚Ä 0 ‚Ì’¸“_‚Ö‚Ì•ÛŒ¯
+    // ãƒœãƒ¼ãƒ³åˆæˆè¡Œåˆ—ï¼ˆç·šå½¢ãƒ–ãƒ¬ãƒ³ãƒ‰ï¼‰
     float totalW = IN.boneWeights.x + IN.boneWeights.y + IN.boneWeights.z + IN.boneWeights.w;
     bool forceRoot = (totalW < 1e-7f);
 
@@ -96,33 +85,28 @@ VSOutput main(VSInput IN)
             uint bi = IN.boneIndices[i];
             float w = IN.boneWeights[i];
             if (w > 0.0f)
-            {
                 skin += gBones[bi] * w;
-            }
         }
     }
 
-    // ˆÊ’uƒXƒLƒ“
+    // ä½ç½®ã‚¹ã‚­ãƒ³ â†’ ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›
     float4 skinnedPos = mul(skin, float4(IN.position, 1.0f));
+    float4 worldPos   = mul(skinnedPos, gWorld);
+    OUT.worldPos      = worldPos;
 
-    // ƒ[ƒ‹ƒh•ÏŠ·
-    float4 worldPos = mul(skinnedPos, gWorld);
-    OUT.worldPos = worldPos;
-
-    // ƒNƒŠƒbƒvÀ•W
+    // ã‚¯ãƒªãƒƒãƒ—åº§æ¨™
     float4 viewPos = mul(worldPos, gView);
-    OUT.svPos = mul(viewPos, gProj);
+    OUT.svPos      = mul(viewPos, gProj);
 
-    // –@üƒXƒLƒ“
-    // iŠÈˆÕjskin * world ‚Å•ÏŠ·Œã normalize
-    // ”ñˆê—lƒXƒP[ƒ‹‘Î‰‚ª•K—v‚È‚ç InverseTranspose3x3(world * skin) ‚ğg‚¤
-    float3 n = IN.normal;
-    // float3x3 N = InverseTranspose3x3(mul(skin, gWorld)); // ‚æ‚è³Šm
-    // OUT.normal = normalize(mul(n, N));
-    OUT.normal = normalize(mul(n, (float3x3) skin));
-    OUT.normal = normalize(mul(OUT.normal, (float3x3) gWorld));
+    // ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“æ³•ç·šï¼ˆæ—¢å­˜ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨ï¼‰
+    float3 n      = normalize(mul(IN.normal, (float3x3) skin));
+    OUT.normal    = normalize(mul(n, (float3x3) gWorld));
 
-    OUT.uv = IN.uv;
+    // ãƒ“ãƒ¥ãƒ¼ç©ºé–“æ³•ç·šï¼ˆGBuffer / SSAOç”¨ï¼‰
+    // ãƒ¯ãƒ¼ãƒ«ãƒ‰æ³•ç·šã‚’Viewè¡Œåˆ—ã§å¤‰æ› (w=0ã§å¹³è¡Œç§»å‹•ã‚’ç„¡è¦–)
+    OUT.viewNormal = mul(float4(OUT.normal, 0.0f), gView).xyz;
+
+    OUT.uv    = IN.uv;
     OUT.color = gBaseColor;
     return OUT;
 }

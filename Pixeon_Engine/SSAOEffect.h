@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "LayerSettings.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -11,7 +11,7 @@ public:
     SSAOEffect();
     ~SSAOEffect() = default;
 
-    // PostEffectBase ƒCƒ“ƒ^[ƒtƒF[ƒX
+    // PostEffectBase ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹
     void Apply(
         ID3D11ShaderResourceView* input,
         ID3D11RenderTargetView* output,
@@ -24,7 +24,7 @@ public:
     void LoadFromJson(const nlohmann::json& j) override;
     PostEffectBase* Clone() const override;
 
-    // Apply ‚Ì‘O‚É LayerSettings.cpp ‚©‚çŒÄ‚Ô
+    // Apply ã®å‰ã« LayerSettings.cpp ã‹ã‚‰å‘¼ã¶
     void SetDepthSRV(ID3D11ShaderResourceView* depthSRV) { depthSRV_ = depthSRV; }
     void SetCameraMatrices(const DirectX::XMMATRIX& proj, const DirectX::XMMATRIX& invProj)
     {
@@ -32,14 +32,14 @@ public:
         invProj_ = invProj;
     }
 
-    // ImGui ‚Å’²®‰Â”\‚Èƒpƒ‰ƒ[ƒ^[
-    float radius = 0.5f;   // ƒTƒ“ƒvƒ‹”¼Œa (ƒrƒ…[‹óŠÔ’PˆÊ)
-    float bias = 0.025f; // –@üƒoƒCƒAƒX
-    float power = 2.0f;   // AO ‹­“x (pow w”)
+    // ImGui ã§èª¿æ•´å¯èƒ½ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
+    float radius = 0.5f;   // ã‚µãƒ³ãƒ—ãƒ«åŠå¾„ (ãƒ“ãƒ¥ãƒ¼ç©ºé–“å˜ä½)
+    float bias = 0.025f; // æ³•ç·šãƒã‚¤ã‚¢ã‚¹
+    float power = 2.0f;   // AO å¼·åº¦ (pow æŒ‡æ•°)
     float aoStrength = 0.8f;
 
 private:
-    // ’è”ƒoƒbƒtƒ@\‘¢‘Ì
+    // å®šæ•°ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
     struct SSAO_Params {
         DirectX::XMMATRIX proj;
         DirectX::XMMATRIX invProj;
@@ -61,7 +61,7 @@ private:
         DirectX::XMFLOAT3 _pad;
     };
 
-    // ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg (SSAOƒoƒbƒtƒ@ / ƒuƒ‰[ƒoƒbƒtƒ@)
+    // ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ (SSAOãƒãƒƒãƒ•ã‚¡ / ãƒ–ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡)
     Microsoft::WRL::ComPtr<ID3D11Texture2D>          ssaoTex_;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   ssaoRTV_;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ssaoSRV_;
@@ -72,33 +72,33 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D>          noiseTex_;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> noiseSRV_;
 
-    // ƒTƒ“ƒvƒ‰[
+    // ã‚µãƒ³ãƒ—ãƒ©ãƒ¼
     Microsoft::WRL::ComPtr<ID3D11SamplerState>       pointClampSmp_;
     Microsoft::WRL::ComPtr<ID3D11SamplerState>       pointWrapSmp_;
     Microsoft::WRL::ComPtr<ID3D11SamplerState>       linearSmp_;
 
-    // [“x‘‚«‚İ–³ŒøƒXƒe[ƒg
+    // æ·±åº¦æ›¸ãè¾¼ã¿ç„¡åŠ¹ã‚¹ãƒ†ãƒ¼ãƒˆ
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState>  dsOff_;
 
-    // ’è”ƒoƒbƒtƒ@
+    // å®šæ•°ãƒãƒƒãƒ•ã‚¡
     Microsoft::WRL::ComPtr<ID3D11Buffer>             ssaoCB_;      // b1
     Microsoft::WRL::ComPtr<ID3D11Buffer>             kernelCB_;    // b2
-    Microsoft::WRL::ComPtr<ID3D11Buffer>             blurCB_;      // b1 (ƒuƒ‰[ƒpƒX)
-    Microsoft::WRL::ComPtr<ID3D11Buffer>             compositeCB_; // b1 (‡¬ƒpƒX)
+    Microsoft::WRL::ComPtr<ID3D11Buffer>             blurCB_;      // b1 (ãƒ–ãƒ©ãƒ¼ãƒ‘ã‚¹)
+    Microsoft::WRL::ComPtr<ID3D11Buffer>             compositeCB_; // b1 (åˆæˆãƒ‘ã‚¹)
 
-    // ”¼‹…ƒJ[ƒlƒ‹ (CPU ‘¤)
+    // åŠçƒã‚«ãƒ¼ãƒãƒ« (CPU å´)
     std::vector<DirectX::XMFLOAT4> kernel_;
 
-    // ŠO•”‚©‚çƒZƒbƒg‚³‚ê‚éî•ñ (Apply ‚Ì‚½‚Ñ‚ÉƒŠƒZƒbƒg)
+    // å¤–éƒ¨ã‹ã‚‰ã‚»ãƒƒãƒˆã•ã‚Œã‚‹æƒ…å ± (Apply ã®ãŸã³ã«ãƒªã‚»ãƒƒãƒˆ)
     ID3D11ShaderResourceView* depthSRV_ = nullptr;
     DirectX::XMMATRIX proj_ = DirectX::XMMatrixIdentity();
     DirectX::XMMATRIX invProj_ = DirectX::XMMatrixIdentity();
 
-    // ƒoƒbƒtƒ@ƒTƒCƒYƒLƒƒƒbƒVƒ…
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚­ãƒ£ãƒƒã‚·ãƒ¥
     int cachedWidth_ = 0;
     int cachedHeight_ = 0;
 
-    // ’x‰„‰Šú‰»
+    // é…å»¶åˆæœŸåŒ–
     bool EnsureRenderTargets(int width, int height);
     void EnsureKernel();
     void EnsureNoise();
@@ -106,14 +106,14 @@ private:
     void EnsureDepthStencilState();
     void EnsureConstantBuffers();
 
-    // VS_Fullscreen •û®‚Ìƒtƒ‹ƒXƒNƒŠ[ƒ“•`‰æ
-    // ’¸“_ƒoƒbƒtƒ@•s—v: Draw(3, 0) ‚Å•`‰æ
+    // VS_Fullscreen æ–¹å¼ã®ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³æç”»
+    // é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä¸è¦: Draw(3, 0) ã§æç”»
     void DrawFullscreen(
         ID3D11PixelShader* ps,
-        ID3D11ShaderResourceView* const* srvs,   // ”z—ñæ“ª
+        ID3D11ShaderResourceView* const* srvs,   // é…åˆ—å…ˆé ­
         UINT                              srvCount,
         UINT                              srvSlot,
-        ID3D11Buffer* const* psCBs,  // ”z—ñæ“ª
+        ID3D11Buffer* const* psCBs,  // é…åˆ—å…ˆé ­
         UINT                              cbCount,
         UINT                              cbSlot,
         ID3D11RenderTargetView* rtv,
