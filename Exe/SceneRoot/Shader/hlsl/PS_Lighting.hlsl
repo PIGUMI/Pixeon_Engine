@@ -228,10 +228,9 @@ float4 main(PS_INPUT i) : SV_TARGET
     // カメラ方向（ワールド空間）
     float3 V = normalize(gCameraPos - worldPos);
 
-    // SSAO（ステップ5で有効化。現時点は 1.0 固定）
+    // SSAO（LightingPass::SetSSAOSRV() でセットされた AO テクスチャ）
+    // セットされていない場合は白テクスチャ（ao=1.0）が使われる
     float ao = gSSAOTex.Sample(gPointClamp, i.uv).r;
-    // ★ ステップ5完了まで ao = 1.0 にしておく
-    ao = 1.0f;
 
     // シャドウ
     float shadow = CalculateShadow(worldPos);

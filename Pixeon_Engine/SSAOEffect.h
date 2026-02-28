@@ -24,8 +24,11 @@ public:
     void LoadFromJson(const nlohmann::json& j) override;
     PostEffectBase* Clone() const override;
 
-    // Apply の前に LayerSettings.cpp から呼ぶ
     void SetDepthSRV(ID3D11ShaderResourceView* depthSRV) { depthSRV_ = depthSRV; }
+
+    void SetNormalSRV(ID3D11ShaderResourceView* normalSRV) { normalSRV_ = normalSRV; }
+
+    ID3D11ShaderResourceView* GetAOSRV() const { return blurSRV_.Get(); }
     void SetCameraMatrices(const DirectX::XMMATRIX& proj, const DirectX::XMMATRIX& invProj)
     {
         proj_ = proj;
@@ -91,6 +94,7 @@ private:
 
     // 外部からセットされる情報 (Apply のたびにリセット)
     ID3D11ShaderResourceView* depthSRV_ = nullptr;
+    ID3D11ShaderResourceView* normalSRV_ = nullptr;  // GBuffer Normal SRV (Deferred65b95f0f7528)
     DirectX::XMMATRIX proj_ = DirectX::XMMatrixIdentity();
     DirectX::XMMATRIX invProj_ = DirectX::XMMatrixIdentity();
 

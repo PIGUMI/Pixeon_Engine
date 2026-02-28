@@ -10,18 +10,12 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-// ============================================================
-// コンストラクタ
-// ============================================================
 SSAOEffect::SSAOEffect()
 {
     EnsureKernel();
     EnsureNoise();
 }
 
-// ============================================================
-// Clone
-// ============================================================
 PostEffectBase* SSAOEffect::Clone() const
 {
     SSAOEffect* c = new SSAOEffect();
@@ -34,11 +28,6 @@ PostEffectBase* SSAOEffect::Clone() const
     return c;
 }
 
-// ============================================================
-// Apply
-// input  = カラーバッファ SRV (layerRT の色テクスチャ)
-// output = 最終出力 RTV
-// ============================================================
 void SSAOEffect::Apply(
     ID3D11ShaderResourceView* input,
     ID3D11RenderTargetView* output,
@@ -48,13 +37,11 @@ void SSAOEffect::Apply(
     auto* ctx = dx->GetContext();
     auto* sm = ShaderManager::GetInstance();
 
-    // シェーダー取得
     ID3D11VertexShader* fullscreenVS = sm->GetVertexShader("VS_Fullscreen");
     ID3D11PixelShader* ssaoPS = sm->GetPixelShader("PS_SSAO");
     ID3D11PixelShader* blurPS = sm->GetPixelShader("PS_SSAOBlur");
     ID3D11PixelShader* compositePS = sm->GetPixelShader("PS_SSAOComposite");
 
-    // 深度 SRV かシェーダーが揃っていない → カラーをそのままコピーして終了
     if (!depthSRV_ || !fullscreenVS || !ssaoPS || !blurPS || !compositePS)
     {
         if (input && output)
@@ -74,13 +61,11 @@ void SSAOEffect::Apply(
         return;
     }
 
-    // 遅延初期化
     if (!EnsureRenderTargets(width, height)) { depthSRV_ = nullptr; return; }
     EnsureSamplers();
     EnsureDepthStencilState();
     EnsureConstantBuffers();
 
-    // 現在の RT / DepthStencil State / BlendState を退避
     ComPtr<ID3D11RenderTargetView>   oldRTV;
     ComPtr<ID3D11DepthStencilView>   oldDSV;
     ComPtr<ID3D11DepthStencilState>  oldDSS;
@@ -96,20 +81,15 @@ void SSAOEffect::Apply(
     ctx->OMGetBlendState(oldBlend.GetAddressOf(), oldBlendFactor, &oldSampleMask);
     ctx->RSGetViewports(&numVP, &oldVP);
 
-    // 深度テスト OFF
     ctx->OMSetDepthStencilState(dsOff_.Get(), 0);
 
-    // VS をセット (全パス共通)
     ctx->VSSetShader(fullscreenVS, nullptr, 0);
 
-    // InputLayout / 頂点バッファは VS_Fullscreen では不要
+
     ctx->IASetInputLayout(nullptr);
     ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
     ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // --------------------------------------------------------
-    // [パス 1] SSAO  (深度 → AO値 R8)
-    // --------------------------------------------------------
     {
         SSAO_Params cb{};
         cb.proj = XMMatrixTranspose(proj_);
@@ -127,23 +107,30 @@ void SSAOEffect::Apply(
         ID3D11Buffer* cbs[] = { ssaoCB_.Get(), kernelCB_.Get() };
         ctx->PSSetConstantBuffers(1, 2, cbs); // b1, b2
 
-        // t1=深度, t2=ノイズ
-        ID3D11ShaderResourceView* srvs[] = { nullptr, depthSRV_, noiseSRV_.Get() };
-        ctx->PSSetShaderResources(0, 3, srvs);
-
         ID3D11SamplerState* smps[] = { pointClampSmp_.Get(), pointWrapSmp_.Get() };
         ctx->PSSetSamplers(0, 2, smps);
 
-        DrawFullscreen(ssaoPS, nullptr, 0, 0, nullptr, 0, 0, ssaoRTV_.Get(), width, height);
+        if (normalSRV_)
+        {
+            // Deferred: GBuffer Normal -> PS_SSAO_Deferred
+            ID3D11PixelShader* deferredPS = sm->GetPixelShader("PS_SSAO_Deferred");
+            ID3D11ShaderResourceView* srvs[] = { normalSRV_, depthSRV_, noiseSRV_.Get() };
+            ctx->PSSetShaderResources(0, 3, srvs);
+            DrawFullscreen(deferredPS ? deferredPS : ssaoPS, nullptr, 0, 0, nullptr, 0, 0, ssaoRTV_.Get(), width, height);
+            normalSRV_ = nullptr;
+        }
+        else
+        {
+            // Forward fallback
+            ID3D11ShaderResourceView* srvs[] = { nullptr, depthSRV_, noiseSRV_.Get() };
+            ctx->PSSetShaderResources(0, 3, srvs);
+            DrawFullscreen(ssaoPS, nullptr, 0, 0, nullptr, 0, 0, ssaoRTV_.Get(), width, height);
+        }
     }
 
-    // SRV 解除
     ID3D11ShaderResourceView* null3[3] = {};
     ctx->PSSetShaderResources(0, 3, null3);
 
-    // --------------------------------------------------------
-    // [パス 2] ブラー  (生AO  スムーズAO R8)
-    // --------------------------------------------------------
     {
         BlurParams bcb{};
         bcb.texelSize = { 1.0f / width, 1.0f / height };
@@ -164,9 +151,6 @@ void SSAOEffect::Apply(
     ID3D11ShaderResourceView* null1[1] = {};
     ctx->PSSetShaderResources(0, 1, null1);
 
-    // --------------------------------------------------------
-    // [パス 3] 合成  (カラー  AO  output)
-    // --------------------------------------------------------
     {
         CompositeParams ccb{};
         ccb.aoStrength = aoStrength;
@@ -184,26 +168,17 @@ void SSAOEffect::Apply(
         DrawFullscreen(compositePS, nullptr, 0, 0, nullptr, 0, 0, output, width, height);
     }
 
-    // SRV 解除
     ID3D11ShaderResourceView* null2[2] = {};
     ctx->PSSetShaderResources(0, 2, null2);
 
-    // --------------------------------------------------------
-    // 状態復元
-    // --------------------------------------------------------
     ctx->OMSetDepthStencilState(oldDSS.Get(), oldStencilRef);
     ctx->OMSetBlendState(oldBlend.Get(), oldBlendFactor, oldSampleMask);
     ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
     ctx->RSSetViewports(1, &oldVP);
 
-    // 使い捨てフラグをリセット
     depthSRV_ = nullptr;
 }
 
-// ============================================================
-// DrawFullscreen  (VS_Fullscreen の SV_VertexID 方式)
-// 頂点バッファ不要: Draw(3, 0) で fullscreen triangle を描画
-// ============================================================
 void SSAOEffect::DrawFullscreen(
     ID3D11PixelShader* ps,
     ID3D11ShaderResourceView* const* srvs,
@@ -230,12 +205,10 @@ void SSAOEffect::DrawFullscreen(
     vp.Width = (float)width; vp.Height = (float)height; vp.MaxDepth = 1.0f;
     ctx->RSSetViewports(1, &vp);
 
-    ctx->Draw(3, 0); // VS_Fullscreen は頂点バッファ不要
+    ctx->Draw(3, 0);
 }
 
-// ============================================================
-// EnsureRenderTargets
-// ============================================================
+
 bool SSAOEffect::EnsureRenderTargets(int width, int height)
 {
     if (cachedWidth_ == width && cachedHeight_ == height && ssaoRTV_) return true;
@@ -251,7 +224,7 @@ bool SSAOEffect::EnsureRenderTargets(int width, int height)
     D3D11_TEXTURE2D_DESC td{};
     td.Width = width; td.Height = height;
     td.MipLevels = 1; td.ArraySize = 1;
-    td.Format = DXGI_FORMAT_R8_UNORM; // AO 値は 1ch 8bit で十分
+    td.Format = DXGI_FORMAT_R8_UNORM;
     td.SampleDesc.Count = 1;
     td.Usage = D3D11_USAGE_DEFAULT;
     td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -267,9 +240,6 @@ bool SSAOEffect::EnsureRenderTargets(int width, int height)
     return ssaoRTV_ && blurRTV_;
 }
 
-// ============================================================
-// EnsureKernel  (半球サンプル 64 点を生成)
-// ============================================================
 void SSAOEffect::EnsureKernel()
 {
     if (!kernel_.empty()) return;
@@ -282,11 +252,10 @@ void SSAOEffect::EnsureKernel()
     {
         XMFLOAT3 s(dist(rng) * 2.0f - 1.0f,
             dist(rng) * 2.0f - 1.0f,
-            dist(rng)); // z は 0?1 (半球)
+            dist(rng));
         XMVECTOR v = XMVector3Normalize(XMLoadFloat3(&s));
         v = XMVectorScale(v, dist(rng));
 
-        // 内側に集中させる加速補間
         float scale = (float)i / 64.0f;
         scale = 0.1f + scale * scale * 0.9f;
         v = XMVectorScale(v, scale);
@@ -297,9 +266,6 @@ void SSAOEffect::EnsureKernel()
     }
 }
 
-// ============================================================
-// EnsureNoise  (4x4 ランダム回転ノイズを生成)
-// ============================================================
 void SSAOEffect::EnsureNoise()
 {
     if (noiseSRV_) return;
@@ -332,9 +298,7 @@ void SSAOEffect::EnsureNoise()
     dev->CreateShaderResourceView(noiseTex_.Get(), nullptr, noiseSRV_.GetAddressOf());
 }
 
-// ============================================================
-// EnsureSamplers
-// ============================================================
+
 void SSAOEffect::EnsureSamplers()
 {
     if (pointClampSmp_) return;
@@ -356,9 +320,6 @@ void SSAOEffect::EnsureSamplers()
     dev->CreateSamplerState(&sd, linearSmp_.GetAddressOf());
 }
 
-// ============================================================
-// EnsureDepthStencilState  (深度テスト OFF)
-// ============================================================
 void SSAOEffect::EnsureDepthStencilState()
 {
     if (dsOff_) return;
@@ -370,9 +331,6 @@ void SSAOEffect::EnsureDepthStencilState()
     DirectX11::GetInstance()->GetDevice()->CreateDepthStencilState(&dsd, dsOff_.GetAddressOf());
 }
 
-// ============================================================
-// EnsureConstantBuffers
-// ============================================================
 void SSAOEffect::EnsureConstantBuffers()
 {
     if (ssaoCB_) return;
@@ -399,9 +357,7 @@ void SSAOEffect::DrawInspector()
     ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("適用強度").c_str(), &aoStrength, 0.01f, 0.0f, 1.0f, "%.2f");
 }
 
-// ============================================================
-// JSON 保存 / 読み込み
-// ============================================================
+
 void SSAOEffect::SaveToJson(nlohmann::json& j) const
 {
     j["radius"] = radius;

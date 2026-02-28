@@ -1,5 +1,5 @@
 ﻿/*
-* MainFrame.cpp
+* MainFrame.cpp - Step5: LightingPass接続版
 */
 
 #include "MainFrame.h"
@@ -26,6 +26,7 @@
 #include "ImageUtils.h"
 #include "LayerSettings.h"
 #include "Scene.h"
+#include "SSAOEffect.h"
 #include "IZANAGI.h"
 #include <crtdbg.h>
 
@@ -77,6 +78,7 @@ int MainFrame::Init(const EngineConfig& InPut)
         }
         _gBuffers.push_back(gb);
 
+        // ★ LightingPass（レイヤーごと）
         LightingPass* lp = new LightingPass();
         if (!lp->Init(DirectX11::GetInstance()->GetDevice()))
         {
@@ -191,10 +193,38 @@ void MainFrame::Draw()
 
                 scene->PrepareShadowAndLights(Layer_Index);
 
+    
                 DrawGeometryPass(Layer_Index, gb);
+
+                ID3D11ShaderResourceView* aoSRV = nullptr;
+                if (layerSettings && gb)
+                {
+                    for (std::shared_ptr<PostEffectBase> fx : layerSettings->postEffects)
+                    {
+                        if (!fx || !fx->enabled) continue;
+                        SSAOEffect* ssao = dynamic_cast<SSAOEffect*>(fx.get());
+                        if (ssao)
+                        {
+                            auto cam2 = scene->GetMainCamera();
+                            if (cam2)
+                            {
+                                ssao->SetNormalSRV(gb->GetNormalSRV());
+                                ssao->SetDepthSRV(gb->GetDepthSRV());
+                                ssao->SetCameraMatrices(
+                                    cam2->GetProjection(),
+                                    DirectX::XMMatrixInverse(nullptr, cam2->GetProjection()));
+
+                                ssao->Apply(nullptr, nullptr, _engineConfig.screenWidth, _engineConfig.screenHeight);
+                                aoSRV = ssao->GetAOSRV();
+                            }
+                            break;
+                        }
+                    }
+                }
 
                 if (lp && gb)
                 {
+                    lp->SetSSAOSRV(aoSRV);
                     auto cam = scene->GetMainCamera();
 
                     layerRT->SetBlend(true);
