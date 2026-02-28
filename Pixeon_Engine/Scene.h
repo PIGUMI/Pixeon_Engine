@@ -53,6 +53,9 @@ public:
 	std::vector<LightComponent*>* GetLights() { return &_lights; }
 
 	void RegisterLight(LightComponent* l);
+	ID3D11ShaderResourceView* GetShadowMapSRV() const { return m_shadowMapSRV.Get(); }
+	void DrawForGBuffer(int Layer);
+	void PrepareShadowAndLights(int Layer);
 	void UnregisterLight(LightComponent* l);
 
 	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }

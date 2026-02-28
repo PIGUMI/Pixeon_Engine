@@ -207,9 +207,10 @@ float4 main(PS_INPUT i) : SV_TARGET
     float4 normalSample = gNormalTex.Sample(gPointClamp, i.uv);
     float  depth        = gDepthTex.Sample(gPointClamp, i.uv).r;
 
-    // 深度が1.0（スカイボックス/未描画ピクセル）はそのまま返す
+    // 深度が1.0（未描画ピクセル）は完全透明で返す
+    // → 下のレイヤーや背景が透けて見える
     if (depth >= 1.0f)
-        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);  // alpha=0 = 完全透明
 
     // アルベド
     float3 albedo = albedoSample.rgb;
@@ -248,7 +249,8 @@ float4 main(PS_INPUT i) : SV_TARGET
     float3 ambient = 0.1 * albedo * ao;   // ← AO はここだけ
 
     // 最終カラー
+    // alpha=1.0 固定：このピクセルはモデルが描画されている
+    // → 最終合成でこのレイヤーが正しく上のレイヤーとして合成される
     float3 color = ambient + lighting * albedo;
-
-    return float4(color, albedoSample.a);
+    return float4(color, 1.0f);
 }

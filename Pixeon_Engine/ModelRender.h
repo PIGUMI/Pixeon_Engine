@@ -39,6 +39,8 @@ public:
 
 	void Init(AbstractObject* owner) override;
 	void Draw(int Layer) override;
+
+	void DrawForGBuffer(int Layer);
 	void DrawInspector() override;
 
 	bool SetModel(const std::string& logicalPath);

@@ -38,7 +38,7 @@ AbstractScene::~AbstractScene()
 {
 	SaveToFile();
 
-	// 全オブジェクトの親子関係を先に切断
+
 	for (auto& obj : _objects) {
 		if (obj) {
 			obj->_parentObject = nullptr;
@@ -46,7 +46,6 @@ AbstractScene::~AbstractScene()
 		}
 	}
 
-	// オブジェクトを削除
 	for (auto& obj : _objects) {
 		if (obj) {
 			obj->UnInit();
@@ -57,7 +56,6 @@ AbstractScene::~AbstractScene()
 
 	CleanupPhysics();
 
-	// ToBeAdded も同様に処理
 	for (auto& obj : _ToBeAdded) {
 		if (obj) {
 			obj->_parentObject = nullptr;
@@ -68,7 +66,6 @@ AbstractScene::~AbstractScene()
 	}
 	_ToBeAdded.clear();
 
-	// SaveObjects も同様に処理
 	for (auto& obj : _SaveObjects) {
 		if (obj) {
 			obj->_parentObject = nullptr;
@@ -79,7 +76,6 @@ AbstractScene::~AbstractScene()
 	}
 	_SaveObjects.clear();
 
-	// レイヤーの解放
 	for (auto& layer : _layers) {
 		delete layer;
 	}
@@ -153,11 +149,10 @@ void AbstractScene::EditUpdate() {
 	if (!EndPlayCalled) {
 		EndPlayCalled = true;
 
-		// 既存のオブジェクトを削除
 		for (auto& obj : _objects) {
 			if (obj) {
-				obj->_parentObject = nullptr;  // 親参照をクリア
-				obj->_children.clear();        // 子リストをクリア
+				obj->_parentObject = nullptr;
+				obj->_children.clear();
 				obj->UnInit();
 				delete obj;
 			}
@@ -166,17 +161,15 @@ void AbstractScene::EditUpdate() {
 		_ToBeAddedBuffer.clear();
 		_objects.clear();
 
-		// SaveObjectsから復元（ルートのみ）
 		for (auto& obj : _SaveObjects) {
 			if (obj && obj->GetParent() == nullptr) {
 				_objects.push_back(obj);
 
-				// 子オブジェクトも_objectsに追加（再帰的）
 				std::function<void(AbstractObject*)> addChildren = [&](AbstractObject* parent) {
 					for (auto child : parent->GetChildren()) {
 						if (child) {
 							_objects.push_back(child);
-							addChildren(child);  // 再帰的に孫も追加
+							addChildren(child);
 						}
 					}
 					};
@@ -221,26 +214,22 @@ void AbstractScene::EditUpdate() {
 		}
 	}
 
-	// ルートオブジェクトのみ更新（子は自動的に更新される）
 	for (auto& obj : _objects) {
 		if (obj && obj->GetParent() == nullptr) {
 			obj->EditUpdate();
 		}
 	}
 
-	// 削除処理
 	if (!_ToBeRemoved.empty()) {
-		// 削除前に親子関係を全て切断
+
 		for (auto& obj : _ToBeRemoved) {
 			if (!obj) continue;
 
-			// 親から切り離す
 			if (obj->GetParent()) {
 				obj->GetParent()->RemoveChild(obj);
 				obj->_parentObject = nullptr;
 			}
 
-			// 子オブジェクトの親参照をクリア
 			for (auto child : obj->GetChildren()) {
 				if (child) {
 					child->_parentObject = nullptr;
@@ -249,7 +238,6 @@ void AbstractScene::EditUpdate() {
 			obj->_children.clear();
 		}
 
-		// オブジェクトを削除
 		for (auto& obj : _ToBeRemoved) {
 			if (!obj) continue;
 
@@ -296,7 +284,6 @@ void AbstractScene::PlayUpdate() {
 		}
 	}
 
-	// 物理演算
 	if (pPhysicsWorld)
 	{
 		try
@@ -363,7 +350,6 @@ void AbstractScene::PlayUpdate() {
 		}
 	}
 
-	// ルートオブジェクトのみ更新（子は自動的に更新される）
 	for (auto& obj : _objects) {
 		if (obj && obj->GetParent() == nullptr) {
 			obj->InGameUpdate();
@@ -372,7 +358,6 @@ void AbstractScene::PlayUpdate() {
 
 	if (_collisionManager) _collisionManager->Update();
 
-	// 削除処理
 	if (!_ToBeRemoved.empty()) {
 		for (auto& obj : _ToBeRemoved) {
 			if (!obj) continue;
@@ -433,7 +418,6 @@ void AbstractScene::Draw(int Layer) {
 	ID3D11Buffer* cbs3[] = { shadowCB.Get() };
 	ctx->PSSetConstantBuffers(3, 1, cbs3);
 
-	// シャドウマップをピクセルシェーダーにバインド
 	ID3D11ShaderResourceView* srvs[] = { m_shadowMapSRV.Get() };
 	ctx->PSSetShaderResources(1, 1, srvs);
 
@@ -576,9 +560,6 @@ void AbstractScene::SaveToFile() {
 		std::string msg = "[AbstractScene] Saved " + std::to_string(SaveObjects.size()) + " objects to " + File + "\n";
 		OutputDebugStringA(msg.c_str());
 	}
-	else {
-		MessageBox(nullptr, ("シーンファイルの保存に失敗:  " + File).c_str(), "Error", MB_OK);
-	}
 }
 
 void AbstractScene::LoadToFile() {
@@ -679,7 +660,6 @@ void AbstractScene::LoadToFile() {
 		}
 	}
 	catch (const std::exception& e) {
-		MessageBox(nullptr, ("シーン読み込みエラー: " + std::string(e.what())).c_str(), "Error", MB_OK);
 		inFile.close();
 	}
 }
@@ -921,7 +901,6 @@ bool AbstractScene::CreateShadowMapResources()
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	if (!dev) return false;
 
-	// シャドウマップテクスチャ作成
 	D3D11_TEXTURE2D_DESC texDesc{};
 	texDesc.Width = SHADOW_MAP_SIZE;
 	texDesc.Height = SHADOW_MAP_SIZE;
@@ -936,7 +915,6 @@ bool AbstractScene::CreateShadowMapResources()
 		return false;
 	}
 
-	// デプスステンシルビュー作成
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -947,7 +925,6 @@ bool AbstractScene::CreateShadowMapResources()
 		return false;
 	}
 
-	// シェーダーリソースビュー作成
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -958,7 +935,6 @@ bool AbstractScene::CreateShadowMapResources()
 		return false;
 	}
 
-	// シャドウサンプラー作成
 	D3D11_SAMPLER_DESC sampDesc{};
 	sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
@@ -996,7 +972,7 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 	}
 
 	DirectX::XMVECTOR lightPos = DirectX::XMVectorSet(
-		cameraPos.x - lightDir.x * 80.0f,  // ライト距離: 80
+		cameraPos.x - lightDir.x * 80.0f,
 		cameraPos.y - lightDir.y * 80.0f,
 		cameraPos.z - lightDir.z * 80.0f,
 		1.0f
@@ -1009,8 +985,8 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 	float size = 20.0f;
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
 		size, size,
-		0.5f,    // ニアクリップ
-		250.0f   // ファークリップ
+		0.5f,
+		250.0f
 	);
 
 	return lightView * lightProj;
@@ -1020,7 +996,6 @@ void AbstractScene::RenderShadowMap() {
 	auto ctx = DirectX11::GetInstance()->GetContext();
 	if (!ctx || !m_shadowMapDSV) return;
 
-	// 現在のレンダーターゲットを保存
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> oldRTV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> oldDSV;
 	ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
@@ -1029,7 +1004,6 @@ void AbstractScene::RenderShadowMap() {
 	UINT numViewports = 1;
 	ctx->RSGetViewports(&numViewports, &oldViewport);
 
-	// シャドウマップ用のビューポート設定
 	D3D11_VIEWPORT shadowViewport{};
 	shadowViewport.Width = static_cast<float>(SHADOW_MAP_SIZE);
 	shadowViewport.Height = static_cast<float>(SHADOW_MAP_SIZE);
@@ -1037,17 +1011,13 @@ void AbstractScene::RenderShadowMap() {
 	shadowViewport.MaxDepth = 1.0f;
 	ctx->RSSetViewports(1, &shadowViewport);
 
-	// シャドウマップをクリア
 	ctx->ClearDepthStencilView(m_shadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	// レンダーターゲットなし、デプスのみ
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	ctx->OMSetRenderTargets(1, &nullRTV, m_shadowMapDSV.Get());
 
-	// ライトビュー行列を取得
 	DirectX::XMMATRIX lightViewProj = GetLightViewProjection();
 
-	// シャドウマップ用のシェーダーを取得
 	auto* sm = ShaderManager::GetInstance();
 	ID3D11VertexShader* shadowVS = sm->GetVertexShader("VS_ShadowMap");
 	ID3D11PixelShader* shadowPS = sm->GetPixelShader("PS_ShadowMap");
@@ -1056,7 +1026,6 @@ void AbstractScene::RenderShadowMap() {
 		ctx->VSSetShader(shadowVS, nullptr, 0);
 		ctx->PSSetShader(shadowPS, nullptr, 0);
 
-		// シャドウマップ用の定数バッファを作成・設定
 		struct ShadowCB {
 			DirectX::XMMATRIX lightViewProj;
 			DirectX::XMMATRIX world;
@@ -1071,14 +1040,12 @@ void AbstractScene::RenderShadowMap() {
 			DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowVSCB.GetAddressOf());
 		}
 
-		// 全オブジェクトを再帰的に描画する関数
 		std::function<void(AbstractObject*)> RenderObjectShadow = [&](AbstractObject* obj) {
 			if (!obj) return;
 
 			bool isSaveObject = std::find(_SaveObjects.begin(), _SaveObjects.end(), obj) != _SaveObjects.end();
 			if (isSaveObject) return;
 
-			// ModelRenderComponentを持つオブジェクトのみ描画
 			auto modelComps = obj->GetComponentsByType<ModelRenderComponent>();
 			for (auto* modelComp : modelComps) {
 				if (!modelComp) continue;
@@ -1086,13 +1053,11 @@ void AbstractScene::RenderShadowMap() {
 				auto model = modelComp->GetModel();
 				if (!model) continue;
 
-				// ワールド行列を計算（GetWorldTransformで親の変換も含まれる）
 				Transform t = obj->GetWorldTransform();
 				DirectX::XMMATRIX world = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z) *
 					DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z) *
 					DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
 
-				// グローバルオフセット・スケール・回転を適用
 				DirectX::XMFLOAT3 globalOffset = modelComp->GetGlobalOffset();
 				DirectX::XMFLOAT3 globalScale = modelComp->GetGlobalScale();
 				DirectX::XMFLOAT3 globalRotation = modelComp->GetGlobalRotation();
@@ -1104,7 +1069,6 @@ void AbstractScene::RenderShadowMap() {
 
 				DirectX::XMMATRIX finalWorld = globalTransform * world;
 
-				// 定数バッファ更新
 				ShadowCB shadowData;
 				shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightViewProj);
 				shadowData.world = DirectX::XMMatrixTranspose(finalWorld);
@@ -1113,12 +1077,10 @@ void AbstractScene::RenderShadowMap() {
 				ID3D11Buffer* cbs[] = { shadowVSCB.Get() };
 				ctx->VSSetConstantBuffers(0, 1, cbs);
 
-				// ボーン行列をシャドウマップシェーダーにも渡す
 				if (model->hasSkin && modelComp->HasBoneMatrices()) {
 					modelComp->SetupBoneMatricesForShader(ctx);
 				}
 
-				// モデル描画
 				UINT stride = sizeof(ModelVertex);
 				UINT offset = 0;
 				ID3D11Buffer* vb = model->vb.Get();
@@ -1130,7 +1092,6 @@ void AbstractScene::RenderShadowMap() {
 				ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
 				ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				// 入力レイアウトを設定
 				const void* bc = nullptr;
 				size_t bcSize = 0;
 				if (sm->GetVSBytecode("VS_ShadowMap", &bc, &bcSize)) {
@@ -1151,19 +1112,16 @@ void AbstractScene::RenderShadowMap() {
 					}
 				}
 
-				// 全サブメッシュを描画
 				for (const auto& submesh : model->submeshes) {
 					ctx->DrawIndexed(submesh.indexCount, submesh.indexOffset, 0);
 				}
 			}
 
-			// 子オブジェクトも再帰的に描画
 			for (auto* child : obj->GetChildren()) {
 				RenderObjectShadow(child);
 			}
 			};
 
-		// ルートオブジェクトから再帰的に描画
 		for (auto& obj : _objects) {
 			if (obj && obj->GetParent() == nullptr) {
 				RenderObjectShadow(obj);
@@ -1171,7 +1129,6 @@ void AbstractScene::RenderShadowMap() {
 		}
 	}
 
-	// 元のレンダーターゲットとビューポートに戻す
 	ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
 	ctx->RSSetViewports(1, &oldViewport);
 }
@@ -1256,4 +1213,70 @@ Layer* AbstractScene::GetLayer(int index)
 {
 	if (index < 0 || index >= MAX_LAYER_COUNT) return nullptr;
 	return _layers[index];
+}
+// ============================================================
+// DrawForGBuffer
+// Geometry Pass 専用の描画
+// ModelRenderComponent::DrawForGBuffer を呼んで
+// GBuffer に Albedo / Normal を書き込む
+// シャドウ / ライトのアップロードは Draw() 側で済んでいる
+// ============================================================
+void AbstractScene::DrawForGBuffer(int Layer)
+{
+	// シャドウマップとライト情報は Draw() でセット済みなので
+	// ここではオブジェクトの DrawForGBuffer だけ呼ぶ
+	for (auto& obj : _objects)
+	{
+		if (!obj) continue;
+
+		// 各コンポーネントに DrawForGBuffer があれば呼ぶ
+		for (auto& comp : obj->GetComponents())
+		{
+			if (!comp) continue;
+			auto* mr = dynamic_cast<ModelRenderComponent*>(comp);
+			if (mr) mr->DrawForGBuffer(Layer);
+		}
+	}
+}
+
+// ============================================================
+// PrepareShadowAndLights
+// シャドウマップ描画 + ライトアップロード + 定数バッファセット
+// Geometry Pass の前に1回だけ呼ぶ
+// モデルの描画は行わない
+// ============================================================
+void AbstractScene::PrepareShadowAndLights(int Layer)
+{
+	RenderShadowMap();
+	UploadLightsToGPU();
+
+	auto ctx = DirectX11::GetInstance()->GetContext();
+	DirectX::XMMATRIX lightVP = GetLightViewProjection();
+
+	struct ShadowCB {
+		DirectX::XMMATRIX lightViewProj;
+	};
+
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> shadowCB;
+	if (!shadowCB) {
+		D3D11_BUFFER_DESC bd{};
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bd.ByteWidth = sizeof(ShadowCB);
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowCB.GetAddressOf());
+	}
+
+	ShadowCB shadowData;
+	shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightVP);
+	ctx->UpdateSubresource(shadowCB.Get(), 0, nullptr, &shadowData, 0, 0);
+
+	ID3D11Buffer* cbs3[] = { shadowCB.Get() };
+	ctx->PSSetConstantBuffers(3, 1, cbs3);
+
+	// シャドウマップを t1 にバインド（Lighting Pass で使用）
+	ID3D11ShaderResourceView* srvs[] = { m_shadowMapSRV.Get() };
+	ctx->PSSetShaderResources(1, 1, srvs);
+
+	ID3D11SamplerState* samplers[] = { m_shadowSampler.Get() };
+	ctx->PSSetSamplers(1, 1, samplers);
 }

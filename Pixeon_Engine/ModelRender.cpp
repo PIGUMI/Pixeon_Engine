@@ -98,20 +98,17 @@ void ModelRenderComponent::RefreshMaterialCache() {
 
 					rt.tex = texRes;
 
-					// ログ出力
 					std::ofstream log("material_cache_log.txt", std::ios::app);
 					log << "[Mat " << idx << "] Embedded texture SET: "
 						<< modelMat.baseColorTex << std::endl;
 				}
 				else {
-					// 失敗ログ
 					std::ofstream log("material_cache_log.txt", std::ios::app);
 					log << "[Mat " << idx << "] FAILED to get embedded texture: "
 						<< modelMat.baseColorTex << std::endl;
 				}
 			}
 			else {
-				// 通常のファイルテクスチャ
 				rt.tex = TextureManager::Instance()->LoadOrGet(modelMat.baseColorTex);
 			}
 		}
@@ -288,7 +285,6 @@ bool ModelRenderComponent::EnsureRasterizerStates() {
 	auto dev = DirectX11::GetInstance()->GetDevice();
 	if (!dev) return false;
 
-	// 裏面カリング（デフォルト）
 	if (!s_rasterizerCullBack) {
 		D3D11_RASTERIZER_DESC rd{};
 		rd.FillMode = D3D11_FILL_SOLID;
@@ -296,12 +292,9 @@ bool ModelRenderComponent::EnsureRasterizerStates() {
 		rd.FrontCounterClockwise = FALSE;
 		rd.DepthClipEnable = TRUE;
 		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullBack.GetAddressOf()))) {
-			OutputDebugStringA("[ModelRenderComponent] RasterizerState(CullBack) 作成失敗\n");
 			return false;
 		}
 	}
-
-	// 表面カリング
 	if (!s_rasterizerCullFront) {
 		D3D11_RASTERIZER_DESC rd{};
 		rd.FillMode = D3D11_FILL_SOLID;
@@ -309,12 +302,10 @@ bool ModelRenderComponent::EnsureRasterizerStates() {
 		rd.FrontCounterClockwise = FALSE;
 		rd.DepthClipEnable = TRUE;
 		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullFront.GetAddressOf()))) {
-			OutputDebugStringA("[ModelRenderComponent] RasterizerState(CullFront) 作成失敗\n");
 			return false;
 		}
 	}
 
-	// カリングなし（両面描画）
 	if (!s_rasterizerCullNone) {
 		D3D11_RASTERIZER_DESC rd{};
 		rd.FillMode = D3D11_FILL_SOLID;
@@ -322,7 +313,6 @@ bool ModelRenderComponent::EnsureRasterizerStates() {
 		rd.FrontCounterClockwise = FALSE;
 		rd.DepthClipEnable = TRUE;
 		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullNone.GetAddressOf()))) {
-			OutputDebugStringA("[ModelRenderComponent] RasterizerState(CullNone) 作成失敗\n");
 			return false;
 		}
 	}
@@ -393,7 +383,6 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 	const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const {
 	Transform t = _Parent->GetWorldTransform();
 
-	// メッシュのローカル変換(GlobalRotation含む)
 	XMMATRIX meshLocalScale = XMMatrixScaling(
 		scale.x * m_globalScale.x,
 		scale.y * m_globalScale.y,
@@ -412,10 +401,8 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 		offset.z + m_globalOffset.z
 	);
 
-	// メッシュローカル変換 = スケール * 回転 * 平行移動
 	XMMATRIX meshLocal = meshLocalScale * meshLocalRotation * meshLocalTranslation;
 
-	// オブジェクトのワールド変換
 	XMMATRIX objectWorld = XMMatrixScaling(
 		t.scale.x, t.scale.y, t.scale.z
 	) * XMMatrixRotationRollPitchYaw(
@@ -424,7 +411,6 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 		t.position.x, t.position.y, t.position.z
 	);
 
-	// メッシュローカルを先に適用してから、オブジェクトワールドを適用
 	return meshLocal * objectWorld;
 }
 
@@ -527,28 +513,23 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneWorldRotation(int boneIndex) cons
 		return XMFLOAT3(0.0f, 0.0f, 0.0f);
 	}
 
-	// クォータニオンをオイラー角に変換
 	XMFLOAT4 quat;
 	XMStoreFloat4(&quat, rotation);
 
-	// クォータニオン → オイラー角変換
 	float pitch, yaw, roll;
 
-	// Pitch (X軸回転)
 	float sinp = 2.0f * (quat.w * quat.x + quat.y * quat.z);
 	float cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
 	pitch = std::atan2(sinp, cosp);
 
-	// Yaw (Y軸回転)
 	float siny = 2.0f * (quat.w * quat.y - quat.z * quat.x);
 	if (std::abs(siny) >= 1.0f) {
-		yaw = std::copysign(XM_PI / 2.0f, siny); // ジンバルロック時
+		yaw = std::copysign(XM_PI / 2.0f, siny);
 	}
 	else {
 		yaw = std::asin(siny);
 	}
 
-	// Roll (Z軸回転)
 	float sinr = 2.0f * (quat.w * quat.z + quat.x * quat.y);
 	float cosr = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
 	roll = std::atan2(sinr, cosr);
@@ -575,13 +556,10 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalPosition(int boneIndex) cons
 		return XMFLOAT3(0.0f, 0.0f, 0.0f);
 	}
 
-	// ボーン行列から位置を抽出
 	XMMATRIX boneMatrix = XMLoadFloat4x4(&m_boneMatrices[boneIndex]);
 
-	// オブジェクトのワールドスケールを取得
 	Transform objTransform = _Parent->GetWorldTransform();
 
-	// 位置を抽出（_41, _42, _43がボーンのローカル位置）
 	XMFLOAT3 localPos;
 	localPos.x = m_boneMatrices[boneIndex]._41 * objTransform.scale.x;
 	localPos.y = m_boneMatrices[boneIndex]._42 * objTransform.scale.y;
@@ -597,10 +575,8 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotation(int boneIndex) cons
 		return XMFLOAT3(0.0f, 0.0f, 0.0f);
 	}
 
-	// ボーン行列をロード
 	XMMATRIX boneMatrix = XMLoadFloat4x4(&m_boneMatrices[boneIndex]);
 
-	// 行列を分解して回転を取得
 	XMVECTOR scale, rotation, translation;
 	if (!XMMatrixDecompose(&scale, &rotation, &translation, boneMatrix)) {
 		return XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -697,7 +673,6 @@ void ModelRenderComponent::Draw(int Layer) {
 	XMMATRIX view = cam->GetView();
 	XMMATRIX proj = cam->GetProjection();
 
-	// カメラ位置を取得
 	XMFLOAT3 camPos = cam->GetPosition();
 
 	auto ctx = DirectX11::GetInstance()->GetContext();
@@ -770,7 +745,6 @@ void ModelRenderComponent::Draw(int Layer) {
 			usedWhite = false;
 		}
 
-		// カリングモードに応じたラスタライザーステートを設定
 		ID3D11RasterizerState* rasterizerState = nullptr;
 		switch (cullMode) {
 		case CullMode::Back:
@@ -800,7 +774,6 @@ void ModelRenderComponent::Draw(int Layer) {
 		ctx->VSSetConstantBuffers(0, 1, cbs);
 		ctx->PSSetConstantBuffers(0, 1, cbs);
 
-		// カメラ位置をb4に送信
 		CameraCBData camCbd;
 		camCbd.CameraPos = camPos;
 		camCbd._pad = 0.0f;
@@ -816,7 +789,6 @@ void ModelRenderComponent::Draw(int Layer) {
 		}
 	}
 
-	// デフォルトのラスタライザーステートに戻す
 	ctx->RSSetState(s_rasterizerCullBack.Get());
 }
 
@@ -880,7 +852,7 @@ void ModelRenderComponent::SaveToFile(std::ostream& out) {
 
 	out << m_globalOffset.x << " " << m_globalOffset.y << " " << m_globalOffset.z << "\n";
 	out << m_globalScale.x << " " << m_globalScale.y << " " << m_globalScale.z << "\n";
-	out << m_globalRotation.x << " " << m_globalRotation.y << " " << m_globalRotation.z << "\n";  // 追加
+	out << m_globalRotation.x << " " << m_globalRotation.y << " " << m_globalRotation.z << "\n";
 
 	out << m_materials.size() << "\n";
 	for (const auto& mat : m_materials) {
@@ -900,12 +872,11 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 	in >> _LayerNumber;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-	// 全体のオフセット・スケール・回転を読み込む
 	in >> m_globalOffset.x >> m_globalOffset.y >> m_globalOffset.z;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	in >> m_globalScale.x >> m_globalScale.y >> m_globalScale.z;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	in >> m_globalRotation.x >> m_globalRotation.y >> m_globalRotation.z;  // 追加
+	in >> m_globalRotation.x >> m_globalRotation.y >> m_globalRotation.z;
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	SetModel(m_modelPath);
@@ -944,14 +915,6 @@ void ModelRenderComponent::SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4
 {
 	m_boneMatrices = matrices;
 	m_useBoneMatrices = !matrices.empty();
-
-#ifdef _DEBUG
-	static int debugCounter = 0;
-	if (++debugCounter % 60 == 0) {
-		OutputDebugStringA(("[ModelRender] Updated " +
-			std::to_string(matrices.size()) + " bone matrices\n").c_str());
-	}
-#endif
 }
 
 void ModelRenderComponent::DrawInspector() {
@@ -1597,4 +1560,113 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 			ImGui::TreePop();
 		}
 	}
+}
+// ============================================================
+// DrawForGBuffer
+// Geometry Pass 専用の描画メソッド
+// PS_GBuffer を使って Albedo / Normal を GBuffer に書き込む
+// ライティング計算は行わない
+// ============================================================
+void ModelRenderComponent::DrawForGBuffer(int Layer)
+{
+	if (Layer != _LayerNumber) return;
+	if (!m_ready || !m_model) return;
+
+	AbstractScene* scene = _Parent->GetParentScene();
+	if (!scene) return;
+	CameraComponent* cam = scene->GetMainCamera();
+	if (!cam) return;
+
+	auto ctx = DirectX11::GetInstance()->GetContext();
+	auto* sm = ShaderManager::GetInstance();
+
+	// VS は既存と同じ（VS_ModelStatic or VS_Animator）
+	// PS だけ PS_GBuffer に差し替える
+	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
+	ID3D11PixelShader* ps = sm->GetPixelShader("PS_GBuffer");
+	if (!vs || !ps) return;
+
+	if (m_model->hasSkin && m_boneMatrices.empty())
+		EnsureDefaultBoneMatrices();
+
+	XMMATRIX view = cam->GetView();
+	XMMATRIX proj = cam->GetProjection();
+
+	UINT stride = sizeof(ModelVertex);
+	UINT offset = 0;
+	ID3D11Buffer* vb = m_model->vb.Get();
+	ID3D11Buffer* ib = m_model->ib.Get();
+	ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+	ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+	ctx->IASetInputLayout(m_layout.Get());
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	ctx->VSSetShader(vs, nullptr, 0);
+	ctx->PSSetShader(ps, nullptr, 0);  // ← PS_GBuffer
+
+	ID3D11SamplerState* smp = s_linearSmp.Get();
+	ctx->PSSetSamplers(0, 1, &smp);
+
+	if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty())
+		SetupBoneMatricesForShader(ctx);
+
+	EnsureDebugFallbackTextures();
+
+	for (size_t i = 0; i < m_model->submeshes.size(); ++i)
+	{
+		const SubMesh& sm2 = m_model->submeshes[i];
+		size_t matIndex = sm2.materialIndex;
+
+		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
+		DirectX::XMFLOAT4 materialColor = m_color;
+		DirectX::XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
+		DirectX::XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
+		CullMode cullMode = CullMode::Back;
+
+		if (matIndex < m_materials.size())
+		{
+			auto& mat = m_materials[matIndex];
+			materialColor.x *= mat.color.x;
+			materialColor.y *= mat.color.y;
+			materialColor.z *= mat.color.z;
+			materialColor.w *= mat.color.w;
+			meshOffset = mat.meshOffset;
+			meshScale = mat.meshScale;
+			cullMode = mat.cullMode;
+
+			if (mat.tex && mat.tex->srv)
+				srv = mat.tex->srv.Get();
+			else if (!mat.texName.empty())
+				srv = s_magentaTexSRV.Get();
+		}
+
+		// ラスタライザー
+		ID3D11RasterizerState* rs = nullptr;
+		switch (cullMode) {
+		case CullMode::Back:  rs = s_rasterizerCullBack.Get();  break;
+		case CullMode::Front: rs = s_rasterizerCullFront.Get(); break;
+		case CullMode::None:  rs = s_rasterizerCullNone.Get();  break;
+		}
+		if (rs) ctx->RSSetState(rs);
+
+		// 定数バッファ（b0: World/View/Proj/BaseColor）
+		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale);
+		CBData cbd;
+		cbd.World = XMMatrixTranspose(world);
+		cbd.View = XMMatrixTranspose(view);
+		cbd.Proj = XMMatrixTranspose(proj);
+		cbd.BaseColor = materialColor;
+
+		ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
+		ID3D11Buffer* cbs[] = { m_cb.Get() };
+		ctx->VSSetConstantBuffers(0, 1, cbs);
+		ctx->PSSetConstantBuffers(0, 1, cbs);
+
+		// t0: アルベドテクスチャ（PS_GBuffer で使用）
+		ctx->PSSetShaderResources(0, 1, &srv);
+
+		ctx->DrawIndexed(sm2.indexCount, sm2.indexOffset, 0);
+	}
+
+	ctx->RSSetState(s_rasterizerCullBack.Get());
 }

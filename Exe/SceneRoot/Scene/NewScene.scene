@@ -90,7 +90,7 @@
         {
             "Components": [
                 {
-                    "Data": "0.652719 0.239812 0.472352 12.9453 0.0143699 0 -3.04616 0.0961179 -8.8173 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 1 ",
+                    "Data": "0.545519 0.84233 2.49239 13.2525 0.383969 0 -5.32863 -2.9037 -4.68128 0 1 0 1.0472 1.77778 0.1 1000 10 0 1 0 1 ",
                     "Name": "CameraComponent",
                     "Type": 0
                 }
@@ -118,40 +118,12 @@
         {
             "Components": [
                 {
-                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1.02 1 1.02\n2\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
+                    "Data": "3DModel/FBX/MB_Munkki_v1.fbx\n1 1 1 1\nVS_ModelStatic\nPS_ModelStatic\n0\n0 0 0\n0.01 0.01 0.01\n0 0 0\n6\n3DModel/FBX/Textures/TX_Munkki_Skin.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Costume1.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Cosutme2.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Hair.png\n0 0 0\n1 1 1\n0\n3DModel/FBX/Textures/TX_Munkki_Face.png\n0 0 0\n1 1 1\n0\n\n0 0 0\n1 1 1\n0\n",
                     "Name": "ModelRender",
                     "Type": 4
                 }
             ],
             "Name": "Model",
-            "Parent": "",
-            "Transform": {
-                "Position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "Components": [
-                {
-                    "Data": "0 1 1 1 1 10 20 35 1 1 0 0 0 -1.0472 0 0 ",
-                    "Name": "Light",
-                    "Type": 1
-                }
-            ],
-            "Name": "Light",
             "Parent": "",
             "Transform": {
                 "Position": [

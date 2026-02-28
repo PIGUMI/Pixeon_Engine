@@ -136,8 +136,8 @@ void LightingPass::Execute(
     cb.resolution = XMFLOAT2((float)width, (float)height);
     ctx->UpdateSubresource(m_lightingCB.Get(), 0, nullptr, &cb, 0, 0);
 
-    // ---- 出力先 RTV をセット（深度なし）----
-    ctx->OMSetRenderTargets(1, &outputRTV, nullptr);
+    // ---- 深度書き込みOFF（フルスクリーン描画では深度不要）----
+    // RT のセットは呼び出し側（MainFrame）で行う
     ctx->OMSetDepthStencilState(m_dsOff.Get(), 0);
 
     // ---- ビューポート ----
