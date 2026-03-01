@@ -1,13 +1,13 @@
-#include "GBuffer.h"
-#include "System.h" // DirectX11::GetInstance() ÇÃÇΩÇﬂ
+Ôªø#include "GBuffer.h"
+#include "System.h" // DirectX11::GetInstance() „ÅÆ„Åü„ÇÅ
 
 // ============================================================
 // Init
 // ============================================================
 bool GBuffer::Init(ID3D11Device* device, int width, int height)
 {
-    if (!device || width <= 0 || height <= 0) return false;
-    return CreateRenderTargets(device, width, height);
+	if (!device || width <= 0 || height <= 0) return false;
+	return CreateRenderTargets(device, width, height);
 }
 
 // ============================================================
@@ -15,11 +15,11 @@ bool GBuffer::Init(ID3D11Device* device, int width, int height)
 // ============================================================
 void GBuffer::Release()
 {
-    m_albedoTex.Reset();  m_albedoRTV.Reset();  m_albedoSRV.Reset();
-    m_normalTex.Reset();  m_normalRTV.Reset();  m_normalSRV.Reset();
-    m_depthTex.Reset();   m_dsv.Reset();        m_depthSRV.Reset();
-    m_width = 0;
-    m_height = 0;
+	m_albedoTex.Reset();  m_albedoRTV.Reset();  m_albedoSRV.Reset();
+	m_normalTex.Reset();  m_normalRTV.Reset();  m_normalSRV.Reset();
+	m_depthTex.Reset();   m_dsv.Reset();        m_depthSRV.Reset();
+	m_width = 0;
+	m_height = 0;
 }
 
 // ============================================================
@@ -27,153 +27,153 @@ void GBuffer::Release()
 // ============================================================
 bool GBuffer::Resize(ID3D11Device* device, int width, int height)
 {
-    Release();
-    return CreateRenderTargets(device, width, height);
+	Release();
+	return CreateRenderTargets(device, width, height);
 }
 
 // ============================================================
 // BeginGeometryPass
-// 2ñáÇÃRTVÇ∆ê[ìxÉoÉbÉtÉ@ÇÉZÉbÉgÅAÉNÉäÉAÇµÇƒï`âÊèÄîı
+// 2Êûö„ÅÆRTV„Å®Ê∑±Â∫¶„Éê„ÉÉ„Éï„Ç°„Çí„Çª„ÉÉ„Éà„ÄÅ„ÇØ„É™„Ç¢„Åó„Å¶ÊèèÁîªÊ∫ñÂÇô
 // ============================================================
 void GBuffer::BeginGeometryPass(ID3D11DeviceContext* ctx)
 {
-    // 2ñáÇÃRTÇÉZÉbÉg
-    ID3D11RenderTargetView* rtvs[] = {
-        m_albedoRTV.Get(),  // [0] Albedo
-        m_normalRTV.Get(),  // [1] Normal
-    };
-    ctx->OMSetRenderTargets(2, rtvs, m_dsv.Get());
-    ctx->RSSetViewports(1, &m_viewport);
+	// 2Êûö„ÅÆRT„Çí„Çª„ÉÉ„Éà
+	ID3D11RenderTargetView* rtvs[] = {
+		m_albedoRTV.Get(),  // [0] Albedo
+		m_normalRTV.Get(),  // [1] Normal
+	};
+	ctx->OMSetRenderTargets(2, rtvs, m_dsv.Get());
+	ctx->RSSetViewports(1, &m_viewport);
 
-    // Albedo ÉNÉäÉAÅiçïÅEïsìßñæÅj
-    float clearAlbedo[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    ctx->ClearRenderTargetView(m_albedoRTV.Get(), clearAlbedo);
+	// Albedo „ÇØ„É™„Ç¢ÔºàÈªí„Éª‰∏çÈÄèÊòéÔºâ
+	float clearAlbedo[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	ctx->ClearRenderTargetView(m_albedoRTV.Get(), clearAlbedo);
 
-    // Normal ÉNÉäÉAÅi0, 0, 0Åj
-    float clearNormal[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    ctx->ClearRenderTargetView(m_normalRTV.Get(), clearNormal);
+	// Normal „ÇØ„É™„Ç¢Ôºà0, 0, 0Ôºâ
+	float clearNormal[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	ctx->ClearRenderTargetView(m_normalRTV.Get(), clearNormal);
 
-    // ê[ìxÉNÉäÉA
-    ctx->ClearDepthStencilView(m_dsv.Get(),
-        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	// Ê∑±Â∫¶„ÇØ„É™„Ç¢
+	ctx->ClearDepthStencilView(m_dsv.Get(),
+		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 // ============================================================
 // EndGeometryPass
-// RTÇÉfÉtÉHÉãÉgÇ…ñﬂÇ∑ÅiÇ±ÇÃå„SRVÇ∆ÇµÇƒì«Ç›éÊÇÍÇÈÅj
+// RT„Çí„Éá„Éï„Ç©„É´„Éà„Å´Êàª„ÅôÔºà„Åì„ÅÆÂæåSRV„Å®„Åó„Å¶Ë™≠„ÅøÂèñ„Çå„ÇãÔºâ
 // ============================================================
 void GBuffer::EndGeometryPass(ID3D11DeviceContext* ctx)
 {
-    // SRV Ç∆ÇµÇƒégÇ§ëOÇ… RT ÇÃâèúÇ™ïKóv
-    ID3D11RenderTargetView* nullRTVs[2] = { nullptr, nullptr };
-    ctx->OMSetRenderTargets(2, nullRTVs, nullptr);
+	// SRV „Å®„Åó„Å¶‰Ωø„ÅÜÂâç„Å´ RT „ÅÆËß£Èô§„ÅåÂøÖË¶Å
+	ID3D11RenderTargetView* nullRTVs[2] = { nullptr, nullptr };
+	ctx->OMSetRenderTargets(2, nullRTVs, nullptr);
 }
 
 // ============================================================
-// CreateRenderTargets  ì‡ïîê∂ê¨ÉwÉãÉpÅ[
+// CreateRenderTargets  ÂÜÖÈÉ®ÁîüÊàê„Éò„É´„Éë„Éº
 // ============================================================
 bool GBuffer::CreateRenderTargets(ID3D11Device* device, int width, int height)
 {
-    m_width = width;
-    m_height = height;
+	m_width = width;
+	m_height = height;
 
-    HRESULT hr;
+	HRESULT hr;
 
-    // --------------------------------------------------------
-    // RT0: Albedo  (RGBA8_UNORM)
-    // --------------------------------------------------------
-    {
-        D3D11_TEXTURE2D_DESC td = {};
-        td.Width = width;
-        td.Height = height;
-        td.MipLevels = 1;
-        td.ArraySize = 1;
-        td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        td.SampleDesc.Count = 1;
-        td.Usage = D3D11_USAGE_DEFAULT;
-        td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	// --------------------------------------------------------
+	// RT0: Albedo  (RGBA8_UNORM)
+	// --------------------------------------------------------
+	{
+		D3D11_TEXTURE2D_DESC td = {};
+		td.Width = width;
+		td.Height = height;
+		td.MipLevels = 1;
+		td.ArraySize = 1;
+		td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		td.SampleDesc.Count = 1;
+		td.Usage = D3D11_USAGE_DEFAULT;
+		td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
-        hr = device->CreateTexture2D(&td, nullptr, m_albedoTex.GetAddressOf());
-        if (FAILED(hr)) return false;
+		hr = device->CreateTexture2D(&td, nullptr, m_albedoTex.GetAddressOf());
+		if (FAILED(hr)) return false;
 
-        hr = device->CreateRenderTargetView(m_albedoTex.Get(), nullptr, m_albedoRTV.GetAddressOf());
-        if (FAILED(hr)) return false;
+		hr = device->CreateRenderTargetView(m_albedoTex.Get(), nullptr, m_albedoRTV.GetAddressOf());
+		if (FAILED(hr)) return false;
 
-        hr = device->CreateShaderResourceView(m_albedoTex.Get(), nullptr, m_albedoSRV.GetAddressOf());
-        if (FAILED(hr)) return false;
-    }
+		hr = device->CreateShaderResourceView(m_albedoTex.Get(), nullptr, m_albedoSRV.GetAddressOf());
+		if (FAILED(hr)) return false;
+	}
 
-    // --------------------------------------------------------
-    // RT1: Normal  (RGBA16F)
-    // 16bit float Ç…Ç∑ÇÈÇ±Ç∆Ç≈ñ@ê¸ÇÃê∏ìxÇämï€
-    // --------------------------------------------------------
-    {
-        D3D11_TEXTURE2D_DESC td = {};
-        td.Width = width;
-        td.Height = height;
-        td.MipLevels = 1;
-        td.ArraySize = 1;
-        td.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-        td.SampleDesc.Count = 1;
-        td.Usage = D3D11_USAGE_DEFAULT;
-        td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	// --------------------------------------------------------
+	// RT1: Normal  (RGBA16F)
+	// 16bit float „Å´„Åô„Çã„Åì„Å®„ÅßÊ≥ïÁ∑ö„ÅÆÁ≤æÂ∫¶„ÇíÁ¢∫‰øù
+	// --------------------------------------------------------
+	{
+		D3D11_TEXTURE2D_DESC td = {};
+		td.Width = width;
+		td.Height = height;
+		td.MipLevels = 1;
+		td.ArraySize = 1;
+		td.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		td.SampleDesc.Count = 1;
+		td.Usage = D3D11_USAGE_DEFAULT;
+		td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
-        hr = device->CreateTexture2D(&td, nullptr, m_normalTex.GetAddressOf());
-        if (FAILED(hr)) return false;
+		hr = device->CreateTexture2D(&td, nullptr, m_normalTex.GetAddressOf());
+		if (FAILED(hr)) return false;
 
-        hr = device->CreateRenderTargetView(m_normalTex.Get(), nullptr, m_normalRTV.GetAddressOf());
-        if (FAILED(hr)) return false;
+		hr = device->CreateRenderTargetView(m_normalTex.Get(), nullptr, m_normalRTV.GetAddressOf());
+		if (FAILED(hr)) return false;
 
-        hr = device->CreateShaderResourceView(m_normalTex.Get(), nullptr, m_normalSRV.GetAddressOf());
-        if (FAILED(hr)) return false;
-    }
+		hr = device->CreateShaderResourceView(m_normalTex.Get(), nullptr, m_normalSRV.GetAddressOf());
+		if (FAILED(hr)) return false;
+	}
 
-    // --------------------------------------------------------
-    // Depth (R24G8_TYPELESS)
-    // DSV Ç∆ SRV ÇÃóºï˚Ç≈égÇ§ÇΩÇﬂÇ… TYPELESS ÉtÉHÅ[É}ÉbÉgÇégóp
-    // DSV: DXGI_FORMAT_D24_UNORM_S8_UINT
-    // SRV: DXGI_FORMAT_R24_UNORM_X8_TYPELESS
-    // --------------------------------------------------------
-    {
-        D3D11_TEXTURE2D_DESC td = {};
-        td.Width = width;
-        td.Height = height;
-        td.MipLevels = 1;
-        td.ArraySize = 1;
-        td.Format = DXGI_FORMAT_R24G8_TYPELESS;
-        td.SampleDesc.Count = 1;
-        td.Usage = D3D11_USAGE_DEFAULT;
-        td.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	// --------------------------------------------------------
+	// Depth (R24G8_TYPELESS)
+	// DSV „Å® SRV „ÅÆ‰∏°Êñπ„Åß‰Ωø„ÅÜ„Åü„ÇÅ„Å´ TYPELESS „Éï„Ç©„Éº„Éû„ÉÉ„Éà„Çí‰ΩøÁî®
+	// DSV: DXGI_FORMAT_D24_UNORM_S8_UINT
+	// SRV: DXGI_FORMAT_R24_UNORM_X8_TYPELESS
+	// --------------------------------------------------------
+	{
+		D3D11_TEXTURE2D_DESC td = {};
+		td.Width = width;
+		td.Height = height;
+		td.MipLevels = 1;
+		td.ArraySize = 1;
+		td.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		td.SampleDesc.Count = 1;
+		td.Usage = D3D11_USAGE_DEFAULT;
+		td.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
-        hr = device->CreateTexture2D(&td, nullptr, m_depthTex.GetAddressOf());
-        if (FAILED(hr)) return false;
+		hr = device->CreateTexture2D(&td, nullptr, m_depthTex.GetAddressOf());
+		if (FAILED(hr)) return false;
 
-        // DSV
-        D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-        dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        hr = device->CreateDepthStencilView(m_depthTex.Get(), &dsvDesc, m_dsv.GetAddressOf());
-        if (FAILED(hr)) return false;
+		// DSV
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		hr = device->CreateDepthStencilView(m_depthTex.Get(), &dsvDesc, m_dsv.GetAddressOf());
+		if (FAILED(hr)) return false;
 
-        // SRVÅiê[ìxÉ`ÉÉÉìÉlÉãÇÃÇ›ì«Ç›éÊÇËÅj
-        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = 1;
-        srvDesc.Texture2D.MostDetailedMip = 0;
-        hr = device->CreateShaderResourceView(m_depthTex.Get(), &srvDesc, m_depthSRV.GetAddressOf());
-        if (FAILED(hr)) return false;
-    }
+		// SRVÔºàÊ∑±Â∫¶„ÉÅ„É£„É≥„Éç„É´„ÅÆ„ÅøË™≠„ÅøÂèñ„ÇäÔºâ
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		hr = device->CreateShaderResourceView(m_depthTex.Get(), &srvDesc, m_depthSRV.GetAddressOf());
+		if (FAILED(hr)) return false;
+	}
 
-    // --------------------------------------------------------
-    // ÉrÉÖÅ[É|Å[Ég
-    // --------------------------------------------------------
-    m_viewport.Width = (float)width;
-    m_viewport.Height = (float)height;
-    m_viewport.MinDepth = 0.0f;
-    m_viewport.MaxDepth = 1.0f;
-    m_viewport.TopLeftX = 0;
-    m_viewport.TopLeftY = 0;
+	// --------------------------------------------------------
+	// „Éì„É•„Éº„Éù„Éº„Éà
+	// --------------------------------------------------------
+	m_viewport.Width = (float)width;
+	m_viewport.Height = (float)height;
+	m_viewport.MinDepth = 0.0f;
+	m_viewport.MaxDepth = 1.0f;
+	m_viewport.TopLeftX = 0;
+	m_viewport.TopLeftY = 0;
 
-    return true;
+	return true;
 }

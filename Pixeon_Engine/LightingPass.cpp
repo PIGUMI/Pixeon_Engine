@@ -1,4 +1,4 @@
-#include "LightingPass.h"
+ï»¿#include "LightingPass.h"
 #include "GBuffer.h"
 #include "System.h"
 #include "ShaderManager.h"
@@ -10,55 +10,55 @@ using namespace DirectX;
 // ============================================================
 bool LightingPass::Init(ID3D11Device* device)
 {
-    if (!device) return false;
+	if (!device) return false;
 
-    // ---- ’è”ƒoƒbƒtƒ@ ----
-    {
-        D3D11_BUFFER_DESC bd = {};
-        bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        bd.ByteWidth = sizeof(LightingCB);
-        bd.Usage = D3D11_USAGE_DEFAULT;
-        if (FAILED(device->CreateBuffer(&bd, nullptr, m_lightingCB.GetAddressOf())))
-            return false;
-    }
+	// ---- å®šæ•°ãƒãƒƒãƒ•ã‚¡ ----
+	{
+		D3D11_BUFFER_DESC bd = {};
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bd.ByteWidth = sizeof(LightingCB);
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		if (FAILED(device->CreateBuffer(&bd, nullptr, m_lightingCB.GetAddressOf())))
+			return false;
+	}
 
-    // ---- PointClamp ƒTƒ“ƒvƒ‰[iGBuffer “Ç‚ÝŽæ‚è—pj----
-    {
-        D3D11_SAMPLER_DESC sd = {};
-        sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-        sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-        sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-        sd.MaxLOD = D3D11_FLOAT32_MAX;
-        if (FAILED(device->CreateSamplerState(&sd, m_pointClampSmp.GetAddressOf())))
-            return false;
-    }
+	// ---- PointClamp ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ï¼ˆGBuffer èª­ã¿å–ã‚Šç”¨ï¼‰----
+	{
+		D3D11_SAMPLER_DESC sd = {};
+		sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		sd.MaxLOD = D3D11_FLOAT32_MAX;
+		if (FAILED(device->CreateSamplerState(&sd, m_pointClampSmp.GetAddressOf())))
+			return false;
+	}
 
-    // ---- ƒVƒƒƒhƒEƒTƒ“ƒvƒ‰[iComparison Samplerj----
-    {
-        D3D11_SAMPLER_DESC sd = {};
-        sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-        sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-        sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-        sd.MaxLOD = D3D11_FLOAT32_MAX;
-        if (FAILED(device->CreateSamplerState(&sd, m_shadowSmp.GetAddressOf())))
-            return false;
-    }
+	// ---- ã‚·ãƒ£ãƒ‰ã‚¦ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ï¼ˆComparison Samplerï¼‰----
+	{
+		D3D11_SAMPLER_DESC sd = {};
+		sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+		sd.MaxLOD = D3D11_FLOAT32_MAX;
+		if (FAILED(device->CreateSamplerState(&sd, m_shadowSmp.GetAddressOf())))
+			return false;
+	}
 
-    // ---- [“x‘‚«ž‚ÝOFF ƒXƒe[ƒg ----
-    {
-        D3D11_DEPTH_STENCIL_DESC dd = {};
-        dd.DepthEnable = FALSE;
-        dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-        dd.DepthFunc = D3D11_COMPARISON_ALWAYS;
-        if (FAILED(device->CreateDepthStencilState(&dd, m_dsOff.GetAddressOf())))
-            return false;
-    }
+	// ---- æ·±åº¦æ›¸ãè¾¼ã¿OFF ã‚¹ãƒ†ãƒ¼ãƒˆ ----
+	{
+		D3D11_DEPTH_STENCIL_DESC dd = {};
+		dd.DepthEnable = FALSE;
+		dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		dd.DepthFunc = D3D11_COMPARISON_ALWAYS;
+		if (FAILED(device->CreateDepthStencilState(&dd, m_dsOff.GetAddressOf())))
+			return false;
+	}
 
-    // ---- ƒ_ƒ~[”’ƒeƒNƒXƒ`ƒƒiSSAO –¢Ý’èŽž‚ÌƒtƒH[ƒ‹ƒoƒbƒNj----
-    if (!EnsureWhiteSRV(device)) return false;
+	// ---- ãƒ€ãƒŸãƒ¼ç™½ãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼ˆSSAO æœªè¨­å®šæ™‚ã®ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼‰----
+	if (!EnsureWhiteSRV(device)) return false;
 
-    m_initialized = true;
-    return true;
+	m_initialized = true;
+	return true;
 }
 
 // ============================================================
@@ -66,27 +66,27 @@ bool LightingPass::Init(ID3D11Device* device)
 // ============================================================
 bool LightingPass::EnsureWhiteSRV(ID3D11Device* device)
 {
-    if (m_whiteSRV) return true;
+	if (m_whiteSRV) return true;
 
-    uint32_t pixel = 0xFFFFFFFF; // ”’iR=1, G=1, B=1, A=1j
-    D3D11_TEXTURE2D_DESC td = {};
-    td.Width = td.Height = 1;
-    td.MipLevels = 1; td.ArraySize = 1;
-    td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    td.SampleDesc.Count = 1;
-    td.Usage = D3D11_USAGE_DEFAULT;
-    td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	uint32_t pixel = 0xFFFFFFFF; // ç™½ï¼ˆR=1, G=1, B=1, A=1ï¼‰
+	D3D11_TEXTURE2D_DESC td = {};
+	td.Width = td.Height = 1;
+	td.MipLevels = 1; td.ArraySize = 1;
+	td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	td.SampleDesc.Count = 1;
+	td.Usage = D3D11_USAGE_DEFAULT;
+	td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
-    D3D11_SUBRESOURCE_DATA init = {};
-    init.pSysMem = &pixel;
-    init.SysMemPitch = 4;
+	D3D11_SUBRESOURCE_DATA init = {};
+	init.pSysMem = &pixel;
+	init.SysMemPitch = 4;
 
-    if (FAILED(device->CreateTexture2D(&td, &init, m_whiteTex.GetAddressOf())))
-        return false;
-    if (FAILED(device->CreateShaderResourceView(m_whiteTex.Get(), nullptr, m_whiteSRV.GetAddressOf())))
-        return false;
+	if (FAILED(device->CreateTexture2D(&td, &init, m_whiteTex.GetAddressOf())))
+		return false;
+	if (FAILED(device->CreateShaderResourceView(m_whiteTex.Get(), nullptr, m_whiteSRV.GetAddressOf())))
+		return false;
 
-    return true;
+	return true;
 }
 
 // ============================================================
@@ -94,98 +94,100 @@ bool LightingPass::EnsureWhiteSRV(ID3D11Device* device)
 // ============================================================
 void LightingPass::Release()
 {
-    m_lightingCB.Reset();
-    m_pointClampSmp.Reset();
-    m_shadowSmp.Reset();
-    m_dsOff.Reset();
-    m_whiteTex.Reset();
-    m_whiteSRV.Reset();
-    m_ssaoSRV = nullptr;
-    m_initialized = false;
+	m_lightingCB.Reset();
+	m_pointClampSmp.Reset();
+	m_shadowSmp.Reset();
+	m_dsOff.Reset();
+	m_whiteTex.Reset();
+	m_whiteSRV.Reset();
+	m_ssaoSRV = nullptr;
+	m_initialized = false;
 }
 
 // ============================================================
 // Execute
-// GBuffer ‚ð“Ç‚ñ‚Å outputRTV ‚Éƒ‰ƒCƒeƒBƒ“ƒOŒ‹‰Ê‚ð‘‚«ž‚Þ
+// GBuffer ã‚’èª­ã‚“ã§ outputRTV ã«ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°çµæžœã‚’æ›¸ãè¾¼ã‚€
 // ============================================================
 void LightingPass::Execute(
-    ID3D11DeviceContext* ctx,
-    GBuffer* gbuffer,
-    ID3D11RenderTargetView* outputRTV,
-    ID3D11ShaderResourceView* shadowMapSRV,
-    int width, int height,
-    const XMMATRIX& proj,
-    const XMMATRIX& view,
-    const XMFLOAT3& cameraPos)
+	ID3D11DeviceContext* ctx,
+	GBuffer* gbuffer,
+	ID3D11RenderTargetView* outputRTV,
+	ID3D11ShaderResourceView* shadowMapSRV,
+	int width, int height,
+	const XMMATRIX& proj,
+	const XMMATRIX& view,
+	const XMFLOAT3& cameraPos)
 {
-    if (!m_initialized || !gbuffer || !outputRTV) return;
+	if (!m_initialized || !gbuffer || !outputRTV) return;
 
-    auto* sm = ShaderManager::GetInstance();
+	auto* sm = ShaderManager::GetInstance();
 
-    // ƒVƒF[ƒ_[Žæ“¾
-    ID3D11VertexShader* vs = sm->GetVertexShader("VS_Fullscreen");
-    ID3D11PixelShader* ps = sm->GetPixelShader("PS_Lighting");
-    if (!vs || !ps) return;
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å–å¾—
+	ID3D11VertexShader* vs = sm->GetVertexShader("VS_Fullscreen");
+	ID3D11PixelShader* ps = sm->GetPixelShader("PS_Lighting");
+	if (!vs || !ps) return;
 
-    // ---- ’è”ƒoƒbƒtƒ@XV ----
-    LightingCB cb = {};
-    cb.invProj = XMMatrixTranspose(XMMatrixInverse(nullptr, proj));
-    cb.invView = XMMatrixTranspose(XMMatrixInverse(nullptr, view));
-    cb.view = XMMatrixTranspose(view);
-    cb.cameraPos = cameraPos;
-    cb.resolution = XMFLOAT2((float)width, (float)height);
-    ctx->UpdateSubresource(m_lightingCB.Get(), 0, nullptr, &cb, 0, 0);
+	// ---- å®šæ•°ãƒãƒƒãƒ•ã‚¡æ›´æ–° ----
+	LightingCB cb = {};
+	cb.invProj = XMMatrixTranspose(XMMatrixInverse(nullptr, proj));
+	cb.invView = XMMatrixTranspose(XMMatrixInverse(nullptr, view));
+	cb.view = XMMatrixTranspose(view);
+	cb.cameraPos = cameraPos;
+	cb.resolution = XMFLOAT2((float)width, (float)height);
+	ctx->UpdateSubresource(m_lightingCB.Get(), 0, nullptr, &cb, 0, 0);
 
-    // ---- [“x‘‚«ž‚ÝOFFiƒtƒ‹ƒXƒNƒŠ[ƒ“•`‰æ‚Å‚Í[“x•s—vj----
-    // RT ‚ÌƒZƒbƒg‚ÍŒÄ‚Ño‚µ‘¤iMainFramej‚Ås‚¤
-    ctx->OMSetDepthStencilState(m_dsOff.Get(), 0);
+	// ---- æ·±åº¦æ›¸ãè¾¼ã¿OFFï¼ˆãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³æç”»ã§ã¯æ·±åº¦ä¸è¦ï¼‰----
+	// RT ã®ã‚»ãƒƒãƒˆã¯å‘¼ã³å‡ºã—å´ï¼ˆMainFrameï¼‰ã§è¡Œã†
+	ctx->OMSetDepthStencilState(m_dsOff.Get(), 0);
 
-    // ---- ƒrƒ…[ƒ|[ƒg ----
-    D3D11_VIEWPORT vp = {};
-    vp.Width = (float)width;
-    vp.Height = (float)height;
-    vp.MaxDepth = 1.0f;
-    ctx->RSSetViewports(1, &vp);
+	// ---- ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ ----
+	D3D11_VIEWPORT vp = {};
+	vp.Width = (float)width;
+	vp.Height = (float)height;
+	vp.MaxDepth = 1.0f;
+	ctx->RSSetViewports(1, &vp);
 
-    // ---- ƒVƒF[ƒ_[ƒZƒbƒg ----
-    ctx->VSSetShader(vs, nullptr, 0);
-    ctx->PSSetShader(ps, nullptr, 0);
+	// ---- ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚»ãƒƒãƒˆ ----
+	ctx->VSSetShader(vs, nullptr, 0);
+	ctx->PSSetShader(ps, nullptr, 0);
 
-    // ---- ’è”ƒoƒbƒtƒ@ib0 = LightingCBj----
-    // b1 / b2 / b3 ‚ÍƒV[ƒ“‚ªŠù‚ÉƒZƒbƒgÏ‚Ý‚Ì‚à‚Ì‚ð‚»‚Ì‚Ü‚ÜŽg‚¤
-    // iLightArrayCB / LightCountCB / ShadowCBj
-    ID3D11Buffer* cbs[] = { m_lightingCB.Get() };
-    ctx->PSSetConstantBuffers(0, 1, cbs);
+	// ---- å®šæ•°ãƒãƒƒãƒ•ã‚¡ ----
+	ID3D11Buffer* cbs[] = { m_lightingCB.Get() };
+	ctx->PSSetConstantBuffers(0, 1, cbs);
 
-    // ---- SRV ƒZƒbƒg ----
-    // t0=Albedo, t1=Normal, t2=Depth, t3=SSAO, t4=ShadowMap
-    ID3D11ShaderResourceView* ssaoSRV = m_ssaoSRV ? m_ssaoSRV : m_whiteSRV.Get();
-    ID3D11ShaderResourceView* srvs[] = {
-        gbuffer->GetAlbedoSRV(),  // t0
-        gbuffer->GetNormalSRV(),  // t1
-        gbuffer->GetDepthSRV(),   // t2
-        ssaoSRV,                  // t3
-        shadowMapSRV,             // t4
-    };
-    ctx->PSSetShaderResources(0, 5, srvs);
+	// b1/b2: ãƒ©ã‚¤ãƒˆCBã‚’å†ã‚»ãƒƒãƒˆï¼ˆGeometryPassã§PSãŒåˆ‡ã‚Šæ›¿ã‚ã£ãŸå¾Œã‚‚ç¢ºå®Ÿã«åæ˜ ï¼‰
+	if (m_lightArrayCB) { ID3D11Buffer* b[] = { m_lightArrayCB }; ctx->PSSetConstantBuffers(1, 1, b); }
+	if (m_lightCountCB) { ID3D11Buffer* b[] = { m_lightCountCB }; ctx->PSSetConstantBuffers(2, 1, b); }
 
-    // ---- ƒTƒ“ƒvƒ‰[ ----
-    ID3D11SamplerState* smps[] = {
-        m_pointClampSmp.Get(),  // s0: GBuffer “Ç‚ÝŽæ‚è
-        m_shadowSmp.Get(),      // s1: ƒVƒƒƒhƒEƒ}ƒbƒv
-    };
-    ctx->PSSetSamplers(0, 2, smps);
+	// ---- SRV ã‚»ãƒƒãƒˆ ----
+	// t0=Albedo, t1=Normal, t2=Depth, t3=SSAO, t4=ShadowMap
+	ID3D11ShaderResourceView* ssaoSRV = m_ssaoSRV ? m_ssaoSRV : m_whiteSRV.Get();
+	ID3D11ShaderResourceView* srvs[] = {
+		gbuffer->GetAlbedoSRV(),  // t0
+		gbuffer->GetNormalSRV(),  // t1
+		gbuffer->GetDepthSRV(),   // t2
+		ssaoSRV,                  // t3
+		shadowMapSRV,             // t4
+	};
+	ctx->PSSetShaderResources(0, 5, srvs);
 
-    // ---- ƒtƒ‹ƒXƒNƒŠ[ƒ“ŽOŠpŒ`•`‰æi’¸“_ƒoƒbƒtƒ@•s—vj----
-    ctx->IASetInputLayout(nullptr);
-    ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    ctx->Draw(3, 0);
+	// ---- ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ ----
+	ID3D11SamplerState* smps[] = {
+		m_pointClampSmp.Get(),  // s0: GBuffer èª­ã¿å–ã‚Š
+		m_shadowSmp.Get(),      // s1: ã‚·ãƒ£ãƒ‰ã‚¦ãƒžãƒƒãƒ—
+	};
+	ctx->PSSetSamplers(0, 2, smps);
 
-    // ---- SRV ƒoƒCƒ“ƒh‰ðœiŽŸƒtƒŒ[ƒ€‚Å RTV ‚Æ‚µ‚ÄŽg‚¦‚é‚æ‚¤‚Éj----
-    ID3D11ShaderResourceView* nullSRVs[5] = {};
-    ctx->PSSetShaderResources(0, 5, nullSRVs);
+	// ---- ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ä¸‰è§’å½¢æç”»ï¼ˆé ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä¸è¦ï¼‰----
+	ctx->IASetInputLayout(nullptr);
+	ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ctx->Draw(3, 0);
 
-    // ---- [“xƒXƒe[ƒg‚ð–ß‚· ----
-    ctx->OMSetDepthStencilState(nullptr, 0);
+	// ---- SRV ãƒã‚¤ãƒ³ãƒ‰è§£é™¤ï¼ˆæ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã§ RTV ã¨ã—ã¦ä½¿ãˆã‚‹ã‚ˆã†ã«ï¼‰----
+	ID3D11ShaderResourceView* nullSRVs[5] = {};
+	ctx->PSSetShaderResources(0, 5, nullSRVs);
+
+	// ---- æ·±åº¦ã‚¹ãƒ†ãƒ¼ãƒˆã‚’æˆ»ã™ ----
+	ctx->OMSetDepthStencilState(nullptr, 0);
 }

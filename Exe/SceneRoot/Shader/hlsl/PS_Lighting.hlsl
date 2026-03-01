@@ -230,10 +230,10 @@ float4 main(PS_INPUT i) : SV_TARGET
 
     // SSAO（LightingPass::SetSSAOSRV() でセットされた AO テクスチャ）
     // セットされていない場合は白テクスチャ（ao=1.0）が使われる
-    float ao = gSSAOTex.Sample(gPointClamp, i.uv).r;
+    float ao = 1.0f; 
 
     // シャドウ
-    float shadow = CalculateShadow(worldPos);
+    float shadow = 1.0f;
 
     // ライティング計算
     float3 lighting = 0;

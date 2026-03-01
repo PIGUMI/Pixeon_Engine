@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <wrl/client.h>
@@ -8,69 +8,80 @@ class GBuffer;
 // ============================================================
 // LightingPass
 //
-// GBuffer ‚Ì Albedo / Normal / Depth ‚ğ“Ç‚İ‚ñ‚Å
-// ƒ‰ƒCƒeƒBƒ“ƒOŒvZ‚ğs‚¢AÅIƒJƒ‰[‚ğo—Í‚·‚éƒNƒ‰ƒX
+// GBuffer ã® Albedo / Normal / Depth ã‚’èª­ã¿è¾¼ã‚“ã§
+// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°è¨ˆç®—ã‚’è¡Œã„ã€æœ€çµ‚ã‚«ãƒ©ãƒ¼ã‚’å‡ºåŠ›ã™ã‚‹ã‚¯ãƒ©ã‚¹
 //
-// g‚¢•û:
-//   Init()       ¨ ‹N“®‚É1‰ñ
-//   Execute()    ¨ ƒtƒŒ[ƒ€‚²‚Æ‚É Geometry Pass ‚ÌŒã‚ÉŒÄ‚Ô
+// ä½¿ã„æ–¹:
+//   Init()       â†’ èµ·å‹•æ™‚ã«1å›
+//   Execute()    â†’ ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨ã« Geometry Pass ã®å¾Œã«å‘¼ã¶
 // ============================================================
 class LightingPass
 {
 public:
-    bool Init(ID3D11Device* device);
-    void Release();
+	bool Init(ID3D11Device* device);
+	void Release();
 
-    // Lighting Pass ‚ğÀs‚µ‚Ä output RTV ‚É‘‚«‚Ş
-    // gbuffer    : Geometry Pass ‚Å‘‚«‚ñ‚¾ GBuffer
-    // outputRTV  : ‘‚«‚İæ RTVilayerRT ‚Ì RTVj
-    // width/height: ƒŒƒ“ƒ_ƒŠƒ“ƒO‰ğ‘œ“x
-    // proj       : ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-    // view       : ƒJƒƒ‰‚Ìƒrƒ…[s—ñ
-    // cameraPos  : ƒJƒƒ‰‚Ìƒ[ƒ‹ƒhÀ•W
-    void Execute(
-        ID3D11DeviceContext* ctx,
-        GBuffer* gbuffer,
-        ID3D11RenderTargetView* outputRTV,
-        ID3D11ShaderResourceView* shadowMapSRV,
-        int width, int height,
-        const DirectX::XMMATRIX& proj,
-        const DirectX::XMMATRIX& view,
-        const DirectX::XMFLOAT3& cameraPos
-    );
+	// Lighting Pass ã‚’å®Ÿè¡Œã—ã¦ output RTV ã«æ›¸ãè¾¼ã‚€
+	// gbuffer    : Geometry Pass ã§æ›¸ãè¾¼ã‚“ã  GBuffer
+	// outputRTV  : æ›¸ãè¾¼ã¿å…ˆ RTVï¼ˆlayerRT ã® RTVï¼‰
+	// width/height: ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°è§£åƒåº¦
+	// proj       : ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	// view       : ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+	// cameraPos  : ã‚«ãƒ¡ãƒ©ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
+	void Execute(
+		ID3D11DeviceContext* ctx,
+		GBuffer* gbuffer,
+		ID3D11RenderTargetView* outputRTV,
+		ID3D11ShaderResourceView* shadowMapSRV,
+		int width, int height,
+		const DirectX::XMMATRIX& proj,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMFLOAT3& cameraPos
+	);
 
-    // SSAO ƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒgiƒXƒeƒbƒv5‚Åg—pj
-    void SetSSAOSRV(ID3D11ShaderResourceView* srv) { m_ssaoSRV = srv; }
+	// SSAO ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆ
+	void SetSSAOSRV(ID3D11ShaderResourceView* srv) { m_ssaoSRV = srv; }
+
+	// ãƒ©ã‚¤ãƒˆå®šæ•°ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆï¼ˆScene::UploadLightsToGPU()ã®å¾Œã«å‘¼ã¶ï¼‰
+	void SetLightBuffers(ID3D11Buffer* lightArrayCB, ID3D11Buffer* lightCountCB)
+	{
+		m_lightArrayCB = lightArrayCB;
+		m_lightCountCB = lightCountCB;
+	}
 
 private:
-    // ’è”ƒoƒbƒtƒ@\‘¢‘Ì
-    struct LightingCB
-    {
-        DirectX::XMMATRIX invProj;
-        DirectX::XMMATRIX invView;
-        DirectX::XMMATRIX view;
-        DirectX::XMFLOAT3 cameraPos;
-        float             _pad0;
-        DirectX::XMFLOAT2 resolution;
-        DirectX::XMFLOAT2 _pad1;
-    };
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
+	struct LightingCB
+	{
+		DirectX::XMMATRIX invProj;
+		DirectX::XMMATRIX invView;
+		DirectX::XMMATRIX view;
+		DirectX::XMFLOAT3 cameraPos;
+		float             _pad0;
+		DirectX::XMFLOAT2 resolution;
+		DirectX::XMFLOAT2 _pad1;
+	};
 
-    // ”’ƒeƒNƒXƒ`ƒƒiSSAO ‚ª–¢İ’è‚Ìê‡‚Ìƒ_ƒ~[j
-    bool EnsureWhiteSRV(ID3D11Device* device);
+	// ç™½ãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼ˆSSAO ãŒæœªè¨­å®šã®å ´åˆã®ãƒ€ãƒŸãƒ¼ï¼‰
+	bool EnsureWhiteSRV(ID3D11Device* device);
 
-    Microsoft::WRL::ComPtr<ID3D11Buffer>       m_lightingCB;
-    Microsoft::WRL::ComPtr<ID3D11SamplerState> m_pointClampSmp;
-    Microsoft::WRL::ComPtr<ID3D11SamplerState> m_shadowSmp;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_lightingCB;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_pointClampSmp;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_shadowSmp;
 
-    // [“x‘‚«‚İOFF—pƒXƒe[ƒgiƒtƒ‹ƒXƒNƒŠ[ƒ“•`‰æ‚Å‚Í[“x•s—vj
-    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_dsOff;
+	// æ·±åº¦æ›¸ãè¾¼ã¿OFFç”¨ã‚¹ãƒ†ãƒ¼ãƒˆï¼ˆãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³æç”»ã§ã¯æ·±åº¦ä¸è¦ï¼‰
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_dsOff;
 
-    // SSAO SRViŠO•”‚©‚çƒZƒbƒgA‚È‚¯‚ê‚Îƒ_ƒ~[”’ƒeƒNƒXƒ`ƒƒ‚ğg—pj
-    ID3D11ShaderResourceView* m_ssaoSRV = nullptr;
+	// SSAO SRVï¼ˆå¤–éƒ¨ã‹ã‚‰ã‚»ãƒƒãƒˆã€ãªã‘ã‚Œã°ãƒ€ãƒŸãƒ¼ç™½ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ï¼‰
+	ID3D11ShaderResourceView* m_ssaoSRV = nullptr;
 
-    // ƒ_ƒ~[”’ƒeƒNƒXƒ`ƒƒiSSAO–¢İ’è‚ÌƒtƒH[ƒ‹ƒoƒbƒNj
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_whiteTex;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_whiteSRV;
+	// ãƒ©ã‚¤ãƒˆCBï¼ˆScene::UploadLightsToGPU()ã‹ã‚‰ã‚»ãƒƒãƒˆï¼‰
+	ID3D11Buffer* m_lightArrayCB = nullptr;
+	ID3D11Buffer* m_lightCountCB = nullptr;
 
-    bool m_initialized = false;
+	// ãƒ€ãƒŸãƒ¼ç™½ãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼ˆSSAOæœªè¨­å®šæ™‚ã®ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼‰
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_whiteTex;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_whiteSRV;
+
+	bool m_initialized = false;
 };

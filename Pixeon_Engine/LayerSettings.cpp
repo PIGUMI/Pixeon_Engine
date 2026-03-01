@@ -87,6 +87,22 @@ void Layer::ApplyPostEffectsToScreen(ID3D11ShaderResourceView* input,
 		// SSAOエフェクトなら深度SRVとカメラ行列をセット
 		if (auto* ssao = dynamic_cast<SSAOEffect*>(activeEffects[i].get()))
 		{
+			// Deferred方式でGenerateAO()実行済みの場合はスキップ
+			if (ssao->IsAOGenerated())
+			{
+				ssao->ResetAOGenerated();
+				// このエフェクトをスキップして次へ。最後のエフェクトならカラーを画面にコピー
+				bool isLast = (i == activeEffects.size() - 1);
+				if (isLast && currentInput && oldRTV)
+				{
+					ctx->OMSetRenderTargets(1, &oldRTV, nullptr);
+					D3D11_VIEWPORT vp{}; vp.Width = (float)width; vp.Height = (float)height; vp.MaxDepth = 1.0f;
+					ctx->RSSetViewports(1, &vp);
+					ImageUtils::DrawSRV(currentInput, 0.0f, 0.0f, (float)width, (float)height,
+						DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMFLOAT4(0, 0, 1, 1), true, 1.0f);
+				}
+				continue;
+			}
 			if (depthSRV)  ssao->SetDepthSRV(depthSRV);
 			if (proj && invProj) ssao->SetCameraMatrices(*proj, *invProj);
 		}

@@ -1,72 +1,72 @@
-#pragma once
+ï»¿#pragma once
 #include <d3d11.h>
 #include <wrl/client.h>
 
 // ============================================================
 // GBuffer
 //
-// Deferred Rendering —p‚Ì•¡”ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgŠÇ—ƒNƒ‰ƒX
+// Deferred Rendering ç”¨ã®è¤‡æ•°ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆç®¡ç†ã‚¯ãƒ©ã‚¹
 //
-// \¬:
-//   RT0: Albedo        RGBA8_UNORM      (RGB=ƒeƒNƒXƒ`ƒƒF, A=–¢g—p)
-//   RT1: Normal        RGBA16F          (RGB=ƒrƒ…[‹óŠÔ–@ü, A=–¢g—p)
-//   Depth: R24G8_TYPELESS               ([“xSRV‚Æ‚µ‚Ä“Ç‚İæ‚è‰Â”\)
+// æ§‹æˆ:
+//   RT0: Albedo        RGBA8_UNORM      (RGB=ãƒ†ã‚¯ã‚¹ãƒãƒ£è‰², A=æœªä½¿ç”¨)
+//   RT1: Normal        RGBA16F          (RGB=ãƒ“ãƒ¥ãƒ¼ç©ºé–“æ³•ç·š, A=æœªä½¿ç”¨)
+//   Depth: R24G8_TYPELESS               (æ·±åº¦SRVã¨ã—ã¦èª­ã¿å–ã‚Šå¯èƒ½)
 //
-// [“xƒoƒbƒtƒ@‚Í Geometry Pass ‚Å‘‚«‚İA
-// SSAO Pass / Lighting Pass ‚Å SRV ‚Æ‚µ‚Ä“Ç‚İæ‚é
+// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã¯ Geometry Pass ã§æ›¸ãè¾¼ã¿ã€
+// SSAO Pass / Lighting Pass ã§ SRV ã¨ã—ã¦èª­ã¿å–ã‚‹
 // ============================================================
 class GBuffer
 {
 public:
-    // ‰Šú‰»E‰ğ•ú
-    bool Init(ID3D11Device* device, int width, int height);
-    void Release();
+	// åˆæœŸåŒ–ãƒ»è§£æ”¾
+	bool Init(ID3D11Device* device, int width, int height);
+	void Release();
 
-    // Geometry Pass ‚ÌŠJn
-    // •¡”RT‚Æ[“xƒoƒbƒtƒ@‚ğƒZƒbƒg‚µAƒNƒŠƒA‚·‚é
-    void BeginGeometryPass(ID3D11DeviceContext* ctx);
+	// Geometry Pass ã®é–‹å§‹
+	// è¤‡æ•°RTã¨æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆã—ã€ã‚¯ãƒªã‚¢ã™ã‚‹
+	void BeginGeometryPass(ID3D11DeviceContext* ctx);
 
-    // Geometry Pass ‚ÌI—¹
-    // RT‚ğƒfƒtƒHƒ‹ƒg‚É–ß‚·iEndŒã‚ÉSRV‚Æ‚µ‚Ä“Ç‚ß‚éj
-    void EndGeometryPass(ID3D11DeviceContext* ctx);
+	// Geometry Pass ã®çµ‚äº†
+	// RTã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«æˆ»ã™ï¼ˆEndå¾Œã«SRVã¨ã—ã¦èª­ã‚ã‚‹ï¼‰
+	void EndGeometryPass(ID3D11DeviceContext* ctx);
 
-    // ƒTƒCƒY•ÏXi‰ğ‘œ“x•ÏXj
-    bool Resize(ID3D11Device* device, int width, int height);
+	// ã‚µã‚¤ã‚ºå¤‰æ›´ï¼ˆè§£åƒåº¦å¤‰æ›´æ™‚ï¼‰
+	bool Resize(ID3D11Device* device, int width, int height);
 
-    // ---- SRV ƒAƒNƒZƒTiLighting / SSAO Pass ‚Åg—pj----
-    // RT0: Albedo SRV
-    ID3D11ShaderResourceView* GetAlbedoSRV()  const { return m_albedoSRV.Get(); }
-    // RT1: Normal SRV
-    ID3D11ShaderResourceView* GetNormalSRV()  const { return m_normalSRV.Get(); }
-    // Depth SRV (R24_UNORM_X8_TYPELESS)
-    ID3D11ShaderResourceView* GetDepthSRV()   const { return m_depthSRV.Get(); }
-    // DSViGeometry Pass Œã‚ÉTransparent•`‰æ“™‚ÅÄ—˜—p‚·‚éê‡j
-    ID3D11DepthStencilView* GetDSV()        const { return m_dsv.Get(); }
+	// ---- SRV ã‚¢ã‚¯ã‚»ã‚µï¼ˆLighting / SSAO Pass ã§ä½¿ç”¨ï¼‰----
+	// RT0: Albedo SRV
+	ID3D11ShaderResourceView* GetAlbedoSRV()  const { return m_albedoSRV.Get(); }
+	// RT1: Normal SRV
+	ID3D11ShaderResourceView* GetNormalSRV()  const { return m_normalSRV.Get(); }
+	// Depth SRV (R24_UNORM_X8_TYPELESS)
+	ID3D11ShaderResourceView* GetDepthSRV()   const { return m_depthSRV.Get(); }
+	// DSVï¼ˆGeometry Pass å¾Œã«Transparentæç”»ç­‰ã§å†åˆ©ç”¨ã™ã‚‹å ´åˆï¼‰
+	ID3D11DepthStencilView* GetDSV()        const { return m_dsv.Get(); }
 
-    int GetWidth()  const { return m_width; }
-    int GetHeight() const { return m_height; }
+	int GetWidth()  const { return m_width; }
+	int GetHeight() const { return m_height; }
 
 private:
-    // RT0: Albedo  (RGBA8_UNORM)
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_albedoTex;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_albedoRTV;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoSRV;
+	// RT0: Albedo  (RGBA8_UNORM)
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_albedoTex;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_albedoRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoSRV;
 
-    // RT1: Normal  (RGBA16F)
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_normalTex;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_normalRTV;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalSRV;
+	// RT1: Normal  (RGBA16F)
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_normalTex;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_normalRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalSRV;
 
-    // Depth (R24G8_TYPELESS ¨ DSV + SRV)
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_depthTex;
-    Microsoft::WRL::ComPtr<ID3D11DepthStencilView>   m_dsv;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthSRV;
+	// Depth (R24G8_TYPELESS â†’ DSV + SRV)
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_depthTex;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>   m_dsv;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthSRV;
 
-    // ƒrƒ…[ƒ|[ƒg
-    D3D11_VIEWPORT m_viewport = {};
-    int m_width = 0;
-    int m_height = 0;
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ
+	D3D11_VIEWPORT m_viewport = {};
+	int m_width = 0;
+	int m_height = 0;
 
-    // “à•”¶¬ƒwƒ‹ƒp[
-    bool CreateRenderTargets(ID3D11Device* device, int width, int height);
+	// å†…éƒ¨ç”Ÿæˆãƒ˜ãƒ«ãƒ‘ãƒ¼
+	bool CreateRenderTargets(ID3D11Device* device, int width, int height);
 };

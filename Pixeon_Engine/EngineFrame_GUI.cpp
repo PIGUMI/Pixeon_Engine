@@ -131,7 +131,6 @@ void EngineFrame::DrawGUI()
 {
 	StatusBarWindow();
 
-
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGuiID DockSpace = ImGui::GetID("EngineFrameDockSpace");
 	ImGui::DockSpace(DockSpace, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);

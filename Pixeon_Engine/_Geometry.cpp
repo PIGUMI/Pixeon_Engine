@@ -5,7 +5,7 @@
 #include "SceneManger.h"
 #include "Scene.h"
 #include <DirectXMath.h>
-#include <algorithm> 
+#include <algorithm>
 
 LineRenderer* LineRenderer::GetInstance() { static LineRenderer inst; return &inst; }
 
@@ -89,8 +89,6 @@ void LineRenderer::DrawLine(const DirectX::XMFLOAT3& s, const DirectX::XMFLOAT3&
 
 	SAFE_RELEASE(vb);
 }
-
-
 
 void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& proj, const DirectX::XMFLOAT3& cameraPosXZ)
 {

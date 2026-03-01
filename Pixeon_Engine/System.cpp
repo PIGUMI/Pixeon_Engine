@@ -229,7 +229,6 @@ void DirectX11::ApplyToneMappingPass()
 		g_pContext->PSSetShader(ps, nullptr, 0);
 		// HDRテクスチャをピクセルシェーダーにセット
 		g_pContext->PSSetShaderResources(0, 1, _hdrSRV.GetAddressOf());
-
 	}
 }
 

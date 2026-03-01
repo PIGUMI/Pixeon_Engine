@@ -38,7 +38,6 @@ AbstractScene::~AbstractScene()
 {
 	SaveToFile();
 
-
 	for (auto& obj : _objects) {
 		if (obj) {
 			obj->_parentObject = nullptr;
@@ -221,7 +220,6 @@ void AbstractScene::EditUpdate() {
 	}
 
 	if (!_ToBeRemoved.empty()) {
-
 		for (auto& obj : _ToBeRemoved) {
 			if (!obj) continue;
 
@@ -391,7 +389,6 @@ void AbstractScene::PlayUpdate() {
 }
 
 void AbstractScene::Draw(int Layer) {
-
 	RenderShadowMap();
 	UploadLightsToGPU();
 
@@ -808,6 +805,8 @@ void AbstractScene::UploadLightsToGPU() {
 	ctx->PSSetConstantBuffers(1, 1, cbs1);
 	ID3D11Buffer* cbs2[] = { gLightCountCB };
 	ctx->PSSetConstantBuffers(2, 1, cbs2);
+	m_lightArrayCB = gLightCB;
+	m_lightCountCB = gLightCountCB;
 }
 
 void AbstractScene::InitPhysics()
@@ -1214,22 +1213,14 @@ Layer* AbstractScene::GetLayer(int index)
 	if (index < 0 || index >= MAX_LAYER_COUNT) return nullptr;
 	return _layers[index];
 }
-// ============================================================
-// DrawForGBuffer
-// Geometry Pass 専用の描画
-// ModelRenderComponent::DrawForGBuffer を呼んで
-// GBuffer に Albedo / Normal を書き込む
-// シャドウ / ライトのアップロードは Draw() 側で済んでいる
-// ============================================================
+
 void AbstractScene::DrawForGBuffer(int Layer)
 {
-	// シャドウマップとライト情報は Draw() でセット済みなので
-	// ここではオブジェクトの DrawForGBuffer だけ呼ぶ
+
 	for (auto& obj : _objects)
 	{
 		if (!obj) continue;
 
-		// 各コンポーネントに DrawForGBuffer があれば呼ぶ
 		for (auto& comp : obj->GetComponents())
 		{
 			if (!comp) continue;
@@ -1239,12 +1230,7 @@ void AbstractScene::DrawForGBuffer(int Layer)
 	}
 }
 
-// ============================================================
-// PrepareShadowAndLights
-// シャドウマップ描画 + ライトアップロード + 定数バッファセット
-// Geometry Pass の前に1回だけ呼ぶ
-// モデルの描画は行わない
-// ============================================================
+
 void AbstractScene::PrepareShadowAndLights(int Layer)
 {
 	RenderShadowMap();
@@ -1273,7 +1259,6 @@ void AbstractScene::PrepareShadowAndLights(int Layer)
 	ID3D11Buffer* cbs3[] = { shadowCB.Get() };
 	ctx->PSSetConstantBuffers(3, 1, cbs3);
 
-	// シャドウマップを t1 にバインド（Lighting Pass で使用）
 	ID3D11ShaderResourceView* srvs[] = { m_shadowMapSRV.Get() };
 	ctx->PSSetShaderResources(1, 1, srvs);
 

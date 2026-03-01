@@ -56,6 +56,8 @@ public:
 	ID3D11ShaderResourceView* GetShadowMapSRV() const { return m_shadowMapSRV.Get(); }
 	void DrawForGBuffer(int Layer);
 	void PrepareShadowAndLights(int Layer);
+	ID3D11Buffer* GetLightArrayCB()  const { return m_lightArrayCB; }
+	ID3D11Buffer* GetLightCountCB()  const { return m_lightCountCB; }
 	void UnregisterLight(LightComponent* l);
 
 	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }
@@ -103,4 +105,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_shadowSampler;
 
 	static constexpr int SHADOW_MAP_SIZE = 8192;
+
+	// ライト定数バッファ（LightingPassに渡すため保持）
+	ID3D11Buffer* m_lightArrayCB = nullptr;
+	ID3D11Buffer* m_lightCountCB = nullptr;
 };

@@ -589,7 +589,6 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotation(int boneIndex) cons
 	float cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
 	float pitch = std::atan2(sinp, cosp);
 
-
 	float siny = 2.0f * (quat.w * quat.y - quat.z * quat.x);
 	float yaw;
 	if (std::abs(siny) >= 1.0f) {
