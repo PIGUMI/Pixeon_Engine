@@ -21,13 +21,14 @@
 // --------------------------------------------------------
 cbuffer LightingCB : register(b0)
 {
-    matrix gInvProj;     // 深度→ビュー空間座標の復元用
-    matrix gInvView;     // ビュー空間→ワールド空間
-    matrix gView;        // ワールド→ビュー空間（法線変換）
-    float3 gCameraPos;   // ワールド空間カメラ位置
+    matrix gInvProj;
+    matrix gInvView;
+    matrix gView;
+    float3 gCameraPos;
     float  _pad0;
-    float2 gResolution;  // レンダリング解像度
-    float2 _pad1;
+    float2 gResolution;
+    float  gAOStrength;
+    float  _pad1;
 };
 
 struct LightGPU
@@ -129,7 +130,7 @@ float CalculateShadow(float3 worldPos)
         [unroll]
         for (int y = -1; y <= 1; ++y)
         {
-            float2 offset = float2(x, y) * (1.0f / 4096.0f);
+            float2 offset = float2(x, y) * (1.0f / 8192.0f);
             shadow += gShadowMap.SampleCmpLevelZero(
                 gShadowSampler,
                 shadowTexCoord + offset,
@@ -230,10 +231,11 @@ float4 main(PS_INPUT i) : SV_TARGET
 
     // SSAO（LightingPass::SetSSAOSRV() でセットされた AO テクスチャ）
     // セットされていない場合は白テクスチャ（ao=1.0）が使われる
-    float ao = 1.0f; 
+    float aoRaw = gSSAOTex.Sample(gPointClamp, i.uv).r;
+    float ao = lerp(1.0f, aoRaw, gAOStrength);
 
     // シャドウ
-    float shadow = 1.0f;
+    float shadow = CalculateShadow(worldPos);
 
     // ライティング計算
     float3 lighting = 0;

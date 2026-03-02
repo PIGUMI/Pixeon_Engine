@@ -41,6 +41,7 @@ public:
 
 	// SSAO テクスチャをセット
 	void SetSSAOSRV(ID3D11ShaderResourceView* srv) { m_ssaoSRV = srv; }
+	void SetAOStrength(float s) { m_aoStrength = s; }
 
 	// ライト定数バッファをセット（Scene::UploadLightsToGPU()の後に呼ぶ）
 	void SetLightBuffers(ID3D11Buffer* lightArrayCB, ID3D11Buffer* lightCountCB)
@@ -59,7 +60,8 @@ private:
 		DirectX::XMFLOAT3 cameraPos;
 		float             _pad0;
 		DirectX::XMFLOAT2 resolution;
-		DirectX::XMFLOAT2 _pad1;
+		float             aoStrength;
+		float             _pad1;
 	};
 
 	// 白テクスチャ（SSAO が未設定の場合のダミー）
@@ -74,6 +76,7 @@ private:
 
 	// SSAO SRV（外部からセット、なければダミー白テクスチャを使用）
 	ID3D11ShaderResourceView* m_ssaoSRV = nullptr;
+	float m_aoStrength = 1.0f;
 
 	// ライトCB（Scene::UploadLightsToGPU()からセット）
 	ID3D11Buffer* m_lightArrayCB = nullptr;

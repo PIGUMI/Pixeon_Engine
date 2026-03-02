@@ -134,6 +134,7 @@ void LightingPass::Execute(
 	cb.view = XMMatrixTranspose(view);
 	cb.cameraPos = cameraPos;
 	cb.resolution = XMFLOAT2((float)width, (float)height);
+	cb.aoStrength = m_aoStrength;
 	ctx->UpdateSubresource(m_lightingCB.Get(), 0, nullptr, &cb, 0, 0);
 
 	// ---- 深度書き込みOFF（フルスクリーン描画では深度不要）----

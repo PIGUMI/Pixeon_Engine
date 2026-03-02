@@ -212,6 +212,7 @@ void MainFrame::Draw()
 									DirectX::XMMatrixInverse(nullptr, cam2->GetProjection()));
 								ssao->GenerateAO(_engineConfig.screenWidth, _engineConfig.screenHeight);
 								aoSRV = ssao->GetAOSRV();
+								if (lp) lp->SetAOStrength(ssao->aoStrength);
 							}
 							break;
 						}

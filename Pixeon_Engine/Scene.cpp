@@ -981,7 +981,7 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 
 	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
 
-	float size = 20.0f;
+	float size = 150.0f;
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
 		size, size,
 		0.5f,
