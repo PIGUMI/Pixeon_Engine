@@ -212,7 +212,6 @@ void MainFrame::Draw()
 									DirectX::XMMatrixInverse(nullptr, cam2->GetProjection()));
 								ssao->GenerateAO(_engineConfig.screenWidth, _engineConfig.screenHeight);
 								aoSRV = ssao->GetAOSRV();
-								if (lp) lp->SetAOStrength(ssao->aoStrength);
 							}
 							break;
 						}
@@ -248,6 +247,8 @@ void MainFrame::Draw()
 					ctx->OMSetRenderTargets(1, &layerRTV, gb->GetDSV());
 					ctx->OMSetDepthStencilState(nullptr, 0);
 					dx11->SetBlendMode(BLEND_ALPHA);
+					// Forward描画（ImageRender/LineRenderer/Grid）
+					scene->DrawForwardObjects(Layer_Index);
 					if (cam)
 						scene->DrawEffects(Layer_Index, cam);
 

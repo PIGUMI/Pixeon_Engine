@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "_Geometry.h"
 #include "ShaderManager.h"
 #include "System.h"
@@ -49,7 +49,7 @@ void LineRenderer::DrawLine(const DirectX::XMFLOAT3& s, const DirectX::XMFLOAT3&
 	auto device = DirectX11::GetInstance()->GetDevice();
 	auto context = DirectX11::GetInstance()->GetContext();
 
-	// ’¸“_ƒoƒbƒtƒ@
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 	D3D11_BUFFER_DESC vbDesc = {};
 	vbDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbDesc.ByteWidth = sizeof(verts);
@@ -59,14 +59,14 @@ void LineRenderer::DrawLine(const DirectX::XMFLOAT3& s, const DirectX::XMFLOAT3&
 	ID3D11Buffer* vb = nullptr;
 	if (FAILED(device->CreateBuffer(&vbDesc, &vdat, &vb))) return;
 
-	// CameraCB ‚Ö‘‚«‚İiShaderManager •û®j
+	// CameraCB ã¸æ›¸ãè¾¼ã¿ï¼ˆShaderManager æ–¹å¼ï¼‰
 	struct MatCB { DirectX::XMFLOAT4X4 world, view, proj; } cb;
 	cb.world = world;
 	cb.view = view;
 	cb.proj = proj;
 
 	ShaderManager* sm = ShaderManager::GetInstance();
-	// CameraCB ‚Æ‚¢‚¤ cbuffer –¼‚ğ‘z’è
+	// CameraCB ã¨ã„ã† cbuffer åã‚’æƒ³å®š
 	sm->SetCBufferRaw(ShaderStage::VS, "VS_Line", "CameraCB", &cb, sizeof(cb));
 	sm->CommitAndBind(ShaderStage::VS, "VS_Line");
 
@@ -96,26 +96,26 @@ void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFL
 	DirectX::XMFLOAT4X4 identity;
 	DirectX::XMStoreFloat4x4(&identity, DirectX::XMMatrixIdentity());
 
-	// ƒOƒŠƒbƒh’†S‚ğƒJƒƒ‰‚ÌX,Z‚É‡‚í‚¹‚é
+	// ã‚°ãƒªãƒƒãƒ‰ä¸­å¿ƒã‚’ã‚«ãƒ¡ãƒ©ã®X,Zã«åˆã‚ã›ã‚‹
 	float half = size * 0.5f;
 	int start = static_cast<int>(cameraPosXZ.x - half);
 	int end_x = static_cast<int>(cameraPosXZ.x + half);
 	int start_z = static_cast<int>(cameraPosXZ.z - half);
 	int end_z = static_cast<int>(cameraPosXZ.z + half);
 
-	float maxDistance = half * 1.5f; // “§–¾‰»‚ªn‚Ü‚é‹——£i’²®‰Âj
+	float maxDistance = half * 1.5f; // é€æ˜åŒ–ãŒå§‹ã¾ã‚‹è·é›¢ï¼ˆèª¿æ•´å¯ï¼‰
 
-	// X²ƒOƒŠƒbƒhFZŒÅ’èAX‘–¸
+	// Xè»¸ã‚°ãƒªãƒƒãƒ‰ï¼šZå›ºå®šã€Xèµ°æŸ»
 	for (int i = start; i <= end_x; ++i) {
 		float x = static_cast<float>(i);
 		for (int j = start_z; j < end_z; ++j) {
 			float z0 = static_cast<float>(j), z1 = z0 + 1.0f;
-			// ü‚Ì’†“_‚ğg—p‚µA“§–¾“x‚ğ‹——£‚ÅŒˆ’è
+			// ç·šã®ä¸­ç‚¹ã‚’ä½¿ç”¨ã—ã€é€æ˜åº¦ã‚’è·é›¢ã§æ±ºå®š
 			float midX = x, midZ = (z0 + z1) * 0.5f;
 			float dist = std::sqrt((midX - cameraPosXZ.x) * (midX - cameraPosXZ.x) + (midZ - cameraPosXZ.z) * (midZ - cameraPosXZ.z));
-			float alpha = 1.0f - std::max(0.0f, std::min(dist / maxDistance, 1.0f)); // maxDistanceˆÈã‚Å0, Œ´“_‚Å1
+			float alpha = 1.0f - std::max(0.0f, std::min(dist / maxDistance, 1.0f)); // maxDistanceä»¥ä¸Šã§0, åŸç‚¹ã§1
 
-			// FF’†‰›ü‚¾‚¯­‚µ–¾‚é‚­i—á‚Æ‚µ‚ÄX=0j
+			// è‰²ï¼šä¸­å¤®ç·šã ã‘å°‘ã—æ˜ã‚‹ãï¼ˆä¾‹ã¨ã—ã¦X=0ï¼‰
 			DirectX::XMFLOAT4 color = (std::abs(x) < 0.01f) ? DirectX::XMFLOAT4(1, 1, 1, alpha) : DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, alpha);
 
 			lr->DrawLine(
@@ -125,7 +125,7 @@ void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFL
 			);
 		}
 	}
-	// Z²ƒOƒŠƒbƒhFXŒÅ’èAZ‘–¸
+	// Zè»¸ã‚°ãƒªãƒƒãƒ‰ï¼šXå›ºå®šã€Zèµ°æŸ»
 	for (int j = start_z; j <= end_z; ++j) {
 		float z = static_cast<float>(j);
 		for (int i = start; i < end_x; ++i) {

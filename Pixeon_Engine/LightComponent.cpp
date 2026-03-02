@@ -28,16 +28,19 @@ void LightComponent::EditUpdate() {
 void LightComponent::Draw(int Layer) {
 	if (!m_debugDraw || !_Parent || !_Parent->GetParentScene()) return;
 
-	switch (m_type) {
-	case LightType::Directional:
-		DrawDirectionalLight();
-		break;
-	case LightType::Point:
-		DrawPointLight();
-		break;
-	case LightType::Spot:
-		DrawSpotLight();
-		break;
+	if (Layer == 0)
+	{
+		switch (m_type) {
+		case LightType::Directional:
+			DrawDirectionalLight();
+			break;
+		case LightType::Point:
+			DrawPointLight();
+			break;
+		case LightType::Spot:
+			DrawSpotLight();
+			break;
+		}
 	}
 }
 

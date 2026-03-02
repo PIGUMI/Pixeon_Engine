@@ -981,7 +981,7 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 
 	DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, target, up);
 
-	float size = 150.0f;
+	float size = 20.0f;
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicLH(
 		size, size,
 		0.5f,
@@ -1214,9 +1214,33 @@ Layer* AbstractScene::GetLayer(int index)
 	return _layers[index];
 }
 
+void AbstractScene::DrawForwardObjects(int Layer)
+{
+	// GBuffer/LightingPass後にForward描画するオブジェクト
+	// (ImageRender, LineRenderer, Grid等)
+	auto ctx = DirectX11::GetInstance()->GetContext();
+
+	if (!InGame)
+	{
+		if (Layer == 0) {
+			DirectX::XMFLOAT4X4 view, proj;
+			DirectX::XMFLOAT3 Pos = { 0,0,0 };
+			if (_MainCamera) {
+				view = _MainCamera->GetViewMatrix();
+				proj = _MainCamera->GetProjectionMatrix();
+				Pos = _MainCamera->GetWorldPosition();
+			}
+			Draw1mGrid(20.0f, view, proj, Pos);
+		}
+	}
+
+	for (auto& obj : _objects) {
+		if (obj) obj->Draw(Layer);
+	}
+}
+
 void AbstractScene::DrawForGBuffer(int Layer)
 {
-
 	for (auto& obj : _objects)
 	{
 		if (!obj) continue;
@@ -1229,7 +1253,6 @@ void AbstractScene::DrawForGBuffer(int Layer)
 		}
 	}
 }
-
 
 void AbstractScene::PrepareShadowAndLights(int Layer)
 {

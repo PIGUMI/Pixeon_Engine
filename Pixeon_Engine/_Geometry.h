@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <d3d11.h>
 #include <DirectXMath.h>
 class LineRenderer
@@ -18,5 +18,5 @@ private:
 	ID3D11Buffer* m_matrixCB = nullptr;
 };
 
-// ƒwƒbƒ_
+// ãƒ˜ãƒƒãƒ€
 void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& proj, const DirectX::XMFLOAT3& cameraPosXZ);

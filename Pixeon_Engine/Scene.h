@@ -56,6 +56,7 @@ public:
 	ID3D11ShaderResourceView* GetShadowMapSRV() const { return m_shadowMapSRV.Get(); }
 	void DrawForGBuffer(int Layer);
 	void PrepareShadowAndLights(int Layer);
+	void DrawForwardObjects(int Layer);  // ImageRender/LineRenderer等のForward描画
 	ID3D11Buffer* GetLightArrayCB()  const { return m_lightArrayCB; }
 	ID3D11Buffer* GetLightCountCB()  const { return m_lightCountCB; }
 	void UnregisterLight(LightComponent* l);
