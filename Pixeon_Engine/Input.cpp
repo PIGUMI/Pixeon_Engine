@@ -38,10 +38,8 @@ void UninitInput()
 
 void UpdateInput(HWND hWnd)
 {
-
 	memcpy_s(g_oldTable, sizeof(g_oldTable), g_keyTable, sizeof(g_keyTable));
 	GetKeyboardState(g_keyTable);
-
 
 	POINT CursorPos;
 	GetCursorPos(&CursorPos);

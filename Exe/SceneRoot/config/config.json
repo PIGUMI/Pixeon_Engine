@@ -1,0 +1,17 @@
+{
+    "ArchiveFilePath": "SceneRoot/Archive/",
+    "AssetsFilePath": "SceneRoot/Assets/",
+    "AutoSaveInterval": 5,
+    "BackgroundColor": [
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        1.0
+    ],
+    "ExternelTool": "SceneRoot/Tool/IN/",
+    "MouseSensitivity": 0.009999999776482582,
+    "PixelPostEffect": false,
+    "SceneFilePath": "SceneRoot/Scene/",
+    "VcpkgFilePath": "E:/vcpkg",
+    "bZBuffer": true
+}

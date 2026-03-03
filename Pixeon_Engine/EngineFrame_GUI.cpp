@@ -795,7 +795,6 @@ void EngineFrame::LayerInspectorWindow()
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("レイヤー設定").c_str());
 
 	if (selectedLayer_) {
-		// 基本設定
 		char nameBuf[128];
 		strcpy_s(nameBuf, selectedLayer_->name.c_str());
 		if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
@@ -808,7 +807,6 @@ void EngineFrame::LayerInspectorWindow()
 		ImGui::Separator();
 		ImGui::Text("Post Effects:");
 
-		// ポストエフェクト一覧
 		for (size_t i = 0; i < selectedLayer_->postEffects.size(); i++) {
 			auto& effect = selectedLayer_->postEffects[i];
 
@@ -826,7 +824,6 @@ void EngineFrame::LayerInspectorWindow()
 
 		ImGui::Separator();
 
-		// エフェクト追加UI
 		static int currentEffect = 0;
 		const char* effectNames[] = {
 			"Bloom","Pixelate", "Color Grading",
@@ -858,7 +855,6 @@ void EngineFrame::SceneRenameWindow()
 		static char oldSceneName[128] = "";
 		static char newSceneName[128] = "";
 
-		// stringをchar配列に変換
 		std::string currentSceneName = SceneRenameNewName_;
 		strncpy_s(oldSceneName, currentSceneName.c_str(), sizeof(oldSceneName));
 
@@ -872,7 +868,7 @@ void EngineFrame::SceneRenameWindow()
 			bool OK = SceneManger::GetInstance()->RenameFileInDirectory(oldSceneName, newSceneName);
 			if (OK) {
 				MessageBoxA(NULL, "シーン名の変更に成功しました。", "成功", MB_OK | MB_ICONINFORMATION);
-				// 名前の初期化
+
 				strcpy_s(oldSceneName, "");
 				strcpy_s(newSceneName, "");
 				SceneRenameNewName_ = "";
@@ -891,7 +887,6 @@ void EngineFrame::DrawObjectNode(AbstractObject* obj)
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	// 子オブジェクトがない場合は葉ノード
 	if (obj->GetChildren().empty()) {
 		flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 	}

@@ -20,7 +20,6 @@ bool IsKeyRepeat(BYTE key);
 int MouseMoveX();
 int MouseMoveY();
 
-
 int MouseWheelDelta();
 float MouseWheel();
 

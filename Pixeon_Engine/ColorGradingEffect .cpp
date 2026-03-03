@@ -1,5 +1,4 @@
-﻿
-#include "ColorGradingEffect.h"
+﻿#include "ColorGradingEffect.h"
 #include "ImageUtils.h"
 #include "System.h"
 #include "GUI.h"

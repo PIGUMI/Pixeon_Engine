@@ -73,7 +73,6 @@ void GUI::Init()
 	ImGui_ImplWin32_Init(MainFrame::GetInstance()->GetWindowHandle());
 	ImGui_ImplDX11_Init(DirectX11::GetInstance()->GetDevice(), DirectX11::GetInstance()->GetContext());
 
-	// 以降のスタイル設定は同じ...
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec4* colors = style.Colors;
 
@@ -412,12 +411,6 @@ void GUI::SettingWindow()
 		if (ImGui::ColorEdit4(ShiftJISToUTF8("背景色").c_str(), color)) {
 			SettingManager::GetInstance()->SetBackgroundColor(DirectX::XMFLOAT4(color[0], color[1], color[2], color[3]));
 		}
-
-		ImGui::Text(ShiftJISToUTF8("ピクセルポストエフェクト設定").c_str());
-		ImGui::Separator();
-		bool bPixelPostEffect = MainFrame::GetInstance()->isPixelated();
-		ImGui::Checkbox(ShiftJISToUTF8("ピクセルポストエフェクトを有効にする").c_str(), &bPixelPostEffect);
-		MainFrame::GetInstance()->setPixelated(bPixelPostEffect);
 
 		ImGui::Text(ShiftJISToUTF8("マウス感度設定").c_str());
 		float mouseSensitivity = SettingManager::GetInstance()->GetMouseSensitivity();

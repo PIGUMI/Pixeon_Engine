@@ -466,9 +466,6 @@
     <ClInclude Include="ChatWindow.h">
       <Filter>ソース ファイル\4_IZANAGI</Filter>
     </ClInclude>
-    <ClInclude Include="IconsFontAwesome5.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\View</Filter>
-    </ClInclude>
     <ClInclude Include="ModelRender.h">
       <Filter>ソース ファイル\1_MainFrame\Component\Renderer</Filter>
     </ClInclude>
@@ -510,6 +507,9 @@
     </ClInclude>
     <ClInclude Include="AtmosphericFogEffect.h">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="IconsFontAwesome5.h">
+      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

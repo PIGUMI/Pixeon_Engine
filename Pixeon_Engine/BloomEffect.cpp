@@ -50,7 +50,6 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	}
 
 	if (!vs || !ps) {
-
 		ID3D11RenderTargetView* oldRTV = nullptr;
 		ID3D11DepthStencilView* oldDSV = nullptr;
 		ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);

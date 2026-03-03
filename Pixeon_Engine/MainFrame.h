@@ -48,8 +48,6 @@ public:
 	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
 	SoftWareMode GetSoftwareMode() const { return _softwareMode; }
 	void fixedMouseCursor(bool fixedCursor) { _fixedMouseCursorFlag = fixedCursor; }
-	bool isPixelated() const { return _PixelatedFlag; }
-	void setPixelated(bool pixelated) { _PixelatedFlag = pixelated; }
 
 	GBuffer* GetGBuffer(int layerIndex) const;
 
@@ -69,7 +67,6 @@ private:
 	EngineConfig _engineConfig;
 
 	bool _fixedMouseCursorFlag = false;
-	bool _PixelatedFlag = false;
 
 	void DrawGeometryPass(int layerIndex, GBuffer* gbuffer);
 

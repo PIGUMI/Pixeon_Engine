@@ -57,9 +57,6 @@ void SettingManager::LoadConfig() {
 		BackgroundColor.z = configJson["BackgroundColor"][2].get<float>();
 		BackgroundColor.w = configJson["BackgroundColor"][3].get<float>();
 	}
-	if (configJson.contains("PixelPostEffect")) {
-		MainFrame::GetInstance()->setPixelated(configJson["PixelPostEffect"].get<bool>());
-	}
 	if (configJson.contains("ExternelTool")) {
 		ExternelTool = configJson["ExternelTool"].get<std::string>();
 	}
@@ -81,7 +78,6 @@ void SettingManager::SaveConfig() {
 	configJson["AutoSaveInterval"] = AutoSaveInterval;
 	configJson["BackgroundColor"] = { BackgroundColor.x, BackgroundColor.y, BackgroundColor.z, BackgroundColor.w };
 	configJson["ExternelTool"] = ExternelTool;
-	configJson["PixelPostEffect"] = MainFrame::GetInstance()->isPixelated();
 	configJson["MouseSensitivity"] = MouseSensitivity;
 	configJson["VcpkgFilePath"] = VcpkgFilePath;
 
