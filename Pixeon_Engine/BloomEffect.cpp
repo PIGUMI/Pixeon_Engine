@@ -14,7 +14,6 @@ namespace {
 		float uv[2];
 	};
 
-	// 頂点バッファとリソースの静的管理
 	static ComPtr<ID3D11Buffer> s_vb;
 	static ComPtr<ID3D11InputLayout> s_layout;
 	static ComPtr<ID3D11Buffer> s_cbVS;
@@ -38,7 +37,6 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 
 	ShaderManager* sm = ShaderManager::GetInstance();
 
-	// シェーダー取得
 	static ID3D11VertexShader* vs = nullptr;
 	static ID3D11PixelShader* ps = nullptr;
 
@@ -52,7 +50,7 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	}
 
 	if (!vs || !ps) {
-		// シェーダーがない場合は通常描画
+
 		ID3D11RenderTargetView* oldRTV = nullptr;
 		ID3D11DepthStencilView* oldDSV = nullptr;
 		ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
@@ -66,14 +64,11 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 		return;
 	}
 
-	// リソース初期化
 	InitializeResources(dev, vs, sm);
 
-	// 一時バッファ作成
 	CreateTempBuffer(width, height);
 	if (!tempRTV_ || !tempSRV_) return;
 
-	// ★ 現在の状態を保存（深度ステートも含む）
 	ID3D11RenderTargetView* oldRTV = nullptr;
 	ID3D11DepthStencilView* oldDSV = nullptr;
 	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
@@ -87,7 +82,6 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	UINT oldStencilRef = 0;
 	ctx->OMGetDepthStencilState(&oldDSS, &oldStencilRef);
 
-	// ビューポート設定
 	D3D11_VIEWPORT vp = {};
 	vp.Width = (FLOAT)width;
 	vp.Height = (FLOAT)height;
@@ -96,17 +90,13 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 
-	// ========================================
-	// Pass 1: 輝度抽出 + ブラー（深度テスト無効）
-	// ========================================
-	ctx->OMSetRenderTargets(1, &tempRTV_, nullptr);  // 深度バッファなし
+	ctx->OMSetRenderTargets(1, &tempRTV_, nullptr);
 	ctx->RSSetViewports(1, &vp);
-	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // 深度テスト無効
+	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);
 
 	float clearColor[4] = { 0, 0, 0, 0 };
 	ctx->ClearRenderTargetView(tempRTV_, clearColor);
 
-	// 定数バッファ設定
 	struct BloomParams {
 		float threshold;
 		float intensity;
@@ -123,35 +113,28 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 	params.blurRadius = blurSize;
 	params.screenWidth = (float)width;
 	params.screenHeight = (float)height;
-	params.passType = 1; // ブラーパス
+	params.passType = 1;
 
-	// 定数バッファ更新
 	ctx->UpdateSubresource(s_cbPS.Get(), 0, nullptr, &params, 0, 0);
 
-	// クアッド描画
 	DrawQuad(ctx, vs, ps, input, 0.0f, 0.0f, (float)width, (float)height, width, height);
 
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	ctx->PSSetShaderResources(0, 1, nullSRV);
 
-	// ========================================
-	// Pass 2: 元画像とブルームを合成（深度テスト無効）
-	// ========================================
-	ctx->OMSetRenderTargets(1, &output, nullptr);  // 深度バッファなし
+	ctx->OMSetRenderTargets(1, &output, nullptr);
 	ctx->RSSetViewports(1, &vp);
-	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);  // 深度テスト無効
+	ctx->OMSetDepthStencilState(s_dsOff.Get(), 0);
 
-	// 2-1: 元画像を描画
 	ctx->OMSetBlendState(s_blendAlpha.Get(), oldBlendFactor, 0xFFFFFFFF);
 	ImageUtils::DrawSRV(input, 0.0f, 0.0f, (float)width, (float)height,
 		DirectX::XMFLOAT4(1, 1, 1, 1),
 		DirectX::XMFLOAT4(0, 0, 1, 1),
 		true, 1.0f);
 
-	// 2-2: ブルーム成分を加算合成
 	ctx->OMSetBlendState(s_blendAdd.Get(), oldBlendFactor, 0xFFFFFFFF);
 
-	params.passType = 2; // 合成パス
+	params.passType = 2;
 	ctx->UpdateSubresource(s_cbPS.Get(), 0, nullptr, &params, 0, 0);
 
 	DrawQuad(ctx, vs, ps, tempSRV_, 0.0f, 0.0f, (float)width, (float)height,
@@ -159,9 +142,6 @@ void BloomEffect::Apply(ID3D11ShaderResourceView* input,
 
 	ctx->PSSetShaderResources(0, 1, nullSRV);
 
-	// ========================================
-	// ★ 状態を完全に復元
-	// ========================================
 	ctx->OMSetDepthStencilState(oldDSS, oldStencilRef);
 	if (oldDSS) oldDSS->Release();
 
@@ -303,8 +283,6 @@ void BloomEffect::DrawQuad(ID3D11DeviceContext* ctx, ID3D11VertexShader* vs, ID3
 	ctx->PSSetConstantBuffers(1, 1, cbsPS);
 
 	ctx->PSSetShaderResources(0, 1, &srv);
-
-	// ★ 深度ステートは Apply() 内で設定するため、ここでは設定しない
 
 	auto* dx = DirectX11::GetInstance();
 	dx->SetSamplerState(SAMPLER_LINEAR);

@@ -15,7 +15,7 @@ public:
         ID3D11RenderTargetView* output,
         int width, int height) override;
 
-    void DrawInspector()                            override;
+    void DrawInspector() override;
     std::string    GetName()  const override { return "Atmospheric Fog"; }
     PostEffectType GetType()  const override { return PostEffectType::ATMOSPHERIC_FOG; }
     void SaveToJson(nlohmann::json& j)        const override;
@@ -67,20 +67,20 @@ private:
 
     struct alignas(16) FogCB
     {
-        DirectX::XMMATRIX invProj;        // offset:  0 (64 bytes)
-        DirectX::XMMATRIX invView;        // offset: 64 (64 bytes)
-        DirectX::XMFLOAT3 fogColor;       // offset:128 (12 bytes)
-        float             fogDensity;     // offset:140
-        float             fogStart;       // offset:144
-        float             fogEnd;         // offset:148
-        float             fogHeight;      // offset:152
-        float             heightFalloff;  // offset:156
-        float             resolutionX;    // offset:160
-        float             resolutionY;    // offset:164
-        int               fogMode;        // offset:168
-        float             _padFog;        // offset:172 (パディング穴埋め)
-        DirectX::XMFLOAT3 cameraPos;      // offset:176 (HLSLのパッキングと一致)
-        float             _pad;           // offset:188
-    };                                    // sizeof = 192 bytes (16の倍数)
+        DirectX::XMMATRIX invProj;
+        DirectX::XMMATRIX invView;
+        DirectX::XMFLOAT3 fogColor;
+        float fogDensity;
+        float fogStart;
+        float fogEnd;
+        float fogHeight;
+        float heightFalloff;
+        float resolutionX;
+        float resolutionY;
+        int fogMode;
+        float _padFog;
+        DirectX::XMFLOAT3 cameraPos;
+        float _pad;
+    };
     static_assert(sizeof(FogCB) % 16 == 0, "FogCB must be 16-byte aligned");
 };

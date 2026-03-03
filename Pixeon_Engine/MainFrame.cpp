@@ -32,14 +32,33 @@
 
 MainFrame* MainFrame::instance_ = nullptr;
 
+/*
+* 関数名：GetInstance
+* 引　数：なし
+* 戻り値：MainFrame*
+* 説　明：MainFrameのシングルトンインスタンスを取得する関数。
+*/
 MainFrame* MainFrame::GetInstance() {
 	if (instance_ == nullptr) instance_ = new MainFrame();
 	return instance_;
 }
+
+/*
+* 関数名：DeleteInstance
+* 引　数：なし
+* 戻り値：なし
+* 説　明：MainFrameのシングルトンインスタンスを削除する関数。
+*/
 void MainFrame::DeleteInstance() {
 	if (instance_ != nullptr) { delete instance_; instance_ = nullptr; }
 }
 
+/*
+* 関数名：Init
+* 引　数：const EngineConfig& InPut - エンジンの初期化に必要な設定をまとめた構造体
+* 戻り値：int - 初期化の成功を示すステータスコード。0は成功、負の値はエラーを示す。
+* 説　明：エンジンの初期化を行う関数
+*/
 int MainFrame::Init(const EngineConfig& InPut)
 {
 	_targetFrameTime = 1000.0f / 200.0f;
@@ -100,6 +119,12 @@ int MainFrame::Init(const EngineConfig& InPut)
 	return 0;
 }
 
+/*
+* 関数名：Update
+* 引　数：なし
+* 戻り値：なし
+* 説　明：エンジンの更新処理を行う関数
+*/
 void MainFrame::Update()
 {
 	DWORD current_Time = timeGetTime();
@@ -126,6 +151,13 @@ void MainFrame::Update()
 	}
 }
 
+/*
+* 関数名：DrawGeometryPass
+* 引　数：int layerIndex - 描画するレイヤーのインデックス
+* 	  GBuffer* gbuffer - ジオメトリパスで使用するGBufferのポインタ
+* 戻り値：なし
+* 説　明：ジオメトリパスを実行する関数。指定されたレイヤーのオブジェクトをGBufferに描画する。
+*/
 void MainFrame::DrawGeometryPass(int layerIndex, GBuffer* gbuffer)
 {
 	if (!gbuffer) return;
@@ -142,12 +174,24 @@ void MainFrame::DrawGeometryPass(int layerIndex, GBuffer* gbuffer)
 	gbuffer->EndGeometryPass(ctx);
 }
 
+/*
+* 関数名：GetGBuffer
+* 引　数：int layerIndex - 取得するGBufferのレイヤーインデックス
+* 戻り値：GBuffer* - 指定されたレイヤーのGBufferのポインタ。インデックスが範囲外の場合はnullptrを返す。
+* 説　明：指定されたレイヤーのGBufferを取得する関数。レイヤーインデックスが有効な範囲内であれば、そのレイヤーに対応するGBufferのポインタを返す。インデックスが無効な場合はnullptrを返す。
+*/
 GBuffer* MainFrame::GetGBuffer(int layerIndex) const
 {
 	if (layerIndex < 0 || layerIndex >= (int)_gBuffers.size()) return nullptr;
 	return _gBuffers[layerIndex];
 }
 
+/*
+* 関数名：Draw
+* 引　数：なし
+* 戻り値：なし
+* 説　明：エンジンの描画処理を行う関数。
+*/
 void MainFrame::Draw()
 {
 	if (!_updateDraw) return;
@@ -350,6 +394,12 @@ void MainFrame::Draw()
 	_updateDraw = false;
 }
 
+/*
+* 関数名：UnInit
+* 引　数：なし
+* 戻り値：なし
+* 説　明：エンジンの終了処理を行う関数。
+*/
 void MainFrame::UnInit()
 {
 	for (auto lp : _lightingPasses)
@@ -393,6 +443,12 @@ void MainFrame::UnInit()
 	CoUninitialize();
 }
 
+/*
+* 関数名：GetFinalRenderTargetSRV
+* 引　数：なし
+* 戻り値：ID3D11ShaderResourceView* - 最終的なレンダリング結果を格納するレンダーターゲットのシェーダーリソースビュー。レンダーターゲットが存在しない場合はnullptrを返す。
+* 説　明：最終的なレンダリング結果を格納するレンダーターゲットのシェーダーリソースビューを取得する関数。
+*/
 ID3D11ShaderResourceView* MainFrame::GetFinalRenderTargetSRV()
 {
 	if (_finalRenderTarget) return _finalRenderTarget->GetShaderResourceView();

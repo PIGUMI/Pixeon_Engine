@@ -94,7 +94,7 @@ void AtmosphericFogEffect::Apply(
     cb.resolutionX = (float)width;
     cb.resolutionY = (float)height;
     cb.fogMode = (int)fogMode;
-    cb._padFog = 0.0f;   // ★ HLSLのパッキングに合わせた穴埋めパディング
+    cb._padFog = 0.0f;
     cb.cameraPos = m_cameraPos;
     cb._pad = 0.0f;
     ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cb, 0, 0);

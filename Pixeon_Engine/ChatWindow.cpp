@@ -40,7 +40,6 @@ ChatWindow::~ChatWindow() {
 	Shutdown();
 }
 
-// Shift-JIS‚©‚çUTF-8‚Ö‚Ì•ÏŠ·
 std::string ChatWindow::ConvertToUTF8(const std::string& input) {
 #ifdef _WIN32
 	if (input.empty()) return "";

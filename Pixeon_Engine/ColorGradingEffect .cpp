@@ -1,4 +1,4 @@
-﻿// ColorGradingEffect.cpp
+﻿
 #include "ColorGradingEffect.h"
 #include "ImageUtils.h"
 #include "System.h"
@@ -15,15 +15,12 @@ void ColorGradingEffect::Apply(ID3D11ShaderResourceView* input,
 	ID3D11DeviceContext* ctx = dx->GetContext();
 	if (!ctx) return;
 
-	// レンダーターゲットを保存
 	ID3D11RenderTargetView* oldRTV = nullptr;
 	ID3D11DepthStencilView* oldDSV = nullptr;
 	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
 
-	// 出力先を設定
 	ctx->OMSetRenderTargets(1, &output, nullptr);
 
-	// ビューポート設定
 	D3D11_VIEWPORT vp = {};
 	vp.Width = (FLOAT)width;
 	vp.Height = (FLOAT)height;
@@ -33,7 +30,6 @@ void ColorGradingEffect::Apply(ID3D11ShaderResourceView* input,
 	vp.TopLeftY = 0;
 	ctx->RSSetViewports(1, &vp);
 
-	// ColorGradingシェーダーで描画
 	ImageUtils::DrawSRVColorGrading(
 		input,
 		0.0f, 0.0f,
@@ -47,11 +43,9 @@ void ColorGradingEffect::Apply(ID3D11ShaderResourceView* input,
 		gamma
 	);
 
-	// SRVバインド解除
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	ctx->PSSetShaderResources(0, 1, nullSRV);
 
-	// レンダーターゲットを復元
 	ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
 
 	if (oldRTV) oldRTV->Release();

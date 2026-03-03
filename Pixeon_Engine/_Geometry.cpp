@@ -49,7 +49,6 @@ void LineRenderer::DrawLine(const DirectX::XMFLOAT3& s, const DirectX::XMFLOAT3&
 	auto device = DirectX11::GetInstance()->GetDevice();
 	auto context = DirectX11::GetInstance()->GetContext();
 
-	// 頂点バッファ
 	D3D11_BUFFER_DESC vbDesc = {};
 	vbDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbDesc.ByteWidth = sizeof(verts);
@@ -59,14 +58,13 @@ void LineRenderer::DrawLine(const DirectX::XMFLOAT3& s, const DirectX::XMFLOAT3&
 	ID3D11Buffer* vb = nullptr;
 	if (FAILED(device->CreateBuffer(&vbDesc, &vdat, &vb))) return;
 
-	// CameraCB へ書き込み（ShaderManager 方式）
 	struct MatCB { DirectX::XMFLOAT4X4 world, view, proj; } cb;
 	cb.world = world;
 	cb.view = view;
 	cb.proj = proj;
 
 	ShaderManager* sm = ShaderManager::GetInstance();
-	// CameraCB という cbuffer 名を想定
+
 	sm->SetCBufferRaw(ShaderStage::VS, "VS_Line", "CameraCB", &cb, sizeof(cb));
 	sm->CommitAndBind(ShaderStage::VS, "VS_Line");
 
@@ -96,26 +94,23 @@ void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFL
 	DirectX::XMFLOAT4X4 identity;
 	DirectX::XMStoreFloat4x4(&identity, DirectX::XMMatrixIdentity());
 
-	// グリッド中心をカメラのX,Zに合わせる
 	float half = size * 0.5f;
 	int start = static_cast<int>(cameraPosXZ.x - half);
 	int end_x = static_cast<int>(cameraPosXZ.x + half);
 	int start_z = static_cast<int>(cameraPosXZ.z - half);
 	int end_z = static_cast<int>(cameraPosXZ.z + half);
 
-	float maxDistance = half * 1.5f; // 透明化が始まる距離（調整可）
+	float maxDistance = half * 1.5f;
 
-	// X軸グリッド：Z固定、X走査
 	for (int i = start; i <= end_x; ++i) {
 		float x = static_cast<float>(i);
 		for (int j = start_z; j < end_z; ++j) {
 			float z0 = static_cast<float>(j), z1 = z0 + 1.0f;
-			// 線の中点を使用し、透明度を距離で決定
+
 			float midX = x, midZ = (z0 + z1) * 0.5f;
 			float dist = std::sqrt((midX - cameraPosXZ.x) * (midX - cameraPosXZ.x) + (midZ - cameraPosXZ.z) * (midZ - cameraPosXZ.z));
-			float alpha = 1.0f - std::max(0.0f, std::min(dist / maxDistance, 1.0f)); // maxDistance以上で0, 原点で1
+			float alpha = 1.0f - std::max(0.0f, std::min(dist / maxDistance, 1.0f));
 
-			// 色：中央線だけ少し明るく（例としてX=0）
 			DirectX::XMFLOAT4 color = (std::abs(x) < 0.01f) ? DirectX::XMFLOAT4(1, 1, 1, alpha) : DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, alpha);
 
 			lr->DrawLine(
@@ -125,7 +120,7 @@ void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFL
 			);
 		}
 	}
-	// Z軸グリッド：X固定、Z走査
+
 	for (int j = start_z; j <= end_z; ++j) {
 		float z = static_cast<float>(j);
 		for (int i = start; i < end_x; ++i) {

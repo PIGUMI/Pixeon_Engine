@@ -18,5 +18,5 @@ private:
 	ID3D11Buffer* m_matrixCB = nullptr;
 };
 
-// ヘッダ
+
 void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& proj, const DirectX::XMFLOAT3& cameraPosXZ);

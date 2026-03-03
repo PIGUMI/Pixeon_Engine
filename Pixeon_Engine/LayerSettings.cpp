@@ -87,7 +87,6 @@ void Layer::ApplyPostEffectsToScreen(
 
 	// エフェクトを順次適用
 	for (size_t i = 0; i < activeEffects.size(); i++) {
-
 		// ---- SSAO: Deferred実行済みならスキップ ----
 		if (auto* ssao = dynamic_cast<SSAOEffect*>(activeEffects[i].get()))
 		{
@@ -117,7 +116,6 @@ void Layer::ApplyPostEffectsToScreen(
 				fog->SetCameraMatrices(*proj, *invProj, *invView, *cameraPos);
 			}
 		}
-
 
 		bool isLastEffect = (i == activeEffects.size() - 1);
 

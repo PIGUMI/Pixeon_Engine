@@ -1,7 +1,7 @@
 ﻿#ifndef MAIN_FRAME_H
 #define MAIN_FRAME_H
 
-#define PIXEON_ENGINE_VERSION (400.0f)
+#define PIXEON_ENGINE_VERSION (500.0f)
 #define PIXEON_ENGINE_INEDITOR true
 
 #include <Windows.h>

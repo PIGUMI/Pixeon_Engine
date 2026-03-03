@@ -31,13 +31,10 @@ public:
 		invProj_ = invProj;
 	}
 
-	// Deferred専用: AOテクスチャを生成してblurSRV_に書き込む
 	void GenerateAO(int width, int height);
 
-	// 生成済みAOテクスチャのSRVを返す
 	ID3D11ShaderResourceView* GetAOSRV() const { return blurSRV_.Get(); }
 
-	// GenerateAO()実行済みフラグ (LayerSettingsでのスキップ判定用)
 	bool IsAOGenerated()    const { return aoGenerated_; }
 	void ResetAOGenerated() { aoGenerated_ = false; }
 
