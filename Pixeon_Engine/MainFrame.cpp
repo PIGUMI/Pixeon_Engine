@@ -288,7 +288,13 @@ void MainFrame::Draw()
 
 		if (layerSettings && !layerSettings->postEffects.empty())
 		{
-			ID3D11ShaderResourceView* depthSRV = layerRT->GetDepthShaderResourceView();
+			// ★★★ 修正: GBufferの深度SRVを優先して使用 ★★★
+			// デファードレンダリングでは深度はGBufferに書かれている
+			// GBufferがない場合はlayerRTのdepthにフォールバック
+			GBuffer* gb = GetGBuffer(Layer_Index);
+			ID3D11ShaderResourceView* depthSRV =
+				(gb != nullptr) ? gb->GetDepthSRV()
+				: layerRT->GetDepthShaderResourceView();
 
 			DirectX::XMMATRIX proj = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX invProj = DirectX::XMMatrixIdentity();

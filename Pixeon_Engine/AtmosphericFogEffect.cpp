@@ -1,4 +1,4 @@
-#include "AtmosphericFogEffect.h"
+ï»¿#include "AtmosphericFogEffect.h"
 #include "System.h"
 #include "ShaderManager.h"
 #include "GUI.h"
@@ -9,7 +9,7 @@ using Microsoft::WRL::ComPtr;
 
 AtmosphericFogEffect::AtmosphericFogEffect()
 {
-    priority = 10; // Bloom(0)‚ÌŒãAColorGrading(20)‚Ì‘O
+    priority = 10;
 }
 
 AtmosphericFogEffect::~AtmosphericFogEffect()
@@ -17,11 +17,6 @@ AtmosphericFogEffect::~AtmosphericFogEffect()
     ReleaseResources();
 }
 
-// ============================================================
-// EnsureResources
-// ShaderManager ‚ª HLSL ƒfƒBƒŒƒNƒgƒŠ‚ğ©“®ƒXƒLƒƒƒ“‚·‚é‚½‚ß
-// GetVertexShader / GetPixelShader ‚Åæ“¾‚·‚é‚¾‚¯‚Å‚æ‚¢
-// ============================================================
 bool AtmosphericFogEffect::EnsureResources()
 {
     if (m_resourcesReady) return true;
@@ -36,7 +31,6 @@ bool AtmosphericFogEffect::EnsureResources()
     m_ps = sm->GetPixelShader("PS_AtmosphericFog");
     if (!m_vs || !m_ps) return false;
 
-    // ---- ’è”ƒoƒbƒtƒ@ (b0) ----
     {
         D3D11_BUFFER_DESC bd = {};
         bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -45,8 +39,6 @@ bool AtmosphericFogEffect::EnsureResources()
         if (FAILED(device->CreateBuffer(&bd, nullptr, m_cb.GetAddressOf())))
             return false;
     }
-
-    // ---- PointClamp ƒTƒ“ƒvƒ‰[ ----
     {
         D3D11_SAMPLER_DESC sd = {};
         sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -55,8 +47,6 @@ bool AtmosphericFogEffect::EnsureResources()
         sd.MaxLOD = D3D11_FLOAT32_MAX;
         device->CreateSamplerState(&sd, m_pointClamp.GetAddressOf());
     }
-
-    // ---- [“x‘‚«‚İ OFF ----
     {
         D3D11_DEPTH_STENCIL_DESC dd = {};
         dd.DepthEnable = FALSE;
@@ -74,16 +64,11 @@ void AtmosphericFogEffect::ReleaseResources()
     m_cb.Reset();
     m_pointClamp.Reset();
     m_dsOff.Reset();
-    // m_vs / m_ps ‚Í ShaderManager Š—L‚È‚Ì‚Å Release ‚µ‚È‚¢
     m_vs = nullptr;
     m_ps = nullptr;
     m_resourcesReady = false;
 }
 
-// ============================================================
-// Apply
-// t0 = ƒV[ƒ“ƒJƒ‰[, t1 = [“x SRV
-// ============================================================
 void AtmosphericFogEffect::Apply(
     ID3D11ShaderResourceView* input,
     ID3D11RenderTargetView* output,
@@ -98,8 +83,8 @@ void AtmosphericFogEffect::Apply(
     if (!ctx) return;
 
     FogCB cb = {};
-    cb.invProj = DirectX::XMMatrixTranspose(m_invProj);
-    cb.invView = DirectX::XMMatrixTranspose(m_invView);
+    cb.invProj = XMMatrixTranspose(m_invProj);
+    cb.invView = XMMatrixTranspose(m_invView);
     cb.fogColor = fogColor;
     cb.fogDensity = fogDensity;
     cb.fogStart = fogStart;
@@ -109,7 +94,9 @@ void AtmosphericFogEffect::Apply(
     cb.resolutionX = (float)width;
     cb.resolutionY = (float)height;
     cb.fogMode = (int)fogMode;
+    cb._padFog = 0.0f;   // â˜… HLSLã®ãƒ‘ãƒƒã‚­ãƒ³ã‚°ã«åˆã‚ã›ãŸç©´åŸ‹ã‚ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°
     cb.cameraPos = m_cameraPos;
+    cb._pad = 0.0f;
     ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cb, 0, 0);
 
     ctx->OMSetDepthStencilState(m_dsOff.Get(), 0);
@@ -143,35 +130,33 @@ void AtmosphericFogEffect::Apply(
     ctx->OMSetDepthStencilState(nullptr, 0);
 }
 
-// ============================================================
 void AtmosphericFogEffect::DrawInspector()
 {
     auto SJ = [](const char* s) { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
-    ImGui::ColorEdit3(SJ("ƒtƒHƒOƒJƒ‰[").c_str(), (float*)&fogColor);
+    ImGui::ColorEdit3(SJ("ãƒ•ã‚©ã‚°ã‚«ãƒ©ãƒ¼").c_str(), (float*)&fogColor);
 
     const char* modeNames[] = { "Linear", "Exponential", "Exponential2" };
     int modeIdx = (int)fogMode;
-    if (ImGui::Combo(SJ("ƒtƒHƒOƒ‚[ƒh").c_str(), &modeIdx, modeNames, 3))
+    if (ImGui::Combo(SJ("ãƒ•ã‚©ã‚°ãƒ¢ãƒ¼ãƒ‰").c_str(), &modeIdx, modeNames, 3))
         fogMode = (FogMode)modeIdx;
 
     if (fogMode == FogMode::Linear)
     {
-        ImGui::DragFloat(SJ("ŠJn‹——£").c_str(), &fogStart, 1.0f, 0.0f, fogEnd - 0.1f);
-        ImGui::DragFloat(SJ("I—¹‹——£").c_str(), &fogEnd, 1.0f, fogStart + 0.1f, 10000.0f);
+        ImGui::DragFloat(SJ("é–‹å§‹è·é›¢").c_str(), &fogStart, 1.0f, 0.0f, fogEnd - 0.1f);
+        ImGui::DragFloat(SJ("çµ‚äº†è·é›¢").c_str(), &fogEnd, 1.0f, fogStart + 0.1f, 10000.0f);
     }
     else
     {
-        ImGui::DragFloat(SJ("ƒtƒHƒO–§“x").c_str(), &fogDensity, 0.001f, 0.0001f, 1.0f, "%.4f");
+        ImGui::DragFloat(SJ("ãƒ•ã‚©ã‚°å¯†åº¦").c_str(), &fogDensity, 0.001f, 0.0001f, 1.0f, "%.4f");
     }
 
     ImGui::Separator();
-    ImGui::Text(SJ("‚‚³ƒtƒHƒO").c_str());
-    ImGui::DragFloat(SJ("Å‘å‚‚³ (0=–³Œø)").c_str(), &fogHeight, 1.0f, 0.0f, 2000.0f);
-    ImGui::DragFloat(SJ("‚‚³Œ¸Š—¦").c_str(), &heightFalloff, 0.001f, 0.0001f, 1.0f, "%.4f");
+    ImGui::Text(SJ("é«˜ã•ãƒ•ã‚©ã‚°").c_str());
+    ImGui::DragFloat(SJ("æœ€å¤§é«˜ã• (0=ç„¡åŠ¹)").c_str(), &fogHeight, 1.0f, 0.0f, 2000.0f);
+    ImGui::DragFloat(SJ("é«˜ã•æ¸›è¡°ç‡").c_str(), &heightFalloff, 0.001f, 0.0001f, 1.0f, "%.4f");
 }
 
-// ============================================================
 void AtmosphericFogEffect::SaveToJson(nlohmann::json& j) const
 {
     j["fogColor"] = { fogColor.x, fogColor.y, fogColor.z };
@@ -194,7 +179,7 @@ void AtmosphericFogEffect::LoadFromJson(const nlohmann::json& j)
     fogDensity = j.value("fogDensity", 0.02f);
     fogStart = j.value("fogStart", 10.0f);
     fogEnd = j.value("fogEnd", 200.0f);
-    fogHeight = j.value("fogHeight", 50.0f);
+    fogHeight = j.value("fogHeight", 0.0f);
     heightFalloff = j.value("heightFalloff", 0.1f);
     fogMode = (FogMode)j.value("fogMode", 1);
 }

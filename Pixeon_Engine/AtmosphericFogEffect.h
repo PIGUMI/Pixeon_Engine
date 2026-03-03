@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "LayerSettings.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -24,12 +24,11 @@ public:
 
     void SetDepthSRV(ID3D11ShaderResourceView* srv) { m_depthSRV = srv; }
 
-    // Åö invViewÇ∆cameraPosÇ‡éÛÇØéÊÇÍÇÈÇÊÇ§Ç…í«â¡
     void SetCameraMatrices(
         const DirectX::XMMATRIX& proj,
         const DirectX::XMMATRIX& invProj,
-        const DirectX::XMMATRIX& invView,       // Åöí«â¡
-        const DirectX::XMFLOAT3& cameraPos)     // Åöí«â¡
+        const DirectX::XMMATRIX& invView,
+        const DirectX::XMFLOAT3& cameraPos)
     {
         m_proj = proj;
         m_invProj = invProj;
@@ -37,12 +36,11 @@ public:
         m_cameraPos = cameraPos;
     }
 
-    // ÉpÉâÉÅÅ[É^
     DirectX::XMFLOAT3 fogColor{ 0.7f, 0.8f, 0.9f };
     float fogDensity = 0.02f;
     float fogStart = 10.0f;
     float fogEnd = 200.0f;
-    float fogHeight = 50.0f;
+    float fogHeight = 0.0f;
     float heightFalloff = 0.1f;
 
     enum class FogMode { Linear = 0, Exponential = 1, ExponentialSquared = 2 };
@@ -67,22 +65,22 @@ private:
 
     bool m_resourcesReady = false;
 
-    // Åö invViewÇ∆cameraPosÇí«â¡Åi+32ÉoÉCÉg Å® çáåv160ÉoÉCÉgÅA16ÇÃî{êîOKÅj
     struct alignas(16) FogCB
     {
-        DirectX::XMMATRIX invProj;        // 64 bytes  offset:  0
-        DirectX::XMMATRIX invView;        // 64 bytes  offset: 64  Åöí«â¡
-        DirectX::XMFLOAT3 fogColor;       // 12 bytes  offset:128
-        float             fogDensity;     //  4 bytes  offset:140
-        float             fogStart;       //  4 bytes  offset:144
-        float             fogEnd;         //  4 bytes  offset:148
-        float             fogHeight;      //  4 bytes  offset:152
-        float             heightFalloff;  //  4 bytes  offset:156
-        float             resolutionX;    //  4 bytes  offset:160
-        float             resolutionY;    //  4 bytes  offset:164
-        int               fogMode;        //  4 bytes  offset:168
-        DirectX::XMFLOAT3 cameraPos;      // 12 bytes  offset:172  Åöí«â¡
-        float             _pad;           //  4 bytes  offset:184
-    }; // çáåv: 188 bytes Å® 192 bytesÅi16ÇÃî{êîÇ…êÿÇËè„Ç∞Åj
+        DirectX::XMMATRIX invProj;        // offset:  0 (64 bytes)
+        DirectX::XMMATRIX invView;        // offset: 64 (64 bytes)
+        DirectX::XMFLOAT3 fogColor;       // offset:128 (12 bytes)
+        float             fogDensity;     // offset:140
+        float             fogStart;       // offset:144
+        float             fogEnd;         // offset:148
+        float             fogHeight;      // offset:152
+        float             heightFalloff;  // offset:156
+        float             resolutionX;    // offset:160
+        float             resolutionY;    // offset:164
+        int               fogMode;        // offset:168
+        float             _padFog;        // offset:172 („Éë„Éá„Ç£„É≥„Ç∞Á©¥Âüã„ÇÅ)
+        DirectX::XMFLOAT3 cameraPos;      // offset:176 (HLSL„ÅÆ„Éë„ÉÉ„Ç≠„É≥„Ç∞„Å®‰∏ÄËá¥)
+        float             _pad;           // offset:188
+    };                                    // sizeof = 192 bytes (16„ÅÆÂÄçÊï∞)
     static_assert(sizeof(FogCB) % 16 == 0, "FogCB must be 16-byte aligned");
 };
