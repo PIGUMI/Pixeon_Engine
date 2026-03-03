@@ -1,4 +1,4 @@
-#include "SceneManger.h"
+ï»¿#include "SceneManger.h"
 #include "Scene.h"
 #include "SettingManager.h"
 
@@ -36,7 +36,7 @@ void SceneManger::Init() {
 	ChangeScene(_StartSceneName);
 }
 
-// ƒV[ƒ“ŠJn
+// ã‚·ãƒ¼ãƒ³é–‹å§‹
 void SceneManger::BeginPlay() {
 	if (_currentScene) {
 		_currentScene->SaveToFile();
@@ -44,9 +44,9 @@ void SceneManger::BeginPlay() {
 	}
 }
 
-// XV
+// æ›´æ–°
 void SceneManger::EditUpdate() {
-	//// ƒV[ƒ“‚ÌØ‚è‘Ö‚¦
+	//// ã‚·ãƒ¼ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆ
 	if (_nextScene) {
 		if (_currentScene)delete _currentScene;
 		_currentScene = _nextScene;
@@ -54,10 +54,10 @@ void SceneManger::EditUpdate() {
 		_currentScene->LoadToFile();
 		_nextScene = nullptr;
 	}
-	//// XV
+	//// æ›´æ–°
 	if (_currentScene)_currentScene->EditUpdate();
 
-	// ƒI[ƒgƒZ[ƒu‚Ìˆ—
+	// ã‚ªãƒ¼ãƒˆã‚»ãƒ¼ãƒ–ã®å‡¦ç†
 	DWORD nowTime = (DWORD)GetTickCount64();
 	_AutoNowTime = SettingManager::GetInstance()->GetAutoSaveInterval() * 1000;
 	if (nowTime - _AutoSaveCurrentTime >= _AutoNowTime) {
@@ -66,7 +66,7 @@ void SceneManger::EditUpdate() {
 	}
 }
 
-// XV
+// æ›´æ–°
 void SceneManger::PlayUpdate() {
 	if (_nextScene) {
 		if (_currentScene)delete _currentScene;
@@ -80,12 +80,12 @@ void SceneManger::PlayUpdate() {
 	if (_currentScene)_currentScene->PlayUpdate();
 }
 
-// •`‰æ
+// æç”»
 void SceneManger::Draw(int Layer) {
 	if (_currentScene)_currentScene->Draw(Layer);
 }
 
-// ƒV[ƒ“‚Ì•ÏX
+// ã‚·ãƒ¼ãƒ³ã®å¤‰æ›´
 void SceneManger::ChangeScene(std::string SceneName) {
 	auto it = _SceneCreators.find(SceneName);
 
@@ -94,7 +94,7 @@ void SceneManger::ChangeScene(std::string SceneName) {
 	}
 }
 
-// V‹KƒV[ƒ“‚Ìì¬‚Æ“o˜^ ì¬‚ÉƒZ[ƒu‚ğs‚¤
+// æ–°è¦ã‚·ãƒ¼ãƒ³ã®ä½œæˆã¨ç™»éŒ² ä½œæˆæ™‚ã«ã‚»ãƒ¼ãƒ–ã‚’è¡Œã†
 bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
 	for (const auto& Name : _sceneList) {
 		if (Name == SceneName) {
@@ -116,7 +116,7 @@ bool SceneManger::CreateAndRegisterScene(std::string SceneName) {
 
 	return true;
 }
-// ƒV[ƒ“‚Ìì¬‚Æ“o˜^@ƒZ[ƒu‚Ís‚í‚È‚¢
+// ã‚·ãƒ¼ãƒ³ã®ä½œæˆã¨ç™»éŒ²ã€€ã‚»ãƒ¼ãƒ–ã¯è¡Œã‚ãªã„
 bool SceneManger::CreateAndRegisterDefaultScene(std::string SceneName)
 {
 	for (const auto& Name : _sceneList) {
@@ -134,12 +134,12 @@ bool SceneManger::CreateAndRegisterDefaultScene(std::string SceneName)
 	return true;
 }
 
-// ƒV[ƒ“‚Ì“o˜^
+// ã‚·ãƒ¼ãƒ³ã®ç™»éŒ²
 void SceneManger::RegisterScene(std::string Name, std::function<AbstractScene* ()> creator) {
 	_SceneCreators[Name] = creator;
 }
 
-// ƒtƒ@ƒCƒ‹–¼‚Ìæ“¾
+// ãƒ•ã‚¡ã‚¤ãƒ«åã®å–å¾—
 std::vector<std::string> SceneManger::ListSceneFiles() {
 	std::vector<std::string> sceneFiles;
 	std::string sceneDir = SettingManager::GetInstance()->GetSceneFilePath();
@@ -148,10 +148,10 @@ std::vector<std::string> SceneManger::ListSceneFiles() {
 	HANDLE hFind = FindFirstFileA(searchPath.c_str(), &findData);
 
 	if (hFind == INVALID_HANDLE_VALUE) {
-		// ƒV[ƒ“ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡
-		MessageBox(nullptr, "ƒV[ƒ“‚ªŒ©‚Â‚©‚ç‚È‚¢‚½‚ß\n©“®ì¬‚ğs‚¢‚Ü‚·", "Info", MB_OK);
+		// ã‚·ãƒ¼ãƒ³ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆ
+		MessageBox(nullptr, "ã‚·ãƒ¼ãƒ³ãŒè¦‹ã¤ã‹ã‚‰ãªã„ãŸã‚\nè‡ªå‹•ä½œæˆã‚’è¡Œã„ã¾ã™", "Info", MB_OK);
 		if (!CreateAndRegisterScene("SampleScene")) {
-			MessageBox(nullptr, "³í‚Éì¬‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½", "Error", MB_OK);
+			MessageBox(nullptr, "æ­£å¸¸ã«ä½œæˆãŒã§ãã¾ã›ã‚“ã§ã—ãŸ", "Error", MB_OK);
 		}
 		_StartSceneName = "SampleScene";
 	}
@@ -177,7 +177,7 @@ SceneManger::~SceneManger() {
 	}
 }
 
-// ƒtƒ@ƒCƒ‹–¼‚Ì•ÏX
+// ãƒ•ã‚¡ã‚¤ãƒ«åã®å¤‰æ›´
 bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::string& newName) {
 	std::string oldPath = SettingManager::GetInstance()->GetSceneFilePath() + oldName;
 	std::string newPath = SettingManager::GetInstance()->GetSceneFilePath() + newName;
@@ -194,7 +194,7 @@ void SceneManger::Save() {
 	if (_currentScene) {
 		_currentScene->SaveToFile();
 	}
-	/*  ƒrƒ‹ƒhˆ—‚ğ§ì‚·‚éÛ‚Éˆ—‚ğ•Ï‚¦‚Ä‚­‚¾‚³‚¢ */
+	/*  ãƒ“ãƒ«ãƒ‰å‡¦ç†ã‚’åˆ¶ä½œã™ã‚‹éš›ã«å‡¦ç†ã‚’å¤‰ãˆã¦ãã ã•ã„ */
 	nlohmann::json configJson;
 	if (_currentScene)
 	{
@@ -208,7 +208,7 @@ void SceneManger::Save() {
 	std::string PATH = SettingManager::GetInstance()->GetSceneFilePath();
 	PATH += "SceneConfig.sceneconfig";
 
-	// JSONƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+	// JSONãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
 	std::ofstream configFile(PATH);
 	if (configFile.is_open())
 	{
@@ -222,7 +222,7 @@ void SceneManger::Load() {
 
 	std::ifstream configFile(PATH);
 	if (!configFile.is_open()) {
-		MessageBox(nullptr, "ƒV[ƒ“İ’èƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚ç‚È‚¢‚½‚ß\nƒfƒtƒHƒ‹ƒg‚ÌƒV[ƒ“‚ğ“Ç‚İ‚İ‚Ü‚·", "Info", MB_OK);
+		MessageBox(nullptr, "ã‚·ãƒ¼ãƒ³è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚‰ãªã„ãŸã‚\nãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ãƒ¼ãƒ³ã‚’èª­ã¿è¾¼ã¿ã¾ã™", "Info", MB_OK);
 		_StartSceneName = "SampleScene";
 		return;
 	}

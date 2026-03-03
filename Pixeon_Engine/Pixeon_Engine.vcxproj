@@ -147,6 +147,7 @@
     <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
+    <ClInclude Include="AtmosphericFogEffect.h" />
     <ClInclude Include="BaseCollision.h" />
     <ClInclude Include="BloomEffect.h" />
     <ClInclude Include="BoneNodeMapping.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Animator2DManager.cpp" />
     <ClCompile Include="API.cpp" />
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="AtmosphericFogEffect.cpp" />
     <ClCompile Include="BloomEffect.cpp" />
     <ClCompile Include="BoxCollision.cpp" />
     <ClCompile Include="Builder.cpp" />

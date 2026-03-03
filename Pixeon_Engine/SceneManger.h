@@ -1,4 +1,4 @@
-// ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX
+ï»¿// ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹
 #pragma once
 
 #include <windows.h>
@@ -47,7 +47,7 @@ private:
 	~SceneManger();
 
 private:
-	// ƒV[ƒ“ƒŠƒXƒg
+	// ã‚·ãƒ¼ãƒ³ãƒªã‚¹ãƒˆ
 	std::vector<std::string> _sceneList;
 	std::map<std::string, std::function<AbstractScene* ()>> _SceneCreators;
 

@@ -829,8 +829,8 @@ void EngineFrame::LayerInspectorWindow()
 		// エフェクト追加UI
 		static int currentEffect = 0;
 		const char* effectNames[] = {
-			"Bloom", "Blur", "Pixelate", "Color Grading",
-			"Vignette", "Chromatic Aberration", "SSAO"
+			"Bloom","Pixelate", "Color Grading",
+			"SSAO","Fog"
 		};
 
 		ImGui::Combo("##EffectType", &currentEffect, effectNames,

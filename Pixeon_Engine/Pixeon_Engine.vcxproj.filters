@@ -281,6 +281,9 @@
     <ClCompile Include="LightingPass.cpp">
       <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="AtmosphericFogEffect.cpp">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -504,6 +507,9 @@
     </ClInclude>
     <ClInclude Include="LightingPass.h">
       <Filter>ソース ファイル\1_MainFrame\Sys\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="AtmosphericFogEffect.h">
+      <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

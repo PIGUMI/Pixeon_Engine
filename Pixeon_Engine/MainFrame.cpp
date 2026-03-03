@@ -42,7 +42,7 @@ void MainFrame::DeleteInstance() {
 
 int MainFrame::Init(const EngineConfig& InPut)
 {
-	_targetFrameTime = 1000.0f / 1000.0f;
+	_targetFrameTime = 1000.0f / 200.0f;
 	_lastUpdateTime = timeGetTime();
 	_wnd = InPut.wnd;
 	_updateDraw = false;
@@ -186,7 +186,6 @@ void MainFrame::Draw()
 
 				scene->PrepareShadowAndLights(Layer_Index);
 
-				// ライトCBをLightingPassに渡す（GeometryPass後も確実に反映させるため）
 				if (lp) lp->SetLightBuffers(
 					scene->GetLightArrayCB(),
 					scene->GetLightCountCB());
@@ -247,7 +246,6 @@ void MainFrame::Draw()
 					ctx->OMSetRenderTargets(1, &layerRTV, gb->GetDSV());
 					ctx->OMSetDepthStencilState(nullptr, 0);
 					dx11->SetBlendMode(BLEND_ALPHA);
-					// Forward描画（ImageRender/LineRenderer/Grid）
 					scene->DrawForwardObjects(Layer_Index);
 					if (cam)
 						scene->DrawEffects(Layer_Index, cam);
@@ -291,19 +289,33 @@ void MainFrame::Draw()
 		if (layerSettings && !layerSettings->postEffects.empty())
 		{
 			ID3D11ShaderResourceView* depthSRV = layerRT->GetDepthShaderResourceView();
+
 			DirectX::XMMATRIX proj = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX invProj = DirectX::XMMatrixIdentity();
+			DirectX::XMMATRIX invView = DirectX::XMMatrixIdentity();
+			DirectX::XMFLOAT3 cameraPos = { 0.f, 0.f, 0.f };
+
 			if (_softwareMode == SoftWareMode::ENGINE)
 				if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
 					if (auto cam = scene->GetMainCamera())
 					{
 						proj = cam->GetProjection();
 						invProj = DirectX::XMMatrixInverse(nullptr, proj);
+						DirectX::XMMATRIX view = cam->GetView();
+						invView = DirectX::XMMatrixInverse(nullptr, view);
+						cameraPos = cam->GetWorldPosition();
 					}
+
 			layerSettings->ApplyPostEffectsToScreen(
 				layerRT->GetShaderResourceView(),
 				_engineConfig.screenWidth, _engineConfig.screenHeight,
-				opacity, depthSRV, &proj, &invProj);
+				opacity,
+				depthSRV,
+				&proj,
+				&invProj,
+				&invView,
+				&cameraPos
+			);
 		}
 		else
 		{
