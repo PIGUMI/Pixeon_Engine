@@ -38,7 +38,7 @@ void OnExitCallback(component collision, const APICollisionInfo* info)
 }
 
 // ========================================
-// IScript 実装
+// IScript
 // ========================================
 IScript::~IScript()
 {
@@ -48,7 +48,6 @@ IScript::~IScript()
 
 void IScript::SetParentObject(object obj)
 {
-	// ラッパークラスを作成（所有権なし）
 	if (_parentObject) {
 		delete _parentObject;
 	}
@@ -57,7 +56,6 @@ void IScript::SetParentObject(object obj)
 
 void IScript::SetParentScene(scene scn)
 {
-	// ラッパークラスを作成（所有権なし）
 	if (_parentScene) {
 		delete _parentScene;
 	}
@@ -70,7 +68,6 @@ void IScript::BeginPlay()
 		return;
 	}
 
-	// コリジョンコンポーネントの自動登録
 	const char* collisionTypes[] = {
 		"BoxCollision",
 		"CapsuleCollision",
@@ -96,7 +93,6 @@ void IScript::FixedUpdate(float DeleteTime)
 
 void IScript::EndPlay()
 {
-	// 自動的にすべてのリソースを解放
 	CleanupAllResources();
 	UnregisterAllCollisions();
 }
@@ -108,7 +104,6 @@ void IScript::CallCustom(const std::string& functionName)
 
 void IScript::ClearParent()
 {
-	// ラッパークラスのみ削除
 	if (_parentObject) {
 		delete _parentObject;
 		_parentObject = nullptr;

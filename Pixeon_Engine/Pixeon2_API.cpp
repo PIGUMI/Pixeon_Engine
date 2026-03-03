@@ -1,6 +1,7 @@
 #include "Pixeon2_API.h"
 #include <stdexcept>
 #include <unordered_map>
+
 // ========================================
 // Object Implementation
 // ========================================
@@ -754,7 +755,6 @@ void Rigidbody::SetSpinningFriction(float friction)
 // Box Collision Component Implementation
 // ========================================
 
-// コールバック保存用グローバルマップ
 static std::unordered_map<component, Boxcollision*> g_CollisionMap;
 
 DirectX::XMFLOAT3 Boxcollision::GetSize()
