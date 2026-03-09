@@ -12,15 +12,6 @@
     <Filter Include="ソース ファイル\1_MainFrame">
       <UniqueIdentifier>{a05cca16-2aee-4170-a41e-9f84dfdb0487}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\1_MainFrame\GUI">
-      <UniqueIdentifier>{443e4728-733e-47c8-ae1e-17c40449c28d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\1_MainFrame\GUI\Internal processing">
-      <UniqueIdentifier>{1af6bf24-6530-4d11-8f14-13991b5e4774}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\1_MainFrame\GUI\View">
-      <UniqueIdentifier>{306ee381-2d50-4435-99d5-f6e344be05b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\1_MainFrame\Sys">
       <UniqueIdentifier>{db6a1d7e-36d0-4766-a177-40a57d57ba05}</UniqueIdentifier>
     </Filter>
@@ -84,6 +75,15 @@
     <Filter Include="ソース ファイル\1_MainFrame\Sys\Rendering">
       <UniqueIdentifier>{0763985c-db9f-4949-8cde-3876e4cd49b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\Component\Renderer\GUI">
+      <UniqueIdentifier>{443e4728-733e-47c8-ae1e-17c40449c28d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing">
+      <UniqueIdentifier>{1af6bf24-6530-4d11-8f14-13991b5e4774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\1_MainFrame\Component\Renderer\GUI\View">
+      <UniqueIdentifier>{306ee381-2d50-4435-99d5-f6e344be05b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -93,25 +93,25 @@
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_demo.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_draw.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_impl_dx11.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_impl_win32.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_tables.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="IMGUI\imgui_widgets.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
@@ -180,7 +180,7 @@
       <Filter>ソース ファイル\2_Engine\Frame</Filter>
     </ClCompile>
     <ClCompile Include="GUI.cpp">
-      <Filter>ソース ファイル\1_MainFrame\GUI\View</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\View</Filter>
     </ClCompile>
     <ClCompile Include="AnimationDebug.cpp">
       <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
@@ -296,28 +296,28 @@
       <Filter>ソース ファイル\1_MainFrame\Sys</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imstb_truetype.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui_impl_dx11.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui_impl_win32.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imgui_internal.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imstb_rectpack.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imstb_textedit.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="IMGUI\imconfig.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
@@ -401,7 +401,7 @@
       <Filter>ソース ファイル\2_Engine\Frame</Filter>
     </ClInclude>
     <ClInclude Include="GUI.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\View</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\View</Filter>
     </ClInclude>
     <ClInclude Include="AnimationDebug.h">
       <Filter>ソース ファイル\1_MainFrame\Component\3DModel</Filter>
@@ -509,7 +509,7 @@
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClInclude>
     <ClInclude Include="IconsFontAwesome5.h">
-      <Filter>ソース ファイル\1_MainFrame\GUI\Internal processing</Filter>
+      <Filter>ソース ファイル\1_MainFrame\Component\Renderer\GUI\Internal processing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
