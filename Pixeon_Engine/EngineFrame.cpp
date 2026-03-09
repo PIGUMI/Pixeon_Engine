@@ -56,6 +56,7 @@ void EngineFrame::Update()
 	}
 	else
 	{
+		if (bBeginPlayCalled_)SelectedObject = nullptr;
 		bBeginPlayCalled_ = false;
 		SceneManger::GetInstance()->EditUpdate();
 	}

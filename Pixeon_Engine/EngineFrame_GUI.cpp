@@ -354,7 +354,8 @@ void  EngineFrame::InspectorWindow()
 		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("オブジェクト名:").c_str());
 		ImGui::SameLine();
 		char buf[256];
-		strcpy_s(buf, SelectedObject->GetObjectName().c_str());
+		std::string name = SelectedObject->GetObjectName();
+		strcpy_s(buf, sizeof(buf), name.c_str());
 		if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("##オブジェクト名").c_str(), buf, sizeof(buf))) {
 			SelectedObject->SetObjectName(buf);
 		}
