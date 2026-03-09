@@ -421,24 +421,6 @@ void AbstractScene::Draw(int Layer) {
 	ID3D11SamplerState* samplers[] = { m_shadowSampler.Get() };
 	ctx->PSSetSamplers(1, 1, samplers);
 
-	if (!InGame)
-	{
-		if (Layer == 0) {
-			DirectX::XMFLOAT4X4 view, proj;
-			DirectX::XMFLOAT3 Pos = { 0,0,0 };
-			if (_MainCamera) {
-				view = _MainCamera->GetViewMatrix();
-				proj = _MainCamera->GetProjectionMatrix();
-				Pos = _MainCamera->GetWorldPosition();
-			}
-			else {
-				view = DirectX::XMFLOAT4X4();
-				proj = DirectX::XMFLOAT4X4();
-			}
-			Draw1mGrid(20.0f, view, proj, Pos);
-		}
-	}
-
 	for (auto& obj : _objects) {
 		if (obj) {
 			obj->Draw(Layer);
@@ -1216,8 +1198,6 @@ Layer* AbstractScene::GetLayer(int index)
 
 void AbstractScene::DrawForwardObjects(int Layer)
 {
-	// GBuffer/LightingPass後にForward描画するオブジェクト
-	// (ImageRender, LineRenderer, Grid等)
 	auto ctx = DirectX11::GetInstance()->GetContext();
 
 	if (!InGame)
