@@ -14,201 +14,201 @@
 class ModelRenderComponent : public AbstractComponent
 {
 private:
-    enum class TextureIssue : uint8_t {
-        None = 0,
-        MaterialIndexOutOfRange,
-        MaterialNoPath,
-        TextureLoadFailed,
-        TextureSRVNull,
-        NoUVChannel,
-        UVAllZero,
-        SamplerMissing,
-        StillFallbackWhite,
-        StillFallbackMagenta
-    };
+	enum class TextureIssue : uint8_t {
+		None = 0,
+		MaterialIndexOutOfRange,
+		MaterialNoPath,
+		TextureLoadFailed,
+		TextureSRVNull,
+		NoUVChannel,
+		UVAllZero,
+		SamplerMissing,
+		StillFallbackWhite,
+		StillFallbackMagenta
+	};
 
 public:
-    enum class CullMode : uint8_t {
-        Back = 0,
-        Front = 1,
-        None = 2
-    };
+	enum class CullMode : uint8_t {
+		Back = 0,
+		Front = 1,
+		None = 2
+	};
 
-    ModelRenderComponent() = default;
-    ~ModelRenderComponent() = default;
+	ModelRenderComponent() = default;
+	~ModelRenderComponent() = default;
 
-    void Init(AbstractObject* owner) override;
-    void Draw(int Layer) override;
+	void Init(AbstractObject* owner) override;
+	void Draw(int Layer) override;
 
-    void DrawForGBuffer(int Layer);
-    void DrawInspector() override;
+	void DrawForGBuffer(int Layer);
+	void DrawInspector() override;
 
-    bool SetModel(const std::string& logicalPath);
-    const std::string& GetModelPath() const { return m_modelPath; }
+	bool SetModel(const std::string& logicalPath);
+	const std::string& GetModelPath() const { return m_modelPath; }
 
-    void SetColor(const DirectX::XMFLOAT4& c) { m_color = c; }
-    DirectX::XMFLOAT4 GetColor() const { return m_color; }
+	void SetColor(const DirectX::XMFLOAT4& c) { m_color = c; }
+	DirectX::XMFLOAT4 GetColor() const { return m_color; }
 
-    void SaveToFile(std::ostream& out) override;
-    void LoadFromFile(std::istream& in) override;
+	void SaveToFile(std::ostream& out) override;
+	void LoadFromFile(std::istream& in) override;
 
-    void SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices);
-    const std::vector<DirectX::XMFLOAT4X4>& GetBoneMatrices() const { return m_boneMatrices; }
-    bool HasBoneMatrices() const { return !m_boneMatrices.empty(); }
-    void SetupBoneMatricesForShader(ID3D11DeviceContext* ctx);
+	void SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices);
+	const std::vector<DirectX::XMFLOAT4X4>& GetBoneMatrices() const { return m_boneMatrices; }
+	bool HasBoneMatrices() const { return !m_boneMatrices.empty(); }
+	void SetupBoneMatricesForShader(ID3D11DeviceContext* ctx);
 
-    bool SetMaterialTexture(int materialIndex, const std::string& texLogicalPath);
+	bool SetMaterialTexture(int materialIndex, const std::string& texLogicalPath);
 
-    void SetMeshOffset(size_t meshIndex, const DirectX::XMFLOAT3& offset);
-    DirectX::XMFLOAT3 GetMeshOffset(size_t meshIndex) const;
+	void SetMeshOffset(size_t meshIndex, const DirectX::XMFLOAT3& offset);
+	DirectX::XMFLOAT3 GetMeshOffset(size_t meshIndex) const;
 
-    void SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT3& scale);
-    DirectX::XMFLOAT3 GetMeshScale(size_t meshIndex) const;
+	void SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT3& scale);
+	DirectX::XMFLOAT3 GetMeshScale(size_t meshIndex) const;
 
-    void SetMeshRotation(size_t meshIndex, const DirectX::XMFLOAT3& rotation);
-    DirectX::XMFLOAT3 GetMeshRotation(size_t meshIndex) const;
+	void SetMeshRotation(size_t meshIndex, const DirectX::XMFLOAT3& rotation);
+	DirectX::XMFLOAT3 GetMeshRotation(size_t meshIndex) const;
 
-    void SetMeshCullMode(size_t meshIndex, CullMode mode);
-    CullMode GetMeshCullMode(size_t meshIndex) const;
+	void SetMeshCullMode(size_t meshIndex, CullMode mode);
+	CullMode GetMeshCullMode(size_t meshIndex) const;
 
-    void SetGlobalOffset(const DirectX::XMFLOAT3& offset) { m_globalOffset = offset; }
-    DirectX::XMFLOAT3 GetGlobalOffset() const { return m_globalOffset; }
+	void SetGlobalOffset(const DirectX::XMFLOAT3& offset) { m_globalOffset = offset; }
+	DirectX::XMFLOAT3 GetGlobalOffset() const { return m_globalOffset; }
 
-    void SetGlobalScale(const DirectX::XMFLOAT3& scale) { m_globalScale = scale; }
-    DirectX::XMFLOAT3 GetGlobalScale() const { return m_globalScale; }
+	void SetGlobalScale(const DirectX::XMFLOAT3& scale) { m_globalScale = scale; }
+	DirectX::XMFLOAT3 GetGlobalScale() const { return m_globalScale; }
 
-    void SetGlobalRotation(const DirectX::XMFLOAT3& rotation) { m_globalRotation = rotation; }
-    DirectX::XMFLOAT3 GetGlobalRotation() const { return m_globalRotation; }
+	void SetGlobalRotation(const DirectX::XMFLOAT3& rotation) { m_globalRotation = rotation; }
+	DirectX::XMFLOAT3 GetGlobalRotation() const { return m_globalRotation; }
 
-    std::shared_ptr<ModelSharedResource> GetModel() const { return m_model; }
+	std::shared_ptr<ModelSharedResource> GetModel() const { return m_model; }
 
-    size_t GetBoneCount() const { return m_model ? m_model->bones.size() : 0; }
+	size_t GetBoneCount() const { return m_model ? m_model->bones.size() : 0; }
 
-    int GetBoneIndexByName(const std::string& boneName) const;
-    std::string GetBoneNameByIndex(int boneIndex) const;
+	int GetBoneIndexByName(const std::string& boneName) const;
+	std::string GetBoneNameByIndex(int boneIndex) const;
 
-    DirectX::XMMATRIX GetBoneWorldMatrix(int boneIndex) const;
-    DirectX::XMFLOAT3 GetBoneWorldPosition(int boneIndex) const;
-    DirectX::XMFLOAT4 GetBoneWorldRotationQuaternion(int boneIndex) const;
-    DirectX::XMFLOAT3 GetBoneWorldRotation(int boneIndex) const;
-    DirectX::XMFLOAT3 GetBoneWorldRotationDegrees(int boneIndex) const;
+	DirectX::XMMATRIX GetBoneWorldMatrix(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneWorldPosition(int boneIndex) const;
+	DirectX::XMFLOAT4 GetBoneWorldRotationQuaternion(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneWorldRotation(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneWorldRotationDegrees(int boneIndex) const;
 
-    DirectX::XMFLOAT3 GetBoneLocalPosition(int boneIndex) const;
-    DirectX::XMFLOAT3 GetBoneLocalRotation(int boneIndex) const;
-    DirectX::XMFLOAT3 GetBoneLocalRotationDegrees(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneLocalPosition(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneLocalRotation(int boneIndex) const;
+	DirectX::XMFLOAT3 GetBoneLocalRotationDegrees(int boneIndex) const;
 
-    const std::vector<Bone>* GetBones() const { return m_model ? &m_model->bones : nullptr; }
+	const std::vector<Bone>* GetBones() const { return m_model ? &m_model->bones : nullptr; }
 
-    int GetBoneParentIndex(int boneIndex) const;
-    std::vector<int> GetBoneChildren(int boneIndex) const;
-
-private:
-    struct CBData {
-        DirectX::XMMATRIX World;
-        DirectX::XMMATRIX View;
-        DirectX::XMMATRIX Proj;
-        DirectX::XMFLOAT4 BaseColor;
-    };
-
-    struct CameraCBData {
-        DirectX::XMFLOAT3 CameraPos;
-        float _pad;
-    };
-
-    struct MaterialRuntime {
-        std::string                      texName;
-        std::shared_ptr<TextureResource> tex;
-        DirectX::XMFLOAT4                color;
-        DirectX::XMFLOAT3                meshOffset;
-        DirectX::XMFLOAT3                meshScale;
-        DirectX::XMFLOAT3                meshRotation;
-        CullMode                         cullMode;
-    };
-
-    struct ShaderTextureSlot {
-        std::string                      varName;
-        UINT                             bindPoint = 0;
-        std::string                      assignedTexName;
-        std::shared_ptr<TextureResource> tex;
-    };
-
-    bool EnsureShaders(bool forceRecreateLayout = false);
-    bool EnsureInputLayout(const void* vsBytecode, size_t size);
-    bool EnsureConstantBuffer();
-    void RefreshMaterialCache();
-    void RebuildShaderTextureSlots();
-
-    void ShowModelSelectPopup();
-    void ShowTextureSelectPopup(int materialIndex);
-    void DrawShaderTextureSlotInspector();
-
-    void RecreateInputLayout();
-    DirectX::XMMATRIX BuildWorldMatrix() const;
-    DirectX::XMMATRIX BuildMeshWorldMatrix(
-        const DirectX::XMFLOAT3& offset,
-        const DirectX::XMFLOAT3& scale,
-        const DirectX::XMFLOAT3& rotation) const;
-
-    bool EnsureWhiteTexture();
-    bool EnsureDebugFallbackTextures();
-    bool EnsureRasterizerStates();
-
-    void DiagnoseAndReportTextureIssue(size_t submeshIdx,
-        const SubMesh& sm,
-        const MaterialRuntime* mat,
-        ID3D11ShaderResourceView* chosenSRV,
-        bool usedMagentaFallback,
-        bool usedWhiteFallback);
-
-    void EnsureDefaultBoneMatrices();
+	int GetBoneParentIndex(int boneIndex) const;
+	std::vector<int> GetBoneChildren(int boneIndex) const;
 
 private:
-    std::string                          m_modelPath;
-    std::shared_ptr<ModelSharedResource> m_model;
-    std::vector<MaterialRuntime>         m_materials;
+	struct CBData {
+		DirectX::XMMATRIX World;
+		DirectX::XMMATRIX View;
+		DirectX::XMMATRIX Proj;
+		DirectX::XMFLOAT4 BaseColor;
+	};
 
-    DirectX::XMFLOAT4 m_color{ 1,1,1,1 };
+	struct CameraCBData {
+		DirectX::XMFLOAT3 CameraPos;
+		float _pad;
+	};
 
-    Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cb;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cameraCb;
+	struct MaterialRuntime {
+		std::string                      texName;
+		std::shared_ptr<TextureResource> tex;
+		DirectX::XMFLOAT4                color;
+		DirectX::XMFLOAT3                meshOffset;
+		DirectX::XMFLOAT3                meshScale;
+		DirectX::XMFLOAT3                meshRotation;
+		CullMode                         cullMode;
+	};
 
-    Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs;
-    Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ps;
-    Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_layout;
+	struct ShaderTextureSlot {
+		std::string                      varName;
+		UINT                             bindPoint = 0;
+		std::string                      assignedTexName;
+		std::shared_ptr<TextureResource> tex;
+	};
 
-    std::string m_vsName = "VS_ModelStatic";
-    std::string m_psName = "PS_ModelStatic";
+	bool EnsureShaders(bool forceRecreateLayout = false);
+	bool EnsureInputLayout(const void* vsBytecode, size_t size);
+	bool EnsureConstantBuffer();
+	void RefreshMaterialCache();
+	void RebuildShaderTextureSlots();
 
-    static Microsoft::WRL::ComPtr<ID3D11SamplerState>       s_linearSmp;
-    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_whiteTexSRV;
-    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_magentaTexSRV;
+	void ShowModelSelectPopup();
+	void ShowTextureSelectPopup(int materialIndex);
+	void DrawShaderTextureSlotInspector();
 
-    static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullBack;
-    static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullFront;
-    static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullNone;
+	void RecreateInputLayout();
+	DirectX::XMMATRIX BuildWorldMatrix() const;
+	DirectX::XMMATRIX BuildMeshWorldMatrix(
+		const DirectX::XMFLOAT3& offset,
+		const DirectX::XMFLOAT3& scale,
+		const DirectX::XMFLOAT3& rotation) const;
 
-    std::vector<uint8_t> m_texIssueReported;
+	bool EnsureWhiteTexture();
+	bool EnsureDebugFallbackTextures();
+	bool EnsureRasterizerStates();
 
-    bool m_ready = false;
-    bool m_openTexPopup = false;
-    int  m_texPopupMatIndex = -1;
+	void DiagnoseAndReportTextureIssue(size_t submeshIdx,
+		const SubMesh& sm,
+		const MaterialRuntime* mat,
+		ID3D11ShaderResourceView* chosenSRV,
+		bool usedMagentaFallback,
+		bool usedWhiteFallback);
 
-    std::vector<DirectX::XMFLOAT4X4> m_boneMatrices;
-    bool m_useBoneMatrices = false;
+	void EnsureDefaultBoneMatrices();
 
-    DirectX::XMFLOAT3 m_globalOffset{ 0.0f, 0.0f, 0.0f };
-    DirectX::XMFLOAT3 m_globalScale{ 1.0f, 1.0f, 1.0f };
-    DirectX::XMFLOAT3 m_globalRotation{ 0.0f, 0.0f, 0.0f };
+private:
+	std::string                          m_modelPath;
+	std::shared_ptr<ModelSharedResource> m_model;
+	std::vector<MaterialRuntime>         m_materials;
 
-    bool m_showBoneHierarchy = false;
-    std::unordered_map<int, bool> m_boneTreeOpenState;
-    int  m_selectedBoneIndex = -1;
-    char m_boneFilterBuffer[128] = "";
+	DirectX::XMFLOAT4 m_color{ 1,1,1,1 };
 
-    std::vector<ShaderTextureSlot> m_shaderTexSlots;
-    bool m_openShaderTexPopup = false;
-    int  m_shaderTexPopupSlotIndex = -1;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cb;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cameraCb;
 
-    void DrawBoneHierarchyRecursive(int boneIndex, int depth = 0);
-    void DrawBoneDetails(int boneIndex);
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ps;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_layout;
+
+	std::string m_vsName = "VS_ModelStatic";
+	std::string m_psName = "PS_ModelStatic";
+
+	static Microsoft::WRL::ComPtr<ID3D11SamplerState>       s_linearSmp;
+	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_whiteTexSRV;
+	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_magentaTexSRV;
+
+	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullBack;
+	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullFront;
+	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullNone;
+
+	std::vector<uint8_t> m_texIssueReported;
+
+	bool m_ready = false;
+	bool m_openTexPopup = false;
+	int  m_texPopupMatIndex = -1;
+
+	std::vector<DirectX::XMFLOAT4X4> m_boneMatrices;
+	bool m_useBoneMatrices = false;
+
+	DirectX::XMFLOAT3 m_globalOffset{ 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 m_globalScale{ 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT3 m_globalRotation{ 0.0f, 0.0f, 0.0f };
+
+	bool m_showBoneHierarchy = false;
+	std::unordered_map<int, bool> m_boneTreeOpenState;
+	int  m_selectedBoneIndex = -1;
+	char m_boneFilterBuffer[128] = "";
+
+	std::vector<ShaderTextureSlot> m_shaderTexSlots;
+	bool m_openShaderTexPopup = false;
+	int  m_shaderTexPopupSlotIndex = -1;
+
+	void DrawBoneHierarchyRecursive(int boneIndex, int depth = 0);
+	void DrawBoneDetails(int boneIndex);
 };
