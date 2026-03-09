@@ -69,6 +69,7 @@ void ModelRenderComponent::RefreshMaterialCache() {
 		rt.color = modelMat.baseColor;
 		rt.meshOffset = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		rt.meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+		rt.meshRotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);  // ★ 追加
 		rt.cullMode = CullMode::Back;
 
 		// テクスチャの読み込み
@@ -84,7 +85,7 @@ void ModelRenderComponent::RefreshMaterialCache() {
 					auto texRes = std::make_shared<TextureResource>();
 					texRes->srv = srv;
 
-					// SRVから実際のテクスチャサイズを取得
+					// SRVから元のテクスチャサイズを取得
 					Microsoft::WRL::ComPtr<ID3D11Resource> resource;
 					srv->GetResource(resource.GetAddressOf());
 
@@ -379,8 +380,12 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 	}
 }
 
+// ★ rotation 引数を追加
 DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
-	const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const {
+	const DirectX::XMFLOAT3& offset,
+	const DirectX::XMFLOAT3& scale,
+	const DirectX::XMFLOAT3& rotation) const
+{
 	Transform t = _Parent->GetWorldTransform();
 
 	XMMATRIX meshLocalScale = XMMatrixScaling(
@@ -389,10 +394,11 @@ DirectX::XMMATRIX ModelRenderComponent::BuildMeshWorldMatrix(
 		scale.z * m_globalScale.z
 	);
 
+	// ★ メッシュ個別回転 + グローバル回転 を合成
 	XMMATRIX meshLocalRotation = XMMatrixRotationRollPitchYaw(
-		m_globalRotation.x,
-		m_globalRotation.y,
-		m_globalRotation.z
+		rotation.x + m_globalRotation.x,
+		rotation.y + m_globalRotation.y,
+		rotation.z + m_globalRotation.z
 	);
 
 	XMMATRIX meshLocalTranslation = XMMatrixTranslation(
@@ -432,6 +438,17 @@ void ModelRenderComponent::SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT
 DirectX::XMFLOAT3 ModelRenderComponent::GetMeshScale(size_t meshIndex) const {
 	if (meshIndex >= m_materials.size()) return DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	return m_materials[meshIndex].meshScale;
+}
+
+// ★ 追加: メッシュ個別回転のアクセサ
+void ModelRenderComponent::SetMeshRotation(size_t meshIndex, const DirectX::XMFLOAT3& rotation) {
+	if (meshIndex >= m_materials.size()) return;
+	m_materials[meshIndex].meshRotation = rotation;
+}
+
+DirectX::XMFLOAT3 ModelRenderComponent::GetMeshRotation(size_t meshIndex) const {
+	if (meshIndex >= m_materials.size()) return DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	return m_materials[meshIndex].meshRotation;
 }
 
 void ModelRenderComponent::SetMeshCullMode(size_t meshIndex, CullMode mode) {
@@ -604,6 +621,7 @@ DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotation(int boneIndex) cons
 
 	return XMFLOAT3(pitch, yaw, roll);
 }
+
 DirectX::XMFLOAT3 ModelRenderComponent::GetBoneLocalRotationDegrees(int boneIndex) const {
 	using namespace DirectX;
 
@@ -638,6 +656,7 @@ std::vector<int> ModelRenderComponent::GetBoneChildren(int boneIndex) const {
 
 	return children;
 }
+
 void ModelRenderComponent::EnsureDefaultBoneMatrices()
 {
 	if (!m_model) return;
@@ -705,6 +724,7 @@ void ModelRenderComponent::Draw(int Layer) {
 		DirectX::XMFLOAT4 materialColor = m_color;
 		DirectX::XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		DirectX::XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
+		DirectX::XMFLOAT3 meshRotation(0.0f, 0.0f, 0.0f);  // ★ 追加
 		CullMode cullMode = CullMode::Back;
 		bool usedWhite = true;
 		bool usedMagenta = false;
@@ -721,6 +741,7 @@ void ModelRenderComponent::Draw(int Layer) {
 
 			meshOffset = mat.meshOffset;
 			meshScale = mat.meshScale;
+			meshRotation = mat.meshRotation;  // ★ 追加
 			cullMode = mat.cullMode;
 
 			if (mat.tex && mat.tex->srv) {
@@ -760,7 +781,8 @@ void ModelRenderComponent::Draw(int Layer) {
 			ctx->RSSetState(rasterizerState);
 		}
 
-		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale);
+		// ★ rotation を渡す
+		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale, meshRotation);
 
 		CBData cbd;
 		cbd.World = XMMatrixTranspose(world);
@@ -858,6 +880,7 @@ void ModelRenderComponent::SaveToFile(std::ostream& out) {
 		out << mat.texName << "\n";
 		out << mat.meshOffset.x << " " << mat.meshOffset.y << " " << mat.meshOffset.z << "\n";
 		out << mat.meshScale.x << " " << mat.meshScale.y << " " << mat.meshScale.z << "\n";
+		out << mat.meshRotation.x << " " << mat.meshRotation.y << " " << mat.meshRotation.z << "\n";  // ★ 追加
 		out << static_cast<int>(mat.cullMode) << "\n";
 	}
 }
@@ -896,6 +919,11 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 		in >> scale.x >> scale.y >> scale.z;
 		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
+		// ★ 追加: 回転を読み込む
+		DirectX::XMFLOAT3 rotation;
+		in >> rotation.x >> rotation.y >> rotation.z;
+		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 		int cullModeInt;
 		in >> cullModeInt;
 		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -906,6 +934,7 @@ void ModelRenderComponent::LoadFromFile(std::istream& in) {
 
 		m_materials[i].meshOffset = offset;
 		m_materials[i].meshScale = scale;
+		m_materials[i].meshRotation = rotation;  // ★ 追加
 		m_materials[i].cullMode = static_cast<CullMode>(cullModeInt);
 	}
 }
@@ -938,7 +967,7 @@ void ModelRenderComponent::DrawInspector() {
 	std::snprintf(pathBuf, sizeof(pathBuf), "%s", m_modelPath.c_str());
 	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("モデルの設定").c_str());
 	ImGui::TableSetColumnIndex(1);
-	if (ImGui::Button(SJ("再読込/適用").c_str())) SetModel(pathBuf);
+	if (ImGui::Button(SJ("再読み込み/適用").c_str())) SetModel(pathBuf);
 	ImGui::SameLine();
 	if (ImGui::Button(SJ("モデル選択").c_str())) ImGui::OpenPopup("ModelSelectPopup");
 	ShowModelSelectPopup();
@@ -950,7 +979,7 @@ void ModelRenderComponent::DrawInspector() {
 	static std::vector<std::string> psList;
 	if (vsList.empty()) vsList = sm->GetShaderList("VS");
 	if (psList.empty()) psList = sm->GetShaderList("PS");
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("シェーダーの再読込").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("シェーダーの再読み込み").c_str());
 	ImGui::TableSetColumnIndex(1);
 	if (ImGui::Button(SJ("更新(一覧)").c_str())) {
 		vsList = sm->GetShaderList("VS");
@@ -1074,6 +1103,19 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshScale.z = scale[2];
 				}
 
+				// ★ 追加: メッシュ回転スライダー（度数表示）
+				ImGui::Text("%s", SJ("メッシュ回転").c_str());
+				float rot[3] = {
+					DirectX::XMConvertToDegrees(m_materials[i].meshRotation.x),
+					DirectX::XMConvertToDegrees(m_materials[i].meshRotation.y),
+					DirectX::XMConvertToDegrees(m_materials[i].meshRotation.z)
+				};
+				if (ImGui::DragFloat3("Rotation", rot, 0.5f, -180.0f, 180.0f)) {
+					m_materials[i].meshRotation.x = DirectX::XMConvertToRadians(rot[0]);
+					m_materials[i].meshRotation.y = DirectX::XMConvertToRadians(rot[1]);
+					m_materials[i].meshRotation.z = DirectX::XMConvertToRadians(rot[2]);
+				}
+
 				ImGui::Separator();
 				ImGui::Text("%s", SJ("カリングモード").c_str());
 
@@ -1098,6 +1140,11 @@ void ModelRenderComponent::DrawInspector() {
 				if (ImGui::Button(SJ("スケールリセット").c_str())) {
 					m_materials[i].meshScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 				}
+				ImGui::SameLine();
+				// ★ 追加: 回転リセットボタン
+				if (ImGui::Button(SJ("回転リセット").c_str())) {
+					m_materials[i].meshRotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+				}
 
 				ImGui::TreePop();
 			}
@@ -1106,10 +1153,10 @@ void ModelRenderComponent::DrawInspector() {
 		ImGui::TreePop();
 	}
 
-	// ★ ボーン階層表示を追加
+	// ボーン階層表示追加
 	if (m_model && m_model->hasSkin && !m_model->bones.empty()) {
 		ImGui::Separator();
-		title = SJ("ボーン構造") + " (" + std::to_string(m_model->bones.size()) + ")##" +
+		title = SJ("ボーン表示") + " (" + std::to_string(m_model->bones.size()) + ")##" +
 			std::to_string(reinterpret_cast<uintptr_t>(this));
 
 		if (ImGui::TreeNode(title.c_str())) {
@@ -1129,10 +1176,10 @@ void ModelRenderComponent::DrawInspector() {
 
 			ImGui::Separator();
 
-			// ボーン階層をスクロール可能な領域に表示
+			// ボーン階層をスクロール可能領域に表示
 			ImGui::BeginChild("BoneHierarchy", ImVec2(0, 300), true);
 
-			// ルートボーン（親がいないボーン）から再帰的に表示
+			// ルートボーン（親がないボーン）から再帰的に表示
 			for (size_t i = 0; i < m_model->bones.size(); ++i) {
 				if (m_model->bones[i].parentIndex < 0) {
 					DrawBoneHierarchyRecursive((int)i, 0);
@@ -1289,7 +1336,7 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex)
 
 		auto list = AssetManager::Instance()->GetCachedTextureNames();
 
-		ImGui::Text("%s: %zu", SJ("総数").c_str(), list.size());
+		ImGui::Text("%s: %zu", SJ("件数").c_str(), list.size());
 		ImGui::Separator();
 
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
@@ -1352,11 +1399,10 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 	if (m_boneFilterBuffer[0] != '\0') {
 		std::string filter(m_boneFilterBuffer);
 		if (bone.name.find(filter) == std::string::npos) {
-			// このボーン自体はマッチしないが、子孫がマッチする可能性があるので子を確認
+			// このボーン自体はマッチしないが、子がマッチする可能性があるので子確認
 			bool hasMatchingChild = false;
 			for (size_t i = 0; i < m_model->bones.size(); ++i) {
 				if (m_model->bones[i].parentIndex == boneIndex) {
-					// 簡易的に子孫チェック（完全な実装ではないが動作する）
 					hasMatchingChild = true;
 					break;
 				}
@@ -1367,7 +1413,7 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 		}
 	}
 
-	// 子ボーンを検索
+	// 子ボーン収集
 	std::vector<int> children;
 	for (size_t i = 0; i < m_model->bones.size(); ++i) {
 		if (m_model->bones[i].parentIndex == boneIndex) {
@@ -1382,7 +1428,7 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
-	// 子がいない場合は葉ノード
+	// 子がない場合は葉ノード
 	if (children.empty()) {
 		flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 	}
@@ -1392,12 +1438,12 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 		flags |= ImGuiTreeNodeFlags_Selected;
 	}
 
-	// 開閉状態を管理
+	// 開閉管理
 	if (m_boneTreeOpenState.find(boneIndex) != m_boneTreeOpenState.end() && m_boneTreeOpenState[boneIndex]) {
 		ImGui::SetNextItemOpen(true);
 	}
 
-	// ボーン名を表示
+	// ボーン名表示
 	std::string label = bone.name + " [" + std::to_string(boneIndex) + "]";
 	bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)boneIndex, flags, "%s", label.c_str());
 
@@ -1439,7 +1485,7 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 		ImGui::EndTooltip();
 	}
 
-	// 開閉状態を保存
+	// 開閉保存
 	if (nodeOpen) {
 		m_boneTreeOpenState[boneIndex] = true;
 
@@ -1560,6 +1606,7 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 		}
 	}
 }
+
 // ============================================================
 // DrawForGBuffer
 // Geometry Pass 専用の描画メソッド
@@ -1579,8 +1626,8 @@ void ModelRenderComponent::DrawForGBuffer(int Layer)
 	auto ctx = DirectX11::GetInstance()->GetContext();
 	auto* sm = ShaderManager::GetInstance();
 
-	// VS は既存と同じ（VS_ModelStatic or VS_Animator）
-	// PS だけ PS_GBuffer に差し替える
+	// VS は共通（VS_ModelStatic or VS_Animator）
+	// PS のみ PS_GBuffer に差し替える
 	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
 	ID3D11PixelShader* ps = sm->GetPixelShader("PS_GBuffer");
 	if (!vs || !ps) return;
@@ -1601,7 +1648,7 @@ void ModelRenderComponent::DrawForGBuffer(int Layer)
 	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	ctx->VSSetShader(vs, nullptr, 0);
-	ctx->PSSetShader(ps, nullptr, 0);  // ← PS_GBuffer
+	ctx->PSSetShader(ps, nullptr, 0);  // PS_GBuffer
 
 	ID3D11SamplerState* smp = s_linearSmp.Get();
 	ctx->PSSetSamplers(0, 1, &smp);
@@ -1620,6 +1667,7 @@ void ModelRenderComponent::DrawForGBuffer(int Layer)
 		DirectX::XMFLOAT4 materialColor = m_color;
 		DirectX::XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		DirectX::XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
+		DirectX::XMFLOAT3 meshRotation(0.0f, 0.0f, 0.0f);  // ★ 追加
 		CullMode cullMode = CullMode::Back;
 
 		if (matIndex < m_materials.size())
@@ -1631,6 +1679,7 @@ void ModelRenderComponent::DrawForGBuffer(int Layer)
 			materialColor.w *= mat.color.w;
 			meshOffset = mat.meshOffset;
 			meshScale = mat.meshScale;
+			meshRotation = mat.meshRotation;  // ★ 追加
 			cullMode = mat.cullMode;
 
 			if (mat.tex && mat.tex->srv)
@@ -1648,8 +1697,9 @@ void ModelRenderComponent::DrawForGBuffer(int Layer)
 		}
 		if (rs) ctx->RSSetState(rs);
 
-		// 定数バッファ（b0: World/View/Proj/BaseColor）
-		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale);
+		// 定数バッファ (b0: World/View/Proj/BaseColor)
+		// ★ rotation を渡す
+		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale, meshRotation);
 		CBData cbd;
 		cbd.World = XMMatrixTranspose(world);
 		cbd.View = XMMatrixTranspose(view);

@@ -65,6 +65,10 @@ public:
 	void SetMeshScale(size_t meshIndex, const DirectX::XMFLOAT3& scale);
 	DirectX::XMFLOAT3 GetMeshScale(size_t meshIndex) const;
 
+	// ★ 追加: メッシュ個別回転のアクセサ
+	void SetMeshRotation(size_t meshIndex, const DirectX::XMFLOAT3& rotation);
+	DirectX::XMFLOAT3 GetMeshRotation(size_t meshIndex) const;
+
 	void SetMeshCullMode(size_t meshIndex, CullMode mode);
 	CullMode GetMeshCullMode(size_t meshIndex) const;
 
@@ -125,12 +129,14 @@ private:
 		DirectX::XMFLOAT3 CameraPos;
 		float _pad;
 	};
+
 	struct MaterialRuntime {
 		std::string                          texName;
 		std::shared_ptr<TextureResource>     tex;
 		DirectX::XMFLOAT4                    color;
 		DirectX::XMFLOAT3                    meshOffset;
 		DirectX::XMFLOAT3                    meshScale;
+		DirectX::XMFLOAT3                    meshRotation;  // ★ 追加（ラジアン）
 		CullMode                             cullMode;
 	};
 
@@ -144,7 +150,11 @@ private:
 
 	void RecreateInputLayout();
 	DirectX::XMMATRIX BuildWorldMatrix() const;
-	DirectX::XMMATRIX BuildMeshWorldMatrix(const DirectX::XMFLOAT3& offset, const DirectX::XMFLOAT3& scale) const;
+	// ★ 引数に rotation を追加
+	DirectX::XMMATRIX BuildMeshWorldMatrix(
+		const DirectX::XMFLOAT3& offset,
+		const DirectX::XMFLOAT3& scale,
+		const DirectX::XMFLOAT3& rotation) const;
 
 	bool EnsureWhiteTexture();
 	bool EnsureDebugFallbackTextures();
