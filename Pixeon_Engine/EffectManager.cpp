@@ -1,4 +1,4 @@
-#include "EffectManager.h"
+ï»¿#include "EffectManager.h"
 #include "AssetManager.h"
 #include "IMGUI/imgui.h"
 
@@ -172,15 +172,15 @@ private:
 		DirectX::ScratchImage scratch;
 		DirectX::TexMetadata meta{};
 
-		// DDSƒtƒH[ƒ}ƒbƒg‚ğ—Dæ“I‚É‚·
+		// DDSãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’å„ªå…ˆçš„ã«è©¦ã™
 		HRESULT hr = DirectX::LoadFromDDSMemory(data, (size_t)size, DirectX::DDS_FLAGS_NONE, &meta, scratch);
 		if (FAILED(hr))
 		{
-			// WIC‚Å“Ç‚İ‚Ş(sRGB‚ğ–³‹)
+			// WICã§èª­ã¿è¾¼ã‚€(sRGBã‚’ç„¡è¦–)
 			hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_IGNORE_SRGB, &meta, scratch);
 			if (FAILED(hr)) return false;
 
-			// R8G8B8A8_UNORM‚É•ÏŠ·
+			// R8G8B8A8_UNORMã«å¤‰æ›
 			const DXGI_FORMAT targetFmt = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 			if (meta.format != targetFmt)

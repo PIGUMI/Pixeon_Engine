@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@: Animator2D
-* à@@@–¾@: 2DƒAƒjƒ[ƒVƒ‡ƒ“‚ğŠÇ—‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒg
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€: Animator2D
+* èª¬ã€€ã€€ã€€æ˜ã€€: 2Dã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç®¡ç†ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
 */
 #include "Animator2D.h"
 #include "SettingManager.h"
@@ -12,10 +12,10 @@
 #include <algorithm>
 
 /*
-* ŠÖ”–¼@: GetTimeSeconds
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: double Œ»İ‚ÌŠÔi•bj
-* à@–¾@: Œ»İ‚ÌŠÔ‚ğ•b’PˆÊ‚Åæ“¾‚·‚é
+* é–¢æ•°åã€€: GetTimeSeconds
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: double ç¾åœ¨ã®æ™‚é–“ï¼ˆç§’ï¼‰
+* èª¬ã€€æ˜ã€€: ç¾åœ¨ã®æ™‚é–“ã‚’ç§’å˜ä½ã§å–å¾—ã™ã‚‹
 */
 static double GetTimeSeconds()
 {
@@ -26,10 +26,10 @@ static double GetTimeSeconds()
 }
 
 /*
-* ŠÖ”–¼:  Animator2D
-* ˆø@”: ‚È‚µ
-* –ß‚è’l: ‚È‚µ
-* à@–¾:  ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+* é–¢æ•°å:  Animator2D
+* å¼•ã€€æ•°: ãªã—
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜:  ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 */
 Animator2D::Animator2D()
 	: bLoop_(false),
@@ -38,15 +38,15 @@ Animator2D::Animator2D()
 	fNowTime_(0.0f),
 	fTotalDuration_(0.0f)
 {
-	// PreviewImage‚Ì‰Šú‰»‚Í’x‰„‚³‚¹‚é
+	// PreviewImageã®åˆæœŸåŒ–ã¯é…å»¶ã•ã›ã‚‹
 	PreviewImage = nullptr;
 }
 
 /*
-* ŠÖ”–¼: ~Animator2D
-* ˆø@”:  ‚È‚µ
-* –ß‚è’l: ‚È‚µ
-* à@–¾: ƒfƒXƒgƒ‰ƒNƒ^
+* é–¢æ•°å: ~Animator2D
+* å¼•ã€€æ•°:  ãªã—
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜: ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 */
 Animator2D::~Animator2D()
 {
@@ -58,10 +58,10 @@ Animator2D::~Animator2D()
 }
 
 /*
-* ŠÖ”–¼: EnsurePreviewImage
-* ˆø@”: ‚È‚µ
-* –ß‚è’l: ‚È‚µ
-* à@–¾:  PreviewImage‚ğ’x‰„‰Šú‰»‚·‚é
+* é–¢æ•°å: EnsurePreviewImage
+* å¼•ã€€æ•°: ãªã—
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜:  PreviewImageã‚’é…å»¶åˆæœŸåŒ–ã™ã‚‹
 */
 void Animator2D::EnsurePreviewImage()
 {
@@ -73,10 +73,10 @@ void Animator2D::EnsurePreviewImage()
 }
 
 /*
-* ŠÖ”–¼: Update
-* ˆø@”: ‚È‚µ
-* –ß‚è’l: ‚È‚µ
-* à@–¾: ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXV
+* é–¢æ•°å: Update
+* å¼•ã€€æ•°: ãªã—
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°
 */
 void Animator2D::Update()
 {
@@ -108,10 +108,10 @@ void Animator2D::Update()
 }
 
 /*
-* ŠÖ”–¼: EditorUpdate
-* ˆø@”: ‚È‚µ
-* –ß‚è’l: ‚È‚µ
-* à@–¾: ƒGƒfƒBƒ^[ƒ‚[ƒh‚ÌƒAƒjƒ[ƒVƒ‡ƒ“XV
+* é–¢æ•°å: EditorUpdate
+* å¼•ã€€æ•°: ãªã—
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜: ã‚¨ãƒ‡ã‚£ã‚¿ãƒ¼ãƒ¢ãƒ¼ãƒ‰æ™‚ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
 */
 void Animator2D::EditorUpdate()
 {
@@ -119,10 +119,10 @@ void Animator2D::EditorUpdate()
 }
 
 /*
-* ŠÖ”–¼: Draw
-* ˆø@”: Layer •`‰æƒŒƒCƒ„[
-* –ß‚è’l: ‚È‚µ
-* à@–¾: ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì•`‰æ
+* é–¢æ•°å: Draw
+* å¼•ã€€æ•°: Layer æç”»ãƒ¬ã‚¤ãƒ¤ãƒ¼
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æç”»
 */
 void Animator2D::Draw(int Layer)
 {
@@ -143,14 +143,14 @@ void Animator2D::Draw(int Layer)
 		DrawCount++;
 		if (PreviewImage)
 		{
-			// ƒGƒfƒBƒ^ƒ‚[ƒh‚Ìê‡AƒGƒfƒBƒ^ƒJƒƒ‰‚ğƒZƒbƒg
+			// ã‚¨ãƒ‡ã‚£ã‚¿ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã€ã‚¨ãƒ‡ã‚£ã‚¿ã‚«ãƒ¡ãƒ©ã‚’ã‚»ãƒƒãƒˆ
 			if (bEditorMode_ && editorCamera_)
 			{
 				PreviewImage->SetCamera(editorCamera_);
 			}
 			else if (owner_)
 			{
-				// ƒQ[ƒ€ƒ‚[ƒh‚Ìê‡AƒV[ƒ“‚ÌƒJƒƒ‰‚ğg—p
+				// ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã€ã‚·ãƒ¼ãƒ³ã®ã‚«ãƒ¡ãƒ©ã‚’ä½¿ç”¨
 				AbstractScene* scene = owner_->GetParentScene();
 				if (scene)
 				{
@@ -168,12 +168,12 @@ void Animator2D::Draw(int Layer)
 				break;
 			}
 
-			// “ˆê‚³‚ê‚½ƒXƒP[ƒ‹’l‚ğg—p
+			// çµ±ä¸€ã•ã‚ŒãŸã‚¹ã‚±ãƒ¼ãƒ«å€¤ã‚’ä½¿ç”¨
 			const float SCALE_FACTOR = 10.0f;
 
 			if (bEditorMode_)
 			{
-				// ƒGƒfƒBƒ^ƒ‚[ƒh: ƒJƒƒ‰‚ğg—p‚µ‚½•`‰æ
+				// ã‚¨ãƒ‡ã‚£ã‚¿ãƒ¢ãƒ¼ãƒ‰: ã‚«ãƒ¡ãƒ©ã‚’ä½¿ç”¨ã—ãŸæç”»
 				PreviewImage->SetOffset2D({
 					kf.NowTransform.Position.x * SCALE_FACTOR,
 					kf.NowTransform.Position.y * SCALE_FACTOR
@@ -194,7 +194,7 @@ void Animator2D::Draw(int Layer)
 			}
 			else
 			{
-				// ƒQ[ƒ€ƒ‚[ƒh
+				// ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰
 				if (owner_)
 				{
 					DirectX::XMFLOAT3 OwnerPos = owner_->GetWorldPosition();
@@ -240,7 +240,7 @@ void Animator2D::Draw(int Layer)
 				}
 			}
 
-			// UVİ’è
+			// UVè¨­å®š
 			if (kf.uiShift.IsActive)
 			{
 				PreviewImage->SetUVRect(kf.NowUiShift.UVRect);
@@ -272,10 +272,10 @@ void Animator2D::Draw(int Layer)
 }
 
 /*
-* ŠÖ”–¼: Debug
-* ˆø@”: ‚È‚µ
-* –ß‚è’l: ‚È‚µ
-* à@–¾: ƒfƒoƒbƒOî•ñ‚Ì•\¦
+* é–¢æ•°å: Debug
+* å¼•ã€€æ•°: ãªã—
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜: ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã®è¡¨ç¤º
 */
 void Animator2D::Debug()
 {
@@ -314,10 +314,10 @@ void Animator2D::Debug()
 }
 
 /*
-* ŠÖ”–¼@: SaveFile
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒAƒjƒ[ƒVƒ‡ƒ“ƒf[ƒ^‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚é
+* é–¢æ•°åã€€: SaveFile
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã™ã‚‹
 */
 void Animator2D::SaveFile()
 {
@@ -326,7 +326,7 @@ void Animator2D::SaveFile()
 	SaveJson["TotalDuration"] = fTotalDuration_;
 	SaveJson["Loop"] = bLoop_;
 	SaveJson["ViewMode"] = static_cast<int>(viewMode_);
-	// ƒL[ƒtƒŒ[ƒ€ŒQ
+	// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ç¾¤
 	nlohmann::json KeyFramesJson = nlohmann::json::array();
 	for (const auto& kf : KeyFrames_)
 	{
@@ -376,7 +376,7 @@ void Animator2D::SaveFile()
 		KeyFramesJson.push_back(kfJson);
 	}
 	SaveJson["KeyFrames"] = KeyFramesJson;
-	// ƒtƒ@ƒCƒ‹‚É•Û‘¶
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
 	std::string savePath = SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + "/" + Name_ + ".anim2d";
 	std::ofstream outFile(savePath);
 	if (outFile.is_open()) {
@@ -386,10 +386,10 @@ void Animator2D::SaveFile()
 }
 
 /*
-* ŠÖ”–¼@: LoadFile
-* ˆø@”@: FilePath ƒtƒ@ƒCƒ‹ƒpƒX
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒAƒjƒ[ƒVƒ‡ƒ“ƒf[ƒ^‚ğƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚Ş
+* é–¢æ•°åã€€: LoadFile
+* å¼•ã€€æ•°ã€€: FilePath ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚€
 */
 void Animator2D::LoadFile(std::string FilePath)
 {
@@ -400,23 +400,23 @@ void Animator2D::LoadFile(std::string FilePath)
 	nlohmann::json LoadJson;
 	inFile >> LoadJson;
 	inFile.close();
-	// ƒvƒƒWƒFƒNƒg–¼
+	// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆå
 	if (LoadJson.contains("ProjectName")) {
 		Name_ = LoadJson["ProjectName"].get<std::string>();
 	}
-	// ‘Ä¶ŠÔ
+	// ç·å†ç”Ÿæ™‚é–“
 	if (LoadJson.contains("TotalDuration")) {
 		fTotalDuration_ = LoadJson["TotalDuration"].get<float>();
 	}
-	// ƒ‹[ƒvİ’è
+	// ãƒ«ãƒ¼ãƒ—è¨­å®š
 	if (LoadJson.contains("Loop")) {
 		bLoop_ = LoadJson["Loop"].get<bool>();
 	}
-	// •`‰æƒ‚[ƒh
+	// æç”»ãƒ¢ãƒ¼ãƒ‰
 	if (LoadJson.contains("ViewMode")) {
 		viewMode_ = static_cast<ViewMode>(LoadJson["ViewMode"].get<int>());
 	}
-	// ƒL[ƒtƒŒ[ƒ€ŒQ
+	// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ç¾¤
 	if (LoadJson.contains("KeyFrames")) {
 		KeyFrames_.clear();
 		for (const auto& kfJson : LoadJson["KeyFrames"]) {
@@ -480,27 +480,27 @@ void Animator2D::LoadFile(std::string FilePath)
 			kf.uiShift.Horizontal_Grid = uiShiftJson["Horizontal_Grid"].get<int>();
 			kf.uiShift.Vertical_Grid = uiShiftJson["Vertical_Grid"].get<int>();
 			kf.uiShift.Speed = uiShiftJson["Speed"].get<float>();
-			// ƒL[ƒtƒŒ[ƒ€‚Ì’Ç‰Á
+			// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®è¿½åŠ 
 			KeyFrames_.push_back(kf);
 		}
 	}
 }
 
 /*
-* ŠÖ”–¼@: LoadCache
-* ˆø@”@: in “ü—ÍƒXƒgƒŠ[ƒ€
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒAƒjƒ[ƒVƒ‡ƒ“ƒf[ƒ^‚ğƒLƒƒƒbƒVƒ…‚©‚ç“Ç‚İ‚Ş
+* é–¢æ•°åã€€: LoadCache
+* å¼•ã€€æ•°ã€€: in å…¥åŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ 
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‹ã‚‰èª­ã¿è¾¼ã‚€
 */
 void Animator2D::LoadCache(std::ifstream& in)
 {
-	// ƒvƒƒWƒFƒNƒg–¼
+	// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆå
 	std::getline(in, Name_);
-	// ‘Ä¶ŠÔ
+	// ç·å†ç”Ÿæ™‚é–“
 	in.read(reinterpret_cast<char*>(&fTotalDuration_), sizeof(float));
-	// ƒ‹[ƒvİ’è
+	// ãƒ«ãƒ¼ãƒ—è¨­å®š
 	in.read(reinterpret_cast<char*>(&bLoop_), sizeof(bool));
-	// ƒL[ƒtƒŒ[ƒ€”
+	// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	size_t keyframeCount = 0;
 	in.read(reinterpret_cast<char*>(&keyframeCount), sizeof(size_t));
 	KeyFrames_.clear();
@@ -521,16 +521,16 @@ void Animator2D::LoadCache(std::ifstream& in)
 		in.read(reinterpret_cast<char*>(&kf.StartTransform), sizeof(UITransform));
 		// EndTransform
 		in.read(reinterpret_cast<char*>(&kf.EndTransform), sizeof(UITransform));
-		// ImageRender ‚Ì“Ç‚İ‚İ
+		// ImageRender ã®èª­ã¿è¾¼ã¿
 		KeyFrames_.push_back(kf);
 	}
 }
 
 /*
-* ŠÖ”–¼@: AddKeyFrame
-* ˆø@”@: keyframe ’Ç‰Á‚·‚éƒL[ƒtƒŒ[ƒ€
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒL[ƒtƒŒ[ƒ€‚ğ’Ç‰Á‚·‚é
+* é–¢æ•°åã€€: AddKeyFrame
+* å¼•ã€€æ•°ã€€: keyframe è¿½åŠ ã™ã‚‹ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ 
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’è¿½åŠ ã™ã‚‹
 */
 void Animator2D::AddKeyFrame(const KeyFrame& keyframe)
 {
@@ -538,10 +538,10 @@ void Animator2D::AddKeyFrame(const KeyFrame& keyframe)
 }
 
 /*
-* ŠÖ”–¼@: RemoveKeyFrame
-* ˆø@”@: ptr íœ‚·‚éƒL[ƒtƒŒ[ƒ€‚Ìƒ|ƒCƒ“ƒ^
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒL[ƒtƒŒ[ƒ€‚ğíœ‚·‚é
+* é–¢æ•°åã€€: RemoveKeyFrame
+* å¼•ã€€æ•°ã€€: ptr å‰Šé™¤ã™ã‚‹ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒã‚¤ãƒ³ã‚¿
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å‰Šé™¤ã™ã‚‹
 */
 void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 {
@@ -550,10 +550,10 @@ void Animator2D::RemoveKeyFrame(KeyFrame* ptr)
 }
 
 /*
-* ŠÖ”–¼@: SetOwner
-* ˆø@”@: owner Š—LÒƒIƒuƒWƒFƒNƒg
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: Š—LÒƒIƒuƒWƒFƒNƒg‚ğİ’è‚·‚é
+* é–¢æ•°åã€€: SetOwner
+* å¼•ã€€æ•°ã€€: owner æ‰€æœ‰è€…ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: æ‰€æœ‰è€…ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¨­å®šã™ã‚‹
 */
 void Animator2D::SetOwner(AbstractObject* owner)
 {
@@ -561,10 +561,10 @@ void Animator2D::SetOwner(AbstractObject* owner)
 }
 
 /*
-* ŠÖ”–¼:  PreviewUpdate
-* ˆø@”: ‚È‚µ
-* –ß‚è’l: ‚È‚µ
-* à@–¾: ƒvƒŒƒrƒ…[—p‚ÌXVˆ—
+* é–¢æ•°å:  PreviewUpdate
+* å¼•ã€€æ•°: ãªã—
+* æˆ»ã‚Šå€¤: ãªã—
+* èª¬ã€€æ˜: ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã®æ›´æ–°å‡¦ç†
 */
 void Animator2D::PreviewUpdate()
 {
@@ -576,10 +576,10 @@ void Animator2D::PreviewUpdate()
 }
 
 /*
-* ŠÖ”–¼: Copy
-* ˆø@”: ‚È‚µ
-* –ß‚è’l:  Animator2D* ƒRƒs[‚³‚ê‚½ƒAƒjƒ[ƒ^[
-* à@–¾: ƒAƒjƒ[ƒ^[‚ğƒRƒs[‚·‚é
+* é–¢æ•°å: Copy
+* å¼•ã€€æ•°: ãªã—
+* æˆ»ã‚Šå€¤:  Animator2D* ã‚³ãƒ”ãƒ¼ã•ã‚ŒãŸã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼
+* èª¬ã€€æ˜: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
 */
 Animator2D* Animator2D::Copy()
 {
@@ -596,16 +596,16 @@ Animator2D* Animator2D::Copy()
 }
 
 /*
-* ŠÖ”–¼@: KeyFrameUpdate
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒL[ƒtƒŒ[ƒ€‚ÌXVˆ—
+* é–¢æ•°åã€€: KeyFrameUpdate
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ›´æ–°å‡¦ç†
 */
 void Animator2D::KeyFrameUpdate()
 {
 	for (auto& obj : KeyFrames_)
 	{
-		// ƒAƒNƒeƒBƒuŠm”F
+		// ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ç¢ºèª
 		obj.Active = (fNowTime_ >= obj.StartTime && fNowTime_ <= obj.EndTime);
 
 		if (!obj.Active) continue;
@@ -617,23 +617,23 @@ void Animator2D::KeyFrameUpdate()
 		if (duration <= 0.0f) tNormalized = 1.0f;
 		else tNormalized = std::clamp(elapsed / duration, 0.0f, 1.0f);
 
-		// ˆÊ’u
+		// ä½ç½®
 		DirectX::XMFLOAT2 Pos = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Position, obj.EndTransform.Position, elapsed, duration);
 		obj.NowTransform.Position = Pos;
-		// ‰ñ“]
+		// å›è»¢
 		DirectX::XMFLOAT2 Rot = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Rotation, obj.EndTransform.Rotation, elapsed, duration);
 		obj.NowTransform.Rotation = Rot;
-		// ƒXƒP[ƒ‹
+		// ã‚¹ã‚±ãƒ¼ãƒ«
 		DirectX::XMFLOAT2 Scl = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.Scale, obj.EndTransform.Scale, elapsed, duration);
 		obj.NowTransform.Scale = Scl;
-		// UV ˆÊ’u
+		// UV ä½ç½®
 		DirectX::XMFLOAT2 uvp = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVPosition, obj.EndTransform.UVPosition, elapsed, duration);
 		obj.NowTransform.UVPosition = uvp;
-		// UV ƒXƒP[ƒ‹
+		// UV ã‚¹ã‚±ãƒ¼ãƒ«
 		DirectX::XMFLOAT2 uvs = EaseByBezierCurve(obj.CurveInfo, obj.StartTransform.UVScale, obj.EndTransform.UVScale, elapsed, duration);
 		obj.NowTransform.UVScale = uvs;
-		// F
-		//î•ñ‚ğ•ªŠ„
+		// è‰²
+		//æƒ…å ±ã‚’åˆ†å‰²
 		DirectX::XMFLOAT2 ColorRB = { obj.StartTransform.Color.x, obj.StartTransform.Color.z };
 		DirectX::XMFLOAT2 ColorGA = { obj.StartTransform.Color.y, obj.StartTransform.Color.w };
 		DirectX::XMFLOAT2 EndColorRB = { obj.EndTransform.Color.x, obj.EndTransform.Color.z };
@@ -642,22 +642,22 @@ void Animator2D::KeyFrameUpdate()
 		DirectX::XMFLOAT2 NewColorGA = EaseByBezierCurve(obj.CurveInfo, ColorGA, EndColorGA, elapsed, duration);
 		obj.NowTransform.Color = DirectX::XMFLOAT4(NewColorRB.x, NewColorGA.x, NewColorRB.y, NewColorGA.y);
 
-		// UVƒVƒtƒg
+		// UVã‚·ãƒ•ãƒˆ
 		if (obj.uiShift.IsActive)
 		{
-			// ƒOƒŠƒbƒh•ªŠ„”‚©‚ç1ƒOƒŠƒbƒh‚ ‚½‚è‚ÌUVƒTƒCƒY‚ğŒvZ
+			// ã‚°ãƒªãƒƒãƒ‰åˆ†å‰²æ•°ã‹ã‚‰1ã‚°ãƒªãƒƒãƒ‰ã‚ãŸã‚Šã®UVã‚µã‚¤ã‚ºã‚’è¨ˆç®—
 			float uvWidth = 1.0f / static_cast<float>(obj.uiShift.Horizontal_Grid > 0 ? obj.uiShift.Horizontal_Grid : 1);
 			float uvHeight = 1.0f / static_cast<float>(obj.uiShift.Vertical_Grid > 0 ? obj.uiShift.Vertical_Grid : 1);
 
-			// Œo‰ßŠÔ‚ÆƒXƒs[ƒh‚©‚çŒ»İ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğŒvZ
+			// çµŒéæ™‚é–“ã¨ã‚¹ãƒ”ãƒ¼ãƒ‰ã‹ã‚‰ç¾åœ¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨ˆç®—
 			float totalElapsed = elapsed * obj.uiShift.Speed;
 			int currentIndex = static_cast<int>(totalElapsed);
 
-			// •ûŒü‚É‚æ‚Á‚ÄUVÀ•W‚ğŒvZ
+			// æ–¹å‘ã«ã‚ˆã£ã¦UVåº§æ¨™ã‚’è¨ˆç®—
 			int gridX = 0;
 			int gridY = 0;
 
-			if (obj.uiShift.direction) // Verticalic•ûŒüj
+			if (obj.uiShift.direction) // Verticalï¼ˆç¸¦æ–¹å‘ï¼‰
 			{
 				int totalGrids = obj.uiShift.Vertical_Grid * obj.uiShift.Horizontal_Grid;
 				if (totalGrids > 0)
@@ -667,7 +667,7 @@ void Animator2D::KeyFrameUpdate()
 					gridY = currentIndex / obj.uiShift.Horizontal_Grid;
 				}
 			}
-			else // Horizontali‰¡•ûŒüj
+			else // Horizontalï¼ˆæ¨ªæ–¹å‘ï¼‰
 			{
 				int totalGrids = obj.uiShift.Horizontal_Grid * obj.uiShift.Vertical_Grid;
 				if (totalGrids > 0)
@@ -678,23 +678,23 @@ void Animator2D::KeyFrameUpdate()
 				}
 			}
 
-			// UVRect ‚ğŒvZ
+			// UVRect ã‚’è¨ˆç®—
 			float uvLeft = static_cast<float>(gridX) * uvWidth;
 			float uvTop = static_cast<float>(gridY) * uvHeight;
 			float uvRight = uvLeft + uvWidth;
 			float uvBottom = uvTop + uvHeight;
 
-			// NowUiShift.UVRect ‚É•Û‘¶
+			// NowUiShift.UVRect ã«ä¿å­˜
 			obj.NowUiShift.UVRect = DirectX::XMFLOAT4(uvLeft, uvTop, uvRight, uvBottom);
 		}
 	}
 }
 
 /*
-* ŠÖ”–¼@: Stop
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~‚·‚é
+* é–¢æ•°åã€€: Stop
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åœæ­¢ã™ã‚‹
 */
 void Animator2D::Stop()
 {
@@ -707,10 +707,10 @@ void Animator2D::Stop()
 }
 
 /*
-* ŠÖ”–¼@: Start
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒAƒjƒ[ƒVƒ‡ƒ“‚ğŠJn‚·‚é
+* é–¢æ•°åã€€: Start
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹ã™ã‚‹
 */
 void Animator2D::Start()
 {
@@ -719,10 +719,10 @@ void Animator2D::Start()
 }
 
 /*
-* ŠÖ”–¼@: GetKeyFrameByName
-* ˆø@”@: name ƒL[ƒtƒŒ[ƒ€–¼
-* –ß‚è’l@: KeyFrame* ƒL[ƒtƒŒ[ƒ€‚Ìƒ|ƒCƒ“ƒ^iŒ©‚Â‚©‚ç‚È‚¯‚ê‚Înullptrj
-* à@–¾@: ƒL[ƒtƒŒ[ƒ€–¼‚©‚çƒL[ƒtƒŒ[ƒ€‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€: GetKeyFrameByName
+* å¼•ã€€æ•°ã€€: name ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ å
+* æˆ»ã‚Šå€¤ã€€: KeyFrame* ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆè¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°nullptrï¼‰
+* èª¬ã€€æ˜ã€€: ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ åã‹ã‚‰ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å–å¾—ã™ã‚‹
 */
 KeyFrame* Animator2D::GetKeyFrameByName(const std::string& name)
 {
@@ -737,14 +737,14 @@ KeyFrame* Animator2D::GetKeyFrameByName(const std::string& name)
 }
 
 /*
-* ŠÖ”–¼@: EaseByBezierCurve
-* ˆø@”@: curve ƒJ[ƒuƒf[ƒ^
-*          startvalue ŠJn’l
-*          endvalue I—¹’l
-*          elapsed Œo‰ßŠÔ
-*          duration ‘ŠÔ
-* –ß‚è’l@: DirectX::XMFLOAT2 •âŠÔŒã‚Ì’l
-* à@–¾@: ƒxƒWƒF‹Èü‚É‚æ‚éƒC[ƒWƒ“ƒO•âŠÔ‚ğs‚¤
+* é–¢æ•°åã€€: EaseByBezierCurve
+* å¼•ã€€æ•°ã€€: curve ã‚«ãƒ¼ãƒ–ãƒ‡ãƒ¼ã‚¿
+*          startvalue é–‹å§‹å€¤
+*          endvalue çµ‚äº†å€¤
+*          elapsed çµŒéæ™‚é–“
+*          duration ç·æ™‚é–“
+* æˆ»ã‚Šå€¤ã€€: DirectX::XMFLOAT2 è£œé–“å¾Œã®å€¤
+* èª¬ã€€æ˜ã€€: ãƒ™ã‚¸ã‚§æ›²ç·šã«ã‚ˆã‚‹ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°è£œé–“ã‚’è¡Œã†
 */
 DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const DirectX::XMFLOAT2& startvalue, const DirectX::XMFLOAT2& endvalue, float elapsed, float duration)
 {
@@ -764,14 +764,14 @@ DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const Di
 
 	const float EPS = 1e-6f;
 
-	// ²‚²‚Æ‚ÌƒXƒP[ƒ‹‚ğŒvZiauthored ‚ª 0 ‚Ìê‡‚Í‚»‚Ì²‚Í 0 ‚É‚·‚éj
+	// è»¸ã”ã¨ã®ã‚¹ã‚±ãƒ¼ãƒ«ã‚’è¨ˆç®—ï¼ˆauthored ãŒ 0 ã®å ´åˆã¯ãã®è»¸ã¯ 0 ã«ã™ã‚‹ï¼‰
 	float scaleX = 1.0f, scaleY = 1.0f;
 	if (std::fabs(authoredVec.x) > EPS) scaleX = currentVec.x / authoredVec.x;
 	else scaleX = 0.0f;
 	if (std::fabs(authoredVec.y) > EPS) scaleY = currentVec.y / authoredVec.y;
 	else scaleY = 0.0f;
 
-	// ƒRƒ“ƒgƒ[ƒ‹“_‚ÌƒIƒtƒZƒbƒgiauthored ‹óŠÔ -> current ‹óŠÔ ‚É“K—pj
+	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç‚¹ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆï¼ˆauthored ç©ºé–“ -> current ç©ºé–“ ã«é©ç”¨ï¼‰
 	DirectX::XMFLOAT2 offset1 = XMFLOAT2Subtract(curve.ControlPoint1, curve.StartPoint);
 	DirectX::XMFLOAT2 offset2 = XMFLOAT2Subtract(curve.ControlPoint2, curve.EndPoint);
 
@@ -780,8 +780,8 @@ DirectX::XMFLOAT2 Animator2D::EaseByBezierCurve(const CurveData& curve, const Di
 	DirectX::XMFLOAT2 p2 = XMFLOAT2Add(endvalue, DirectX::XMFLOAT2{ offset2.x * scaleX, offset2.y * scaleY });
 	DirectX::XMFLOAT2 p3 = endvalue;
 
-	// start ‚Æ end ‚Ì·‚ª‚Ù‚Ú 0 ‚Ì²‚ÍA‚»‚Ì²•ûŒü‚ÌƒRƒ“ƒgƒ[ƒ‹“_‚ğ‹­§ŒÅ’è‚µ‚Ä
-	// •s—v‚È²ˆÚ“®‚ğ–h‚®i—á: X ‚ğŒÅ’è‚µ‚½‚¢‚È‚ç p1.x/p2.x ‚ğŠJn x ‚ÉŒÅ’èj
+	// start ã¨ end ã®å·®ãŒã»ã¼ 0 ã®è»¸ã¯ã€ãã®è»¸æ–¹å‘ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç‚¹ã‚’å¼·åˆ¶å›ºå®šã—ã¦
+	// ä¸è¦ãªè»¸ç§»å‹•ã‚’é˜²ãï¼ˆä¾‹: X ã‚’å›ºå®šã—ãŸã„ãªã‚‰ p1.x/p2.x ã‚’é–‹å§‹ x ã«å›ºå®šï¼‰
 	if (std::fabs(currentVec.x) < EPS) {
 		p1.x = p0.x;
 		p2.x = p3.x;

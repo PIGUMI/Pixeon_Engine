@@ -1,4 +1,4 @@
-#include "SettingManager.h"
+ï»¿#include "SettingManager.h"
 #include "MainFrame.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
@@ -25,17 +25,17 @@ void SettingManager::DestroyInstance()
 	}
 }
 
-// Config‚Ì“Ç‚İ‚İ
+// Configã®èª­ã¿è¾¼ã¿
 void SettingManager::LoadConfig() {
-	// JSONƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+	// JSONãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
 	std::ifstream configFile(CONFIG_FILE_PATH);
 	if (!configFile.is_open()) {
-		// ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡AƒfƒtƒHƒ‹ƒgİ’è‚ğg—p
+		// ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®šã‚’ä½¿ç”¨
 		return;
 	}
 	nlohmann::json configJson;
 	configFile >> configJson;
-	// İ’è€–Ú‚ğ“Ç‚İ‚Ş
+	// è¨­å®šé …ç›®ã‚’èª­ã¿è¾¼ã‚€
 	if (configJson.contains("AssetsFilePath")) {
 		AssetsFilePath = configJson["AssetsFilePath"].get<std::string>();
 	}
@@ -69,7 +69,7 @@ void SettingManager::LoadConfig() {
 }
 
 void SettingManager::SaveConfig() {
-	// İ’è€–Ú‚ğJSONƒIƒuƒWƒFƒNƒg‚É•Û‘¶
+	// è¨­å®šé …ç›®ã‚’JSONã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ä¿å­˜
 	nlohmann::json configJson;
 	configJson["AssetsFilePath"] = AssetsFilePath;
 	configJson["ArchiveFilePath"] = ArchiveFilePath;
@@ -81,9 +81,9 @@ void SettingManager::SaveConfig() {
 	configJson["MouseSensitivity"] = MouseSensitivity;
 	configJson["VcpkgFilePath"] = VcpkgFilePath;
 
-	// JSONƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+	// JSONãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
 	std::ofstream configFile(CONFIG_FILE_PATH);
 	if (configFile.is_open()) {
-		configFile << configJson.dump(4); // ƒCƒ“ƒfƒ“ƒg‚ğ4ƒXƒy[ƒX‚Éİ’è‚µ‚Ä•Û‘¶
+		configFile << configJson.dump(4); // ã‚¤ãƒ³ãƒ‡ãƒ³ãƒˆã‚’4ã‚¹ãƒšãƒ¼ã‚¹ã«è¨­å®šã—ã¦ä¿å­˜
 	}
 }

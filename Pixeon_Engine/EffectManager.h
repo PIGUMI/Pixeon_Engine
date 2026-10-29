@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼ EffectManager.h
-* ŠT—v      EffekseerƒGƒtƒFƒNƒgŠÇ—ƒNƒ‰ƒX (EffekseerForCpp 1.7.2.0 / DX11)
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«å EffectManager.h
+* æ¦‚è¦      Effekseerã‚¨ãƒ•ã‚§ã‚¯ãƒˆç®¡ç†ã‚¯ãƒ©ã‚¹ (EffekseerForCpp 1.7.2.0 / DX11)
 */
 #ifndef EFFECTMANAGER_H
 #define EFFECTMANAGER_H
@@ -22,35 +22,35 @@ public:
 	static EffectManager* Instance();
 	static void DeleteInstance();
 
-	// ‰Šú‰»EI—¹
+	// åˆæœŸåŒ–ãƒ»çµ‚äº†
 	bool Init(ID3D11Device* device, ID3D11DeviceContext* context, int maxParticles = 8000);
 	void UnInit();
 
-	// ƒGƒtƒFƒNƒgƒŠƒ\[ƒXŠÇ—
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒªã‚½ãƒ¼ã‚¹ç®¡ç†
 	Effekseer::EffectRef LoadEffect(const std::string& path);
 	void UnloadEffect(const std::string& path);
 	void ClearAllEffects();
 
-	// ƒGƒtƒFƒNƒgÄ¶
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
 	Effekseer::Handle PlayEffect(const std::string& path, const DirectX::XMFLOAT3& position);
 	void StopEffect(Effekseer::Handle handle);
 	void StopAllEffects();
 	bool IsPlaying(Effekseer::Handle handle);
 
-	// ƒGƒtƒFƒNƒgƒpƒ‰ƒ[ƒ^İ’è
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 	void SetEffectPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position);
 	void SetEffectRotation(Effekseer::Handle handle, const DirectX::XMFLOAT3& rotation);
 	void SetEffectScale(Effekseer::Handle handle, const DirectX::XMFLOAT3& scale);
 	void SetEffectSpeed(Effekseer::Handle handle, float speed);
 
-	// ƒJƒƒ‰İ’è
+	// ã‚«ãƒ¡ãƒ©è¨­å®š
 	void SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
 
-	// XVE•`‰æ
+	// æ›´æ–°ãƒ»æç”»
 	void Update(float deltaTime = 1.0f / 60.0f);
 	void Draw();
 
-	// ƒfƒoƒbƒO
+	// ãƒ‡ãƒãƒƒã‚°
 	void DrawDebugGUI();
 	int GetPlayingEffectsCount() const;
 
@@ -60,7 +60,7 @@ private:
 	EffectManager() = default;
 	~EffectManager();
 
-	// ƒ[ƒ_[iAssetManagerŒo—Rj
+	// ãƒ­ãƒ¼ãƒ€ãƒ¼ï¼ˆAssetManagerçµŒç”±ï¼‰
 	class EffectLoader;
 	class TextureLoader;
 	class ModelLoader;
@@ -78,13 +78,13 @@ private:
 	ID3D11Device* _device = nullptr;
 	ID3D11DeviceContext* _context = nullptr;
 
-	// ƒLƒƒƒbƒVƒ…
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥
 	std::unordered_map<std::string, Effekseer::EffectRef> _effectCache;
 
 	struct TextureCacheEntry
 	{
-		Effekseer::TextureRef tex; // Effekseer::Texturei“à•”‚ÉBackend::Texturej
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv; // À‘Ì•ÛiˆÀ‘S‚Ì‚½‚ßj
+		Effekseer::TextureRef tex; // Effekseer::Textureï¼ˆå†…éƒ¨ã«Backend::Textureï¼‰
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv; // å®Ÿä½“ä¿æŒï¼ˆå®‰å…¨ã®ãŸã‚ï¼‰
 		int w = 0;
 		int h = 0;
 		uint64_t bytes = 0;

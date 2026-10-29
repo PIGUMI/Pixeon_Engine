@@ -1,8 +1,8 @@
-#include "AnimationDebug.h"
+ï»¿#include "AnimationDebug.h"
 
 void DumpBoneChannelMapping(const ModelSharedResource* res) {
 	if (!res || res->clips.empty()) { return; }
-	const auto& clip = res->clips[0]; // ‘ã•\ƒNƒŠƒbƒv
+	const auto& clip = res->clips[0]; // ä»£è¡¨ã‚¯ãƒªãƒƒãƒ—
 	const auto& hierarchy = clip.nodeHierarchy;
 
 	for (size_t b = 0; b < res->bones.size(); ++b) {
@@ -33,7 +33,7 @@ void DumpBoneChannelMapping(const ModelSharedResource* res) {
 
 int RebindBoneNodeIndices(ModelSharedResource* res) {
 	if (!res || res->clips.empty()) return 0;
-	// ‘ã•\ƒNƒŠƒbƒv‚ÌŠK‘wi‚·‚×‚Ä“¯ˆê\‘¢‘O’ñj
+	// ä»£è¡¨ã‚¯ãƒªãƒƒãƒ—ã®éšå±¤ï¼ˆã™ã¹ã¦åŒä¸€æ§‹é€ å‰æï¼‰
 	const auto& hierarchy = res->clips[0].nodeHierarchy;
 	std::unordered_map<std::string, int> map;
 	for (size_t i = 0; i < hierarchy.size(); ++i)
@@ -51,8 +51,8 @@ int RebindBoneNodeIndices(ModelSharedResource* res) {
 }
 
 int RebindChannelNodeIndices(ModelSharedResource* res, AnimationClipRuntime& runtimeClip) {
-	// runtimeClip ‚Í AnimationComponent “à‚Ì m_clips[?]
-	// ‚»‚Ì runtimeClip ‚Í Resource ‘¤ clips[“¯ index] ‚Æ 1:1 ‘Î‰‚µ‚Ä‚¢‚é‘O’ñ
+	// runtimeClip ã¯ AnimationComponent å†…ã® m_clips[?]
+	// ãã® runtimeClip ã¯ Resource å´ clips[åŒ index] ã¨ 1:1 å¯¾å¿œã—ã¦ã„ã‚‹å‰æ
 	if (!res) return 0;
 	int clipIdx = -1;
 	for (size_t i = 0; i < res->clips.size(); ++i)
@@ -65,8 +65,8 @@ int RebindChannelNodeIndices(ModelSharedResource* res, AnimationClipRuntime& run
 		nodeMap[srcClip.nodeHierarchy[i].name] = (int)i;
 
 	int fixed = 0;
-	// runtimeClip.channels ‚Í nodeIndex ‚Æ timeline ‚ğ‚Â‚ª nodeName ‚Í•Û‚µ‚Ä‚¢‚È‚¢‚Ì‚Å
-	// Resource clip ‚Ì channel ‚ğQÆ‚µ‚Ä nodeName ‚ğæ‚é
+	// runtimeClip.channels ã¯ nodeIndex ã¨ timeline ã‚’æŒã¤ãŒ nodeName ã¯ä¿æŒã—ã¦ã„ãªã„ã®ã§
+	// Resource clip ã® channel ã‚’å‚ç…§ã—ã¦ nodeName ã‚’å–ã‚‹
 	for (size_t ch = 0; ch < runtimeClip.channels.size() && ch < srcClip.channels.size(); ++ch) {
 		const std::string& nodeName = srcClip.channels[ch].nodeName;
 		auto it = nodeMap.find(nodeName);

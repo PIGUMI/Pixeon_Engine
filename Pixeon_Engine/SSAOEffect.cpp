@@ -1,4 +1,4 @@
-// SSAOEffect.cpp
+Ôªø// SSAOEffect.cpp
 #include "SSAOEffect.h"
 #include "System.h"
 #include "ShaderManager.h"
@@ -348,10 +348,10 @@ void SSAOEffect::EnsureConstantBuffers()
 
 void SSAOEffect::DrawInspector()
 {
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("îºåa").c_str(), &radius, 0.01f, 0.05f, 2.0f, "%.3f");
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ÉoÉCÉAÉX").c_str(), &bias, 0.001f, 0.001f, 0.1f, "%.4f");
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ã≠ìx").c_str(), &power, 0.05f, 0.5f, 5.0f, "%.2f");
-	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ìKópã≠ìx").c_str(), &aoStrength, 0.01f, 0.0f, 1.0f, "%.2f");
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ÂçäÂæÑ").c_str(), &radius, 0.01f, 0.05f, 2.0f, "%.3f");
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("„Éê„Ç§„Ç¢„Çπ").c_str(), &bias, 0.001f, 0.001f, 0.1f, "%.4f");
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("Âº∑Â∫¶").c_str(), &power, 0.05f, 0.5f, 5.0f, "%.2f");
+	ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ÈÅ©Áî®Âº∑Â∫¶").c_str(), &aoStrength, 0.01f, 0.0f, 1.0f, "%.2f");
 }
 
 void SSAOEffect::SaveToJson(nlohmann::json& j) const

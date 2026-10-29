@@ -1,4 +1,4 @@
-#include "RigidBody.h"
+ï»¿#include "RigidBody.h"
 #include "Object.h"
 #include "Scene.h"
 #include "GUI.h"
@@ -41,14 +41,14 @@ void RigidBody::BeginPlay()
 
 					if (pRigidBody_->getCollisionShape() && pRigidBody_->getMotionState())
 					{
-						// ƒJƒŠƒ“ƒOó‘Ô‚ğŠm”F‚µ‚Äƒ[ƒ‹ƒh‚É’Ç‰Á
+						// ã‚«ãƒªãƒ³ã‚°çŠ¶æ…‹ã‚’ç¢ºèªã—ã¦ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ 
 						if (bUseCulling_ && !bAlwaysActive_)
 						{
 							UpdateCullingState();
 						}
 						else
 						{
-							// ƒJƒŠƒ“ƒO–³Œø‚Ü‚½‚Íí‚ÉƒAƒNƒeƒBƒu‚Ìê‡‚Í•K‚¸ƒ[ƒ‹ƒh‚É’Ç‰Á
+							// ã‚«ãƒªãƒ³ã‚°ç„¡åŠ¹ã¾ãŸã¯å¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã®å ´åˆã¯å¿…ãšãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ 
 							bActiveInPhysicsWorld_ = true;
 						}
 
@@ -58,7 +58,7 @@ void RigidBody::BeginPlay()
 							bAddedToWorld_ = true;
 						}
 
-						// ƒXƒŠ[ƒvİ’è‚ğ“K—p
+						// ã‚¹ãƒªãƒ¼ãƒ—è¨­å®šã‚’é©ç”¨
 						if (bDisableSleep_)
 						{
 							pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
@@ -142,13 +142,13 @@ void RigidBody::InGameUpdate()
 {
 	if (!pRigidBody_)return;
 
-	// ƒJƒŠƒ“ƒOó‘Ô‚ğXVií‚ÉƒAƒNƒeƒBƒu‚Å‚È‚¢ê‡‚Ì‚İj
+	// ã‚«ãƒªãƒ³ã‚°çŠ¶æ…‹ã‚’æ›´æ–°ï¼ˆå¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã§ãªã„å ´åˆã®ã¿ï¼‰
 	if (bUseCulling_ && !bAlwaysActive_)
 	{
 		UpdateCullingState();
 	}
 
-	// ƒXƒŠ[ƒv–³Œø‰»‚ª—LŒø‚Èê‡Aí‚ÉƒAƒNƒeƒBƒuó‘Ô‚ğˆÛ
+	// ã‚¹ãƒªãƒ¼ãƒ—ç„¡åŠ¹åŒ–ãŒæœ‰åŠ¹ãªå ´åˆã€å¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–çŠ¶æ…‹ã‚’ç¶­æŒ
 	if (bDisableSleep_ && pRigidBody_ && bAddedToWorld_)
 	{
 		if (pRigidBody_->getActivationState() != DISABLE_DEACTIVATION)
@@ -234,73 +234,73 @@ void RigidBody::DrawInspector()
 	label = "RigidBodyTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("¿—Ê").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è³ªé‡").c_str());
 		float Mass = fMass_;
 		ImGui::TableSetColumnIndex(1); ImGui::InputFloat(SJ("##MassInput").c_str(), &Mass, 0.1f, 1.0f, "%.3f");
 		SetMass(Mass);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒLƒlƒ}ƒeƒBƒbƒN").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ã‚­ãƒãƒãƒ†ã‚£ãƒƒã‚¯").c_str());
 		bool Kinematic = bKinematic_;
 		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##KinematicCheckbox").c_str(), &Kinematic);
 		SetKinematic(Kinematic);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("d—Í‚ğg—p").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("é‡åŠ›ã‚’ä½¿ç”¨").c_str());
 		bool UseGravity = bUseGravity_;
 		ImGui::TableSetColumnIndex(1); ImGui::Checkbox(SJ("##UseGravityCheckbox").c_str(), &UseGravity);
 		SetGravityEnabled(UseGravity);
 
-		// –€CŒW”
+		// æ‘©æ“¦ä¿‚æ•°
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("–€CŒW”").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("æ‘©æ“¦ä¿‚æ•°").c_str());
 		float Friction = fFriction_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::SliderFloat(SJ("##FrictionSlider").c_str(), &Friction, 0.0f, 1.0f, "%.3f"))
 			SetFriction(Friction);
 
-		// ”½”­ŒW”
+		// åç™ºä¿‚æ•°
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("”½”­ŒW”").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("åç™ºä¿‚æ•°").c_str());
 		float Restitution = fRestitution_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::SliderFloat(SJ("##RestitutionSlider").c_str(), &Restitution, 0.0f, 1.0f, "%.3f"))
 			SetRestitution(Restitution);
 
-		// üŒ`Œ¸Š
+		// ç·šå½¢æ¸›è¡°
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("üŒ`Œ¸Š").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ç·šå½¢æ¸›è¡°").c_str());
 		float LinearDamping = fLinearDamping_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::SliderFloat(SJ("##LinearDampingSlider").c_str(), &LinearDamping, 0.0f, 1.0f, "%.3f"))
 			SetLinearDamping(LinearDamping);
 
-		// Šp“xŒ¸Š
+		// è§’åº¦æ¸›è¡°
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("Šp“xŒ¸Š").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è§’åº¦æ¸›è¡°").c_str());
 		float AngularDamping = fAngularDamping_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::SliderFloat(SJ("##AngularDampingSlider").c_str(), &AngularDamping, 0.0f, 1.0f, "%.3f"))
 			SetAngularDamping(AngularDamping);
 
-		// “]‚ª‚è–€C
+		// è»¢ãŒã‚Šæ‘©æ“¦
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("“]‚ª‚è–€C").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è»¢ãŒã‚Šæ‘©æ“¦").c_str());
 		float RollingFriction = fRollingFriction_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::SliderFloat(SJ("##RollingFrictionSlider").c_str(), &RollingFriction, 0.0f, 1.0f, "%.3f"))
 			SetRollingFriction(RollingFriction);
 
-		// ‰ñ“]–€C
+		// å›è»¢æ‘©æ“¦
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‰ñ“]–€C").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("å›è»¢æ‘©æ“¦").c_str());
 		float SpinningFriction = fSpinningFriction_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::SliderFloat(SJ("##SpinningFrictionSlider").c_str(), &SpinningFriction, 0.0f, 1.0f, "%.3f"))
 			SetSpinningFriction(SpinningFriction);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‰ñ“]§–ñ").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("å›è»¢åˆ¶ç´„").c_str());
 		ImGui::TableSetColumnIndex(1);
 
 		bool lockX = bLockRotationX_;
@@ -325,17 +325,17 @@ void RigidBody::DrawInspector()
 			ImGui::EndTable();
 		}
 
-		// ƒXƒŠ[ƒv–³Œø‰»
+		// ã‚¹ãƒªãƒ¼ãƒ—ç„¡åŠ¹åŒ–
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒXƒŠ[ƒv–³Œø‰»").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ã‚¹ãƒªãƒ¼ãƒ—ç„¡åŠ¹åŒ–").c_str());
 		bool DisableSleep = bDisableSleep_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::Checkbox(SJ("##DisableSleepCheckbox").c_str(), &DisableSleep))
 			SetDisableSleep(DisableSleep);
 
-		// ƒJƒŠƒ“ƒOİ’è
+		// ã‚«ãƒªãƒ³ã‚°è¨­å®š
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‹——£ƒJƒŠƒ“ƒOg—p").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è·é›¢ã‚«ãƒªãƒ³ã‚°ä½¿ç”¨").c_str());
 		bool UseCulling = bUseCulling_;
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::Checkbox(SJ("##UseCullingCheckbox").c_str(), &UseCulling))
@@ -344,7 +344,7 @@ void RigidBody::DrawInspector()
 		if (bUseCulling_)
 		{
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("í‚ÉƒAƒNƒeƒBƒu").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("å¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–").c_str());
 			bool AlwaysActive = bAlwaysActive_;
 			ImGui::TableSetColumnIndex(1);
 			if (ImGui::Checkbox(SJ("##AlwaysActiveCheckbox").c_str(), &AlwaysActive))
@@ -353,16 +353,16 @@ void RigidBody::DrawInspector()
 			if (!bAlwaysActive_)
 			{
 				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒJƒŠƒ“ƒO‹——£").c_str());
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ã‚«ãƒªãƒ³ã‚°è·é›¢").c_str());
 				float CullingDistance = fCullingDistance_;
 				ImGui::TableSetColumnIndex(1);
 				if (ImGui::InputFloat(SJ("##CullingDistanceInput").c_str(), &CullingDistance, 1.0f, 10.0f, "%.1f"))
 					SetCullingDistance(CullingDistance);
 
 				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("•¨—ƒAƒNƒeƒBƒu").c_str());
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ç‰©ç†ã‚¢ã‚¯ãƒ†ã‚£ãƒ–").c_str());
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text(bActiveInPhysicsWorld_ ? SJ("—LŒø").c_str() : SJ("–³Œø").c_str());
+				ImGui::Text(bActiveInPhysicsWorld_ ? SJ("æœ‰åŠ¹").c_str() : SJ("ç„¡åŠ¹").c_str());
 			}
 		}
 
@@ -405,10 +405,10 @@ void RigidBody::LoadFromFile(std::istream& in)
 	in >> bLockRotationY_;
 	in >> bLockRotationZ_;
 
-	// ƒXƒŠ[ƒvİ’è‚ğ“Ç‚İ‚İ
+	// ã‚¹ãƒªãƒ¼ãƒ—è¨­å®šã‚’èª­ã¿è¾¼ã¿
 	if (in >> bDisableSleep_)
 	{
-		// ƒJƒŠƒ“ƒOİ’è‚ğ“Ç‚İ‚İ(ŒÃ‚¢ƒtƒ@ƒCƒ‹‚Æ‚ÌŒİŠ·«‚Ì‚½‚ßƒfƒtƒHƒ‹ƒg’l‚ğg—p)
+		// ã‚«ãƒªãƒ³ã‚°è¨­å®šã‚’èª­ã¿è¾¼ã¿(å¤ã„ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã®äº’æ›æ€§ã®ãŸã‚ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚’ä½¿ç”¨)
 		if (in >> bUseCulling_)
 		{
 			if (in >> bAlwaysActive_)
@@ -471,7 +471,7 @@ void RigidBody::SetKinematic(bool kinematic)
 		{
 			pRigidBody_->setCollisionFlags(pRigidBody_->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
 
-			// ƒXƒŠ[ƒvİ’è‚É‰‚¶‚ÄƒAƒNƒeƒBƒx[ƒVƒ‡ƒ“ó‘Ô‚ğİ’è
+			// ã‚¹ãƒªãƒ¼ãƒ—è¨­å®šã«å¿œã˜ã¦ã‚¢ã‚¯ãƒ†ã‚£ãƒ™ãƒ¼ã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‚’è¨­å®š
 			if (bDisableSleep_)
 			{
 				pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
@@ -502,7 +502,7 @@ void RigidBody::SetGravityEnabled(bool useGravity)
 			pRigidBody_->setGravity(btVector3(0, 0, 0));
 		}
 
-		// ƒXƒŠ[ƒvİ’è‚É‰‚¶‚ÄƒAƒNƒeƒBƒx[ƒVƒ‡ƒ“ó‘Ô‚ğİ’è
+		// ã‚¹ãƒªãƒ¼ãƒ—è¨­å®šã«å¿œã˜ã¦ã‚¢ã‚¯ãƒ†ã‚£ãƒ™ãƒ¼ã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‚’è¨­å®š
 		if (bDisableSleep_)
 		{
 			pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
@@ -742,7 +742,7 @@ void RigidBody::CreateRigidBody()
 	startTransform.setIdentity();
 	if (_Parent)
 	{
-		// ƒ[ƒ‹ƒhÀ•W‚ÌTransform‚ğg—p
+		// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã®Transformã‚’ä½¿ç”¨
 		auto worldTransform = _Parent->GetWorldTransform();
 		startTransform.setOrigin(btVector3(
 			worldTransform.position.x,
@@ -775,7 +775,7 @@ void RigidBody::CreateRigidBody()
 
 	pRigidBody_->setContactProcessingThreshold(0.0001f);
 
-	// ƒXƒŠ[ƒvè‡’l‚Ìİ’èiƒXƒŠ[ƒv–³Œø‰»‚Í‚‚¢’l‚ğİ’èj
+	// ã‚¹ãƒªãƒ¼ãƒ—é–¾å€¤ã®è¨­å®šï¼ˆã‚¹ãƒªãƒ¼ãƒ—ç„¡åŠ¹åŒ–æ™‚ã¯é«˜ã„å€¤ã‚’è¨­å®šï¼‰
 	if (bDisableSleep_)
 	{
 		pRigidBody_->setSleepingThresholds(0.0f, 0.0f);
@@ -800,7 +800,7 @@ void RigidBody::CreateRigidBody()
 	}
 	else if (bDisableSleep_)
 	{
-		// ƒXƒŠ[ƒv–³Œø‰»‚ª—LŒø‚Èê‡
+		// ã‚¹ãƒªãƒ¼ãƒ—ç„¡åŠ¹åŒ–ãŒæœ‰åŠ¹ãªå ´åˆ
 		pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
 	}
 
@@ -968,7 +968,7 @@ void RigidBody::SetRotationConstraintZ(bool lock)
 	SetRotationConstraint(bLockRotationX_, bLockRotationY_, bLockRotationZ_);
 }
 
-// ƒXƒŠ[ƒv§Œä
+// ã‚¹ãƒªãƒ¼ãƒ—åˆ¶å¾¡
 void RigidBody::SetDisableSleep(bool disableSleep)
 {
 	bDisableSleep_ = disableSleep;
@@ -977,13 +977,13 @@ void RigidBody::SetDisableSleep(bool disableSleep)
 	{
 		if (bDisableSleep_)
 		{
-			// ƒXƒŠ[ƒv‚ğ–³Œø‰»
+			// ã‚¹ãƒªãƒ¼ãƒ—ã‚’ç„¡åŠ¹åŒ–
 			pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
 			pRigidBody_->setSleepingThresholds(0.0f, 0.0f);
 		}
 		else
 		{
-			// ’Êí‚ÌƒXƒŠ[ƒvİ’è‚É–ß‚·
+			// é€šå¸¸ã®ã‚¹ãƒªãƒ¼ãƒ—è¨­å®šã«æˆ»ã™
 			pRigidBody_->setActivationState(ACTIVE_TAG);
 			pRigidBody_->setSleepingThresholds(0.2f, 0.2f);
 			pRigidBody_->activate(true);
@@ -991,7 +991,7 @@ void RigidBody::SetDisableSleep(bool disableSleep)
 	}
 }
 
-// ƒJƒƒ‰‹——£‚ÉŠî‚Ã‚­ƒJƒŠƒ“ƒO§Œä
+// ã‚«ãƒ¡ãƒ©è·é›¢ã«åŸºã¥ãã‚«ãƒªãƒ³ã‚°åˆ¶å¾¡
 void RigidBody::SetCullingDistance(float distance)
 {
 	fCullingDistance_ = distance;
@@ -1002,12 +1002,12 @@ void RigidBody::SetUseCulling(bool useCulling)
 	bool prevUseCulling = bUseCulling_;
 	bUseCulling_ = useCulling;
 
-	// ƒJƒŠƒ“ƒOİ’è‚ª•ÏX‚³‚ê‚½ê‡
+	// ã‚«ãƒªãƒ³ã‚°è¨­å®šãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆ
 	if (prevUseCulling != bUseCulling_)
 	{
 		if (!bUseCulling_ && !bActiveInPhysicsWorld_)
 		{
-			// ƒJƒŠƒ“ƒO‚ğ–³Œø‚É‚µ‚½ê‡A•¨—ƒ[ƒ‹ƒh‚É’Ç‰Á
+			// ã‚«ãƒªãƒ³ã‚°ã‚’ç„¡åŠ¹ã«ã—ãŸå ´åˆã€ç‰©ç†ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ 
 			AddToPhysicsWorld();
 		}
 	}
@@ -1018,17 +1018,17 @@ void RigidBody::SetAlwaysActive(bool alwaysActive)
 	bool prevAlwaysActive = bAlwaysActive_;
 	bAlwaysActive_ = alwaysActive;
 
-	// í‚ÉƒAƒNƒeƒBƒuİ’è‚ª•ÏX‚³‚ê‚½ê‡
+	// å¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–è¨­å®šãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆ
 	if (prevAlwaysActive != bAlwaysActive_)
 	{
 		if (bAlwaysActive_ && !bActiveInPhysicsWorld_)
 		{
-			// í‚ÉƒAƒNƒeƒBƒu‚Éİ’è‚µ‚½ê‡A•¨—ƒ[ƒ‹ƒh‚É’Ç‰Á
+			// å¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«è¨­å®šã—ãŸå ´åˆã€ç‰©ç†ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ 
 			AddToPhysicsWorld();
 		}
 		else if (!bAlwaysActive_ && bUseCulling_)
 		{
-			// í‚ÉƒAƒNƒeƒBƒu‚ğ‰ğœ‚µ‚½ê‡AƒJƒŠƒ“ƒOó‘Ô‚ğXV
+			// å¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‚’è§£é™¤ã—ãŸå ´åˆã€ã‚«ãƒªãƒ³ã‚°çŠ¶æ…‹ã‚’æ›´æ–°
 			UpdateCullingState();
 		}
 	}
@@ -1042,7 +1042,7 @@ void RigidBody::UpdateCullingState()
 	float distance = CalculateDistanceToCamera();
 	bool shouldBeActive = distance <= fCullingDistance_;
 
-	// ó‘Ô‚ª•Ï‰»‚µ‚½ê‡‚Ì‚İˆ—
+	// çŠ¶æ…‹ãŒå¤‰åŒ–ã—ãŸå ´åˆã®ã¿å‡¦ç†
 	if (shouldBeActive != bActiveInPhysicsWorld_)
 	{
 		if (shouldBeActive)
@@ -1091,11 +1091,11 @@ void RigidBody::AddToPhysicsWorld()
 			bAddedToWorld_ = true;
 			bActiveInPhysicsWorld_ = true;
 
-			// ƒ[ƒ‹ƒh‚É’Ç‰Á‚µ‚½‚Æ‚«‚ÉŒ»İ‚Ìó‘Ô‚ğ“¯Šú
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ ã—ãŸã¨ãã«ç¾åœ¨ã®çŠ¶æ…‹ã‚’åŒæœŸ
 			SyncTransformToBullet();
 			pRigidBody_->activate(true);
 
-			// ƒXƒŠ[ƒvİ’è‚ğ“K—p
+			// ã‚¹ãƒªãƒ¼ãƒ—è¨­å®šã‚’é©ç”¨
 			if (bDisableSleep_)
 			{
 				pRigidBody_->setActivationState(DISABLE_DEACTIVATION);
@@ -1119,7 +1119,7 @@ void RigidBody::RemoveFromPhysicsWorld()
 	{
 		try
 		{
-			// Œ»İ‚Ìó‘Ô‚ğ•Û‘¶‚µ‚Ä‚©‚çƒ[ƒ‹ƒh‚©‚çíœ
+			// ç¾åœ¨ã®çŠ¶æ…‹ã‚’ä¿å­˜ã—ã¦ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰å‰Šé™¤
 			btTransform currentTransform = pRigidBody_->getWorldTransform();
 			btVector3 currentVelocity = pRigidBody_->getLinearVelocity();
 			btVector3 currentAngularVelocity = pRigidBody_->getAngularVelocity();
@@ -1128,7 +1128,7 @@ void RigidBody::RemoveFromPhysicsWorld()
 			bAddedToWorld_ = false;
 			bActiveInPhysicsWorld_ = false;
 
-			// ó‘Ô‚ğ•œŒ³iÄ“xƒAƒNƒeƒBƒu‚É‚È‚Á‚½‚Æ‚«‚Ì‚½‚ßj
+			// çŠ¶æ…‹ã‚’å¾©å…ƒï¼ˆå†åº¦ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã£ãŸã¨ãã®ãŸã‚ï¼‰
 			pRigidBody_->setWorldTransform(currentTransform);
 			pRigidBody_->setLinearVelocity(currentVelocity);
 			pRigidBody_->setAngularVelocity(currentAngularVelocity);

@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@: Object
-* à@@@–¾@: ƒIƒuƒWƒFƒNƒgƒNƒ‰ƒXÀ‘•
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€: Object
+* èª¬ã€€ã€€ã€€æ˜ã€€: ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚¯ãƒ©ã‚¹å®Ÿè£…
 */
 #include "Object.h"
 #include "Component.h"
@@ -9,35 +9,35 @@
 #include <DirectXMath.h>
 
 /*
-* ŠÖ”–¼@: Init
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ‰Šú‰»ˆ—
+* é–¢æ•°åã€€: Init
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: åˆæœŸåŒ–å‡¦ç†
 */
 void AbstractObject::Init() {
 }
 
 /*
-* ŠÖ”–¼@: BeginPlay
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒQ[ƒ€ŠJn‚Ìˆ—
+* é–¢æ•°åã€€: BeginPlay
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚ã®å‡¦ç†
 */
 void AbstractObject::BeginPlay() {
 	for (auto comp : _components) {
 		if (comp) comp->BeginPlay();
 	}
-	// qƒIƒuƒWƒFƒNƒg‚ÌBeginPlay‚àŒÄ‚Ô
+	// å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®BeginPlayã‚‚å‘¼ã¶
 	for (auto child : _children) {
 		if (child) child->BeginPlay();
 	}
 }
 
 /*
-* ŠÖ”–¼@: EditUpdate
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒGƒfƒBƒ^XVˆ—
+* é–¢æ•°åã€€: EditUpdate
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¨ãƒ‡ã‚£ã‚¿æ›´æ–°å‡¦ç†
 */
 void AbstractObject::EditUpdate() {
 	for (auto comp : _components) {
@@ -51,10 +51,10 @@ void AbstractObject::EditUpdate() {
 }
 
 /*
-* ŠÖ”–¼@: InGameUpdate
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒQ[ƒ€XVˆ—
+* é–¢æ•°åã€€: InGameUpdate
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚²ãƒ¼ãƒ æ›´æ–°å‡¦ç†
 */
 void AbstractObject::InGameUpdate() {
 	for (auto comp : _components) {
@@ -68,10 +68,10 @@ void AbstractObject::InGameUpdate() {
 }
 
 /*
-* ŠÖ”–¼@: Draw
-* ˆø@”@: Layer	•`‰æƒŒƒCƒ„[
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: •`‰æˆ—
+* é–¢æ•°åã€€: Draw
+* å¼•ã€€æ•°ã€€: Layer	æç”»ãƒ¬ã‚¤ãƒ¤ãƒ¼
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: æç”»å‡¦ç†
 */
 void AbstractObject::Draw(int Layer) {
 	for (auto comp : _components) {
@@ -84,10 +84,10 @@ void AbstractObject::Draw(int Layer) {
 }
 
 /*
-* ŠÖ”–¼@: UnInit
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: I—¹ˆ—
+* é–¢æ•°åã€€: UnInit
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: çµ‚äº†å‡¦ç†
 */
 void AbstractObject::UnInit() {
 	RemoveParent();
@@ -109,34 +109,34 @@ void AbstractObject::UnInit() {
 }
 
 /*
-* ŠÖ”–¼@: GetWorldTransform
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
-* à@–¾@: ƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚Ìæ“¾
+* é–¢æ•°åã€€: GetWorldTransform
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
+* èª¬ã€€æ˜ã€€: ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã®å–å¾—
 */
 Transform AbstractObject::GetWorldTransform() {
 	if (!_parentObject) {
 		return _transform;
 	}
 
-	// e‚Ìƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚ğæ“¾
+	// è¦ªã®ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã‚’å–å¾—
 	Transform parentWorld = _parentObject->GetWorldTransform();
 
-	// e‚Ì‰ñ“]s—ñ‚ğì¬
+	// è¦ªã®å›è»¢è¡Œåˆ—ã‚’ä½œæˆ
 	DirectX::XMMATRIX parentRotMat = DirectX::XMMatrixRotationRollPitchYaw(
 		parentWorld.rotation.x,
 		parentWorld.rotation.y,
 		parentWorld.rotation.z
 	);
 
-	// ƒ[ƒJƒ‹ˆÊ’u‚ğe‚Ì‰ñ“]‚Å•ÏŠ·
+	// ãƒ­ãƒ¼ã‚«ãƒ«ä½ç½®ã‚’è¦ªã®å›è»¢ã§å¤‰æ›
 	DirectX::XMVECTOR localPosVec = DirectX::XMLoadFloat3(&_transform.position);
 	DirectX::XMVECTOR rotatedPosVec = DirectX::XMVector3Transform(localPosVec, parentRotMat);
 
 	DirectX::XMFLOAT3 rotatedPos;
 	DirectX::XMStoreFloat3(&rotatedPos, rotatedPosVec);
 
-	// ƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚ğŒvZ
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã‚’è¨ˆç®—
 	Transform worldTransform;
 	worldTransform.position.x = parentWorld.position.x + rotatedPos.x * parentWorld.scale.x;
 	worldTransform.position.y = parentWorld.position.y + rotatedPos.y * parentWorld.scale.y;
@@ -154,10 +154,10 @@ Transform AbstractObject::GetWorldTransform() {
 }
 
 /*
-* ŠÖ”–¼@: GetWorldPosition
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ƒ[ƒ‹ƒhˆÊ’u
-* à@–¾@: ƒ[ƒ‹ƒhˆÊ’u‚Ìæ“¾
+* é–¢æ•°åã€€: GetWorldPosition
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®
+* èª¬ã€€æ˜ã€€: ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®ã®å–å¾—
 */
 DirectX::XMFLOAT3 AbstractObject::GetWorldPosition() {
 	Transform worldTransform = GetWorldTransform();
@@ -165,18 +165,18 @@ DirectX::XMFLOAT3 AbstractObject::GetWorldPosition() {
 }
 
 /*
-* ŠÖ”–¼@: SetParent
-* ˆø@”@: parent	V‚µ‚¢eƒIƒuƒWƒFƒNƒg
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: eƒIƒuƒWƒFƒNƒg‚Ìİ’è
+* é–¢æ•°åã€€: SetParent
+* å¼•ã€€æ•°ã€€: parent	æ–°ã—ã„è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¨­å®š
 */
 void AbstractObject::SetParent(AbstractObject* parent) {
 	if (_parentObject == parent) return;
 
-	// Šù‘¶‚Ìe‚©‚çíœ
+	// æ—¢å­˜ã®è¦ªã‹ã‚‰å‰Šé™¤
 	RemoveParent();
 
-	// V‚µ‚¢e‚ğİ’è
+	// æ–°ã—ã„è¦ªã‚’è¨­å®š
 	_parentObject = parent;
 	if (_parentObject) {
 		_parentObject->AddChild(this);
@@ -184,10 +184,10 @@ void AbstractObject::SetParent(AbstractObject* parent) {
 }
 
 /*
-* ŠÖ”–¼@: RemoveParent
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: eƒIƒuƒWƒFƒNƒg‚Ìíœ
+* é–¢æ•°åã€€: RemoveParent
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å‰Šé™¤
 */
 void AbstractObject::RemoveParent() {
 	if (_parentObject) {
@@ -197,10 +197,10 @@ void AbstractObject::RemoveParent() {
 }
 
 /*
-* ŠÖ”–¼@: FindChildByName
-* ˆø@”@: name	qƒIƒuƒWƒFƒNƒg–¼
-* –ß‚è’l@: Œ©‚Â‚©‚Á‚½qƒIƒuƒWƒFƒNƒgAŒ©‚Â‚©‚ç‚È‚¯‚ê‚Înullptr
-* à@–¾@: –¼‘O‚©‚çqƒIƒuƒWƒFƒNƒg‚ğŒŸõ
+* é–¢æ•°åã€€: FindChildByName
+* å¼•ã€€æ•°ã€€: name	å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå
+* æˆ»ã‚Šå€¤ã€€: è¦‹ã¤ã‹ã£ãŸå­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°nullptr
+* èª¬ã€€æ˜ã€€: åå‰ã‹ã‚‰å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œç´¢
 */
 AbstractObject* AbstractObject::FindChildByName(const std::string& name)
 {
@@ -213,15 +213,15 @@ AbstractObject* AbstractObject::FindChildByName(const std::string& name)
 }
 
 /*
-* ŠÖ”–¼@: AddChild
-* ˆø@”@: child	’Ç‰Á‚·‚éqƒIƒuƒWƒFƒNƒg
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: qƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Á
+* é–¢æ•°åã€€: AddChild
+* å¼•ã€€æ•°ã€€: child	è¿½åŠ ã™ã‚‹å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¿½åŠ 
 */
 void AbstractObject::AddChild(AbstractObject* child) {
 	if (!child) return;
 
-	// Šù‚ÉqƒŠƒXƒg‚É‚ ‚éê‡‚Í’Ç‰Á‚µ‚È‚¢
+	// æ—¢ã«å­ãƒªã‚¹ãƒˆã«ã‚ã‚‹å ´åˆã¯è¿½åŠ ã—ãªã„
 	auto it = std::find(_children.begin(), _children.end(), child);
 	if (it != _children.end()) return;
 
@@ -229,10 +229,10 @@ void AbstractObject::AddChild(AbstractObject* child) {
 }
 
 /*
-* ŠÖ”–¼@: RemoveChild
-* ˆø@”@: child	íœ‚·‚éqƒIƒuƒWƒFƒNƒg
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: qƒIƒuƒWƒFƒNƒg‚Ìíœ
+* é–¢æ•°åã€€: RemoveChild
+* å¼•ã€€æ•°ã€€: child	å‰Šé™¤ã™ã‚‹å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å‰Šé™¤
 */
 void AbstractObject::RemoveChild(AbstractObject* child) {
 	if (!child) return;
@@ -244,10 +244,10 @@ void AbstractObject::RemoveChild(AbstractObject* child) {
 }
 
 /*
-* ŠÖ”–¼@: Clone
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ƒNƒ[ƒ“‚³‚ê‚½ƒIƒuƒWƒFƒNƒg
-* à@–¾@: ƒIƒuƒWƒFƒNƒg‚ÌƒNƒ[ƒ“ì¬
+* é–¢æ•°åã€€: Clone
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ã‚¯ãƒ­ãƒ¼ãƒ³ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+* èª¬ã€€æ˜ã€€: ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¯ãƒ­ãƒ¼ãƒ³ä½œæˆ
 */
 AbstractObject* AbstractObject::Clone() {
 	AbstractObject* newObj = new AbstractObject();
@@ -255,7 +255,7 @@ AbstractObject* AbstractObject::Clone() {
 	newObj->_ObjectName = this->_ObjectName;
 	newObj->SetParentScene(this->GetParentScene());
 
-	// ƒRƒ“ƒ|[ƒlƒ“ƒg‚ÌƒNƒ[ƒ“
+	// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®ã‚¯ãƒ­ãƒ¼ãƒ³
 	for (auto comp : _components) {
 		if (comp) {
 			AbstractComponent* newComp = ComponentManager::GetInstance()->AddComponent(newObj, comp->GetComponentType());
@@ -268,7 +268,7 @@ AbstractObject* AbstractObject::Clone() {
 		}
 	}
 
-	// qƒIƒuƒWƒFƒNƒg‚ÌƒNƒ[ƒ“
+	// å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¯ãƒ­ãƒ¼ãƒ³
 	for (auto child : _children) {
 		if (child) {
 			AbstractObject* newChild = child->Clone();
@@ -280,10 +280,10 @@ AbstractObject* AbstractObject::Clone() {
 }
 
 /*
-* ŠÖ”–¼@: GetComponent
-* ˆø@”@: name	ƒRƒ“ƒ|[ƒlƒ“ƒg–¼
-* –ß‚è’l@: Œ©‚Â‚©‚Á‚½ƒRƒ“ƒ|[ƒlƒ“ƒgAŒ©‚Â‚©‚ç‚È‚¯‚ê‚Înullptr
-* à@–¾@: –¼‘O‚©‚çƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+* é–¢æ•°åã€€: GetComponent
+* å¼•ã€€æ•°ã€€: name	ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆå
+* æˆ»ã‚Šå€¤ã€€: è¦‹ã¤ã‹ã£ãŸã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã€è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°nullptr
+* èª¬ã€€æ˜ã€€: åå‰ã‹ã‚‰ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
 */
 AbstractComponent* AbstractObject::GetComponent(const std::string& name)
 {
@@ -296,10 +296,10 @@ AbstractComponent* AbstractObject::GetComponent(const std::string& name)
 }
 
 /*
-* ŠÖ”–¼@: GetComponentsByTypeID
-* ˆø@”@: typeID	ƒRƒ“ƒ|[ƒlƒ“ƒg‚ÌŒ^ID
-* –ß‚è’l@: w’èŒ^‚ÌƒRƒ“ƒ|[ƒlƒ“ƒgƒŠƒXƒg
-* à@–¾@: Œ^ID‚©‚çƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+* é–¢æ•°åã€€: GetComponentsByTypeID
+* å¼•ã€€æ•°ã€€: typeID	ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®å‹ID
+* æˆ»ã‚Šå€¤ã€€: æŒ‡å®šå‹ã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãƒªã‚¹ãƒˆ
+* èª¬ã€€æ˜ã€€: å‹IDã‹ã‚‰ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
 */
 std::vector<AbstractComponent*> AbstractObject::GetComponentsByTypeID(int typeID)
 {
@@ -313,10 +313,10 @@ std::vector<AbstractComponent*> AbstractObject::GetComponentsByTypeID(int typeID
 }
 
 /*
-* ŠÖ”–¼@: RemoveComponent
-* ˆø@”@: comp	íœ‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒg
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ìíœ
+* é–¢æ•°åã€€: RemoveComponent
+* å¼•ã€€æ•°ã€€: comp	å‰Šé™¤ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®å‰Šé™¤
 */
 void AbstractObject::RemoveComponent(AbstractComponent* comp) {
 	if (comp == nullptr) return;

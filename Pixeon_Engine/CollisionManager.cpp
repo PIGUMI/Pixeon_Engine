@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "CollisionManager.h"
 #include "BoxCollision.h"
 #include "CapsuleCollision.h"
@@ -95,12 +95,12 @@ void CollisionManager::Shutdown()
 	m_CurrentCollisions.clear();
 }
 
-// šC³1: íœ‚³‚ê‚éƒRƒŠƒWƒ‡ƒ“‚ğQÆ‚µ‚Ä‚¢‚é‘S‚Ä‚ÌƒGƒ“ƒgƒŠ‚ğƒNƒŠ[ƒ“ƒAƒbƒv
+// â˜…ä¿®æ­£1: å‰Šé™¤ã•ã‚Œã‚‹ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚’å‚ç…§ã—ã¦ã„ã‚‹å…¨ã¦ã®ã‚¨ãƒ³ãƒˆãƒªã‚’ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—
 void CollisionManager::CleanupCollisionReferences(BaseCollision* collision)
 {
 	if (!collision) return;
 
-	// m_PreviousCollisions‚©‚çA‚±‚ÌƒRƒŠƒWƒ‡ƒ“‚Ö‚ÌQÆ‚ğ‘S‚Äíœ
+	// m_PreviousCollisionsã‹ã‚‰ã€ã“ã®ã‚³ãƒªã‚¸ãƒ§ãƒ³ã¸ã®å‚ç…§ã‚’å…¨ã¦å‰Šé™¤
 	for (auto& pair : m_PreviousCollisions)
 	{
 		auto& collisionList = pair.second;
@@ -110,7 +110,7 @@ void CollisionManager::CleanupCollisionReferences(BaseCollision* collision)
 		);
 	}
 
-	// m_CurrentCollisions‚©‚çA‚±‚ÌƒRƒŠƒWƒ‡ƒ“‚ÌƒIƒuƒWƒFƒNƒg‚Ö‚ÌQÆ‚ğíœ
+	// m_CurrentCollisionsã‹ã‚‰ã€ã“ã®ã‚³ãƒªã‚¸ãƒ§ãƒ³ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®å‚ç…§ã‚’å‰Šé™¤
 	AbstractObject* parent = collision->GetParent();
 	if (parent)
 	{
@@ -151,7 +151,7 @@ void CollisionManager::UnregisterBoxCollision(BoxCollision* collision)
 			m_ContactCallbacks.erase(callbackIt);
 		}
 
-		// šC³2: íœ‘O‚É‘S‚Ä‚ÌQÆ‚ğƒNƒŠ[ƒ“ƒAƒbƒv
+		// â˜…ä¿®æ­£2: å‰Šé™¤å‰ã«å…¨ã¦ã®å‚ç…§ã‚’ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—
 		CleanupCollisionReferences(collision);
 
 		m_PreviousCollisions.erase(collision);
@@ -182,7 +182,7 @@ void CollisionManager::UnregisterCapsuleCollision(CapsuleCollision* collision)
 			m_ContactCallbacks.erase(callbackIt);
 		}
 
-		// šC³3: íœ‘O‚É‘S‚Ä‚ÌQÆ‚ğƒNƒŠ[ƒ“ƒAƒbƒv
+		// â˜…ä¿®æ­£3: å‰Šé™¤å‰ã«å…¨ã¦ã®å‚ç…§ã‚’ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—
 		CleanupCollisionReferences(collision);
 
 		m_PreviousCollisions.erase(collision);
@@ -214,7 +214,7 @@ void CollisionManager::CheckManualCollisions()
 
 	for (BoxCollision* collision : m_BoxCollisions)
 	{
-		// šC³4: nullptrƒ`ƒFƒbƒN’Ç‰Á
+		// â˜…ä¿®æ­£4: nullptrãƒã‚§ãƒƒã‚¯è¿½åŠ 
 		if (!collision || !collision->GetParent()) continue;
 
 		RigidBody* rigidBody = collision->GetParent()->GetComponent<RigidBody>();
@@ -226,7 +226,7 @@ void CollisionManager::CheckManualCollisions()
 
 	for (CapsuleCollision* collision : m_CapsuleCollisions)
 	{
-		// šC³5: nullptrƒ`ƒFƒbƒN’Ç‰Á
+		// â˜…ä¿®æ­£5: nullptrãƒã‚§ãƒƒã‚¯è¿½åŠ 
 		if (!collision || !collision->GetParent()) continue;
 
 		RigidBody* rigidBody = collision->GetParent()->GetComponent<RigidBody>();
@@ -236,7 +236,7 @@ void CollisionManager::CheckManualCollisions()
 		}
 	}
 
-	// Box ‚Æ Box ‚ÌÕ“Ë”»’è
+	// Box ã¨ Box ã®è¡çªåˆ¤å®š
 	for (size_t i = 0; i < manualBoxCollisions.size(); ++i)
 	{
 		std::vector<CollisionInfo> newCollisions;
@@ -264,7 +264,7 @@ void CollisionManager::CheckManualCollisions()
 		ProcessCollisionEvents(manualBoxCollisions[i], newCollisions);
 	}
 
-	// Box ‚Æ Capsule ‚ÌÕ“Ë”»’è
+	// Box ã¨ Capsule ã®è¡çªåˆ¤å®š
 	for (BoxCollision* boxCol : manualBoxCollisions)
 	{
 		std::vector<CollisionInfo> boxNewCollisions;
@@ -292,7 +292,7 @@ void CollisionManager::CheckManualCollisions()
 		ProcessCollisionEvents(boxCol, boxNewCollisions);
 	}
 
-	// Capsule ‚Æ Capsule ‚ÌÕ“Ë”»’è
+	// Capsule ã¨ Capsule ã®è¡çªåˆ¤å®š
 	for (size_t i = 0; i < manualCapsuleCollisions.size(); ++i)
 	{
 		std::vector<CollisionInfo> newCollisions;
@@ -368,13 +368,13 @@ void CollisionManager::ProcessBulletCollisions()
 	}
 }
 
-// šC³6: ProcessCollisionEvents‚ÉˆÀ‘S«ƒ`ƒFƒbƒN‚ğ’Ç‰Á
+// â˜…ä¿®æ­£6: ProcessCollisionEventsã«å®‰å…¨æ€§ãƒã‚§ãƒƒã‚¯ã‚’è¿½åŠ 
 void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 	const std::vector<CollisionInfo>& newCollisions)
 {
 	if (!collision || !collision->GetParent()) return;
 
-	// d•¡”rœ
+	// é‡è¤‡æ’é™¤
 	std::vector<CollisionInfo> uniqueCollisions;
 	for (const CollisionInfo& info : newCollisions)
 	{
@@ -396,7 +396,7 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 		}
 	}
 
-	// ‘O‰ñ‚ÌÕ“ËƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚ğæ“¾
+	// å‰å›ã®è¡çªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒªã‚¹ãƒˆã‚’å–å¾—
 	std::vector<BaseCollision*> previousObjects;
 	auto prevIt = m_PreviousCollisions.find(collision);
 	if (prevIt != m_PreviousCollisions.end())
@@ -406,15 +406,15 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 
 	std::vector<BaseCollision*> currentObjects;
 
-	// V‚µ‚¢Õ“Ë‚ğˆ—
+	// æ–°ã—ã„è¡çªã‚’å‡¦ç†
 	for (const CollisionInfo& info : uniqueCollisions)
 	{
-		// šC³7: HitObject‚Ì—LŒø«ƒ`ƒFƒbƒN
+		// â˜…ä¿®æ­£7: HitObjectã®æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
 		if (!info.HitObject) continue;
 
 		BaseCollision* otherCollision = nullptr;
 
-		// BoxCollision‚ÆCapsuleCollision‚Ì—¼•û‚ğƒ`ƒFƒbƒN
+		// BoxCollisionã¨CapsuleCollisionã®ä¸¡æ–¹ã‚’ãƒã‚§ãƒƒã‚¯
 		BoxCollision* otherBoxCollision = info.HitObject->GetComponent<BoxCollision>();
 		if (otherBoxCollision)
 		{
@@ -433,7 +433,7 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 
 		currentObjects.push_back(otherCollision);
 
-		// V‚µ‚¢Õ“Ë‚©ƒ`ƒFƒbƒN
+		// æ–°ã—ã„è¡çªã‹ãƒã‚§ãƒƒã‚¯
 		auto it = std::find(previousObjects.begin(), previousObjects.end(), otherCollision);
 		if (it == previousObjects.end())
 		{
@@ -453,17 +453,17 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 		}
 	}
 
-	// OnCollisionExit‚Ìˆ—
-	// šC³8: ˆÀ‘S«ƒ`ƒFƒbƒN‚ğ’Ç‰Á
+	// OnCollisionExitã®å‡¦ç†
+	// â˜…ä¿®æ­£8: å®‰å…¨æ€§ãƒã‚§ãƒƒã‚¯ã‚’è¿½åŠ 
 	for (BaseCollision* prevObject : previousObjects)
 	{
-		// prevObject‚ª—LŒø‚©ƒ`ƒFƒbƒN
+		// prevObjectãŒæœ‰åŠ¹ã‹ãƒã‚§ãƒƒã‚¯
 		if (!prevObject) continue;
 
-		// prevObject‚ª‚Ü‚¾“o˜^‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
+		// prevObjectãŒã¾ã ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 		bool isStillRegistered = false;
 
-		// BoxCollisionƒŠƒXƒg‚ğƒ`ƒFƒbƒN
+		// BoxCollisionãƒªã‚¹ãƒˆã‚’ãƒã‚§ãƒƒã‚¯
 		for (BoxCollision* box : m_BoxCollisions)
 		{
 			if (box == prevObject)
@@ -473,7 +473,7 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 			}
 		}
 
-		// CapsuleCollisionƒŠƒXƒg‚àƒ`ƒFƒbƒN
+		// CapsuleCollisionãƒªã‚¹ãƒˆã‚‚ãƒã‚§ãƒƒã‚¯
 		if (!isStillRegistered)
 		{
 			for (CapsuleCollision* capsule : m_CapsuleCollisions)
@@ -486,10 +486,10 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 			}
 		}
 
-		// “o˜^‚³‚ê‚Ä‚¢‚È‚¢ƒIƒuƒWƒFƒNƒg‚ÍƒXƒLƒbƒv(íœÏ‚İ)
+		// ç™»éŒ²ã•ã‚Œã¦ã„ãªã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ã‚¹ã‚­ãƒƒãƒ—(å‰Šé™¤æ¸ˆã¿)
 		if (!isStillRegistered) continue;
 
-		// GetParent()‚ª—LŒø‚©ƒ`ƒFƒbƒN
+		// GetParent()ãŒæœ‰åŠ¹ã‹ãƒã‚§ãƒƒã‚¯
 		AbstractObject* prevParent = prevObject->GetParent();
 		if (!prevParent) continue;
 
@@ -507,11 +507,11 @@ void CollisionManager::ProcessCollisionEvents(BaseCollision* collision,
 		}
 	}
 
-	// ó‘Ô‚ğXV
+	// çŠ¶æ…‹ã‚’æ›´æ–°
 	m_PreviousCollisions[collision] = currentObjects;
 	m_CurrentCollisions[collision] = uniqueCollisions;
 
-	// CurrentCollisions_‚ğ’¼ÚXV
+	// CurrentCollisions_ã‚’ç›´æ¥æ›´æ–°
 	collision->CurrentCollisions_ = uniqueCollisions;
 }
 
@@ -619,7 +619,7 @@ DirectX::XMFLOAT3 CollisionManager::ClosestPointOnLineSegmentToAABB(
 		(boxMin.z + boxMax.z) * 0.5f
 	};
 
-	// ƒ{ƒbƒNƒX‚Ì’†S‚ÉÅ‚à‹ß‚¢ü•ªã‚Ì“_‚ğŒvZ
+	// ãƒœãƒƒã‚¯ã‚¹ã®ä¸­å¿ƒã«æœ€ã‚‚è¿‘ã„ç·šåˆ†ä¸Šã®ç‚¹ã‚’è¨ˆç®—
 	DirectX::XMVECTOR start = DirectX::XMLoadFloat3(&lineStart);
 	DirectX::XMVECTOR end = DirectX::XMLoadFloat3(&lineEnd);
 	DirectX::XMVECTOR center = DirectX::XMLoadFloat3(&boxCenter);
@@ -636,7 +636,7 @@ DirectX::XMFLOAT3 CollisionManager::ClosestPointOnLineSegmentToAABB(
 	DirectX::XMFLOAT3 result;
 	DirectX::XMStoreFloat3(&result, pointOnLine);
 
-	// AABB”ÍˆÍ“à‚ÉƒNƒ‰ƒ“ƒv
+	// AABBç¯„å›²å†…ã«ã‚¯ãƒ©ãƒ³ãƒ—
 	result.x = std::max(boxMin.x, std::min(boxMax.x, result.x));
 	result.y = std::max(boxMin.y, std::min(boxMax.y, result.y));
 	result.z = std::max(boxMin.z, std::min(boxMax.z, result.z));
@@ -649,7 +649,7 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 	if (!box || !capsule || !box->GetParent() || !capsule->GetParent())
 		return false;
 
-	// ƒ{ƒbƒNƒX‚Ìî•ñ‚ğæ“¾
+	// ãƒœãƒƒã‚¯ã‚¹ã®æƒ…å ±ã‚’å–å¾—
 	DirectX::XMFLOAT3 boxPos = box->GetParent()->GetWorldTransform().position;
 	DirectX::XMFLOAT3 boxRot = box->GetParent()->GetWorldTransform().rotation;
 	DirectX::XMFLOAT3 boxScale = box->GetParent()->GetWorldTransform().scale;
@@ -660,7 +660,7 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 	boxPos.y += boxCenter.y;
 	boxPos.z += boxCenter.z;
 
-	// ƒJƒvƒZƒ‹‚Ìî•ñ‚ğæ“¾
+	// ã‚«ãƒ—ã‚»ãƒ«ã®æƒ…å ±ã‚’å–å¾—
 	DirectX::XMFLOAT3 capsulePos = capsule->GetParent()->GetWorldTransform().position;
 	DirectX::XMFLOAT3 capsuleRot = capsule->GetParent()->GetWorldTransform().rotation;
 	DirectX::XMFLOAT3 capsuleScale = capsule->GetParent()->GetWorldTransform().scale;
@@ -674,7 +674,7 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 	float height = capsule->GetHeight();
 	float cylinderHeight = (height - 2.0f * capsule->GetRadius()) * capsuleScale.y;
 
-	// ƒJƒvƒZƒ‹‚Ìã‰º‚Ì’†S“_‚ğŒvZ
+	// ã‚«ãƒ—ã‚»ãƒ«ã®ä¸Šä¸‹ã®ä¸­å¿ƒç‚¹ã‚’è¨ˆç®—
 	DirectX::XMMATRIX capsuleRotMat = DirectX::XMMatrixRotationRollPitchYaw(
 		capsuleRot.x, capsuleRot.y, capsuleRot.z
 	);
@@ -690,7 +690,7 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 	DirectX::XMStoreFloat3(&topCenterF, topCenter);
 	DirectX::XMStoreFloat3(&bottomCenterF, bottomCenter);
 
-	// ƒ{ƒbƒNƒX‚ÌAABB‚ğŒvZ(ŠÈˆÕ”Å)
+	// ãƒœãƒƒã‚¯ã‚¹ã®AABBã‚’è¨ˆç®—(ç°¡æ˜“ç‰ˆ)
 	DirectX::XMFLOAT3 boxMin = {
 		boxPos.x - boxSize.x * boxScale.x * 0.5f,
 		boxPos.y - boxSize.y * boxScale.y * 0.5f,
@@ -702,12 +702,12 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 		boxPos.z + boxSize.z * boxScale.z * 0.5f
 	};
 
-	// ƒJƒvƒZƒ‹‚Ìü•ª‚Æƒ{ƒbƒNƒX‚ÌÅ‹ß“_‚ğŒvZ
+	// ã‚«ãƒ—ã‚»ãƒ«ã®ç·šåˆ†ã¨ãƒœãƒƒã‚¯ã‚¹ã®æœ€è¿‘ç‚¹ã‚’è¨ˆç®—
 	DirectX::XMFLOAT3 closestPoint = ClosestPointOnLineSegmentToAABB(
 		topCenterF, bottomCenterF, boxMin, boxMax
 	);
 
-	// Å‹ß“_‚Ü‚Å‚Ì‹——£‚ğŒvZ
+	// æœ€è¿‘ç‚¹ã¾ã§ã®è·é›¢ã‚’è¨ˆç®—
 	DirectX::XMVECTOR closestVec = DirectX::XMLoadFloat3(&closestPoint);
 	DirectX::XMVECTOR lineStart = DirectX::XMLoadFloat3(&topCenterF);
 	DirectX::XMVECTOR lineEnd = DirectX::XMLoadFloat3(&bottomCenterF);
@@ -723,7 +723,7 @@ bool CollisionManager::CheckBoxCapsuleCollision(BoxCollision* box, CapsuleCollis
 	DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(closestVec, pointOnLine);
 	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diff));
 
-	// Õ“Ë”»’è
+	// è¡çªåˆ¤å®š
 	if (distance <= radius)
 	{
 		DirectX::XMFLOAT3 pointOnLineF;
@@ -753,7 +753,7 @@ bool CollisionManager::CheckCapsuleCapsuleCollision(CapsuleCollision* capsule1, 
 	if (!capsule1 || !capsule2 || !capsule1->GetParent() || !capsule2->GetParent())
 		return false;
 
-	// ƒJƒvƒZƒ‹1‚Ìî•ñ
+	// ã‚«ãƒ—ã‚»ãƒ«1ã®æƒ…å ±
 	DirectX::XMFLOAT3 pos1 = capsule1->GetParent()->GetWorldTransform().position;
 	DirectX::XMFLOAT3 rot1 = capsule1->GetParent()->GetWorldTransform().rotation;
 	DirectX::XMFLOAT3 scale1 = capsule1->GetParent()->GetWorldTransform().scale;
@@ -766,7 +766,7 @@ bool CollisionManager::CheckCapsuleCapsuleCollision(CapsuleCollision* capsule1, 
 	float radius1 = capsule1->GetRadius() * std::max(scale1.x, scale1.z);
 	float cylinderHeight1 = (capsule1->GetHeight() - 2.0f * capsule1->GetRadius()) * scale1.y;
 
-	// ƒJƒvƒZƒ‹2‚Ìî•ñ
+	// ã‚«ãƒ—ã‚»ãƒ«2ã®æƒ…å ±
 	DirectX::XMFLOAT3 pos2 = capsule2->GetParent()->GetWorldTransform().position;
 	DirectX::XMFLOAT3 rot2 = capsule2->GetParent()->GetWorldTransform().rotation;
 	DirectX::XMFLOAT3 scale2 = capsule2->GetParent()->GetWorldTransform().scale;
@@ -779,27 +779,27 @@ bool CollisionManager::CheckCapsuleCapsuleCollision(CapsuleCollision* capsule1, 
 	float radius2 = capsule2->GetRadius() * std::max(scale2.x, scale2.z);
 	float cylinderHeight2 = (capsule2->GetHeight() - 2.0f * capsule2->GetRadius()) * scale2.y;
 
-	// ƒJƒvƒZƒ‹1‚Ìü•ª
+	// ã‚«ãƒ—ã‚»ãƒ«1ã®ç·šåˆ†
 	DirectX::XMMATRIX rot1Mat = DirectX::XMMatrixRotationRollPitchYaw(rot1.x, rot1.y, rot1.z);
 	DirectX::XMVECTOR up1 = DirectX::XMVector3TransformNormal(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rot1Mat);
 	DirectX::XMVECTOR pos1Vec = DirectX::XMLoadFloat3(&pos1);
 	DirectX::XMVECTOR top1 = DirectX::XMVectorAdd(pos1Vec, DirectX::XMVectorScale(up1, cylinderHeight1 * 0.5f));
 	DirectX::XMVECTOR bottom1 = DirectX::XMVectorAdd(pos1Vec, DirectX::XMVectorScale(up1, -cylinderHeight1 * 0.5f));
 
-	// ƒJƒvƒZƒ‹2‚Ìü•ª
+	// ã‚«ãƒ—ã‚»ãƒ«2ã®ç·šåˆ†
 	DirectX::XMMATRIX rot2Mat = DirectX::XMMatrixRotationRollPitchYaw(rot2.x, rot2.y, rot2.z);
 	DirectX::XMVECTOR up2 = DirectX::XMVector3TransformNormal(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rot2Mat);
 	DirectX::XMVECTOR pos2Vec = DirectX::XMLoadFloat3(&pos2);
 	DirectX::XMVECTOR top2 = DirectX::XMVectorAdd(pos2Vec, DirectX::XMVectorScale(up2, cylinderHeight2 * 0.5f));
 	DirectX::XMVECTOR bottom2 = DirectX::XMVectorAdd(pos2Vec, DirectX::XMVectorScale(up2, -cylinderHeight2 * 0.5f));
 
-	// 2‚Â‚Ìü•ªŠÔ‚ÌÅ’Z‹——£‚ğŒvZ
+	// 2ã¤ã®ç·šåˆ†é–“ã®æœ€çŸ­è·é›¢ã‚’è¨ˆç®—
 	DirectX::XMFLOAT3 point1, point2;
 	float distance = ClosestPointsBetweenLineSegments(
 		top1, bottom1, top2, bottom2, point1, point2
 	);
 
-	// Õ“Ë”»’è
+	// è¡çªåˆ¤å®š
 	float radiusSum = radius1 + radius2;
 	if (distance <= radiusSum)
 	{

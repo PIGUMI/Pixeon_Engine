@@ -1,4 +1,4 @@
-#include "Input.h"
+ï»¿#include "Input.h"
 #include "StartUp.h"
 #include "System.h"
 #include "MainFrame.h"
@@ -26,7 +26,7 @@ static int g_hwheelBackwardFrameDelta = 0;
 
 HRESULT InitInput()
 {
-	// ‰ŠúƒL[ƒ{[ƒhó‘Ô‚ğæ“¾
+	// åˆæœŸã‚­ãƒ¼ãƒœãƒ¼ãƒ‰çŠ¶æ…‹ã‚’å–å¾—
 	GetKeyboardState(g_keyTable);
 	return S_OK;
 }

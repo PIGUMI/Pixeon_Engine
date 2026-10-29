@@ -1,4 +1,4 @@
-//Dx11 ‚ÌŠî–{ˆ—
+ï»¿//Dx11 ã®åŸºæœ¬å‡¦ç†
 #pragma once
 // Include
 #include <math.h>
@@ -61,7 +61,7 @@ struct Vertex {
 	float uv[2];
 };
 
-// ƒeƒNƒXƒ`ƒƒ
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£
 class Render
 {
 public:
@@ -84,7 +84,7 @@ protected:
 	ID3D11ShaderResourceView* m_pSRV;
 	ID3D11Texture2D* m_pTex;
 };
-// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg
+// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 class RenderTarget : public Render
 {
 public:
@@ -100,7 +100,7 @@ protected:
 private:
 	ID3D11RenderTargetView* m_pRTV;
 };
-// [“xƒoƒbƒtƒ@
+// æ·±åº¦ãƒãƒƒãƒ•ã‚¡
 class DepthStencil : public Render
 {
 public:

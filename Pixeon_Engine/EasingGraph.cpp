@@ -1,29 +1,29 @@
-#include "EasingGraph.h"
+ï»¿#include "EasingGraph.h"
 
 void DrawEasingGraph(CurveData& curve, const char* label, ImVec2 size)
 {
 	ImVec2 parent_pos = ImGui::GetCursorScreenPos();
 	ImGui::BeginChild(label, { 451.0f,460.0f }, true);
 
-	// Child‚Ì¶ãÀ•WiBeginChildŒã‚ÌGetCursorScreenPos‚ÍChild“à•”‚Ì¶ã‚É‚È‚éj
+	// Childã®å·¦ä¸Šåº§æ¨™ï¼ˆBeginChildå¾Œã®GetCursorScreenPosã¯Childå†…éƒ¨ã®å·¦ä¸Šã«ãªã‚‹ï¼‰
 	ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();
 
-	// ‰E‰ºÀ•W‚ÌŒvZ•û–@‚ğC³
+	// å³ä¸‹åº§æ¨™ã®è¨ˆç®—æ–¹æ³•ã‚’ä¿®æ­£
 	ImVec2 canvas_p1 = ImVec2(canvas_p0.x + size.x, canvas_p0.y + size.y);
 
-	// ˜gü‚Ì“à‘¤‚É•`‰æ‚·‚é‚½‚ß1px•ª‚¾‚¯“à‘¤‚É
+	// æ ç·šã®å†…å´ã«æç”»ã™ã‚‹ãŸã‚1pxåˆ†ã ã‘å†…å´ã«
 	canvas_p0.x += 1; canvas_p0.y += 1;
 	canvas_p1.x -= 1; canvas_p1.y -= 1;
 
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-	// ˜g•`‰æ
+	// æ æç”»
 	draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
 
-	// À•W•ÏŠ·
+	// åº§æ¨™å¤‰æ›
 	auto toScreen = [&](DirectX::XMFLOAT2 p) {
 		float x = canvas_p0.x + p.x * (canvas_p1.x - canvas_p0.x);
-		float y = canvas_p1.y - p.y * (canvas_p1.y - canvas_p0.y); // y”½“]
+		float y = canvas_p1.y - p.y * (canvas_p1.y - canvas_p0.y); // yåè»¢
 		return ImVec2(x, y);
 		};
 	auto toLogic = [&](ImVec2 p) {
@@ -32,7 +32,7 @@ void DrawEasingGraph(CurveData& curve, const char* label, ImVec2 size)
 		return DirectX::XMFLOAT2(x, y);
 		};
 
-	// §Œä“_
+	// åˆ¶å¾¡ç‚¹
 	DirectX::XMFLOAT2 pts[] = {
 		curve.StartPoint,
 		curve.ControlPoint1,
@@ -40,11 +40,11 @@ void DrawEasingGraph(CurveData& curve, const char* label, ImVec2 size)
 		curve.EndPoint
 	};
 
-	// ü•ª‚ÅƒxƒWƒF‹Èü
+	// ç·šåˆ†ã§ãƒ™ã‚¸ã‚§æ›²ç·š
 	ImVec2 prev = toScreen(pts[0]);
 	for (int i = 1; i <= 64; ++i) {
 		float t = i / 64.0f;
-		// ƒxƒWƒF•âŠÔ
+		// ãƒ™ã‚¸ã‚§è£œé–“
 		auto bezier = [](DirectX::XMFLOAT2 p0, DirectX::XMFLOAT2 p1, DirectX::XMFLOAT2 p2, DirectX::XMFLOAT2 p3, float t) {
 			float u = 1.f - t;
 			float tt = t * t; float uu = u * u;
@@ -60,14 +60,14 @@ void DrawEasingGraph(CurveData& curve, const char* label, ImVec2 size)
 		prev = curr;
 	}
 
-	// §Œä“_“¯m‚Ìü
+	// åˆ¶å¾¡ç‚¹åŒå£«ã®ç·š
 	draw_list->AddLine(toScreen(pts[0]), toScreen(pts[1]), IM_COL32(180, 180, 80, 80), 1.0f);
 	draw_list->AddLine(toScreen(pts[2]), toScreen(pts[3]), IM_COL32(180, 180, 80, 80), 1.0f);
 
 	static int drag_idx = -1;
 	static bool dragging = false;
 
-	// §Œä“_‚Ì•`‰æ‚Æƒhƒ‰ƒbƒO
+	// åˆ¶å¾¡ç‚¹ã®æç”»ã¨ãƒ‰ãƒ©ãƒƒã‚°
 	for (int i = 0; i < 4; ++i) {
 		ImVec2 p = toScreen(pts[i]);
 		ImU32 color = (i == 0 || i == 3) ? IM_COL32(0, 220, 0, 255) : IM_COL32(220, 0, 0, 255);
@@ -75,7 +75,7 @@ void DrawEasingGraph(CurveData& curve, const char* label, ImVec2 size)
 
 		draw_list->AddCircleFilled(p, radius, color);
 
-		// ƒhƒ‰ƒbƒOˆ—
+		// ãƒ‰ãƒ©ãƒƒã‚°å‡¦ç†
 		ImGui::SetCursorScreenPos(ImVec2(p.x - radius, p.y - radius));
 		ImGui::InvisibleButton((std::string(label) + "##drag" + std::to_string(i)).c_str(), ImVec2(radius * 2, radius * 2));
 		if (ImGui::IsItemActive() && ImGui::IsMouseDown(0)) {
@@ -85,8 +85,8 @@ void DrawEasingGraph(CurveData& curve, const char* label, ImVec2 size)
 		if (dragging && drag_idx == i && ImGui::IsMouseDragging(0)) {
 			ImVec2 mouse = ImGui::GetIO().MousePos;
 			DirectX::XMFLOAT2 logical = toLogic(mouse);
-			if (i == 0) logical = { 0,0 }; // n“_‚ÍŒÅ’è
-			if (i == 3) logical = { 1,1 }; // I“_‚ÍŒÅ’è
+			if (i == 0) logical = { 0,0 }; // å§‹ç‚¹ã¯å›ºå®š
+			if (i == 3) logical = { 1,1 }; // çµ‚ç‚¹ã¯å›ºå®š
 			logical.x = std::clamp(logical.x, 0.f, 1.f);
 			logical.y = std::clamp(logical.y, 0.f, 1.f);
 

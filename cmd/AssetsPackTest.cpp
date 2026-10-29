@@ -1,4 +1,4 @@
-#include <windows.h>
+ï»¿#include <windows.h>
 #include <iostream>
 
 
@@ -12,7 +12,7 @@ bool CallAssetPacker(const std::string& toolPath, const std::string& assetDir, c
 
     if (!result) return false;
 
-    // ƒvƒƒZƒXI—¹‚Ü‚Å‘Ò‹@
+    // ãƒ—ãƒ­ã‚»ã‚¹çµ‚äº†ã¾ã§å¾…æ©Ÿ
     WaitForSingleObject(pi.hProcess, INFINITE);
 
     DWORD exitCode = 0;

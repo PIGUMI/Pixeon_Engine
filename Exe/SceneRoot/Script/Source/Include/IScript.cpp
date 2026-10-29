@@ -1,4 +1,4 @@
-// IScript.cpp
+ï»¿// IScript.cpp
 #include "IScript.h"
 #include <unordered_map>
 #include <mutex>
@@ -8,7 +8,7 @@ static std::unordered_map<component, IScript*> g_scriptInstances;
 static std::mutex g_scriptInstancesMutex;
 
 // ========================================
-// ƒRƒŠƒWƒ‡ƒ“ƒR[ƒ‹ƒoƒbƒN
+// ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 // ========================================
 void OnEnterCallback(component collision, const APICollisionInfo* info)
 {
@@ -38,7 +38,7 @@ void OnExitCallback(component collision, const APICollisionInfo* info)
 }
 
 // ========================================
-// IScript À‘•
+// IScript å®Ÿè£…
 // ========================================
 IScript::~IScript()
 {
@@ -48,7 +48,7 @@ IScript::~IScript()
 
 void IScript::SetParentObject(object obj)
 {
-    // ƒ‰ƒbƒp[ƒNƒ‰ƒX‚ğì¬iŠ—LŒ ‚È‚µj
+    // ãƒ©ãƒƒãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹ã‚’ä½œæˆï¼ˆæ‰€æœ‰æ¨©ãªã—ï¼‰
     if (_parentObject) {
         delete _parentObject;
     }
@@ -57,7 +57,7 @@ void IScript::SetParentObject(object obj)
 
 void IScript::SetParentScene(scene scn)
 {
-    // ƒ‰ƒbƒp[ƒNƒ‰ƒX‚ğì¬iŠ—LŒ ‚È‚µj
+    // ãƒ©ãƒƒãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹ã‚’ä½œæˆï¼ˆæ‰€æœ‰æ¨©ãªã—ï¼‰
     if (_parentScene) {
         delete _parentScene;
     }
@@ -70,7 +70,7 @@ void IScript::BeginPlay()
         return;
     }
 
-    // ƒRƒŠƒWƒ‡ƒ“ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì©“®“o˜^
+    // ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®è‡ªå‹•ç™»éŒ²
     const char* collisionTypes[] = {
         "BoxCollision",
         "CapsuleCollision",
@@ -86,24 +86,24 @@ void IScript::BeginPlay()
 
 void IScript::Update(float DeltaTime)
 {
-    // Œp³æ‚ÅÀ‘•
+    // ç¶™æ‰¿å…ˆã§å®Ÿè£…
 }
 
 void IScript::EndPlay()
 {
-    // ©“®“I‚É‚·‚×‚Ä‚ÌƒŠƒ\[ƒX‚ğ‰ğ•ú
+    // è‡ªå‹•çš„ã«ã™ã¹ã¦ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’è§£æ”¾
     CleanupAllResources();
     UnregisterAllCollisions();
 }
 
 void IScript::CallCustom(const std::string& functionName)
 {
-    // Œp³æ‚ÅÀ‘•
+    // ç¶™æ‰¿å…ˆã§å®Ÿè£…
 }
 
 void IScript::ClearParent()
 {
-    // ƒ‰ƒbƒp[ƒNƒ‰ƒX‚Ì‚İíœ
+    // ãƒ©ãƒƒãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹ã®ã¿å‰Šé™¤
     if (_parentObject) {
         delete _parentObject;
         _parentObject = nullptr;
@@ -116,7 +116,7 @@ void IScript::ClearParent()
 }
 
 // ========================================
-// ƒRƒŠƒWƒ‡ƒ“ŠÇ—
+// ã‚³ãƒªã‚¸ãƒ§ãƒ³ç®¡ç†
 // ========================================
 void IScript::RegisterCollisionComponent(component collision)
 {
@@ -165,7 +165,7 @@ void IScript::OnCollisionStay(const APICollisionInfo* info) {}
 void IScript::OnCollisionExit(const APICollisionInfo* info) {}
 
 // ========================================
-// ©“®ƒƒ‚ƒŠŠÇ—
+// è‡ªå‹•ãƒ¡ãƒ¢ãƒªç®¡ç†
 // ========================================
 Object* IScript::CreateManagedObject(const std::string& prefabName)
 {
@@ -201,13 +201,13 @@ void IScript::ReleaseAllManagedResources()
 
 void IScript::CleanupAllResources()
 {
-    // ¶¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚ğƒV[ƒ“‚©‚çíœ
+    // ç”Ÿæˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚·ãƒ¼ãƒ³ã‹ã‚‰å‰Šé™¤
     if (_parentScene) {
         for (auto obj : _createdObjects) {
             if (obj) {
                 try {
                     _parentScene->RemoveObject(obj);
-                    delete obj;  // ƒ‰ƒbƒp[‚Ì‚İíœ
+                    delete obj;  // ãƒ©ãƒƒãƒ‘ãƒ¼ã®ã¿å‰Šé™¤
                 }
                 catch (const std::exception& e) {
                     std::cerr << "[IScript] Exception during object cleanup: "
@@ -218,7 +218,7 @@ void IScript::CleanupAllResources()
     }
     _createdObjects.clear();
 
-    // ƒJƒXƒ^ƒ€ƒŠƒ\[ƒX‚Ì‰ğ•ú
+    // ã‚«ã‚¹ã‚¿ãƒ ãƒªã‚½ãƒ¼ã‚¹ã®è§£æ”¾
     for (auto& cleanup : _managedResources) {
         if (cleanup) {
             try {
@@ -232,6 +232,6 @@ void IScript::CleanupAllResources()
     }
     _managedResources.clear();
 
-    // shared_ptr ‚ÌƒNƒŠƒA
+    // shared_ptr ã®ã‚¯ãƒªã‚¢
     _sharedResources.clear();
 }

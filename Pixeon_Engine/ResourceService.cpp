@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@: ResourceService
-* à@@@–¾@: ƒŠƒ\[ƒXŠÇ—ƒT[ƒrƒXŽÀ‘•
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€: ResourceService
+* èª¬ã€€ã€€ã€€æ˜Žã€€: ãƒªã‚½ãƒ¼ã‚¹ç®¡ç†ã‚µãƒ¼ãƒ“ã‚¹å®Ÿè£…
 */
 #include "ResourceService.h"
 #include "TextureManager.h"
@@ -10,10 +10,10 @@
 ResourceService* ResourceService::_instance = nullptr;
 
 /*
-* ŠÖ”–¼@: Instance
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒ|ƒCƒ“ƒ^[
-* à@–¾@: ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ðŽæ“¾‚·‚é
+* é–¢æ•°åã€€: Instance
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+* èª¬ã€€æ˜Žã€€: ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 */
 ResourceService& ResourceService::Instance() {
 	if (!_instance) {
@@ -23,10 +23,10 @@ ResourceService& ResourceService::Instance() {
 }
 
 /*
-* ŠÖ”–¼@: DeleteInstance
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ð”jŠü‚·‚é
+* é–¢æ•°åã€€: DeleteInstance
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜Žã€€: ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã™ã‚‹
 */
 void ResourceService::DeleteInstance() {
 	if (_instance) {
@@ -36,41 +36,41 @@ void ResourceService::DeleteInstance() {
 }
 
 /*
-* ŠÖ”–¼@: GetTexture
-* ˆø@”@: name		[in] ƒƒWƒJƒ‹–¼
-* –ß‚è’l@: ƒeƒNƒXƒ`ƒƒƒŠƒ\[ƒXƒ|ƒCƒ“ƒ^[
-* à@–¾@: ƒeƒNƒXƒ`ƒƒƒŠƒ\[ƒX‚ðŽæ“¾‚·‚é
+* é–¢æ•°åã€€: GetTexture
+* å¼•ã€€æ•°ã€€: name		[in] ãƒ­ã‚¸ã‚«ãƒ«å
+* æˆ»ã‚Šå€¤ã€€: ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒªã‚½ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+* èª¬ã€€æ˜Žã€€: ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒªã‚½ãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹
 */
 std::shared_ptr<TextureResource> ResourceService::GetTexture(const std::string& name) {
 	return TextureManager::Instance()->LoadOrGet(name);
 }
 
 /*
-* ŠÖ”–¼@: GetModel
-* ˆø@”@: name		[in] ƒƒWƒJƒ‹–¼
-* –ß‚è’l@: ƒ‚ƒfƒ‹‹¤—LƒŠƒ\[ƒXƒ|ƒCƒ“ƒ^[
-* à@–¾@: ƒ‚ƒfƒ‹‹¤—LƒŠƒ\[ƒX‚ðŽæ“¾‚·‚é
+* é–¢æ•°åã€€: GetModel
+* å¼•ã€€æ•°ã€€: name		[in] ãƒ­ã‚¸ã‚«ãƒ«å
+* æˆ»ã‚Šå€¤ã€€: ãƒ¢ãƒ‡ãƒ«å…±æœ‰ãƒªã‚½ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+* èª¬ã€€æ˜Žã€€: ãƒ¢ãƒ‡ãƒ«å…±æœ‰ãƒªã‚½ãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹
 */
 std::shared_ptr<ModelSharedResource> ResourceService::GetModel(const std::string& name) {
 	return ModelManager::Instance()->LoadOrGet(name);
 }
 
 /*
-* ŠÖ”–¼@: GetSound
-* ˆø@”@: name		[in] ƒƒWƒJƒ‹–¼
-* @@@@: streaming	[in] ƒXƒgƒŠ[ƒ~ƒ“ƒOÄ¶ƒtƒ‰ƒO
-* –ß‚è’l@: ƒTƒEƒ“ƒhƒŠƒ\[ƒXƒ|ƒCƒ“ƒ^[
-* à@–¾@: ƒTƒEƒ“ƒhƒŠƒ\[ƒX‚ðŽæ“¾‚·‚é
+* é–¢æ•°åã€€: GetSound
+* å¼•ã€€æ•°ã€€: name		[in] ãƒ­ã‚¸ã‚«ãƒ«å
+* ã€€ã€€ã€€ã€€: streaming	[in] ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°å†ç”Ÿãƒ•ãƒ©ã‚°
+* æˆ»ã‚Šå€¤ã€€: ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+* èª¬ã€€æ˜Žã€€: ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹
 */
 std::shared_ptr<SoundResource> ResourceService::GetSound(const std::string& name, bool streaming) {
 	return SoundManager::Instance()->LoadOrGet(name, streaming);
 }
 
 /*
-* ŠÖ”–¼@: AutoResolve
-* ˆø@”@: name		[in] ƒƒWƒJƒ‹–¼
-* –ß‚è’l@: ‰ðŒˆ¬Œ÷ƒtƒ‰ƒO
-* à@–¾@: Šg’£Žq‚©‚çŽ©“®“I‚ÉƒŠƒ\[ƒXŽí•Ê‚ð”»•Ê‚µ‚ÄŽæ“¾‚·‚é
+* é–¢æ•°åã€€: AutoResolve
+* å¼•ã€€æ•°ã€€: name		[in] ãƒ­ã‚¸ã‚«ãƒ«å
+* æˆ»ã‚Šå€¤ã€€: è§£æ±ºæˆåŠŸãƒ•ãƒ©ã‚°
+* èª¬ã€€æ˜Žã€€: æ‹¡å¼µå­ã‹ã‚‰è‡ªå‹•çš„ã«ãƒªã‚½ãƒ¼ã‚¹ç¨®åˆ¥ã‚’åˆ¤åˆ¥ã—ã¦å–å¾—ã™ã‚‹
 */
 bool ResourceService::AutoResolve(const std::string& name) {
 	std::string ext;

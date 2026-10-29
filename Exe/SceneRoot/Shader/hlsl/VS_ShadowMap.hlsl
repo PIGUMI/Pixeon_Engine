@@ -1,10 +1,10 @@
-cbuffer ShadowCB : register(b0)
+ï»¿cbuffer ShadowCB : register(b0)
 {
     matrix gLightViewProj;
     matrix gWorld;
 };
 
-// ƒ{[ƒ“s—ñ’Ç‰Á
+// ãƒœãƒ¼ãƒ³è¡Œåˆ—è¿½åŠ 
 cbuffer CBBones : register(b1)
 {
     float4x4 gBones[256];
@@ -30,13 +30,13 @@ VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
     
-    // ƒ{[ƒ“ƒXƒLƒjƒ“ƒOˆ—
+    // ãƒœãƒ¼ãƒ³ã‚¹ã‚­ãƒ‹ãƒ³ã‚°å‡¦ç†
     float totalW = input.bw.x + input.bw.y + input.bw.z + input.bw.w;
     float4 skinnedPos;
     
     if (totalW < 1e-7f)
     {
-        // ƒEƒFƒCƒg‚ª‚È‚¢ê‡‚Í‚»‚Ì‚Ü‚Ü
+        // ã‚¦ã‚§ã‚¤ãƒˆãŒãªã„å ´åˆã¯ãã®ã¾ã¾
         skinnedPos = float4(input.pos, 1.0f);
     }
     else

@@ -1,4 +1,4 @@
-#include "Animator2DFrame.h"
+ï»¿#include "Animator2DFrame.h"
 #include "MainFrame.h"
 #include "GUI.h"
 #include "Input.h"
@@ -17,7 +17,7 @@ void Animator2DFrame::DrawGUI()
 	{
 		Animator2DFrame_dock_init = true;
 
-		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceƒŠƒZƒbƒg
+		ImGui::DockBuilderRemoveNode(DockSpace); // DockSpaceãƒªã‚»ãƒƒãƒˆ
 		ImGui::DockBuilderAddNode(DockSpace, ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_DockSpace);
 		ImGui::DockBuilderSetNodeSize(DockSpace, viewport->Size);
 
@@ -26,11 +26,11 @@ void Animator2DFrame::DrawGUI()
 		ImGuiID dock_id_bottom;
 		ImGuiID dock_id_left;
 
-		// ‰E‚ÉInspector
+		// å³ã«Inspector
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_main_id);
-		// ‰º‚ÉContentDrawer
+		// ä¸‹ã«ContentDrawer
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.3f, &dock_id_bottom, &dock_main_id);
-		// ¶‚ÉHierarchy
+		// å·¦ã«Hierarchy
 		ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.18f, &dock_id_left, &dock_main_id);
 
 		ImGui::DockBuilderDockWindow(GUI::GetInstance()->ShiftJISToUTF8("Animator2DTimeLine").c_str(), dock_id_bottom);
@@ -67,7 +67,7 @@ void Animator2DFrame::DrawTimeline()
 		ImGui::OpenPopup("LoadProject");
 	}
 
-	// ƒ‚[ƒ_ƒ‹•`‰æi•K‚¸ End() ‚ÌŠO‚ÅŽÀsj
+	// ãƒ¢ãƒ¼ãƒ€ãƒ«æç”»ï¼ˆå¿…ãš End() ã®å¤–ã§å®Ÿè¡Œï¼‰
 	if (timelineEditor_) {
 		timelineEditor_->DrawProjectLoadPopup();
 	}
@@ -78,7 +78,7 @@ void Animator2DFrame::DrawView()
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Animator2DView").c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
 	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
 	ImVec2 size = ImGui::GetContentRegionAvail();
-	// ƒAƒXƒyƒNƒg”ä16:9‚É‡‚í‚¹‚é
+	// ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”16:9ã«åˆã‚ã›ã‚‹
 	float aspect = 16.0f / 9.0f;
 	if (size.x / size.y > aspect) {
 		size.x = size.y * aspect;
@@ -93,7 +93,7 @@ void Animator2DFrame::DrawView()
 	if (srv)
 		ImGui::Image((ImTextureID)srv, size);
 	else
-		ImGui::Text("SRV‚ªNull‚Å‚·");
+		ImGui::Text("SRVãŒNullã§ã™");
 	ImGui::End();
 }
 
@@ -110,9 +110,9 @@ void Animator2DFrame::DrawKeyFrameEditor()
 	if (ImGui::BeginTable(SJ("KeyFrameEditor").c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		std::string msg;
 
-		/* KeyFrame–¼Ý’è */
+		/* KeyFrameåè¨­å®š */
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("KeyFrame–¼").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("KeyFrameå").c_str());
 		ImGui::TableSetColumnIndex(1);
 		char nameBuffer[256];
 		strcpy_s(nameBuffer, selectedKeyFrame_->KeyFrameName.c_str());
@@ -121,19 +121,19 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			selectedKeyFrame_->KeyFrameName = std::string(nameBuffer);
 		}
 
-		/* ˆÊ’uÝ’è */
+		/* ä½ç½®è¨­å®š */
 		if (!selectedKeyFrame_->editorFlag.bPosition)
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("ˆÊ’u").c_str());
+			ImGui::Text(SJ("ä½ç½®").c_str());
 			ImGui::SameLine();
 			ImGui::Text(SJ("X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Position").c_str(), &selectedKeyFrame_->StartTransform.Position.x);
 			selectedKeyFrame_->EndTransform.Position = selectedKeyFrame_->StartTransform.Position;
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ú×“WŠJ##pos").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è©³ç´°å±•é–‹##pos").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bPosition = true;
 			}
@@ -142,31 +142,31 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("ˆÊ’u:Start X:Y").c_str());
-			ImGui::Text(SJ("ˆÊ’u:End X:Y").c_str());
+			ImGui::Text(SJ("ä½ç½®:Start X:Y").c_str());
+			ImGui::Text(SJ("ä½ç½®:End X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartPosition").c_str(), &selectedKeyFrame_->StartTransform.Position.x);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndPosition").c_str(), &selectedKeyFrame_->EndTransform.Position.x);
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ŠÈˆÕ•\Ž¦##pos").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ç°¡æ˜“è¡¨ç¤º##pos").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bPosition = false;
 				selectedKeyFrame_->StartTransform.Position = selectedKeyFrame_->EndTransform.Position;
 			}
 		}
 
-		/* ‰ñ“] */
+		/* å›žè»¢ */
 		if (!selectedKeyFrame_->editorFlag.bRotation)
 		{
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‰ñ“]").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("å›žè»¢").c_str());
 			ImGui::SameLine();
 			ImGui::Text(SJ("X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Rotation").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x);
 			selectedKeyFrame_->EndTransform.Rotation = selectedKeyFrame_->StartTransform.Rotation;
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ú×“WŠJ##rot").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è©³ç´°å±•é–‹##rot").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bRotation = true;
 			}
@@ -175,31 +175,31 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("‰ñ“]:Start X:Y").c_str());
-			ImGui::Text(SJ("‰ñ“]:End X:Y").c_str());
+			ImGui::Text(SJ("å›žè»¢:Start X:Y").c_str());
+			ImGui::Text(SJ("å›žè»¢:End X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartRotation").c_str(), &selectedKeyFrame_->StartTransform.Rotation.x);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndRotation").c_str(), &selectedKeyFrame_->EndTransform.Rotation.x);
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ŠÈˆÕ•\Ž¦##rot").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ç°¡æ˜“è¡¨ç¤º##rot").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bRotation = false;
 				selectedKeyFrame_->StartTransform.Rotation = selectedKeyFrame_->EndTransform.Rotation;
 			}
 		}
 
-		/* ƒTƒCƒY */
+		/* ã‚µã‚¤ã‚º */
 		if (!selectedKeyFrame_->editorFlag.bScale)
 		{
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒTƒCƒY").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ã‚µã‚¤ã‚º").c_str());
 			ImGui::SameLine();
 			ImGui::Text(SJ("X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##Scale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x, 0.01f);
 			selectedKeyFrame_->EndTransform.Scale = selectedKeyFrame_->StartTransform.Scale;
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ú×“WŠJ##scl").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è©³ç´°å±•é–‹##scl").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bScale = true;
 			}
@@ -208,13 +208,13 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("ƒTƒCƒY:Start X:Y").c_str());
-			ImGui::Text(SJ("ƒTƒCƒY:End X:Y").c_str());
+			ImGui::Text(SJ("ã‚µã‚¤ã‚º:Start X:Y").c_str());
+			ImGui::Text(SJ("ã‚µã‚¤ã‚º:End X:Y").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartScale").c_str(), &selectedKeyFrame_->StartTransform.Scale.x, 0.01f);
 			ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndScale").c_str(), &selectedKeyFrame_->EndTransform.Scale.x, 0.01f);
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ŠÈˆÕ•\Ž¦##scl").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ç°¡æ˜“è¡¨ç¤º##scl").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bScale = false;
 				selectedKeyFrame_->StartTransform.Scale = selectedKeyFrame_->EndTransform.Scale;
@@ -225,25 +225,25 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		if (!selectedKeyFrame_->editorFlag.bVertexOffset)
 		{
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("’¸“_ƒIƒtƒZƒbƒg").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("é ‚ç‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ã##VertexOffsetUp").c_str(), &selectedKeyFrame_->vertexOffset.Up, 1.0f, -50.0f, 50.0f);
-			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("‰º##VertexOffsetDown").c_str(), &selectedKeyFrame_->vertexOffset.Down, 1.0f, -50.0f, 50.0f);
-			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("¶##VertexOffsetLeft").c_str(), &selectedKeyFrame_->vertexOffset.Left, 1.0f, -50.0f, 50.0f);
-			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("‰E##VertexOffsetRight").c_str(), &selectedKeyFrame_->vertexOffset.Right, 1.0f, -50.0f, 50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ä¸Š##VertexOffsetUp").c_str(), &selectedKeyFrame_->vertexOffset.Up, 1.0f, -50.0f, 50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("ä¸‹##VertexOffsetDown").c_str(), &selectedKeyFrame_->vertexOffset.Down, 1.0f, -50.0f, 50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("å·¦##VertexOffsetLeft").c_str(), &selectedKeyFrame_->vertexOffset.Left, 1.0f, -50.0f, 50.0f);
+			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("å³##VertexOffsetRight").c_str(), &selectedKeyFrame_->vertexOffset.Right, 1.0f, -50.0f, 50.0f);
 			ImGui::SameLine();
 		}
 
-		/* F‚ÌÝ’è */
+		/* è‰²ã®è¨­å®š */
 		if (!selectedKeyFrame_->editorFlag.bColor)
 		{
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("F").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è‰²").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("##Color").c_str(), &selectedKeyFrame_->StartTransform.Color.x);
 			selectedKeyFrame_->EndTransform.Color = selectedKeyFrame_->StartTransform.Color;
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ú×“WŠJ##color").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è©³ç´°å±•é–‹##color").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bColor = true;
 			}
@@ -252,13 +252,13 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("F:Start RGBA").c_str());
-			ImGui::Text(SJ("F:End RGBA").c_str());
+			ImGui::Text(SJ("è‰²:Start RGBA").c_str());
+			ImGui::Text(SJ("è‰²:End RGBA").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("##StartColor").c_str(), &selectedKeyFrame_->StartTransform.Color.x);
 			ImGui::ColorEdit4(GUI::GetInstance()->ShiftJISToUTF8("##EndColor").c_str(), &selectedKeyFrame_->EndTransform.Color.x);
 			ImGui::SameLine();
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ŠÈˆÕ•\Ž¦##color").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ç°¡æ˜“è¡¨ç¤º##color").c_str()))
 			{
 				selectedKeyFrame_->editorFlag.bColor = false;
 				selectedKeyFrame_->StartTransform.Color = selectedKeyFrame_->EndTransform.Color;
@@ -267,18 +267,18 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 		if (!selectedKeyFrame_->uiShift.IsActive)
 		{
-			/* UV ƒTƒCƒY */
+			/* UV ã‚µã‚¤ã‚º */
 			if (!selectedKeyFrame_->editorFlag.bUVScale)
 			{
 				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UVƒTƒCƒY").c_str());
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UVã‚µã‚¤ã‚º").c_str());
 				ImGui::SameLine();
 				ImGui::Text(SJ("X:Y").c_str());
 				ImGui::TableSetColumnIndex(1);
 				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
 				selectedKeyFrame_->EndTransform.UVScale = selectedKeyFrame_->StartTransform.UVScale;
 				ImGui::SameLine();
-				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ú×“WŠJ##uvscl").c_str()))
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è©³ç´°å±•é–‹##uvscl").c_str()))
 				{
 					selectedKeyFrame_->editorFlag.bUVScale = true;
 				}
@@ -287,31 +287,31 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text(SJ("UVƒTƒCƒY:Start X:Y").c_str());
-				ImGui::Text(SJ("UVƒTƒCƒY:End X:Y").c_str());
+				ImGui::Text(SJ("UVã‚µã‚¤ã‚º:Start X:Y").c_str());
+				ImGui::Text(SJ("UVã‚µã‚¤ã‚º:End X:Y").c_str());
 				ImGui::TableSetColumnIndex(1);
 				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVScale").c_str(), &selectedKeyFrame_->StartTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVScale").c_str(), &selectedKeyFrame_->EndTransform.UVScale.x, 0.01f, 0.0f, 1.0f);
 				ImGui::SameLine();
-				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ŠÈˆÕ•\Ž¦##uvscl").c_str()))
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ç°¡æ˜“è¡¨ç¤º##uvscl").c_str()))
 				{
 					selectedKeyFrame_->editorFlag.bUVScale = false;
 					selectedKeyFrame_->StartTransform.UVScale = selectedKeyFrame_->EndTransform.UVScale;
 				}
 			}
 
-			/* UVˆÊ’u */
+			/* UVä½ç½® */
 			if (!selectedKeyFrame_->editorFlag.bUVPosition)
 			{
 				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UVˆÊ’u").c_str());
+				ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("UVä½ç½®").c_str());
 				ImGui::SameLine();
 				ImGui::Text(SJ("X:Y").c_str());
 				ImGui::TableSetColumnIndex(1);
 				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##UVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
 				selectedKeyFrame_->EndTransform.UVPosition = selectedKeyFrame_->StartTransform.UVPosition;
 				ImGui::SameLine();
-				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("Ú×“WŠJ##uvpos").c_str()))
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("è©³ç´°å±•é–‹##uvpos").c_str()))
 				{
 					selectedKeyFrame_->editorFlag.bUVPosition = true;
 				}
@@ -320,13 +320,13 @@ void Animator2DFrame::DrawKeyFrameEditor()
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text(SJ("UVˆÊ’u:Start X:Y").c_str());
-				ImGui::Text(SJ("UVˆÊ’u:End X:Y").c_str());
+				ImGui::Text(SJ("UVä½ç½®:Start X:Y").c_str());
+				ImGui::Text(SJ("UVä½ç½®:End X:Y").c_str());
 				ImGui::TableSetColumnIndex(1);
 				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##StartUVPosition").c_str(), &selectedKeyFrame_->StartTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat2(GUI::GetInstance()->ShiftJISToUTF8("##EndUVPosition").c_str(), &selectedKeyFrame_->EndTransform.UVPosition.x, 0.01f, 0.0f, 1.0f);
 				ImGui::SameLine();
-				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ŠÈˆÕ•\Ž¦##uvpos").c_str()))
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ç°¡æ˜“è¡¨ç¤º##uvpos").c_str()))
 				{
 					selectedKeyFrame_->editorFlag.bUVPosition = false;
 					selectedKeyFrame_->StartTransform.UVPosition = selectedKeyFrame_->EndTransform.UVPosition;
@@ -335,37 +335,37 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("UIƒVƒtƒg").c_str());
+			ImGui::Text(SJ("UIã‚·ãƒ•ãƒˆ").c_str());
 			ImGui::TableSetColumnIndex(1);
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("“WŠJ##UIShift").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("å±•é–‹##UIShift").c_str()))
 			{
 				selectedKeyFrame_->uiShift.IsActive = true;
 			}
 		}
 		else
 		{
-			/* UIƒVƒtƒgÝ’è */
+			/* UIã‚·ãƒ•ãƒˆè¨­å®š */
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("UIƒOƒŠƒbƒh").c_str());
+			ImGui::Text(SJ("UIã‚°ãƒªãƒƒãƒ‰").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragInt(GUI::GetInstance()->ShiftJISToUTF8("X##UIShiftGridX").c_str(), &selectedKeyFrame_->uiShift.Horizontal_Grid, 1, 0, 100);
 			ImGui::DragInt(GUI::GetInstance()->ShiftJISToUTF8("Y##UIShiftGridY").c_str(), &selectedKeyFrame_->uiShift.Vertical_Grid, 1, 0, 100);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("UIˆÚ“®Œü‚«").c_str());
+			ImGui::Text(SJ("UIç§»å‹•å‘ã").c_str());
 			ImGui::TableSetColumnIndex(1);
 			if (selectedKeyFrame_->uiShift.direction)
 			{
-				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("‚’¼##UIShiftDirection").c_str()))
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("åž‚ç›´##UIShiftDirection").c_str()))
 				{
 					selectedKeyFrame_->uiShift.direction = false;
 				}
 			}
 			else
 			{
-				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("…•½##UIShiftDirection").c_str()))
+				if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("æ°´å¹³##UIShiftDirection").c_str()))
 				{
 					selectedKeyFrame_->uiShift.direction = true;
 				}
@@ -373,25 +373,25 @@ void Animator2DFrame::DrawKeyFrameEditor()
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("ƒXƒs[ƒh").c_str());
+			ImGui::Text(SJ("ã‚¹ãƒ”ãƒ¼ãƒ‰").c_str());
 			ImGui::TableSetColumnIndex(1);
 			ImGui::DragFloat(GUI::GetInstance()->ShiftJISToUTF8("##UIShiftSpeed").c_str(), &selectedKeyFrame_->uiShift.Speed, 0.1f, 0.0f, 100.0f);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(SJ("UIƒVƒtƒg").c_str());
+			ImGui::Text(SJ("UIã‚·ãƒ•ãƒˆ").c_str());
 			ImGui::TableSetColumnIndex(1);
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("k¬##UIShift").c_str()))
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ç¸®å°##UIShift").c_str()))
 			{
 				selectedKeyFrame_->uiShift.IsActive = false;
 			}
 		}
 
-		/* ƒeƒNƒXƒ`ƒƒ‚ÌÝ’èGUI */
+		/* ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è¨­å®šGUI */
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒeƒNƒXƒ`ƒƒ").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒ†ã‚¯ã‚¹ãƒãƒ£").c_str());
 		ImGui::TableSetColumnIndex(1);
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("‘I‘ð").c_str()))
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("é¸æŠž").c_str()))
 		{
 			wantOpenTexturePopup_ = true;
 		}
@@ -399,12 +399,12 @@ void Animator2DFrame::DrawKeyFrameEditor()
 		ImGui::EndTable();
 	}
 
-	/* ƒC[ƒWƒ“ƒO‚Ìì¬ */
+	/* ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ã®ä½œæˆ */
 	ImGui::Separator();
 	DrawEasingGraph(selectedKeyFrame_->CurveInfo, "Easing", { 430.0f,430.0f });
 	//////////////////////
 
-	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("íœ").c_str()) || IsKeyTrigger(VK_DELETE))
+	if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("å‰Šé™¤").c_str()) || IsKeyTrigger(VK_DELETE))
 	{
 		animator_->RemoveKeyFrame(selectedKeyFrame_);
 		animator_ = nullptr;
@@ -419,19 +419,19 @@ void Animator2DFrame::DrawAnimatorControl()
 			std::string ProjectName = animator_->Name_;
 			char buf[256];
 			strcpy_s(buf, ProjectName.c_str());
-			if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("ƒvƒƒWƒFƒNƒg–¼").c_str(), buf, sizeof(buf))) {
+			if (ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆå").c_str(), buf, sizeof(buf))) {
 				animator_->Name_ = std::string(buf);
 			}
 			std::string msg;
-			msg = animator_->bLoop_ ? "ƒ‹[ƒvÄ¶: —LŒø" : "ƒ‹[ƒvÄ¶: –³Œø";
+			msg = animator_->bLoop_ ? "ãƒ«ãƒ¼ãƒ—å†ç”Ÿ: æœ‰åŠ¹" : "ãƒ«ãƒ¼ãƒ—å†ç”Ÿ: ç„¡åŠ¹";
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fTotalDuration_);
 			ImGui::SameLine();
-			ImGui::Checkbox(GUI::GetInstance()->ShiftJISToUTF8("ƒ‹[ƒvÄ¶").c_str(), &animator_->bLoop_);
-			msg = "‘Ä¶ŽžŠÔ: " + std::to_string(animator_->fTotalDuration_) + " •b";
+			ImGui::Checkbox(GUI::GetInstance()->ShiftJISToUTF8("ãƒ«ãƒ¼ãƒ—å†ç”Ÿ").c_str(), &animator_->bLoop_);
+			msg = "ç·å†ç”Ÿæ™‚é–“: " + std::to_string(animator_->fTotalDuration_) + " ç§’";
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fTotalDuration_);
-			msg = "Œ»Ý‚ÌÄ¶ŽžŠÔ: " + std::to_string(animator_->fNowTime_) + " •b";
+			msg = "ç¾åœ¨ã®å†ç”Ÿæ™‚é–“: " + std::to_string(animator_->fNowTime_) + " ç§’";
 			ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8(msg).c_str(), animator_->fNowTime_);
-			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ƒvƒƒWƒFƒNƒg‚ð•Â‚¶‚é").c_str())) {
+			if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’é–‰ã˜ã‚‹").c_str())) {
 				animator_->SaveFile();
 				delete animator_;
 				animator_ = nullptr;
@@ -447,7 +447,7 @@ void Animator2DFrame::DrawTextureLoadPopup()
 	if (ImGui::BeginPopupModal("LoadTexture", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		static char filter[128] = "";
-		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("ƒtƒBƒ‹ƒ^").c_str(), filter, sizeof(filter));
+		ImGui::InputText(GUI::GetInstance()->ShiftJISToUTF8("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), filter, sizeof(filter));
 		auto texList = AssetManager::Instance()->GetCachedTextureNames();
 		ImGui::BeginChild("ImgTexList", ImVec2(420, 260), true);
 		for (int i = 0; i < (int)texList.size(); ++i) {
@@ -460,7 +460,7 @@ void Animator2DFrame::DrawTextureLoadPopup()
 			}
 		}
 		ImGui::EndChild();
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ƒLƒƒƒ“ƒZƒ‹").c_str()))
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str()))
 		{
 			wantOpenTexturePopup_ = false;
 			ImGui::CloseCurrentPopup();

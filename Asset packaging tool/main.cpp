@@ -1,4 +1,4 @@
-#include <windows.h>
+ï»¿#include <windows.h>
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -39,7 +39,7 @@ static void CollectFiles(const fs::path& root, std::vector<TempFileEntry>& out) 
 int main(int argc, char* argv[]) {
     SetConsoleOutputCP(CP_UTF8);
     if (argc < 3 || argc > 4) {
-        std::cout << "Žg—p•û–@: PixAssetPacker.exe <input_dir> <output.pak> [alignment]\n";
+        std::cout << "ä½¿ç”¨æ–¹æ³•: PixAssetPacker.exe <input_dir> <output.pak> [alignment]\n";
         return 1;
     }
 
@@ -49,14 +49,14 @@ int main(int argc, char* argv[]) {
     if (argc == 4) alignment = std::max<uint32_t>(1, std::stoul(argv[3]));
 
     if (!fs::exists(inputDir) || !fs::is_directory(inputDir)) {
-        std::cout << "“ü—ÍƒfƒBƒŒƒNƒgƒŠ‚ª‘¶Ý‚µ‚Ü‚¹‚ñ\n";
+        std::cout << "å…¥åŠ›ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒå­˜åœ¨ã—ã¾ã›ã‚“\n";
         return 1;
     }
 
     std::vector<TempFileEntry> files;
     CollectFiles(inputDir, files);
     if (files.empty()) {
-        std::cout << "‘ÎÛƒtƒ@ƒCƒ‹‚ª‚ ‚è‚Ü‚¹‚ñ\n";
+        std::cout << "å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Šã¾ã›ã‚“\n";
         return 1;
     }
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 
     std::ofstream ofs(outputPak, std::ios::binary);
     if (!ofs) {
-        std::cout << "o—Í‚ðŠJ‚¯‚Ü‚¹‚ñ: " << outputPak << "\n";
+        std::cout << "å‡ºåŠ›ã‚’é–‹ã‘ã¾ã›ã‚“: " << outputPak << "\n";
         return 1;
     }
 
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
         fs::path full = inputDir / fe.relativePath;
         std::ifstream ifs(full, std::ios::binary | std::ios::ate);
         if (!ifs) {
-            std::cout << "“ÇžŽ¸”s: " << full << "\n";
+            std::cout << "èª­è¾¼å¤±æ•—: " << full << "\n";
             return 1;
         }
         uint64_t sz = (uint64_t)ifs.tellg();
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
         buf.resize((size_t)sz);
         if (sz > 0) {
             if (!ifs.read(reinterpret_cast<char*>(buf.data()), sz)) {
-                std::cout << "“Çž’†ƒGƒ‰[: " << full << "\n";
+                std::cout << "èª­è¾¼ä¸­ã‚¨ãƒ©ãƒ¼: " << full << "\n";
                 return 1;
             }
         }
@@ -124,14 +124,14 @@ int main(int argc, char* argv[]) {
         ++idx;
         if (idx % 10 == 0 || idx == files.size()) {
             double prog = (double)idx / files.size() * 100.0;
-            std::cout << "\r‘‚«ž‚Ý’†... " << std::fixed << std::setprecision(1) << prog << "%";
+            std::cout << "\ræ›¸ãè¾¼ã¿ä¸­... " << std::fixed << std::setprecision(1) << prog << "%";
         }
     }
     std::cout << "\n";
 
     header.tocOffset = currentOffset;
 
-    // TOC ‘‚«ž‚Ý (v2)
+    // TOC æ›¸ãè¾¼ã¿ (v2)
     for (auto& fe : files) {
         uint16_t nameLen = (uint16_t)fe.relativePath.size();
         ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(nameLen));
@@ -150,8 +150,8 @@ int main(int argc, char* argv[]) {
     ofs.write(reinterpret_cast<const char*>(&header), sizeof(header));
     ofs.flush();
 
-    std::cout << "ƒpƒbƒNŠ®—¹: " << outputPak << "\n";
-    std::cout << "ƒtƒ@ƒCƒ‹”: " << files.size() << "\n";
+    std::cout << "ãƒ‘ãƒƒã‚¯å®Œäº†: " << outputPak << "\n";
+    std::cout << "ãƒ•ã‚¡ã‚¤ãƒ«æ•°: " << files.size() << "\n";
     std::cout << "TOC Offset: " << header.tocOffset << "\n";
     return 0;
 }

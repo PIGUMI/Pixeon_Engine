@@ -1,4 +1,4 @@
-#include "ImageUtils.h"
+ï»¿#include "ImageUtils.h"
 #include "System.h"
 #include "ShaderManager.h"
 #include <vector>
@@ -407,7 +407,7 @@ namespace ImageUtils {
 
 		ShaderManager* sm = ShaderManager::GetInstance();
 
-		// Ã“IƒŠƒ\[ƒX
+		// é™çš„ãƒªã‚½ãƒ¼ã‚¹
 		static ComPtr<ID3D11Buffer> s_vb;
 		static ComPtr<ID3D11InputLayout> s_layout;
 		static ComPtr<ID3D11Buffer> s_cbVS;

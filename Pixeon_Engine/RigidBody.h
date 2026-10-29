@@ -1,4 +1,4 @@
-#ifndef _RIGID_BODY_H_
+ï»¿#ifndef _RIGID_BODY_H_
 #define _RIGID_BODY_H_
 
 #include "Component.h"
@@ -82,7 +82,7 @@ public:
 	bool IsRotationConstraintY() const { return bLockRotationY_; }
 	bool IsRotationConstraintZ() const { return bLockRotationZ_; }
 
-	// ƒJƒƒ‰‹——£‚ÉŠî‚Ã‚­§Œä
+	// ã‚«ãƒ¡ãƒ©è·é›¢ã«åŸºã¥ãåˆ¶å¾¡
 	void SetCullingDistance(float distance);
 	float GetCullingDistance() const { return fCullingDistance_; }
 	void SetUseCulling(bool useCulling);
@@ -92,11 +92,11 @@ public:
 	void UpdateCullingState();
 	bool IsActiveInPhysicsWorld() const { return bActiveInPhysicsWorld_; }
 
-	// ƒXƒŠ[ƒv§Œä
+	// ã‚¹ãƒªãƒ¼ãƒ—åˆ¶å¾¡
 	void SetDisableSleep(bool disableSleep);
 	bool IsDisableSleep() const { return bDisableSleep_; }
 
-	// Collision‚©‚ç‚ÌWorld‘€ì‚ğ‹–‰Â‚·‚éƒtƒ‰ƒO
+	// Collisionã‹ã‚‰ã®Worldæ“ä½œã‚’è¨±å¯ã™ã‚‹ãƒ•ãƒ©ã‚°
 	bool CanModifyPhysicsWorld() const { return !bUseCulling_ || bAlwaysActive_; }
 
 private:
@@ -138,15 +138,15 @@ private:
 	bool bLockRotationY_ = false;
 	bool bLockRotationZ_ = false;
 
-	// ƒJƒŠƒ“ƒOŠÖ˜A
+	// ã‚«ãƒªãƒ³ã‚°é–¢é€£
 	bool bUseCulling_ = false;
-	bool bAlwaysActive_ = false;  // í‚ÉƒAƒNƒeƒBƒu‚É‚·‚éƒtƒ‰ƒO
+	bool bAlwaysActive_ = false;  // å¸¸ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã™ã‚‹ãƒ•ãƒ©ã‚°
 	float fCullingDistance_ = 100.0f;
 	bool bActiveInPhysicsWorld_ = true;
 	bool bWasActiveLastFrame_ = true;
 
-	// ƒXƒŠ[ƒv§Œä
-	bool bDisableSleep_ = false;  // ƒXƒŠ[ƒv‚ğ–³Œø‰»‚·‚éƒtƒ‰ƒO
+	// ã‚¹ãƒªãƒ¼ãƒ—åˆ¶å¾¡
+	bool bDisableSleep_ = false;  // ã‚¹ãƒªãƒ¼ãƒ—ã‚’ç„¡åŠ¹åŒ–ã™ã‚‹ãƒ•ãƒ©ã‚°
 };
 
 #endif // _RIGID_BODY_H_

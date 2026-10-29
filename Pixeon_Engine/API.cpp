@@ -1,7 +1,7 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@API
-* à      –¾  APIŠÖ”ŒQ
-*	          PixeonEngine‚Ì‹@”\‚ğŠO•”‚©‚ç—˜—p‚·‚é‚½‚ß‚ÌƒCƒ“ƒ^[ƒtƒF[ƒX‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€API
+* èª¬      æ˜  APIé–¢æ•°ç¾¤
+*	          PixeonEngineã®æ©Ÿèƒ½ã‚’å¤–éƒ¨ã‹ã‚‰åˆ©ç”¨ã™ã‚‹ãŸã‚ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’æä¾›ã—ã¾ã™ã€‚
 */
 
 #include "API.h"
@@ -117,7 +117,7 @@ namespace {
 	CollisionStayCallback  g_BoxCollisionStayCallback = nullptr;
 	CollisionExitCallback  g_BoxCollisionExitCallback = nullptr;
 
-	// CollisionInfo‚©‚çAPICollisionInfo‚Ö•ÏŠ·
+	// CollisionInfoã‹ã‚‰APICollisionInfoã¸å¤‰æ›
 	APICollisionInfo ToAPICollisionInfo(const CollisionInfo& info) {
 		APICollisionInfo apiInfo;
 		apiInfo.HitObject = reinterpret_cast<object>(info.HitObject);
@@ -332,7 +332,7 @@ extern "C" {
 			return PN_ERROR_NOT_FOUND;
 		}
 
-		// •ûŒüƒxƒNƒgƒ‹‚ğ³‹K‰»
+		// æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–
 		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
 		if (length < 0.0001f) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -344,7 +344,7 @@ extern "C" {
 			direction.z / length
 		};
 
-		// ƒŒƒC‚ÌŠJnˆÊ’u‚ÆI—¹ˆÊ’u‚ğŒvZ
+		// ãƒ¬ã‚¤ã®é–‹å§‹ä½ç½®ã¨çµ‚äº†ä½ç½®ã‚’è¨ˆç®—
 		btVector3 rayFrom(origin.x, origin.y, origin.z);
 		btVector3 rayTo(
 			origin.x + normalizedDir.x * maxDistance,
@@ -352,28 +352,28 @@ extern "C" {
 			origin.z + normalizedDir.z * maxDistance
 		);
 
-		// ƒŒƒCƒLƒƒƒXƒg‚ğÀs
+		// ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã‚’å®Ÿè¡Œ
 		btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
 		physicsWorld->rayTest(rayFrom, rayTo, rayCallback);
 
 		if (rayCallback.hasHit()) {
 			outHit->bHit = true;
 
-			// ƒqƒbƒgˆÊ’u
+			// ãƒ’ãƒƒãƒˆä½ç½®
 			outHit->point = CreateFloat3(
 				rayCallback.m_hitPointWorld.getX(),
 				rayCallback.m_hitPointWorld.getY(),
 				rayCallback.m_hitPointWorld.getZ()
 			);
 
-			// –@ü
+			// æ³•ç·š
 			outHit->normal = CreateFloat3(
 				rayCallback.m_hitNormalWorld.getX(),
 				rayCallback.m_hitNormalWorld.getY(),
 				rayCallback.m_hitNormalWorld.getZ()
 			);
 
-			// ‹——£
+			// è·é›¢
 			Float3 diff = {
 				outHit->point.x - origin.x,
 				outHit->point.y - origin.y,
@@ -381,7 +381,7 @@ extern "C" {
 			};
 			outHit->distance = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
 
-			// ƒqƒbƒg‚µ‚½ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+			// ãƒ’ãƒƒãƒˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
 			const btCollisionObject* collisionObject = rayCallback.m_collisionObject;
 			if (collisionObject) {
 				const btRigidBody* rigidBody = btRigidBody::upcast(collisionObject);
@@ -391,7 +391,7 @@ extern "C" {
 						AbstractObject* hitObj = rbComponent->GetParent();
 						outHit->hitObject = reinterpret_cast<object>(hitObj);
 
-						// ƒIƒuƒWƒFƒNƒg–¼‚ğæ“¾
+						// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåã‚’å–å¾—
 						std::string objName = hitObj->GetObjectName();
 						strncpy_s(outHit->hitObjectName, sizeof(outHit->hitObjectName), objName.c_str(), _TRUNCATE);
 					}
@@ -432,7 +432,7 @@ extern "C" {
 			return PN_ERROR_NOT_FOUND;
 		}
 
-		// •ûŒüƒxƒNƒgƒ‹‚ğ³‹K‰»
+		// æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–
 		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
 		if (length < 0.0001f) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -451,15 +451,15 @@ extern "C" {
 			origin.z + normalizedDir.z * maxDistance
 		);
 
-		// ƒJƒXƒ^ƒ€ƒR[ƒ‹ƒoƒbƒN‚ÅƒgƒŠƒK[‚ğ–³‹
+		// ã‚«ã‚¹ã‚¿ãƒ ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§ãƒˆãƒªã‚¬ãƒ¼ã‚’ç„¡è¦–
 		struct ClosestNotTrigger : public btCollisionWorld::ClosestRayResultCallback {
 			ClosestNotTrigger(const btVector3& from, const btVector3& to)
 				: btCollisionWorld::ClosestRayResultCallback(from, to) {}
 
 			btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace) override {
-				// ƒgƒŠƒK[iCF_NO_CONTACT_RESPONSEj‚ğ‚ÂƒIƒuƒWƒFƒNƒg‚ğ–³‹
+				// ãƒˆãƒªã‚¬ãƒ¼ï¼ˆCF_NO_CONTACT_RESPONSEï¼‰ã‚’æŒã¤ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç„¡è¦–
 				if (rayResult.m_collisionObject->getCollisionFlags() & btCollisionObject::CF_NO_CONTACT_RESPONSE) {
-					return 1.0f; // ‚±‚Ìƒqƒbƒg‚ğ–³‹
+					return 1.0f; // ã“ã®ãƒ’ãƒƒãƒˆã‚’ç„¡è¦–
 				}
 				return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
 			}
@@ -540,7 +540,7 @@ extern "C" {
 			return PN_ERROR_NOT_FOUND;
 		}
 
-		// •ûŒüƒxƒNƒgƒ‹‚ğ³‹K‰»
+		// æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–
 		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
 		if (length < 0.0001f) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -552,10 +552,10 @@ extern "C" {
 			direction.z / length
 		};
 
-		// ‹…‘Ì‚ÌŒ`ó‚ğì¬
+		// çƒä½“ã®å½¢çŠ¶ã‚’ä½œæˆ
 		btSphereShape sphereShape(radius);
 
-		// ŠJn‚ÆI—¹‚Ìƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+		// é–‹å§‹ã¨çµ‚äº†ã®ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
 		btTransform transformFrom;
 		transformFrom.setIdentity();
 		transformFrom.setOrigin(btVector3(origin.x, origin.y, origin.z));
@@ -568,7 +568,7 @@ extern "C" {
 			origin.z + normalizedDir.z * maxDistance
 		));
 
-		// ConvexCast‚ğÀs
+		// ConvexCastã‚’å®Ÿè¡Œ
 		btCollisionWorld::ClosestConvexResultCallback convexCallback(
 			transformFrom.getOrigin(),
 			transformTo.getOrigin()
@@ -648,7 +648,7 @@ extern "C" {
 			return PN_ERROR_NOT_FOUND;
 		}
 
-		// •ûŒüƒxƒNƒgƒ‹‚ğ³‹K‰»
+		// æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–
 		float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
 		if (length < 0.0001f) {
 			return PN_ERROR_INVALID_PARAMETER;
@@ -669,7 +669,7 @@ extern "C" {
 
 		AbstractObject* ignoreObjPtr = reinterpret_cast<AbstractObject*>(ignoreObject);
 
-		// ƒJƒXƒ^ƒ€ƒR[ƒ‹ƒoƒbƒN‚Å“Á’è‚ÌƒIƒuƒWƒFƒNƒg‚ğ–³‹
+		// ã‚«ã‚¹ã‚¿ãƒ ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§ç‰¹å®šã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç„¡è¦–
 		struct ClosestNotIgnored : public btCollisionWorld::ClosestRayResultCallback {
 			AbstractObject* ignoreObj;
 
@@ -683,7 +683,7 @@ extern "C" {
 					if (rigidBody && rigidBody->getUserPointer()) {
 						RigidBody* rbComponent = static_cast<RigidBody*>(rigidBody->getUserPointer());
 						if (rbComponent && rbComponent->GetParent() == ignoreObj) {
-							return 1.0f; // ‚±‚Ìƒqƒbƒg‚ğ–³‹
+							return 1.0f; // ã“ã®ãƒ’ãƒƒãƒˆã‚’ç„¡è¦–
 						}
 					}
 				}
@@ -2479,13 +2479,13 @@ extern "C" {
 		if (!animator) {
 			return PN_ERROR_INVALID_PARAMETER;
 		}
-		*outHandel = reinterpret_cast<animator2d>(animator);  // Animator2D* ‚ğ animator2d (void*) ‚ÉƒLƒƒƒXƒg
+		*outHandel = reinterpret_cast<animator2d>(animator);  // Animator2D* ã‚’ animator2d (void*) ã«ã‚­ãƒ£ã‚¹ãƒˆ
 		return PN_SUCCESS;
 	}
 
 	PIXEON_API APIResult Animator2DPlay(animator2d animator)
 	{
-		Animator2D* animatorPtr = reinterpret_cast<Animator2D*>(animator);  // animator2d (void*) ‚ğ Animator2D* ‚ÉƒLƒƒƒXƒg
+		Animator2D* animatorPtr = reinterpret_cast<Animator2D*>(animator);  // animator2d (void*) ã‚’ Animator2D* ã«ã‚­ãƒ£ã‚¹ãƒˆ
 		if (!animatorPtr) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
@@ -2529,7 +2529,7 @@ extern "C" {
 		if (!keyframePtr) {
 			return PN_ERROR_NOT_FOUND;
 		}
-		*outKeyframe = reinterpret_cast<keyframe>(keyframePtr);  // KeyFrame* ‚ğ keyframe (void*) ‚ÉƒLƒƒƒXƒg
+		*outKeyframe = reinterpret_cast<keyframe>(keyframePtr);  // KeyFrame* ã‚’ keyframe (void*) ã«ã‚­ãƒ£ã‚¹ãƒˆ
 		return PN_SUCCESS;
 	}
 
@@ -2538,7 +2538,7 @@ extern "C" {
 		if (!Keyframe) {
 			return PN_ERROR_INVALID_HANDLE;
 		}
-		KeyFrame* keyframePtr = reinterpret_cast<KeyFrame*>(Keyframe);  // keyframe (void*) ‚ğ KeyFrame* ‚ÉƒLƒƒƒXƒg
+		KeyFrame* keyframePtr = reinterpret_cast<KeyFrame*>(Keyframe);  // keyframe (void*) ã‚’ KeyFrame* ã«ã‚­ãƒ£ã‚¹ãƒˆ
 		keyframePtr->vertexOffset.Up = offset;
 		return PN_SUCCESS;
 	}

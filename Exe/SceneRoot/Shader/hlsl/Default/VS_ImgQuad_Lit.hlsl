@@ -1,4 +1,4 @@
-cbuffer VS_CB : register(b0)
+ï»¿cbuffer VS_CB : register(b0)
 {
     float4x4 World;
     float4x4 View;
@@ -29,21 +29,21 @@ VS_OUT main(VS_IN i)
     
     if (mode2D == 1)
     {
-        // 2D”z’uƒ‚[ƒhiƒXƒNƒŠ[ƒ“À•Wj
+        // 2Dé…ç½®ãƒ¢ãƒ¼ãƒ‰ï¼ˆã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ï¼‰
         o.pos = float4(i.pos, 1.0f);
         o.worldPos = float3(0, 0, 0);
         o.normal = float3(0, 0, -1);
     }
     else if (mode2D == 2)
     {
-        // 3D”z’uƒ‚[ƒhiWorld3Dj
+        // 3Dé…ç½®ãƒ¢ãƒ¼ãƒ‰ï¼ˆWorld3Dï¼‰
         float4 wpos = mul(float4(i.pos, 1.0f), World);
         o.worldPos = wpos.xyz;
         
         float4 vpos = mul(wpos, View);
         o.pos = mul(vpos, Proj);
         
-        // ZŽ²•ûŒü‚Ì–@ü‚ðƒ[ƒ‹ƒh•ÏŠ·
+        // Zè»¸æ–¹å‘ã®æ³•ç·šã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›
         float3 localNormal = float3(0, 0, 1);
         float3 worldNormalX = normalize(World[0].xyz);
         float3 worldNormalY = normalize(World[1].xyz);
@@ -57,33 +57,33 @@ VS_OUT main(VS_IN i)
     }
     else
     {
-        // š ƒrƒ‹ƒ{[ƒh/UIƒ‚[ƒh - Š®‘SC³”Å
+        // â˜… ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰/UIãƒ¢ãƒ¼ãƒ‰ - å®Œå…¨ä¿®æ­£ç‰ˆ
         
-        // 1. Worlds—ñ‚©‚çˆÊ’u‚ÆƒXƒP[ƒ‹‚ð’Šo
-        float3 worldPos = World[3].xyz; // ˆÊ’u
-        float scaleX = length(World[0].xyz); // XƒXƒP[ƒ‹
-        float scaleY = length(World[1].xyz); // YƒXƒP[ƒ‹
+        // 1. Worldè¡Œåˆ—ã‹ã‚‰ä½ç½®ã¨ã‚¹ã‚±ãƒ¼ãƒ«ã‚’æŠ½å‡º
+        float3 worldPos = World[3].xyz; // ä½ç½®
+        float scaleX = length(World[0].xyz); // Xã‚¹ã‚±ãƒ¼ãƒ«
+        float scaleY = length(World[1].xyz); // Yã‚¹ã‚±ãƒ¼ãƒ«
         
-        // 2. Views—ñ‚Ì“]’u‚©‚çAƒrƒ…[‹óŠÔ‚Ì‰EEãƒxƒNƒgƒ‹‚ð **ƒ[ƒ‹ƒh‹óŠÔ** ‚É•ÏŠ·
-        // Views—ñ‚Íuƒ[ƒ‹ƒh¨ƒrƒ…[v•ÏŠ·‚È‚Ì‚ÅA“]’u‚·‚ê‚Îuƒrƒ…[¨ƒ[ƒ‹ƒhv
-        // ‰EƒxƒNƒgƒ‹ = Views—ñ‚Ì‘æ1—ñi“]’uŒã‚Í‘æ1sj
+        // 2. Viewè¡Œåˆ—ã®è»¢ç½®ã‹ã‚‰ã€ãƒ“ãƒ¥ãƒ¼ç©ºé–“ã®å³ãƒ»ä¸Šãƒ™ã‚¯ãƒˆãƒ«ã‚’ **ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“** ã«å¤‰æ›
+        // Viewè¡Œåˆ—ã¯ã€Œãƒ¯ãƒ¼ãƒ«ãƒ‰â†’ãƒ“ãƒ¥ãƒ¼ã€å¤‰æ›ãªã®ã§ã€è»¢ç½®ã™ã‚Œã°ã€Œãƒ“ãƒ¥ãƒ¼â†’ãƒ¯ãƒ¼ãƒ«ãƒ‰ã€
+        // å³ãƒ™ã‚¯ãƒˆãƒ« = Viewè¡Œåˆ—ã®ç¬¬1åˆ—ï¼ˆè»¢ç½®å¾Œã¯ç¬¬1è¡Œï¼‰
         float3 camRight = normalize(float3(View[0][0], View[1][0], View[2][0]));
-        // ãƒxƒNƒgƒ‹ = Views—ñ‚Ì‘æ2—ñi“]’uŒã‚Í‘æ2sj
+        // ä¸Šãƒ™ã‚¯ãƒˆãƒ« = Viewè¡Œåˆ—ã®ç¬¬2åˆ—ï¼ˆè»¢ç½®å¾Œã¯ç¬¬2è¡Œï¼‰
         float3 camUp = normalize(float3(View[0][1], View[1][1], View[2][1]));
         
-        // 3. ƒ[ƒJƒ‹’¸“_ˆÊ’u‚ðƒ[ƒ‹ƒh‹óŠÔ‚Åƒrƒ‹ƒ{[ƒh‰»iƒXƒP[ƒ‹“K—pj
+        // 3. ãƒ­ãƒ¼ã‚«ãƒ«é ‚ç‚¹ä½ç½®ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã§ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰åŒ–ï¼ˆã‚¹ã‚±ãƒ¼ãƒ«é©ç”¨ï¼‰
         float3 billboardWorldPos = worldPos
             + camRight * (i.pos.x * scaleX)
             + camUp * (i.pos.y * scaleY);
         
         o.worldPos = billboardWorldPos;
         
-        // 4. ƒ[ƒ‹ƒhÀ•W‚ðƒrƒ…[•ÏŠ·¨ƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·
+        // 4. ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’ãƒ“ãƒ¥ãƒ¼å¤‰æ›â†’ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›
         float4 vpos = mul(float4(billboardWorldPos, 1.0f), View);
         o.pos = mul(vpos, Proj);
         
-        // 5. ƒJƒƒ‰‚Ì‘O•ûŒüƒxƒNƒgƒ‹‚ð–@ü‚Æ‚µ‚ÄŽg—piƒrƒ‹ƒ{[ƒh‚Íí‚ÉƒJƒƒ‰‚ðŒü‚­j
-        // Views—ñ‚Ì‘æ3—ñiZŽ² = forwardj‚Ì‹t•ûŒü
+        // 5. ã‚«ãƒ¡ãƒ©ã®å‰æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ³•ç·šã¨ã—ã¦ä½¿ç”¨ï¼ˆãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã¯å¸¸ã«ã‚«ãƒ¡ãƒ©ã‚’å‘ãï¼‰
+        // Viewè¡Œåˆ—ã®ç¬¬3åˆ—ï¼ˆZè»¸ = forwardï¼‰ã®é€†æ–¹å‘
         float3 camForward = float3(View[0][2], View[1][2], View[2][2]);
         o.normal = -normalize(camForward);
     }

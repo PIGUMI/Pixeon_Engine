@@ -1,4 +1,4 @@
-cbuffer MaterialCB : register(b0)
+ï»¿cbuffer MaterialCB : register(b0)
 {
     float4 LineColor;
 };
@@ -7,7 +7,7 @@ struct PS_INPUT {
     float4 color : COLOR0;
 };
 float4 main(PS_INPUT input) : SV_Target {
-    // ’¸“_F‚ÆMaterialF‚ÌæZ—á
+    // é ‚ç‚¹è‰²ã¨Materialè‰²ã®ä¹—ç®—ä¾‹
     return input.color * LineColor;
-    return float4(1, 0, 0, 1); // ÔF‚Å“h‚è‚Â‚Ô‚µ
+    return float4(1, 0, 0, 1); // èµ¤è‰²ã§å¡—ã‚Šã¤ã¶ã—
 }

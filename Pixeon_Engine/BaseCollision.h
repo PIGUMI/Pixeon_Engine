@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@: BaseCollision.h
-* à@@@–¾@: Õ“Ë”»’èŠî’êƒNƒ‰ƒXƒwƒbƒ_
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€: BaseCollision.h
+* èª¬ã€€ã€€ã€€æ˜ã€€: è¡çªåˆ¤å®šåŸºåº•ã‚¯ãƒ©ã‚¹ãƒ˜ãƒƒãƒ€
 */
 #ifndef _BASE_COLLISION_H_
 #define _BASE_COLLISION_H_
@@ -13,7 +13,7 @@
 
 class RigidBody;
 
-// Õ“ËƒR[ƒ‹ƒoƒbƒNŠÖ”‚ÌŒ^’è‹`
+// è¡çªã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã®å‹å®šç¾©
 using OnCollisionEnterCallback = std::function<void(const CollisionInfo&)>;
 using OnCollisionStayCallback = std::function<void(const CollisionInfo&)>;
 using OnCollisionExitCallback = std::function<void(const CollisionInfo&)>;
@@ -23,7 +23,7 @@ class BaseCollision : public AbstractComponent
 public:
 	virtual ~BaseCollision() = default;
 
-	// ƒR[ƒ‹ƒoƒbƒNİ’è
+	// ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯è¨­å®š
 	void SetOnCollisionEnter(OnCollisionEnterCallback callback) {
 		OnCollisionEnter_ = callback;
 		bCallBackSetAfterBeginPlay = true;

@@ -1,25 +1,25 @@
-/* –½–¼‹K‘¥ */
+ï»¿/* å‘½åè¦å‰‡ */
 
-/* •Ï” */
-ƒOƒ[ƒoƒ‹•Ï”: ¬•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: playerScore, enemyCount)
-ƒ[ƒJƒ‹•Ï”: ¬•¶š‚ÌƒAƒ“ƒ_[ƒXƒRƒA‹æØ‚è (—á: player_score, enemy_count)
-’è”: ‘S‚Ä‘å•¶š‚ÌƒAƒ“ƒ_[ƒXƒRƒA‹æØ‚è (—á: MAX_HEALTH, DEFAULT_SPEED)
-”z—ñ: •¡”Œ`‚Ì–¼‘O‚ğg—p (—á: playerScores, enemyCounts)
-ƒIƒuƒWƒFƒNƒg: ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: PlayerCharacter, EnemyAI)
-ƒƒ“ƒo[•Ï”: ƒAƒ“ƒ_[ƒXƒRƒA‚Ån‚ß‚é (—á: _health, _speed)
+/* å¤‰æ•° */
+ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°: å°æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: playerScore, enemyCount)
+ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°: å°æ–‡å­—ã®ã‚¢ãƒ³ãƒ€ãƒ¼ã‚¹ã‚³ã‚¢åŒºåˆ‡ã‚Š (ä¾‹: player_score, enemy_count)
+å®šæ•°: å…¨ã¦å¤§æ–‡å­—ã®ã‚¢ãƒ³ãƒ€ãƒ¼ã‚¹ã‚³ã‚¢åŒºåˆ‡ã‚Š (ä¾‹: MAX_HEALTH, DEFAULT_SPEED)
+é…åˆ—: è¤‡æ•°å½¢ã®åå‰ã‚’ä½¿ç”¨ (ä¾‹: playerScores, enemyCounts)
+ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ: å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: PlayerCharacter, EnemyAI)
+ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•°: ã‚¢ãƒ³ãƒ€ãƒ¼ã‚¹ã‚³ã‚¢ã§å§‹ã‚ã‚‹ (ä¾‹: _health, _speed)
 
-/* ŠÖ” */
-ŠÖ”–¼: “®Œ‚©‚çn‚ß‚é¬•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: calculateScore(), updatePosition())
-ƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰: on + ƒCƒxƒ“ƒg–¼ + “®Œ (—á: onPlayerDeath(), onEnemySpawn())
-ƒR[ƒ‹ƒoƒbƒNŠÖ”: “®Œ + Callback (—á: loadDataCallback(), saveGameCallback())
-ƒ†[ƒeƒBƒŠƒeƒBŠÖ”: “®Œ + Utility (—á: formatStringUtility(), parseDataUtility())
-ƒRƒ“ƒXƒgƒ‰ƒNƒ^: ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: PlayerCharacter(), EnemyAI())
-ƒfƒXƒgƒ‰ƒNƒ^: ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX‚Ì‘O‚Éu~v‚ğ•t‚¯‚é (—á: ~PlayerCharacter(), ~EnemyAI())
+/* é–¢æ•° */
+é–¢æ•°å: å‹•è©ã‹ã‚‰å§‹ã‚ã‚‹å°æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: calculateScore(), updatePosition())
+ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©: on + ã‚¤ãƒ™ãƒ³ãƒˆå + å‹•è© (ä¾‹: onPlayerDeath(), onEnemySpawn())
+ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°: å‹•è© + Callback (ä¾‹: loadDataCallback(), saveGameCallback())
+ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£é–¢æ•°: å‹•è© + Utility (ä¾‹: formatStringUtility(), parseDataUtility())
+ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿: å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: PlayerCharacter(), EnemyAI())
+ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿: å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ã®å‰ã«ã€Œ~ã€ã‚’ä»˜ã‘ã‚‹ (ä¾‹: ~PlayerCharacter(), ~EnemyAI())
 
-/* ƒNƒ‰ƒX */
-ƒNƒ‰ƒX–¼: ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: GameManager, AudioController)
-ƒCƒ“ƒ^[ƒtƒF[ƒX–¼: I + ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: ISerializable, IUpdatable)
-’ŠÛƒNƒ‰ƒX–¼: Abstract + ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: AbstractEnemy, AbstractWeapon)
-ƒl[ƒ€ƒXƒy[ƒX–¼: ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: GameUtilities, AudioSystems)
-ƒWƒFƒlƒŠƒbƒNŒ^ƒpƒ‰ƒ[ƒ^: T + ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: TItem, TEntity)
-ƒRƒ“ƒ|[ƒlƒ“ƒg–¼: ‘å•¶š‚ÌƒLƒƒƒƒ‹ƒP[ƒX (—á: HealthComponent, MovementComponent)
+/* ã‚¯ãƒ©ã‚¹ */
+ã‚¯ãƒ©ã‚¹å: å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: GameManager, AudioController)
+ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹å: I + å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: ISerializable, IUpdatable)
+æŠ½è±¡ã‚¯ãƒ©ã‚¹å: Abstract + å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: AbstractEnemy, AbstractWeapon)
+ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹å: å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: GameUtilities, AudioSystems)
+ã‚¸ã‚§ãƒãƒªãƒƒã‚¯å‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿: T + å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: TItem, TEntity)
+ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆå: å¤§æ–‡å­—ã®ã‚­ãƒ£ãƒ¡ãƒ«ã‚±ãƒ¼ã‚¹ (ä¾‹: HealthComponent, MovementComponent)

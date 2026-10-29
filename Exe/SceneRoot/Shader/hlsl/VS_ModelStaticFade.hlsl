@@ -1,4 +1,4 @@
-cbuffer ModelCB : register(b0)
+ï»¿cbuffer ModelCB : register(b0)
 {
     matrix gWorld;
     matrix gView;
@@ -31,7 +31,7 @@ VS_OUTPUT main(VS_INPUT i)
     float4 wp = mul(float4(i.pos, 1), gWorld);
     o.worldPos = wp.xyz;
     
-    // ƒrƒ…[‹óŠÔ‚Å‚ÌˆÊ’u‚ğŒvZ
+    // ãƒ“ãƒ¥ãƒ¼ç©ºé–“ã§ã®ä½ç½®ã‚’è¨ˆç®—
     float4 vp = mul(wp, gView);
     o.viewPos = vp.xyz;
     

@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "ModelRender.h"
 #include "System.h"
 #include "Scene.h"
@@ -851,23 +851,23 @@ void ModelRenderComponent::DrawInspector() {
 	if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) return;
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒŒƒCƒ„[”Ô†: ").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·: ").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::InputInt("Layer", &_LayerNumber);
 	if (0 > _LayerNumber)  _LayerNumber = 0;
 	if (10 <= _LayerNumber) _LayerNumber = 9;
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ‚ƒfƒ‹–¼").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¢ãƒ‡ãƒ«å").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::Text("%s", m_modelPath.c_str());
 
 	ImGui::TableNextRow();
 	static char pathBuf[256];
 	std::snprintf(pathBuf, sizeof(pathBuf), "%s", m_modelPath.c_str());
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ‚ƒfƒ‹‚Ìİ’è").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¢ãƒ‡ãƒ«ã®è¨­å®š").c_str());
 	ImGui::TableSetColumnIndex(1);
-	if (ImGui::Button(SJ("Ä“Ç‚İ‚İ/“K—p").c_str())) SetModel(pathBuf);
+	if (ImGui::Button(SJ("å†èª­ã¿è¾¼ã¿/é©ç”¨").c_str())) SetModel(pathBuf);
 	ImGui::SameLine();
-	if (ImGui::Button(SJ("ƒ‚ƒfƒ‹‘I‘ğ").c_str())) ImGui::OpenPopup("ModelSelectPopup");
+	if (ImGui::Button(SJ("ãƒ¢ãƒ‡ãƒ«é¸æŠ").c_str())) ImGui::OpenPopup("ModelSelectPopup");
 	ShowModelSelectPopup();
 
 	ImGui::TableNextRow();
@@ -878,15 +878,15 @@ void ModelRenderComponent::DrawInspector() {
 	if (vsList.empty()) vsList = sm->GetShaderList("VS");
 	if (psList.empty()) psList = sm->GetShaderList("PS");
 
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒVƒF[ƒ_[‚ÌÄ“Ç‚İ‚İ").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å†èª­ã¿è¾¼ã¿").c_str());
 	ImGui::TableSetColumnIndex(1);
-	if (ImGui::Button(SJ("XV(ˆê——)").c_str())) {
+	if (ImGui::Button(SJ("æ›´æ–°(ä¸€è¦§)").c_str())) {
 		vsList = sm->GetShaderList("VS");
 		psList = sm->GetShaderList("PS");
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("’¸“_ƒVƒF[ƒ_[").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼").c_str());
 	ImGui::TableSetColumnIndex(1);
 	if (ImGui::BeginCombo("VS", m_vsName.c_str())) {
 		for (auto& n : vsList) {
@@ -901,7 +901,7 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒsƒNƒZƒ‹ƒVƒF[ƒ_[").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼").c_str());
 	ImGui::TableSetColumnIndex(1);
 	if (ImGui::BeginCombo("PS", m_psName.c_str())) {
 		for (auto& n : psList) {
@@ -916,11 +916,11 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒx[ƒXFİ’è").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ™ãƒ¼ã‚¹è‰²è¨­å®š").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::ColorEdit4("Color", (float*)&m_color);
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("‘S‘ÌƒIƒtƒZƒbƒg").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("å…¨ä½“ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 	ImGui::TableSetColumnIndex(1);
 	float globalOffset[3] = { m_globalOffset.x, m_globalOffset.y, m_globalOffset.z };
 	if (ImGui::DragFloat3("GlobalOffset", globalOffset, 0.01f, -100.0f, 100.0f)) {
@@ -930,7 +930,7 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("‘S‘ÌƒXƒP[ƒ‹").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("å…¨ä½“ã‚¹ã‚±ãƒ¼ãƒ«").c_str());
 	ImGui::TableSetColumnIndex(1);
 	float globalScale[3] = { m_globalScale.x, m_globalScale.y, m_globalScale.z };
 	if (ImGui::DragFloat3("GlobalScale", globalScale, 0.01f, 0.01f, 10.0f)) {
@@ -940,7 +940,7 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("‘S‘Ì‚Ì‰ñ“]").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("å…¨ä½“ã®å›è»¢").c_str());
 	ImGui::TableSetColumnIndex(1);
 	XMFLOAT3 globalRotationDeg;
 	globalRotationDeg.x = XMConvertToDegrees(m_globalRotation.x);
@@ -959,24 +959,24 @@ void ModelRenderComponent::DrawInspector() {
 
 	DrawShaderTextureSlotInspector();
 
-	title = "ƒ}ƒeƒŠƒAƒ‹ˆê——##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+	title = "ãƒãƒ†ãƒªã‚¢ãƒ«ä¸€è¦§##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::TreeNode(SJ(title.c_str()).c_str())) {
-		ImGui::Text("%s %zu", SJ("ƒ}ƒeƒŠƒAƒ‹”:").c_str(), m_materials.size());
+		ImGui::Text("%s %zu", SJ("ãƒãƒ†ãƒªã‚¢ãƒ«æ•°:").c_str(), m_materials.size());
 		for (size_t i = 0; i < m_materials.size(); ++i) {
 			ImGui::PushID((int)i);
 			std::string nodeLabel = "Mat " + std::to_string(i);
 			if (ImGui::TreeNode(nodeLabel.c_str())) {
-				std::string shown = m_materials[i].texName.empty() ? SJ("(‚È‚µ)") : m_materials[i].texName;
+				std::string shown = m_materials[i].texName.empty() ? SJ("(ãªã—)") : m_materials[i].texName;
 				ImGui::Text("tex=%s", shown.c_str());
 				ImGui::SameLine();
-				if (ImGui::Button(SJ("ƒeƒNƒXƒ`ƒƒ•ÏX").c_str())) {
+				if (ImGui::Button(SJ("ãƒ†ã‚¯ã‚¹ãƒãƒ£å¤‰æ›´").c_str())) {
 					m_openTexPopup = true;
 					m_texPopupMatIndex = (int)i;
 					ImGui::OpenPopup("TextureSelectPopup");
 				}
 
 				ImGui::Separator();
-				ImGui::Text("%s", SJ("ƒƒbƒVƒ…ƒIƒtƒZƒbƒg").c_str());
+				ImGui::Text("%s", SJ("ãƒ¡ãƒƒã‚·ãƒ¥ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 				float offset[3] = { m_materials[i].meshOffset.x, m_materials[i].meshOffset.y, m_materials[i].meshOffset.z };
 				if (ImGui::DragFloat3("Offset", offset, 0.01f, -100.0f, 100.0f)) {
 					m_materials[i].meshOffset.x = offset[0];
@@ -984,7 +984,7 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshOffset.z = offset[2];
 				}
 
-				ImGui::Text("%s", SJ("ƒƒbƒVƒ…ƒXƒP[ƒ‹").c_str());
+				ImGui::Text("%s", SJ("ãƒ¡ãƒƒã‚·ãƒ¥ã‚¹ã‚±ãƒ¼ãƒ«").c_str());
 				float scale[3] = { m_materials[i].meshScale.x, m_materials[i].meshScale.y, m_materials[i].meshScale.z };
 				if (ImGui::DragFloat3("Scale", scale, 0.01f, 0.01f, 10.0f)) {
 					m_materials[i].meshScale.x = scale[0];
@@ -992,7 +992,7 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshScale.z = scale[2];
 				}
 
-				ImGui::Text("%s", SJ("ƒƒbƒVƒ…‰ñ“](“x)").c_str());
+				ImGui::Text("%s", SJ("ãƒ¡ãƒƒã‚·ãƒ¥å›è»¢(åº¦)").c_str());
 				float rotDeg[3] = {
 					XMConvertToDegrees(m_materials[i].meshRotation.x),
 					XMConvertToDegrees(m_materials[i].meshRotation.y),
@@ -1005,22 +1005,22 @@ void ModelRenderComponent::DrawInspector() {
 				}
 
 				ImGui::Separator();
-				ImGui::Text("%s", SJ("ƒJƒŠƒ“ƒOƒ‚[ƒh").c_str());
-				std::string cullBack = SJ("— –ÊƒJƒŠƒ“ƒO(’Êí)");
-				std::string cullFront = SJ("•\–ÊƒJƒŠƒ“ƒO");
-				std::string cullNone = SJ("—¼–Ê•`‰æ");
+				ImGui::Text("%s", SJ("ã‚«ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰").c_str());
+				std::string cullBack = SJ("è£é¢ã‚«ãƒªãƒ³ã‚°(é€šå¸¸)");
+				std::string cullFront = SJ("è¡¨é¢ã‚«ãƒªãƒ³ã‚°");
+				std::string cullNone = SJ("ä¸¡é¢æç”»");
 				const char* cullModeNames[] = { cullBack.c_str(), cullFront.c_str(), cullNone.c_str() };
 				int currentCullMode = static_cast<int>(m_materials[i].cullMode);
 				if (ImGui::Combo("CullMode", &currentCullMode, cullModeNames, 3))
 					m_materials[i].cullMode = static_cast<CullMode>(currentCullMode);
 
-				if (ImGui::Button(SJ("ƒIƒtƒZƒbƒgƒŠƒZƒbƒg").c_str()))
+				if (ImGui::Button(SJ("ã‚ªãƒ•ã‚»ãƒƒãƒˆãƒªã‚»ãƒƒãƒˆ").c_str()))
 					m_materials[i].meshOffset = XMFLOAT3(0.0f, 0.0f, 0.0f);
 				ImGui::SameLine();
-				if (ImGui::Button(SJ("ƒXƒP[ƒ‹ƒŠƒZƒbƒg").c_str()))
+				if (ImGui::Button(SJ("ã‚¹ã‚±ãƒ¼ãƒ«ãƒªã‚»ãƒƒãƒˆ").c_str()))
 					m_materials[i].meshScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 				ImGui::SameLine();
-				if (ImGui::Button(SJ("‰ñ“]ƒŠƒZƒbƒg").c_str()))
+				if (ImGui::Button(SJ("å›è»¢ãƒªã‚»ãƒƒãƒˆ").c_str()))
 					m_materials[i].meshRotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 				ImGui::TreePop();
@@ -1032,16 +1032,16 @@ void ModelRenderComponent::DrawInspector() {
 
 	if (m_model && m_model->hasSkin && !m_model->bones.empty()) {
 		ImGui::Separator();
-		title = SJ("ƒ{[ƒ“•\¦") + " (" + std::to_string(m_model->bones.size()) + ")##" +
+		title = SJ("ãƒœãƒ¼ãƒ³è¡¨ç¤º") + " (" + std::to_string(m_model->bones.size()) + ")##" +
 			std::to_string(reinterpret_cast<uintptr_t>(this));
 		if (ImGui::TreeNode(title.c_str())) {
-			ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), m_boneFilterBuffer, sizeof(m_boneFilterBuffer));
+			ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), m_boneFilterBuffer, sizeof(m_boneFilterBuffer));
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("‚·‚×‚Ä“WŠJ").c_str())) {
+			if (ImGui::Button(SJ("ã™ã¹ã¦å±•é–‹").c_str())) {
 				for (size_t i = 0; i < m_model->bones.size(); ++i) m_boneTreeOpenState[i] = true;
 			}
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("‚·‚×‚Äô‚Ş").c_str())) m_boneTreeOpenState.clear();
+			if (ImGui::Button(SJ("ã™ã¹ã¦ç•³ã‚€").c_str())) m_boneTreeOpenState.clear();
 			ImGui::Separator();
 			ImGui::BeginChild("BoneHierarchy", ImVec2(0, 300), true);
 			for (size_t i = 0; i < m_model->bones.size(); ++i)
@@ -1059,9 +1059,9 @@ void ModelRenderComponent::DrawInspector() {
 
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), filter, sizeof(filter));
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), filter, sizeof(filter));
 		auto list = AssetManager::Instance()->GetCachedTextureNames();
-		ImGui::Text("%s:  %zu", SJ("Œ”").c_str(), list.size());
+		ImGui::Text("%s:  %zu", SJ("ä»¶æ•°").c_str(), list.size());
 		ImGui::Separator();
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
 		static int highlight = -1;
@@ -1083,12 +1083,12 @@ void ModelRenderComponent::DrawInspector() {
 			if (m_texPopupMatIndex >= 0 && m_texPopupMatIndex < (int)m_materials.size()
 				&& m_materials[m_texPopupMatIndex].texName == rawName) {
 				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[g—p’†]").c_str());
+				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[ä½¿ç”¨ä¸­]").c_str());
 			}
 		}
 		ImGui::EndChild();
 		ImGui::Separator();
-		if (ImGui::Button(SJ("“K—p").c_str())) {
+		if (ImGui::Button(SJ("é©ç”¨").c_str())) {
 			if (highlight >= 0 && highlight < (int)list.size() && m_texPopupMatIndex >= 0) {
 				const std::string& sel = list[highlight];
 				m_materials[m_texPopupMatIndex].texName = sel;
@@ -1099,7 +1099,7 @@ void ModelRenderComponent::DrawInspector() {
 			m_texPopupMatIndex = -1;
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("ƒLƒƒƒ“ƒZƒ‹").c_str())) {
+		if (ImGui::Button(SJ("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) {
 			ImGui::CloseCurrentPopup();
 			m_openTexPopup = false;
 			m_texPopupMatIndex = -1;
@@ -1112,11 +1112,11 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
 	ImGui::Separator();
-	std::string title = SJ("ƒVƒF[ƒ_[ƒeƒNƒXƒ`ƒƒƒXƒƒbƒg##") + std::to_string(reinterpret_cast<uintptr_t>(this));
+	std::string title = SJ("ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ­ãƒƒãƒˆ##") + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::TreeNode(title.c_str())) return;
 
 	if (m_shaderTexSlots.empty()) {
-		ImGui::TextDisabled("%s", SJ("(ƒXƒƒbƒg‚È‚µ / PSƒŠƒtƒŒƒNƒVƒ‡ƒ“–¢æ“¾)").c_str());
+		ImGui::TextDisabled("%s", SJ("(ã‚¹ãƒ­ãƒƒãƒˆãªã— / PSãƒªãƒ•ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³æœªå–å¾—)").c_str());
 		ImGui::TreePop();
 		return;
 	}
@@ -1129,7 +1129,7 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 		ImGui::SameLine();
 
 		if (slot.assignedTexName.empty()) {
-			ImGui::TextDisabled("[–¢İ’è]");
+			ImGui::TextDisabled("[æœªè¨­å®š]");
 		}
 		else {
 			bool loaded = slot.tex && slot.tex->srv;
@@ -1139,7 +1139,7 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 		}
 
 		ImGui::SameLine();
-		if (ImGui::SmallButton(SJ("‘I‘ğ").c_str())) {
+		if (ImGui::SmallButton(SJ("é¸æŠ").c_str())) {
 			m_openShaderTexPopup = true;
 			m_shaderTexPopupSlotIndex = i;
 		}
@@ -1162,10 +1162,10 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 	}
 
 	if (ImGui::BeginPopup("ShaderTexSelect")) {
-		ImGui::TextUnformatted(SJ("ƒeƒNƒXƒ`ƒƒ‚ğ‘I‘ğ").c_str());
+		ImGui::TextUnformatted(SJ("ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’é¸æŠ").c_str());
 		ImGui::Separator();
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^[").c_str(), filter, sizeof(filter));
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼").c_str(), filter, sizeof(filter));
 		auto texList = AssetManager::Instance()->GetCachedTextureNames();
 		ImGui::BeginChild("ShaderTexList", ImVec2(300, 300), true);
 		for (auto& name : texList) {
@@ -1193,10 +1193,10 @@ void ModelRenderComponent::ShowModelSelectPopup() {
 	if (ImGui::BeginPopupModal("ModelSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^(•”•ªˆê’v)").c_str(), filter, sizeof(filter));
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿(éƒ¨åˆ†ä¸€è‡´)").c_str(), filter, sizeof(filter));
 		auto list = AssetManager::Instance()->GetCachedAssetNames(true);
 		{
-			std::string label = SJ("“o˜^ƒ‚ƒfƒ‹”:  ") + std::to_string(list.size());
+			std::string label = SJ("ç™»éŒ²ãƒ¢ãƒ‡ãƒ«æ•°:  ") + std::to_string(list.size());
 			ImGui::Text("%s", label.c_str());
 		}
 		ImGui::Separator();
@@ -1216,12 +1216,12 @@ void ModelRenderComponent::ShowModelSelectPopup() {
 			}
 			if (m_modelPath == rawName) {
 				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[g—p’†]").c_str());
+				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[ä½¿ç”¨ä¸­]").c_str());
 			}
 		}
 		ImGui::EndChild();
 		ImGui::Separator();
-		if (ImGui::Button(SJ("“K—p").c_str())) {
+		if (ImGui::Button(SJ("é©ç”¨").c_str())) {
 			if (currentHighlight >= 0 && currentHighlight < (int)list.size()) {
 				const std::string& sel = list[currentHighlight];
 				if (SetModel(sel)) m_modelPath = sel;
@@ -1229,9 +1229,9 @@ void ModelRenderComponent::ShowModelSelectPopup() {
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("ƒLƒƒƒ“ƒZƒ‹").c_str())) ImGui::CloseCurrentPopup();
+		if (ImGui::Button(SJ("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) ImGui::CloseCurrentPopup();
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("Äƒ[ƒh").c_str())) {
+		if (ImGui::Button(SJ("å†ãƒ­ãƒ¼ãƒ‰").c_str())) {
 			if (!m_modelPath.empty()) SetModel(m_modelPath);
 		}
 		ImGui::EndPopup();
@@ -1243,9 +1243,9 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), filter, sizeof(filter));
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), filter, sizeof(filter));
 		auto list = AssetManager::Instance()->GetCachedTextureNames();
-		ImGui::Text("%s: %zu", SJ("Œ”").c_str(), list.size());
+		ImGui::Text("%s: %zu", SJ("ä»¶æ•°").c_str(), list.size());
 		ImGui::Separator();
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
 		static int highlight = -1;
@@ -1266,12 +1266,12 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
 			}
 			if (m_materials[materialIndex].texName == rawName) {
 				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[g—p’†]").c_str());
+				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[ä½¿ç”¨ä¸­]").c_str());
 			}
 		}
 		ImGui::EndChild();
 		ImGui::Separator();
-		if (ImGui::Button(SJ("“K—p").c_str())) {
+		if (ImGui::Button(SJ("é©ç”¨").c_str())) {
 			if (highlight >= 0 && highlight < (int)list.size()) {
 				const std::string& sel = list[highlight];
 				m_materials[materialIndex].texName = sel;
@@ -1282,7 +1282,7 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
 			m_texPopupMatIndex = -1;
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("ƒLƒƒƒ“ƒZƒ‹").c_str())) {
+		if (ImGui::Button(SJ("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) {
 			ImGui::CloseCurrentPopup();
 			m_openTexPopup = false;
 			m_texPopupMatIndex = -1;
@@ -1326,12 +1326,12 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 	if (ImGui::IsItemClicked()) m_selectedBoneIndex = boneIndex;
 
 	if (ImGui::BeginPopupContextItem()) {
-		ImGui::Text("%s", SJ("ƒ{[ƒ“: ").c_str());
+		ImGui::Text("%s", SJ("ãƒœãƒ¼ãƒ³: ").c_str());
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", bone.name.c_str());
 		ImGui::Separator();
-		if (ImGui::MenuItem(SJ("–¼‘O‚ğƒRƒs[").c_str())) ImGui::SetClipboardText(bone.name.c_str());
-		if (ImGui::MenuItem(SJ("ƒ[ƒ‹ƒhˆÊ’u‚ğƒƒOo—Í").c_str())) {
+		if (ImGui::MenuItem(SJ("åå‰ã‚’ã‚³ãƒ”ãƒ¼").c_str())) ImGui::SetClipboardText(bone.name.c_str());
+		if (ImGui::MenuItem(SJ("ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®ã‚’ãƒ­ã‚°å‡ºåŠ›").c_str())) {
 			XMFLOAT3 pos = GetBoneWorldPosition(boneIndex);
 			char buf[256];
 			sprintf_s(buf, "[Bone] %s: (%.3f, %.3f, %.3f)\n", bone.name.c_str(), pos.x, pos.y, pos.z);
@@ -1342,11 +1342,11 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 
 	if (ImGui::IsItemHovered()) {
 		ImGui::BeginTooltip();
-		ImGui::Text("%s: %s", SJ("ƒ{[ƒ“–¼").c_str(), bone.name.c_str());
-		ImGui::Text("%s: %d", SJ("ƒCƒ“ƒfƒbƒNƒX").c_str(), boneIndex);
-		ImGui::Text("%s: %d", SJ("eƒCƒ“ƒfƒbƒNƒX").c_str(), bone.parentIndex);
-		ImGui::Text("%s: %d", SJ("ƒm[ƒhƒCƒ“ƒfƒbƒNƒX").c_str(), bone.nodeIndex);
-		ImGui::Text("%s: %zu", SJ("q‚Ì”").c_str(), children.size());
+		ImGui::Text("%s: %s", SJ("ãƒœãƒ¼ãƒ³å").c_str(), bone.name.c_str());
+		ImGui::Text("%s: %d", SJ("ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str(), boneIndex);
+		ImGui::Text("%s: %d", SJ("è¦ªã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str(), bone.parentIndex);
+		ImGui::Text("%s: %d", SJ("ãƒãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str(), bone.nodeIndex);
+		ImGui::Text("%s: %zu", SJ("å­ã®æ•°").c_str(), children.size());
 		ImGui::EndTooltip();
 	}
 
@@ -1370,42 +1370,42 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	const auto& bone = m_model->bones[boneIndex];
 
-	ImGui::Text("%s", SJ("‘I‘ğ’†‚Ìƒ{[ƒ“Ú×:").c_str());
+	ImGui::Text("%s", SJ("é¸æŠä¸­ã®ãƒœãƒ¼ãƒ³è©³ç´°:").c_str());
 	ImGui::Separator();
 
 	if (ImGui::BeginTable("BoneDetailsTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ{[ƒ“–¼").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒœãƒ¼ãƒ³å").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("%s", bone.name.c_str());
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒCƒ“ƒfƒbƒNƒX").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("%d", boneIndex);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("eƒCƒ“ƒfƒbƒNƒX").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("è¦ªã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str());
 		ImGui::TableSetColumnIndex(1);
 		if (bone.parentIndex >= 0)
 			ImGui::Text("%d (%s)", bone.parentIndex, m_model->bones[bone.parentIndex].name.c_str());
 		else
-			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", SJ("‚È‚µ(ƒ‹[ƒgƒ{[ƒ“)").c_str());
+			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", SJ("ãªã—(ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³)").c_str());
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒm[ƒhƒCƒ“ƒfƒbƒNƒX").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("%d", bone.nodeIndex);
 
 		XMFLOAT3 worldPos = GetBoneWorldPosition(boneIndex);
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ[ƒ‹ƒhˆÊ’u").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("(%.3f, %.3f, %.3f)", worldPos.x, worldPos.y, worldPos.z);
 
 		XMFLOAT4 worldRot = GetBoneWorldRotationQuaternion(boneIndex);
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ[ƒ‹ƒh‰ñ“]").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¯ãƒ¼ãƒ«ãƒ‰å›è»¢").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("(%.3f, %.3f, %.3f, %.3f)", worldRot.x, worldRot.y, worldRot.z, worldRot.w);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒIƒtƒZƒbƒgs—ñ").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ã‚ªãƒ•ã‚»ãƒƒãƒˆè¡Œåˆ—").c_str());
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::TreeNode("OffsetMatrix")) {
 			XMFLOAT4X4 offset;
@@ -1417,7 +1417,7 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 
 		if (boneIndex < (int)m_boneMatrices.size()) {
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("Œ»İ‚Ìƒ{[ƒ“s—ñ").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ç¾åœ¨ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—").c_str());
 			ImGui::TableSetColumnIndex(1);
 			if (ImGui::TreeNode("CurrentMatrix")) {
 				const auto& mat = m_boneMatrices[boneIndex];
@@ -1434,7 +1434,7 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 	if (!children.empty()) {
 		ImGui::Separator();
 		auto SJ2 = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
-		std::string childLabel = SJ2("qƒ{[ƒ“") + " (" + std::to_string(children.size()) + ")";
+		std::string childLabel = SJ2("å­ãƒœãƒ¼ãƒ³") + " (" + std::to_string(children.size()) + ")";
 		if (ImGui::TreeNode(childLabel.c_str())) {
 			for (int childIdx : children) {
 				std::string lbl = m_model->bones[childIdx].name + " [" + std::to_string(childIdx) + "]";

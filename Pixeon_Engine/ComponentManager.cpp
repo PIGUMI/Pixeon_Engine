@@ -1,4 +1,4 @@
-#include "ComponentManager.h"
+ï»¿#include "ComponentManager.h"
 #include "Component.h"
 #include "CameraComponent.h"
 #include "ModelRender.h"
@@ -84,10 +84,10 @@ AbstractComponent* ComponentManager::AddComponent(AbstractObject* owner, COMPONE
 		component = owner->AddComponent<EffectComponent>();
 		break;
 	case ComponentManager::COMPONENT_TYPE::MAX:
-		MessageBox(nullptr, "—áŠO‚È’l‚Å‚·\nCode : CMMAX", "Error", MB_OK);
+		MessageBox(nullptr, "ä¾‹å¤–ãªå€¤ã§ã™\nCode : CMMAX", "Error", MB_OK);
 		break;
 	default:
-		MessageBox(nullptr, "“o˜^‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ\nCode CMFIND", "Error", MB_OK);
+		MessageBox(nullptr, "ç™»éŒ²ã•ã‚Œã¦ã„ã¾ã›ã‚“\nCode CMFIND", "Error", MB_OK);
 		break;
 	}
 	return component;

@@ -1,4 +1,4 @@
-#include "EffectComponent.h"
+ï»¿#include "EffectComponent.h"
 #include "Object.h"
 #include "Scene.h"
 #include "GUI.h"
@@ -51,7 +51,7 @@ void EffectComponent::BeginPlay()
 
 void EffectComponent::EditUpdate()
 {
-	// ƒGƒfƒBƒ^ƒvƒŒƒrƒ…[—p‚ÌXV‚ª‚ ‚ê‚Î‚±‚±‚É
+	// ã‚¨ãƒ‡ã‚£ã‚¿ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã®æ›´æ–°ãŒã‚ã‚Œã°ã“ã“ã«
 }
 
 void EffectComponent::InGameUpdate()
@@ -76,7 +76,7 @@ void EffectComponent::InGameUpdate()
 	}
 	else
 	{
-		// ƒ‹[ƒvON‚Å‰½‚ç‚©‚Ì——R‚Å~‚Ü‚Á‚Ä‚¢‚éê‡‚Ì•œ‹A
+		// ãƒ«ãƒ¼ãƒ—ONã§ä½•ã‚‰ã‹ã®ç†ç”±ã§æ­¢ã¾ã£ã¦ã„ã‚‹å ´åˆã®å¾©å¸°
 		if (loop_ && autoPlay_ && !effectPath_.empty() && !isPaused_)
 		{
 			Play();
@@ -197,15 +197,15 @@ void EffectComponent::ApplyParamsToHandle()
 
 	auto mgr = EffectManager::Instance();
 
-	// ˆÊ’u
+	// ä½ç½®
 	auto pos = GetWorldPositionWithOffset();
 	mgr->SetEffectPosition(handle_, pos);
 
-	// ‰ñ“]
+	// å›è»¢
 	auto rot = GetWorldRotationWithOffset();
 	mgr->SetEffectRotation(handle_, rot);
 
-	// ƒXƒP[ƒ‹
+	// ã‚¹ã‚±ãƒ¼ãƒ«
 	DirectX::XMFLOAT3 finalScale = scale_;
 	if (followParentScale_ && _Parent)
 	{
@@ -216,10 +216,10 @@ void EffectComponent::ApplyParamsToHandle()
 	}
 	mgr->SetEffectScale(handle_, finalScale);
 
-	// ‘¬“x
+	// é€Ÿåº¦
 	mgr->SetEffectSpeed(handle_, speed_);
 
-	// “®“Iƒpƒ‰ƒ[ƒ^
+	// å‹•çš„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	if (useDynamicInputs_)
 	{
 		auto effMgr = mgr->GetManager();
@@ -235,11 +235,11 @@ void EffectComponent::Play()
 	Stop();
 	if (effectPath_.empty()) return;
 
-	// Šg’£qƒ`ƒFƒbƒN(”CˆÓ)
+	// æ‹¡å¼µå­ãƒã‚§ãƒƒã‚¯(ä»»æ„)
 	std::string lower = ToLowerCopy(effectPath_);
 	if (!(lower.ends_with(".efk") || lower.ends_with(".efkefc")))
 	{
-		// Œx‚ğo‚·‚©Areturn‚·‚é‚©
+		// è­¦å‘Šã‚’å‡ºã™ã‹ã€returnã™ã‚‹ã‹
 	}
 
 	auto pos = GetWorldPositionWithOffset();
@@ -272,7 +272,7 @@ void EffectComponent::Pause(bool pause)
 }
 
 //============================================================
-// Inspector(ƒIƒvƒVƒ‡ƒ“)
+// Inspector(ã‚ªãƒ—ã‚·ãƒ§ãƒ³)
 //============================================================
 void EffectComponent::RefreshEffectList()
 {
@@ -299,19 +299,19 @@ void EffectComponent::DrawPlaybackControls()
 {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
-	if (ImGui::Button(SJ("Ä¶").c_str(), ImVec2(60, 0)))
+	if (ImGui::Button(SJ("å†ç”Ÿ").c_str(), ImVec2(60, 0)))
 	{
 		Play();
 	}
 	ImGui::SameLine();
 
-	if (ImGui::Button(SJ("’â~").c_str(), ImVec2(60, 0)))
+	if (ImGui::Button(SJ("åœæ­¢").c_str(), ImVec2(60, 0)))
 	{
 		Stop();
 	}
 	ImGui::SameLine();
 
-	const char* pauseLabel = isPaused_ ? SJ("ÄŠJ").c_str() : SJ("ˆê’â~").c_str();
+	const char* pauseLabel = isPaused_ ? SJ("å†é–‹").c_str() : SJ("ä¸€æ™‚åœæ­¢").c_str();
 	if (ImGui::Button(pauseLabel, ImVec2(80, 0)))
 	{
 		Pause(!isPaused_);
@@ -319,14 +319,14 @@ void EffectComponent::DrawPlaybackControls()
 
 	ImGui::SameLine();
 	const char* status = IsPlaying()
-		? (isPaused_ ? SJ("ó‘Ô: ˆê’â~’†").c_str() : SJ("ó‘Ô: Ä¶’†").c_str())
-		: SJ("ó‘Ô: ’â~’†").c_str();
+		? (isPaused_ ? SJ("çŠ¶æ…‹: ä¸€æ™‚åœæ­¢ä¸­").c_str() : SJ("çŠ¶æ…‹: å†ç”Ÿä¸­").c_str())
+		: SJ("çŠ¶æ…‹: åœæ­¢ä¸­").c_str();
 	ImGui::TextColored(IsPlaying() ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1), "%s", status);
 
 	if (IsPlaying())
 	{
 		int count = GetInstanceCount();
-		ImGui::Text("%s: %d", SJ("ƒCƒ“ƒXƒ^ƒ“ƒX”").c_str(), count);
+		ImGui::Text("%s: %d", SJ("ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹æ•°").c_str(), count);
 	}
 }
 
@@ -335,7 +335,7 @@ void EffectComponent::DrawTransformSettings()
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ˆÊ’uƒIƒtƒZƒbƒg").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ä½ç½®ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 	ImGui::TableSetColumnIndex(1);
 	{
 		DirectX::XMFLOAT3 off = offset_;
@@ -346,7 +346,7 @@ void EffectComponent::DrawTransformSettings()
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‰ñ“]").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("å›è»¢").c_str());
 	ImGui::TableSetColumnIndex(1);
 	{
 		DirectX::XMFLOAT3 rot = {
@@ -366,7 +366,7 @@ void EffectComponent::DrawTransformSettings()
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒXƒP[ƒ‹").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ã‚¹ã‚±ãƒ¼ãƒ«").c_str());
 	ImGui::TableSetColumnIndex(1);
 	{
 		DirectX::XMFLOAT3 scl = scale_;
@@ -377,12 +377,12 @@ void EffectComponent::DrawTransformSettings()
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("e‚Ì‰ñ“]’Ç]").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è¦ªã®å›è»¢è¿½å¾“").c_str());
 	ImGui::TableSetColumnIndex(1);
 	ImGui::Checkbox("##FollowRotation", &followParentRotation_);
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("e‚ÌƒXƒP[ƒ‹’Ç]").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è¦ªã®ã‚¹ã‚±ãƒ¼ãƒ«è¿½å¾“").c_str());
 	ImGui::TableSetColumnIndex(1);
 	ImGui::Checkbox("##FollowScale", &followParentScale_);
 }
@@ -392,7 +392,7 @@ void EffectComponent::DrawDynamicParameters()
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("“®“Iƒpƒ‰ƒ[ƒ^g—p").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("å‹•çš„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä½¿ç”¨").c_str());
 	ImGui::TableSetColumnIndex(1);
 	ImGui::Checkbox("##UseDynamic", &useDynamicInputs_);
 
@@ -402,7 +402,7 @@ void EffectComponent::DrawDynamicParameters()
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%s %d", SJ("“®“Iƒpƒ‰ƒ[ƒ^").c_str(), i);
+			ImGui::Text("%s %d", SJ("å‹•çš„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿").c_str(), i);
 			ImGui::TableSetColumnIndex(1);
 
 			std::string label = "##DynInput" + std::to_string(i);
@@ -422,7 +422,7 @@ void EffectComponent::DrawInspector()
 	std::string header = _ComponentName + "##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::CollapsingHeader(SJ(header.c_str()).c_str())) return;
 
-	// Ä¶ƒRƒ“ƒgƒ[ƒ‹
+	// å†ç”Ÿã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«
 	DrawPlaybackControls();
 
 	ImGui::Separator();
@@ -431,16 +431,16 @@ void EffectComponent::DrawInspector()
 	if (ImGui::BeginTable(SJ(tableId.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV))
 	{
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒŒƒCƒ„[").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒ¬ã‚¤ãƒ¤ãƒ¼").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::InputInt("##EffectLayer", &_LayerNumber);
 
-		// ƒGƒtƒFƒNƒg‘I‘ğ
+		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆé¸æŠ
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒGƒtƒFƒNƒg").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ").c_str());
 		ImGui::TableSetColumnIndex(1);
 		{
-			if (ImGui::Button(SJ("XV").c_str()))
+			if (ImGui::Button(SJ("æ›´æ–°").c_str()))
 			{
 				RefreshEffectList();
 				selectedIndex_ = FindEffectIndexByPath(effectPath_);
@@ -471,19 +471,19 @@ void EffectComponent::DrawInspector()
 			}
 		}
 
-		// Šî–{İ’è
+		// åŸºæœ¬è¨­å®š
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("©“®Ä¶").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("è‡ªå‹•å†ç”Ÿ").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::Checkbox("##AutoPlay", &autoPlay_);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒ‹[ƒv").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒ«ãƒ¼ãƒ—").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::Checkbox("##Loop", &loop_);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("Ä¶‘¬“x").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("å†ç”Ÿé€Ÿåº¦").c_str());
 		ImGui::TableSetColumnIndex(1);
 		{
 			float spd = speed_;
@@ -493,10 +493,10 @@ void EffectComponent::DrawInspector()
 			}
 		}
 
-		// ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€İ’è
+		// ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ è¨­å®š
 		DrawTransformSettings();
 
-		// “®“Iƒpƒ‰ƒ[ƒ^
+		// å‹•çš„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 		DrawDynamicParameters();
 
 		ImGui::EndTable();

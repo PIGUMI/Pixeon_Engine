@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@Animator2DManager
-* à@@@–¾@Animator2D‚ÌŠÇ—‚ğs‚¤ƒVƒ“ƒOƒ‹ƒgƒ“ƒNƒ‰ƒX
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€Animator2DManager
+* èª¬ã€€ã€€ã€€æ˜ã€€Animator2Dã®ç®¡ç†ã‚’è¡Œã†ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¯ãƒ©ã‚¹
 */
 #include "Animator2DManager.h"
 #include "SettingManager.h"
@@ -8,10 +8,10 @@
 Animator2DManager* Animator2DManager::_instance = nullptr;
 
 /*
-* ŠÖ”–¼@GetInstance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@Animator2DManager*
-* à@–¾@Animator2DManager‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€GetInstance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€Animator2DManager*
+* èª¬ã€€æ˜ã€€Animator2DManagerã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 */
 Animator2DManager* Animator2DManager::GetInstance()
 {
@@ -24,10 +24,10 @@ Animator2DManager* Animator2DManager::GetInstance()
 }
 
 /*
-* ŠÖ”–¼@DestroyInstance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@Animator2DManager‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü‚·‚é
+* é–¢æ•°åã€€DestroyInstance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€Animator2DManagerã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã™ã‚‹
 */
 void Animator2DManager::DestroyInstance()
 {
@@ -40,14 +40,14 @@ void Animator2DManager::DestroyInstance()
 }
 
 /*
-* ŠÖ”–¼@GetAnimator2D
-* ˆø@”@æ“¾‚·‚éAnimator2D–¼
-* –ß‚è’l@Animator2D‚Ìƒ|ƒCƒ“ƒ^
-* à@–¾@–¼‘O‚©‚çAnimator2D‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€GetAnimator2D
+* å¼•ã€€æ•°ã€€å–å¾—ã™ã‚‹Animator2Då
+* æˆ»ã‚Šå€¤ã€€Animator2Dã®ãƒã‚¤ãƒ³ã‚¿
+* èª¬ã€€æ˜ã€€åå‰ã‹ã‚‰Animator2Dã‚’å–å¾—ã™ã‚‹
 */
 Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 {
-	// ƒLƒƒƒbƒVƒ…‚©‚çŒŸõ
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‹ã‚‰æ¤œç´¢
 	for (auto animator : _animator2Ds)
 	{
 		if (animator->GetProjectName() == name)
@@ -56,7 +56,7 @@ Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 		}
 	}
 
-	// ƒLƒƒƒbƒVƒ…‚É‚È‚¢ê‡‚ÍV‹Kƒ[ƒh
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«ãªã„å ´åˆã¯æ–°è¦ãƒ­ãƒ¼ãƒ‰
 	Animator2D* newAnimator = new Animator2D();
 	newAnimator->LoadFile(SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + name);
 	_animator2Ds.push_back(newAnimator);
@@ -64,10 +64,10 @@ Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 }
 
 /*
-* ŠÖ”–¼@PreloadAnimator2D
-* ˆø@”@ƒvƒŠƒ[ƒh‚·‚éAnimator2D–¼
-* –ß‚è’l@‚È‚µ
-* à@–¾@w’è‚³‚ê‚½Animator2D‚ğ–‘O‚Éƒ[ƒh‚µ‚ÄƒLƒƒƒbƒVƒ…‚·‚é
+* é–¢æ•°åã€€PreloadAnimator2D
+* å¼•ã€€æ•°ã€€ãƒ—ãƒªãƒ­ãƒ¼ãƒ‰ã™ã‚‹Animator2Då
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€æŒ‡å®šã•ã‚ŒãŸAnimator2Dã‚’äº‹å‰ã«ãƒ­ãƒ¼ãƒ‰ã—ã¦ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã™ã‚‹
 */
 void Animator2DManager::PreloadAnimator2D(const std::string& name)
 {
@@ -98,10 +98,10 @@ void Animator2DManager::PreloadAnimator2D(const std::string& name)
 }
 
 /*
-* ŠÖ”–¼@IsLoaded
-* ˆø@”@Šm”F‚·‚éAnimator2D–¼
-* –ß‚è’l@ƒ[ƒhÏ‚İ‚È‚çtrue
-* à@–¾@w’è‚³‚ê‚½Animator2D‚ªƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚é‚©Šm”F‚·‚é
+* é–¢æ•°åã€€IsLoaded
+* å¼•ã€€æ•°ã€€ç¢ºèªã™ã‚‹Animator2Då
+* æˆ»ã‚Šå€¤ã€€ãƒ­ãƒ¼ãƒ‰æ¸ˆã¿ãªã‚‰true
+* èª¬ã€€æ˜ã€€æŒ‡å®šã•ã‚ŒãŸAnimator2DãŒã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
 */
 bool Animator2DManager::IsLoaded(const std::string& name)
 {
@@ -116,10 +116,10 @@ bool Animator2DManager::IsLoaded(const std::string& name)
 }
 
 /*
-* ŠÖ”–¼@ResetAllAnimator2D
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@ŠÇ—‚µ‚Ä‚¢‚é‘S‚Ä‚ÌAnimator2D‚ğ”jŠü‚·‚é
+* é–¢æ•°åã€€ResetAllAnimator2D
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ç®¡ç†ã—ã¦ã„ã‚‹å…¨ã¦ã®Animator2Dã‚’ç ´æ£„ã™ã‚‹
 */
 void Animator2DManager::ResetAllAnimator2D()
 {
@@ -131,10 +131,10 @@ void Animator2DManager::ResetAllAnimator2D()
 }
 
 /*
-* ŠÖ”–¼@RemoveAllAnimator2D
-* ˆø@”@íœ‚·‚éAnimator2D–¼
-* –ß‚è’l@‚È‚µ
-* à@–¾@w’è‚µ‚½–¼‘O‚ÌAnimator2D‚ğ‘S‚Ä”jŠü‚·‚é
+* é–¢æ•°åã€€RemoveAllAnimator2D
+* å¼•ã€€æ•°ã€€å‰Šé™¤ã™ã‚‹Animator2Då
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€æŒ‡å®šã—ãŸåå‰ã®Animator2Dã‚’å…¨ã¦ç ´æ£„ã™ã‚‹
 */
 void Animator2DManager::RemoveAllAnimator2D(std::string DeleteName)
 {

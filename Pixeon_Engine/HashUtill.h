@@ -1,4 +1,4 @@
-#ifndef HASHUTIL_H
+ï»¿#ifndef HASHUTIL_H
 #define HASHUTIL_H
 
 #include <cstdint>
@@ -10,7 +10,7 @@ namespace HashUtil {
 	void InitCRC32();
 	uint32_t CalcCRC32(const void* data, size_t len, uint32_t crc = 0xFFFFFFFFu);
 
-	// ŠÈˆÕ SHA-256 ŽÀ‘•
+	// ç°¡æ˜“ SHA-256 å®Ÿè£…
 	struct SHA256Ctx {
 		uint64_t bitlen = 0;
 		uint32_t state[8];

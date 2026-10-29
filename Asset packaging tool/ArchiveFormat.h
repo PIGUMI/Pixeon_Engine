@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <cstdint>
 #include <cstring>
 
@@ -9,18 +9,18 @@ struct PakHeader {
     uint32_t fileCount;
     uint64_t tocOffset;
     uint32_t flags;         // 0
-    uint32_t alignment;     // 16 / 4096 ‚È‚Ç
+    uint32_t alignment;     // 16 / 4096 ãªã©
     uint8_t  reserved[32];  // 0
 };
 #pragma pack(pop)
 
-// ˆ³kí•Ê
+// åœ§ç¸®ç¨®åˆ¥
 enum class AssetCompression : uint16_t {
     None = 0,
     LZ4 = 1,
 };
 
-// ƒtƒ‰ƒO
+// ãƒ•ãƒ©ã‚°
 enum AssetFlags : uint16_t {
     AssetFlag_None = 0,
     AssetFlag_Encrypted = 1 << 0,

@@ -1,9 +1,9 @@
-// GameLauncher/main.cpp
+ï»¿// GameLauncher/main.cpp
 #include <Windows.h>
 #include <iostream>
 #include <crtdbg.h>
 
-// Engine.dll‚©‚ç‚ÌŠÖ”‚ğƒCƒ“ƒ|[ƒg
+// Engine.dllã‹ã‚‰ã®é–¢æ•°ã‚’ã‚¤ãƒ³ãƒãƒ¼ãƒˆ
 struct EngineConfig {
     HWND hWnd;
     int screenWidth;
@@ -22,7 +22,7 @@ typedef bool (*EngineIsRunningFunc)();
 typedef LRESULT(*EngineProcessWindowMessageFunc)(HWND, UINT, WPARAM, LPARAM);
 
 
-// ƒOƒ[ƒoƒ‹•Ï”
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 HWND g_hWnd;
 HMODULE g_engineDLL = nullptr;
 EngineUpdateFunc EngineUpdate;
@@ -34,12 +34,12 @@ EngineProcessWindowMessageFunc EngineProcessWindowMessage;
 #define APP_TITLE "Pixeon"
 #define SCREEN_WIDTH (1920)
 #define SCREEN_HEIGHT (1080)
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (EngineProcessWindowMessage) {
         LRESULT r = EngineProcessWindowMessage(hWnd, message, wParam, lParam);
-        if (r != 0) return r; // ImGui‚ªˆ—‚µ‚½
+        if (r != 0) return r; // ImGuiãŒå‡¦ç†ã—ãŸ
     }
 
     const float ASPECT_RATIO = 16.0f / 9.0f;
@@ -50,8 +50,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_SIZING:
-        // ‚±‚±‚Í‚ ‚È‚½‚Ìˆ—‚Ì‚Ü‚Ü‚ÅOK
-        // c
+        // ã“ã“ã¯ã‚ãªãŸã®å‡¦ç†ã®ã¾ã¾ã§OK
+        // â€¦
         return 0;
     }
 
@@ -60,7 +60,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    // Engine.dll‚Ì“Ç‚İ‚İ
+    // Engine.dllã®èª­ã¿è¾¼ã¿
     g_engineDLL = LoadLibrary("Pixeon_Engine.dll");
     if (!g_engineDLL) {
         DWORD error = GetLastError();
@@ -70,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return -1;
     }
 
-    // ƒGƒ“ƒWƒ“ŠÖ”‚Ìæ“¾
+    // ã‚¨ãƒ³ã‚¸ãƒ³é–¢æ•°ã®å–å¾—
     EngineInitFunc EngineInit = (EngineInitFunc)GetProcAddress(g_engineDLL, "SoftInit");
     EngineUpdate = (EngineUpdateFunc)GetProcAddress(g_engineDLL, "SoftUpdate");
 	EngineDraw = (EngineDrawFunc)GetProcAddress(g_engineDLL, "SoftDraw");
@@ -79,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     EngineProcessWindowMessage = (EngineProcessWindowMessageFunc)GetProcAddress(g_engineDLL, "EngineProc");
 
 
-    // ŠÖ”ƒ|ƒCƒ“ƒ^‚Ìƒ`ƒFƒbƒN@
+    // é–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã®ãƒã‚§ãƒƒã‚¯ã€€
     if (!EngineInit)
     {
         MessageBox(NULL, "EngineInit function not found", "Error", MB_OK);
@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 
-    // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
     WNDCLASSEX wcex = {};
     wcex.cbSize = sizeof(WNDCLASSEX);
     wcex.hInstance = hInstance;
@@ -122,7 +122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-    // ƒEƒBƒ“ƒhƒE‚Ìì¬
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
     RECT rect = { 0, 0, screenWidth, screenHeight };
     DWORD style = WS_OVERLAPPEDWINDOW;
     DWORD exStyle = WS_EX_OVERLAPPEDWINDOW;
@@ -146,7 +146,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ShowWindow(g_hWnd, nCmdShow);
     UpdateWindow(g_hWnd);
 
-    // ƒGƒ“ƒWƒ“‚Ì‰Šú‰»
+    // ã‚¨ãƒ³ã‚¸ãƒ³ã®åˆæœŸåŒ–
     EngineConfig config = {};
     config.hWnd = g_hWnd;
     config.screenWidth = screenWidth;
@@ -164,7 +164,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return -1;
     }
 
-    // ƒƒCƒ“ƒ‹[ƒv
+    // ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
     MSG msg = {};
     while (EngineIsRunning && EngineIsRunning())
     {
@@ -187,7 +187,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
     }
 
-    // I—¹ˆ—
+    // çµ‚äº†å‡¦ç†
     EngineShutdown();
     DestroyWindow(g_hWnd);
     UnregisterClass(wcex.lpszClassName, hInstance);

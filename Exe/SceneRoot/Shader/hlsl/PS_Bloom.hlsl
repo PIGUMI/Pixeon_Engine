@@ -1,15 +1,15 @@
-// PS_Bloom.hlsl
+ï»¿// PS_Bloom.hlsl
 Texture2D texDiffuse : register(t0);
 SamplerState samLinear : register(s0);
 
 cbuffer BloomParams : register(b1)
 {
-    float threshold; // ‹P“xè‡’l
-    float intensity; // Bloom‹­“x
-    float blurRadius; // ƒuƒ‰[”¼Œa
-    float screenWidth; // ƒXƒNƒŠ[ƒ“•
-    float screenHeight; // ƒXƒNƒŠ[ƒ“‚‚³
-    int passType; // 0: ‹P“x’Šo, 1: ƒuƒ‰[, 2: ‡¬
+    float threshold; // è¼åº¦é–¾å€¤
+    float intensity; // Bloomå¼·åº¦
+    float blurRadius; // ãƒ–ãƒ©ãƒ¼åŠå¾„
+    float screenWidth; // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³å¹…
+    float screenHeight; // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³é«˜ã•
+    int passType; // 0: è¼åº¦æŠ½å‡º, 1: ãƒ–ãƒ©ãƒ¼, 2: åˆæˆ
     float2 pad;
 };
 
@@ -19,26 +19,26 @@ struct PS_INPUT
     float2 uv : TEXCOORD0;
 };
 
-// ‹P“xŒvZ
+// è¼åº¦è¨ˆç®—
 float Luminance(float3 color)
 {
     return dot(color, float3(0.299f, 0.587f, 0.114f));
 }
 
-// ‹P“x’ŠoƒpƒX
+// è¼åº¦æŠ½å‡ºãƒ‘ã‚¹
 float4 BrightPass(float2 uv)
 {
     float4 color = texDiffuse.Sample(samLinear, uv);
     float lum = Luminance(color.rgb);
     
-    // è‡’lˆÈã‚Ì–¾‚é‚¢•”•ª‚Ì‚İ’Šo
+    // é–¾å€¤ä»¥ä¸Šã®æ˜ã‚‹ã„éƒ¨åˆ†ã®ã¿æŠ½å‡º
     float brightness = max(0.0f, lum - threshold);
     color.rgb *= brightness / (lum + 0.0001f);
     
     return color;
 }
 
-// ƒKƒEƒVƒAƒ“ƒuƒ‰[iŠÈˆÕ”Åj
+// ã‚¬ã‚¦ã‚·ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼ï¼ˆç°¡æ˜“ç‰ˆï¼‰
 float4 BlurPass(float2 uv)
 {
     float2 texelSize = float2(1.0f / screenWidth, 1.0f / screenHeight);
@@ -46,7 +46,7 @@ float4 BlurPass(float2 uv)
     float4 color = float4(0, 0, 0, 0);
     float totalWeight = 0.0f;
     
-    // 5x5ƒJ[ƒlƒ‹
+    // 5x5ã‚«ãƒ¼ãƒãƒ«
     const int kernelSize = 5;
     const float sigma = blurRadius;
     
@@ -56,7 +56,7 @@ float4 BlurPass(float2 uv)
         {
             float2 offset = float2(x, y) * texelSize * blurRadius;
             
-            // ƒKƒEƒXŠÖ”‚É‚æ‚éd‚İŒvZ
+            // ã‚¬ã‚¦ã‚¹é–¢æ•°ã«ã‚ˆã‚‹é‡ã¿è¨ˆç®—
             float distance = length(float2(x, y));
             float weight = exp(-(distance * distance) / (2.0f * sigma * sigma));
             
@@ -68,7 +68,7 @@ float4 BlurPass(float2 uv)
     return color / totalWeight;
 }
 
-// ‡¬ƒpƒXiŒ³‰æ‘œ‚Æƒuƒ‹[ƒ€‚ğ‡¬j
+// åˆæˆãƒ‘ã‚¹ï¼ˆå…ƒç”»åƒã¨ãƒ–ãƒ«ãƒ¼ãƒ ã‚’åˆæˆï¼‰
 float4 CompositePass(float2 uv)
 {
     float4 color = texDiffuse.Sample(samLinear, uv);
@@ -79,17 +79,17 @@ float4 main(PS_INPUT input) : SV_Target
 {
     if (passType == 0)
     {
-        // ‹P“x’Šo
+        // è¼åº¦æŠ½å‡º
         return BrightPass(input.uv);
     }
     else if (passType == 1)
     {
-        // ƒuƒ‰[
+        // ãƒ–ãƒ©ãƒ¼
         return BlurPass(input.uv);
     }
     else
     {
-        // ‡¬
+        // åˆæˆ
         return CompositePass(input.uv);
     }
 }

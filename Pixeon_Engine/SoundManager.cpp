@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼ : SoundManager
-* à@@@–¾ : ƒTƒEƒ“ƒhƒŠƒ\[ƒXŠÇ—ƒNƒ‰ƒX
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«å : SoundManager
+* èª¬ã€€ã€€ã€€æ˜ : ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ç®¡ç†ã‚¯ãƒ©ã‚¹
 */
 #include "SoundManager.h"
 #include "AssetManager.h"
@@ -10,10 +10,10 @@
 SoundManager* SoundManager::_instance = nullptr;
 
 /*
-* ŠÖ”–¼@: Instance
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒ|ƒCƒ“ƒ^[
-* à@–¾@: ƒCƒ“ƒXƒ^ƒ“ƒXæ“¾
+* é–¢æ•°åã€€: Instance
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+* èª¬ã€€æ˜ã€€: ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å–å¾—
 */
 SoundManager* SoundManager::Instance()
 {
@@ -24,10 +24,10 @@ SoundManager* SoundManager::Instance()
 }
 
 /*
-* ŠÖ”–¼@: DeleteInstance
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒCƒ“ƒXƒ^ƒ“ƒX”jŠü
+* é–¢æ•°åã€€: DeleteInstance
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç ´æ£„
 */
 void SoundManager::DeleteInstance() {
 	if (_instance) {
@@ -38,10 +38,10 @@ void SoundManager::DeleteInstance() {
 }
 
 /*
-* ŠÖ”–¼@: UnInit
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ”jŠüˆ—
+* é–¢æ•°åã€€: UnInit
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ç ´æ£„å‡¦ç†
 */
 void SoundManager::UnInit() {
 	std::lock_guard<std::mutex> lk(_mtx);
@@ -50,11 +50,11 @@ void SoundManager::UnInit() {
 }
 
 /*
-* ŠÖ”–¼@: LoadOrGet
-* ˆø@”@: logicalName  ˜_—–¼
-* @@@@: streaming    ƒXƒgƒŠ[ƒ~ƒ“ƒOƒtƒ‰ƒO
-* –ß‚è’l@: ƒTƒEƒ“ƒhƒŠƒ\[ƒXƒ|ƒCƒ“ƒ^[
-* à@–¾@: ƒTƒEƒ“ƒhƒŠƒ\[ƒX‚Ìæ“¾iƒLƒƒƒbƒVƒ…—LŒøj
+* é–¢æ•°åã€€: LoadOrGet
+* å¼•ã€€æ•°ã€€: logicalName  è«–ç†å
+* ã€€ã€€ã€€ã€€: streaming    ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°ãƒ•ãƒ©ã‚°
+* æˆ»ã‚Šå€¤ã€€: ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+* èª¬ã€€æ˜ã€€: ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ã®å–å¾—ï¼ˆã‚­ãƒ£ãƒƒã‚·ãƒ¥æœ‰åŠ¹ï¼‰
 */
 std::shared_ptr<SoundResource> SoundManager::LoadOrGet(const std::string& logicalName, bool streaming) {
 	std::lock_guard<std::mutex> lk(_mtx);
@@ -79,11 +79,11 @@ std::shared_ptr<SoundResource> SoundManager::LoadOrGet(const std::string& logica
 }
 
 /*
-* ŠÖ”–¼@: LoadInternal
-* ˆø@”@: logicalName  ˜_—–¼
-* @@@@: streaming    ƒXƒgƒŠ[ƒ~ƒ“ƒOƒtƒ‰ƒO
-* –ß‚è’l@: ƒTƒEƒ“ƒhƒŠƒ\[ƒXƒ|ƒCƒ“ƒ^[
-* à@–¾@: ƒTƒEƒ“ƒhƒŠƒ\[ƒX‚Ì“à•”“Ç‚İ‚İˆ—
+* é–¢æ•°åã€€: LoadInternal
+* å¼•ã€€æ•°ã€€: logicalName  è«–ç†å
+* ã€€ã€€ã€€ã€€: streaming    ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°ãƒ•ãƒ©ã‚°
+* æˆ»ã‚Šå€¤ã€€: ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+* èª¬ã€€æ˜ã€€: ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ã®å†…éƒ¨èª­ã¿è¾¼ã¿å‡¦ç†
 */
 std::shared_ptr<SoundResource> SoundManager::LoadInternal(const std::string& logicalName, bool streaming) {
 	std::vector<uint8_t> data;
@@ -94,20 +94,20 @@ std::shared_ptr<SoundResource> SoundManager::LoadInternal(const std::string& log
 	auto snd = std::make_shared<SoundResource>();
 	snd->name = logicalName;
 	if (!streaming) {
-		// ŠÈˆÕ: ‚»‚Ì‚Ü‚ÜŠi”[iÀÛ‚Í WAV ƒp[ƒX‚µ‚Äƒwƒbƒ_œ‹j
+		// ç°¡æ˜“: ãã®ã¾ã¾æ ¼ç´ï¼ˆå®Ÿéš›ã¯ WAV ãƒ‘ãƒ¼ã‚¹ã—ã¦ãƒ˜ãƒƒãƒ€é™¤å»ï¼‰
 		snd->pcmData = data;
 	}
 	else {
-		// ƒXƒgƒŠ[ƒ~ƒ“ƒO: ƒwƒbƒ_‰ğÍ‚¾‚¯s‚¢ PCM ‚Í“s“x“Ç‚ŞİŒv‚ÖŠg’£
+		// ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°: ãƒ˜ãƒƒãƒ€è§£æã ã‘è¡Œã„ PCM ã¯éƒ½åº¦èª­ã‚€è¨­è¨ˆã¸æ‹¡å¼µ
 	}
 	return snd;
 }
 
 /*
-* ŠÖ”–¼@: GarbageCollect
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“
+* é–¢æ•°åã€€: GarbageCollect
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ã‚¬ãƒ™ãƒ¼ã‚¸ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³
 */
 void SoundManager::GarbageCollect() {
 	std::lock_guard<std::mutex> lk(_mtx);
@@ -122,10 +122,10 @@ void SoundManager::GarbageCollect() {
 }
 
 /*
-* ŠÖ”–¼@: DrawDebugGUI
-* ˆø@”@: ‚È‚µ
-* –ß‚è’l@: ‚È‚µ
-* à@–¾@: ƒfƒoƒbƒOGUI•`‰æ
+* é–¢æ•°åã€€: DrawDebugGUI
+* å¼•ã€€æ•°ã€€: ãªã—
+* æˆ»ã‚Šå€¤ã€€: ãªã—
+* èª¬ã€€æ˜ã€€: ãƒ‡ãƒãƒƒã‚°GUIæç”»
 */
 void SoundManager::DrawDebugGUI() {
 	std::lock_guard<std::mutex> lk(_mtx);

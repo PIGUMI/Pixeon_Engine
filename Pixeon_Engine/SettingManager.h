@@ -1,6 +1,6 @@
-// İ’èŠÇ—ƒ}ƒl[ƒWƒƒ[
-// ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“
-// json‚É‚Ä•Û‘¶
+ï»¿// è¨­å®šç®¡ç†ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼
+// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³
+// jsonã«ã¦ä¿å­˜
 
 #pragma once
 #include <string>
@@ -17,7 +17,7 @@ public:
 	void SaveConfig();
 
 public:
-	// İ’è€–Ú‚ÌƒQƒbƒ^[‚ÆƒZƒbƒ^[
+	// è¨­å®šé …ç›®ã®ã‚²ãƒƒã‚¿ãƒ¼ã¨ã‚»ãƒƒã‚¿ãƒ¼
 	std::string GetAssetsFilePath() const { return AssetsFilePath; }
 	void SetAssetsFilePath(const std::string& path) { AssetsFilePath = path; }
 
@@ -69,7 +69,7 @@ public:
 private:
 	static SettingManager* instance;
 private:
-	// İ’è€–Ú
+	// è¨­å®šé …ç›®
 	std::string AssetsFilePath = "SceneRoot/Assets/";
 	std::string ArchiveFilePath = "SceneRoot/Archive/";
 	std::string SceneFilePath = "SceneRoot/Scene/";
@@ -86,7 +86,7 @@ private:
 	float MouseSensitivity = 0.01f;
 
 	bool bZBuffer = true;
-	int AutoSaveInterval = 5; // ©“®•Û‘¶ŠÔŠui•ªj
+	int AutoSaveInterval = 5; // è‡ªå‹•ä¿å­˜é–“éš”ï¼ˆåˆ†ï¼‰
 
 	SettingManager() {}
 	~SettingManager() {}

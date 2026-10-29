@@ -1,4 +1,4 @@
-cbuffer VS_CB : register(b0)
+ï»¿cbuffer VS_CB : register(b0)
 {
     float4x4 View;
     float4x4 Proj;
@@ -24,12 +24,12 @@ VS_OUT main(VS_IN i)
     VS_OUT o;
     if (mode2D != 0)
     {
-        // ‚·‚Å‚ÉƒNƒŠƒbƒv‹óŠÔiNDC‘Š“–, w=1j‚Å“n‚³‚ê‚é‘O’ñ
+        // ã™ã§ã«ã‚¯ãƒªãƒƒãƒ—ç©ºé–“ï¼ˆNDCç›¸å½“, w=1ï¼‰ã§æ¸¡ã•ã‚Œã‚‹å‰æ
         o.pos = float4(i.pos, 1.0f);
     }
     else
     {
-        // ƒ[ƒ‹ƒh‹óŠÔ‚Å“n‚³‚ê‚é‘O’ñ
+        // ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã§æ¸¡ã•ã‚Œã‚‹å‰æ
         float4 wpos = float4(i.pos, 1.0f);
         float4 vpos = mul(wpos, View);
         o.pos = mul(vpos, Proj);

@@ -1,6 +1,6 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@AssetManager
-* à@@@–¾@ƒAƒZƒbƒgŠÇ—ƒNƒ‰ƒX
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€AssetManager
+* èª¬ã€€ã€€ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆç®¡ç†ã‚¯ãƒ©ã‚¹
 */
 #include "AssetManager.h"
 #include <fstream>
@@ -10,10 +10,10 @@
 AssetManager* AssetManager::_instance = nullptr;
 
 /*
-* ŠÖ”–¼@Instance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒ|ƒCƒ“ƒ^
-* à@–¾@AssetManager‚ÌƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€Instance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+* èª¬ã€€æ˜ã€€AssetManagerã®ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 */
 AssetManager* AssetManager::Instance()
 {
@@ -24,10 +24,10 @@ AssetManager* AssetManager::Instance()
 }
 
 /*
-* ŠÖ”–¼@DeleteInstance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@AssetManager‚ÌƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü‚·‚é
+* é–¢æ•°åã€€DeleteInstance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€AssetManagerã®ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã™ã‚‹
 */
 void AssetManager::DeleteInstance()
 {
@@ -39,10 +39,10 @@ void AssetManager::DeleteInstance()
 }
 
 /*
-* ŠÖ”–¼@UnInit
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@AssetManager‚ÌƒAƒ“ƒCƒjƒVƒƒƒ‰ƒCƒYˆ—
+* é–¢æ•°åã€€UnInit
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€AssetManagerã®ã‚¢ãƒ³ã‚¤ãƒ‹ã‚·ãƒ£ãƒ©ã‚¤ã‚ºå‡¦ç†
 */
 void AssetManager::UnInit()
 {
@@ -55,36 +55,36 @@ void AssetManager::UnInit()
 }
 
 /*
-* ŠÖ”–¼@~AssetManager
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@AssetManager‚ÌƒfƒXƒgƒ‰ƒNƒ^
+* é–¢æ•°åã€€~AssetManager
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€AssetManagerã®ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 */
 AssetManager::~AssetManager() {
 	StopAutoSync();
 }
 
 /*
-* ŠÖ”–¼@SetRoot
-* ˆø@”@rootFƒAƒZƒbƒgƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ‚ÌƒpƒX
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒAƒZƒbƒgƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ‚ğİ’è‚·‚é
+* é–¢æ•°åã€€SetRoot
+* å¼•ã€€æ•°ã€€rootï¼šã‚¢ã‚»ãƒƒãƒˆãƒ«ãƒ¼ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆãƒ«ãƒ¼ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’è¨­å®šã™ã‚‹
 */
 void AssetManager::SetRoot(const std::string& root) { _root = root; }
 
 /*
-* ŠÖ”–¼@SetLoadMode
-* ˆø@”@mFƒ[ƒhƒ‚[ƒh
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒAƒZƒbƒg‚Ìƒ[ƒhƒ‚[ƒh‚ğİ’è‚·‚é
+* é–¢æ•°åã€€SetLoadMode
+* å¼•ã€€æ•°ã€€mï¼šãƒ­ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆã®ãƒ­ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
 */
 void AssetManager::SetLoadMode(LoadMode m) { _mode = m; }
 
 /*
-* ŠÖ”–¼@Normalize
-* ˆø@”@nameF³‹K‰»‚·‚éƒAƒZƒbƒg–¼
-* –ß‚è’l@³‹K‰»‚³‚ê‚½ƒAƒZƒbƒg–¼
-* à@–¾@ƒAƒZƒbƒg–¼‚ÌƒpƒX‹æØ‚è•¶š‚ğ“ˆê‚·‚é
+* é–¢æ•°åã€€Normalize
+* å¼•ã€€æ•°ã€€nameï¼šæ­£è¦åŒ–ã™ã‚‹ã‚¢ã‚»ãƒƒãƒˆå
+* æˆ»ã‚Šå€¤ã€€æ­£è¦åŒ–ã•ã‚ŒãŸã‚¢ã‚»ãƒƒãƒˆå
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆåã®ãƒ‘ã‚¹åŒºåˆ‡ã‚Šæ–‡å­—ã‚’çµ±ä¸€ã™ã‚‹
 */
 std::string AssetManager::Normalize(const std::string& name) const {
 	std::string s = name;
@@ -93,10 +93,10 @@ std::string AssetManager::Normalize(const std::string& name) const {
 }
 
 /*
-* ŠÖ”–¼@Exists
-* ˆø@”@logicalNameF˜_—ƒAƒZƒbƒg–¼
-* –ß‚è’l@‘¶İ‚·‚éê‡trueA‘¶İ‚µ‚È‚¢ê‡false
-* à@–¾@ƒAƒZƒbƒg‚ª‘¶İ‚·‚é‚©‚Ç‚¤‚©‚ğŠm”F‚·‚é
+* é–¢æ•°åã€€Exists
+* å¼•ã€€æ•°ã€€logicalNameï¼šè«–ç†ã‚¢ã‚»ãƒƒãƒˆå
+* æˆ»ã‚Šå€¤ã€€å­˜åœ¨ã™ã‚‹å ´åˆtrueã€å­˜åœ¨ã—ãªã„å ´åˆfalse
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆãŒå­˜åœ¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’ç¢ºèªã™ã‚‹
 */
 bool AssetManager::Exists(const std::string& logicalName) {
 	std::string norm = Normalize(logicalName);
@@ -109,11 +109,11 @@ bool AssetManager::Exists(const std::string& logicalName) {
 }
 
 /*
-* ŠÖ”–¼@LoadAsset
-* ˆø@”@logicalNameF˜_—ƒAƒZƒbƒg–¼
-* @@@@outDataF“Ç‚İ‚ñ‚¾ƒAƒZƒbƒgƒf[ƒ^‚Ìo—Íæ
-* –ß‚è’l@“Ç‚İ‚İ‚É¬Œ÷‚µ‚½ê‡trueA¸”s‚µ‚½ê‡false
-* à@–¾@ƒAƒZƒbƒg‚ğ“Ç‚İ‚İA¶ƒoƒCƒgƒf[ƒ^‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€LoadAsset
+* å¼•ã€€æ•°ã€€logicalNameï¼šè«–ç†ã‚¢ã‚»ãƒƒãƒˆå
+* ã€€ã€€ã€€ã€€outDataï¼šèª­ã¿è¾¼ã‚“ã ã‚¢ã‚»ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã®å‡ºåŠ›å…ˆ
+* æˆ»ã‚Šå€¤ã€€èª­ã¿è¾¼ã¿ã«æˆåŠŸã—ãŸå ´åˆtrueã€å¤±æ•—ã—ãŸå ´åˆfalse
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆã‚’èª­ã¿è¾¼ã¿ã€ç”Ÿãƒã‚¤ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
 */
 bool AssetManager::LoadAsset(const std::string& logicalName, std::vector<uint8_t>& outData) {
 	std::string norm = Normalize(logicalName);
@@ -147,10 +147,10 @@ bool AssetManager::LoadAsset(const std::string& logicalName, std::vector<uint8_t
 }
 
 /*
-* ŠÖ”–¼@ClearRawCache
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@¶ƒoƒCƒgƒLƒƒƒbƒVƒ…‚ğƒNƒŠƒA‚·‚é
+* é–¢æ•°åã€€ClearRawCache
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ç”Ÿãƒã‚¤ãƒˆã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 */
 void AssetManager::ClearRawCache() {
 	std::lock_guard<std::mutex> lk(_mtx);
@@ -159,11 +159,11 @@ void AssetManager::ClearRawCache() {
 }
 
 /*
-* ŠÖ”–¼@PushChange
-* ˆø@”@typeF•ÏXƒ^ƒCƒv
-* @@@@pathF•ÏX‚³‚ê‚½ƒAƒZƒbƒg‚ÌƒpƒX
-* –ß‚è’l@‚È‚µ
-* à@–¾@•ÏXƒƒO‚ğ’Ç‰Á‚·‚é
+* é–¢æ•°åã€€PushChange
+* å¼•ã€€æ•°ã€€typeï¼šå¤‰æ›´ã‚¿ã‚¤ãƒ—
+* ã€€ã€€ã€€ã€€pathï¼šå¤‰æ›´ã•ã‚ŒãŸã‚¢ã‚»ãƒƒãƒˆã®ãƒ‘ã‚¹
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€å¤‰æ›´ãƒ­ã‚°ã‚’è¿½åŠ ã™ã‚‹
 */
 void AssetManager::PushChange(ChangeType type, const std::string& path) {
 	std::lock_guard<std::mutex> lk(_mtx);
@@ -173,11 +173,11 @@ void AssetManager::PushChange(ChangeType type, const std::string& path) {
 }
 
 /*
-* ŠÖ”–¼@StartAutoSync
-* ˆø@”@intervalFƒXƒLƒƒƒ“ŠÔŠu
-* @@@@recursiveFÄ‹A“I‚ÉƒTƒuƒfƒBƒŒƒNƒgƒŠ‚àŠÄ‹‚·‚é‚©‚Ç‚¤‚©
-* –ß‚è’l@‚È‚µ
-* à@–¾@©“®“¯ŠúŠÄ‹‚ğŠJn‚·‚é
+* é–¢æ•°åã€€StartAutoSync
+* å¼•ã€€æ•°ã€€intervalï¼šã‚¹ã‚­ãƒ£ãƒ³é–“éš”
+* ã€€ã€€ã€€ã€€recursiveï¼šå†å¸°çš„ã«ã‚µãƒ–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚‚ç›£è¦–ã™ã‚‹ã‹ã©ã†ã‹
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€è‡ªå‹•åŒæœŸç›£è¦–ã‚’é–‹å§‹ã™ã‚‹
 */
 void AssetManager::StartAutoSync(std::chrono::milliseconds interval, bool recursive) {
 	if (_watchRunning.load()) return;
@@ -191,10 +191,10 @@ void AssetManager::StartAutoSync(std::chrono::milliseconds interval, bool recurs
 }
 
 /*
-* ŠÖ”–¼@StopAutoSync
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@©“®“¯ŠúŠÄ‹‚ğ’â~‚·‚é
+* é–¢æ•°åã€€StopAutoSync
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€è‡ªå‹•åŒæœŸç›£è¦–ã‚’åœæ­¢ã™ã‚‹
 */
 void AssetManager::StopAutoSync() {
 	if (!_watchRunning.load()) return;
@@ -203,10 +203,10 @@ void AssetManager::StopAutoSync() {
 }
 
 /*
-* ŠÖ”–¼@WatchLoop
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@©“®“¯ŠúŠÄ‹ƒ‹[ƒv
+* é–¢æ•°åã€€WatchLoop
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€è‡ªå‹•åŒæœŸç›£è¦–ãƒ«ãƒ¼ãƒ—
 */
 void AssetManager::WatchLoop() {
 	PerformScan();
@@ -221,10 +221,10 @@ void AssetManager::WatchLoop() {
 }
 
 /*
-* ŠÖ”–¼@PerformScan
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒAƒZƒbƒgƒfƒBƒŒƒNƒgƒŠ‚ÌƒXƒLƒƒƒ“‚ğÀs‚µA•ÏX‚ğŒŸo‚µ‚Ä“K—p‚·‚é
+* é–¢æ•°åã€€PerformScan
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ã‚¹ã‚­ãƒ£ãƒ³ã‚’å®Ÿè¡Œã—ã€å¤‰æ›´ã‚’æ¤œå‡ºã—ã¦é©ç”¨ã™ã‚‹
 */
 void AssetManager::PerformScan() {
 	using namespace std::filesystem;
@@ -326,10 +326,10 @@ void AssetManager::PerformScan() {
 }
 
 /*
-* ŠÖ”–¼@DrawDebugGUI
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒfƒoƒbƒO—pGUI‚ğ•`‰æ‚·‚é
+* é–¢æ•°åã€€DrawDebugGUI
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ãƒ‡ãƒãƒƒã‚°ç”¨GUIã‚’æç”»ã™ã‚‹
 */
 void AssetManager::DrawDebugGUI()
 {
@@ -386,10 +386,10 @@ void AssetManager::DrawDebugGUI()
 }
 
 /*
-* ŠÖ”–¼@GetCachedAssetNames
-* ˆø@”@onlyModelExtFƒ‚ƒfƒ‹Šg’£q‚Ì‚İæ“¾‚·‚é‚©‚Ç‚¤‚©
-* –ß‚è’l@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg
-* à@–¾@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€GetCachedAssetNames
+* å¼•ã€€æ•°ã€€onlyModelExtï¼šãƒ¢ãƒ‡ãƒ«æ‹¡å¼µå­ã®ã¿å–å¾—ã™ã‚‹ã‹ã©ã†ã‹
+* æˆ»ã‚Šå€¤ã€€ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚»ãƒƒãƒˆåã®ãƒªã‚¹ãƒˆ
+* èª¬ã€€æ˜ã€€ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚»ãƒƒãƒˆåã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 */
 std::vector<std::string> AssetManager::GetCachedAssetNames(bool onlyModelExt) const {
 	std::vector<std::string> result;
@@ -418,10 +418,10 @@ std::vector<std::string> AssetManager::GetCachedAssetNames(bool onlyModelExt) co
 }
 
 /*
-* ŠÖ”–¼@GetCachedTextureNames
-* ˆø@”@‚È‚µ
-* –ß‚è’l@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg
-* à@–¾@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€GetCachedTextureNames
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¢ã‚»ãƒƒãƒˆåã®ãƒªã‚¹ãƒˆ
+* èª¬ã€€æ˜ã€€ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¢ã‚»ãƒƒãƒˆåã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 */
 std::vector<std::string> AssetManager::GetCachedTextureNames() const {
 	static const char* exts[] = { ".png", ".jpg", ".jpeg", ".tga", ".dds", ".bmp", ".hdr" };
@@ -447,10 +447,10 @@ std::vector<std::string> AssetManager::GetCachedTextureNames() const {
 }
 
 /*
-* ŠÖ”–¼@GetCachedEffectNames
-* ˆø@”@‚È‚µ
-* –ß‚è’l@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒGƒtƒFƒNƒgƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg
-* à@–¾@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒGƒtƒFƒNƒgƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€GetCachedEffectNames
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã¦ã„ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚¢ã‚»ãƒƒãƒˆåã®ãƒªã‚¹ãƒˆ
+* èª¬ã€€æ˜ã€€ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã¦ã„ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚¢ã‚»ãƒƒãƒˆåã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 */
 std::vector<std::string> AssetManager::GetCachedEffectNames() const
 {

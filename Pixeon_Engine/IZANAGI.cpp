@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "IZANAGI.h"
 #include <iostream>
 #include <sstream>
@@ -13,10 +13,10 @@
 IZANAGI* IZANAGI::instance = nullptr;
 
 /*
-* ŠÖ”–¼@GetInstance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@IZANAGI*FIZANAGI‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^
-* à@–¾@IZANAGI‚ÌƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚éŠÖ”
+* é–¢æ•°åã€€GetInstance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€IZANAGI*ï¼šIZANAGIã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+* èª¬ã€€æ˜ã€€IZANAGIã®ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹é–¢æ•°
 */
 IZANAGI* IZANAGI::GetInstance() {
 	if (instance == nullptr) {
@@ -26,10 +26,10 @@ IZANAGI* IZANAGI::GetInstance() {
 }
 
 /*
-* ŠÖ”–¼@DestroyInstance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@IZANAGI‚ÌƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü‚·‚éŠÖ”
+* é–¢æ•°åã€€DestroyInstance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€IZANAGIã®ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã™ã‚‹é–¢æ•°
 */
 void IZANAGI::DestroyInstance() {
 	if (instance != nullptr) {
@@ -39,10 +39,10 @@ void IZANAGI::DestroyInstance() {
 }
 
 /*
-* ŠÖ”–¼@IZANAGIiƒRƒ“ƒXƒgƒ‰ƒNƒ^j
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@IZANAGIƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+* é–¢æ•°åã€€IZANAGIï¼ˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼‰
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€IZANAGIã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 */
 IZANAGI::IZANAGI()
 	: model(nullptr)
@@ -57,20 +57,20 @@ IZANAGI::IZANAGI()
 }
 
 /*
-* ŠÖ”–¼@~IZANAGIiƒfƒXƒgƒ‰ƒNƒ^j
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@IZANAGIƒNƒ‰ƒX‚ÌƒfƒXƒgƒ‰ƒNƒ^
+* é–¢æ•°åã€€~IZANAGIï¼ˆãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼‰
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€IZANAGIã‚¯ãƒ©ã‚¹ã®ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 */
 IZANAGI::~IZANAGI() {
 	if (isInitialized)Shutdown();
 }
 
 /*
-* ŠÖ”–¼@UTF8ToShiftJIS
-* ˆø@”@const std::string& utf8strFUTF-8ƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š—ñ
-* –ß‚è’l@std::stringFShift_JISƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š—ñ
-* à@–¾@UTF-8ƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š—ñ‚ğShift_JISƒGƒ“ƒR[ƒh‚É•ÏŠ·‚·‚éŠÖ”
+* é–¢æ•°åã€€UTF8ToShiftJIS
+* å¼•ã€€æ•°ã€€const std::string& utf8strï¼šUTF-8ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—åˆ—
+* æˆ»ã‚Šå€¤ã€€std::stringï¼šShift_JISã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—åˆ—
+* èª¬ã€€æ˜ã€€UTF-8ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’Shift_JISã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›ã™ã‚‹é–¢æ•°
 */
 std::string IZANAGI::UTF8ToShiftJIS(const std::string& utf8str) {
 #ifdef _WIN32
@@ -95,10 +95,10 @@ std::string IZANAGI::UTF8ToShiftJIS(const std::string& utf8str) {
 }
 
 /*
-* ŠÖ”–¼@ShiftJISToUTF8
-* ˆø@”@const std::string& sjisstrFShift_JISƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š—ñ
-* –ß‚è’l@std::stringFUTF-8ƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š—ñ
-* à@–¾@Shift_JISƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š—ñ‚ğUTF-8ƒGƒ“ƒR[ƒh‚É•ÏŠ·‚·‚éŠÖ”
+* é–¢æ•°åã€€ShiftJISToUTF8
+* å¼•ã€€æ•°ã€€const std::string& sjisstrï¼šShift_JISã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—åˆ—
+* æˆ»ã‚Šå€¤ã€€std::stringï¼šUTF-8ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—åˆ—
+* èª¬ã€€æ˜ã€€Shift_JISã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’UTF-8ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›ã™ã‚‹é–¢æ•°
 */
 std::string IZANAGI::ShiftJISToUTF8(const std::string& sjisstr) {
 #ifdef _WIN32
@@ -123,10 +123,10 @@ std::string IZANAGI::ShiftJISToUTF8(const std::string& sjisstr) {
 }
 
 /*
-* ŠÖ”–¼@LoadPersona
-* ˆø@”@const std::string& personaPathFƒyƒ‹ƒ\ƒiƒtƒ@ƒCƒ‹‚ÌƒpƒX
-* –ß‚è’l@boolF“Ç‚İ‚İ¬Œ÷‚È‚çtrueA¸”s‚È‚çfalse
-* à@–¾@w’è‚³‚ê‚½ƒyƒ‹ƒ\ƒiƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İAƒVƒXƒeƒ€ƒvƒƒ“ƒvƒg‚Æ‚µ‚Äİ’è‚·‚éŠÖ”
+* é–¢æ•°åã€€LoadPersona
+* å¼•ã€€æ•°ã€€const std::string& personaPathï¼šãƒšãƒ«ã‚½ãƒŠãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+* æˆ»ã‚Šå€¤ã€€boolï¼šèª­ã¿è¾¼ã¿æˆåŠŸãªã‚‰trueã€å¤±æ•—ãªã‚‰false
+* èª¬ã€€æ˜ã€€æŒ‡å®šã•ã‚ŒãŸãƒšãƒ«ã‚½ãƒŠãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ã€ã‚·ã‚¹ãƒ†ãƒ ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã¨ã—ã¦è¨­å®šã™ã‚‹é–¢æ•°
 */
 bool IZANAGI::LoadPersona(const std::string& personaPath) {
 	std::ifstream file(personaPath, std::ios::binary);
@@ -154,10 +154,10 @@ bool IZANAGI::LoadPersona(const std::string& personaPath) {
 }
 
 /*
-* ŠÖ”–¼@SetPersona
-* ˆø@”@const std::string& personaContentFƒyƒ‹ƒ\ƒi“à—e‚Ì•¶š—ñ
-* –ß‚è’l@boolFİ’è¬Œ÷‚È‚çtrueA¸”s‚È‚çfalse
-* à@–¾@w’è‚³‚ê‚½ƒyƒ‹ƒ\ƒi“à—e‚ğƒVƒXƒeƒ€ƒvƒƒ“ƒvƒg‚Æ‚µ‚Äİ’è‚·‚éŠÖ”
+* é–¢æ•°åã€€SetPersona
+* å¼•ã€€æ•°ã€€const std::string& personaContentï¼šãƒšãƒ«ã‚½ãƒŠå†…å®¹ã®æ–‡å­—åˆ—
+* æˆ»ã‚Šå€¤ã€€boolï¼šè¨­å®šæˆåŠŸãªã‚‰trueã€å¤±æ•—ãªã‚‰false
+* èª¬ã€€æ˜ã€€æŒ‡å®šã•ã‚ŒãŸãƒšãƒ«ã‚½ãƒŠå†…å®¹ã‚’ã‚·ã‚¹ãƒ†ãƒ ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã¨ã—ã¦è¨­å®šã™ã‚‹é–¢æ•°
 */
 bool IZANAGI::SetPersona(const std::string& personaContent)
 {
@@ -180,10 +180,10 @@ bool IZANAGI::SetPersona(const std::string& personaContent)
 }
 
 /*
-* ŠÖ”–¼@SetSystemPrompt
-* ˆø@”@const std::string& promptFV‚µ‚¢ƒVƒXƒeƒ€ƒvƒƒ“ƒvƒg
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒVƒXƒeƒ€ƒvƒƒ“ƒvƒg‚ğİ’è‚µA‰ï˜b—š—ğ‚ğƒNƒŠƒA‚·‚éŠÖ”
+* é–¢æ•°åã€€SetSystemPrompt
+* å¼•ã€€æ•°ã€€const std::string& promptï¼šæ–°ã—ã„ã‚·ã‚¹ãƒ†ãƒ ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆ
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ã‚·ã‚¹ãƒ†ãƒ ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã‚’è¨­å®šã—ã€ä¼šè©±å±¥æ­´ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹é–¢æ•°
 */
 void IZANAGI::SetSystemPrompt(const std::string& prompt) {
 	systemPrompt = prompt;
@@ -191,20 +191,20 @@ void IZANAGI::SetSystemPrompt(const std::string& prompt) {
 }
 
 /*
-* ŠÖ”–¼@GetSystemPrompt
-* ˆø@”@‚È‚µ
-* –ß‚è’l@std::stringFŒ»İ‚ÌƒVƒXƒeƒ€ƒvƒƒ“ƒvƒg
-* à@–¾@Œ»İ‚ÌƒVƒXƒeƒ€ƒvƒƒ“ƒvƒg‚ğæ“¾‚·‚éŠÖ”
+* é–¢æ•°åã€€GetSystemPrompt
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€std::stringï¼šç¾åœ¨ã®ã‚·ã‚¹ãƒ†ãƒ ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆ
+* èª¬ã€€æ˜ã€€ç¾åœ¨ã®ã‚·ã‚¹ãƒ†ãƒ ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã‚’å–å¾—ã™ã‚‹é–¢æ•°
 */
 std::string IZANAGI::GetSystemPrompt() const {
 	return systemPrompt;
 }
 
 /*
-* ŠÖ”–¼@ClearConversationHistory
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@‰ï˜b—š—ğ‚ğƒNƒŠƒA‚·‚éŠÖ”
+* é–¢æ•°åã€€ClearConversationHistory
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ä¼šè©±å±¥æ­´ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹é–¢æ•°
 */
 void IZANAGI::ClearConversationHistory() {
 	std::lock_guard<std::mutex> lock(messageMutex);
@@ -212,17 +212,17 @@ void IZANAGI::ClearConversationHistory() {
 }
 
 /*
-* ŠÖ”–¼@Initialize
-* ˆø@”@const std::string& modelPathFƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-* 	   int contextSizeFƒRƒ“ƒeƒLƒXƒgƒTƒCƒY
-* 	   int threadsFg—p‚·‚éƒXƒŒƒbƒh”
-* 	   int gpuLayersFGPU‚ÉŠ„‚è“–‚Ä‚éƒŒƒCƒ„[”
-* –ß‚è’l@boolF‰Šú‰»¬Œ÷‚È‚çtrueA¸”s‚È‚çfalse
-* à@–¾@IZANAGIƒGƒ“ƒWƒ“‚ğ‰Šú‰»‚·‚éŠÖ”
+* é–¢æ•°åã€€Initialize
+* å¼•ã€€æ•°ã€€const std::string& modelPathï¼šãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+* 	   int contextSizeï¼šã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚µã‚¤ã‚º
+* 	   int threadsï¼šä½¿ç”¨ã™ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰æ•°
+* 	   int gpuLayersï¼šGPUã«å‰²ã‚Šå½“ã¦ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°
+* æˆ»ã‚Šå€¤ã€€boolï¼šåˆæœŸåŒ–æˆåŠŸãªã‚‰trueã€å¤±æ•—ãªã‚‰false
+* èª¬ã€€æ˜ã€€IZANAGIã‚¨ãƒ³ã‚¸ãƒ³ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 */
 bool IZANAGI::Initialize(const std::string& modelPath, int contextSize, int threads, int gpuLayers) {
 	if (threads <= 0) {
-		threads = std::thread::hardware_concurrency() / 2; // •¨—ƒRƒA”‚Ì„’è
+		threads = std::thread::hardware_concurrency() / 2; // ç‰©ç†ã‚³ã‚¢æ•°ã®æ¨å®š
 		if (threads < 1) threads = 4;
 	}
 
@@ -277,10 +277,10 @@ bool IZANAGI::Initialize(const std::string& modelPath, int contextSize, int thre
 }
 
 /*
-* ŠÖ”–¼@Shutdown
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@IZANAGIƒGƒ“ƒWƒ“‚ğƒVƒƒƒbƒgƒ_ƒEƒ“‚·‚éŠÖ”
+* é–¢æ•°åã€€Shutdown
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€IZANAGIã‚¨ãƒ³ã‚¸ãƒ³ã‚’ã‚·ãƒ£ãƒƒãƒˆãƒ€ã‚¦ãƒ³ã™ã‚‹é–¢æ•°
 */
 void IZANAGI::SendAIMessage(const std::string& messageUTF8) {
 	std::lock_guard<std::mutex> lock(messageMutex);
@@ -289,10 +289,10 @@ void IZANAGI::SendAIMessage(const std::string& messageUTF8) {
 }
 
 /*
-* ŠÖ”–¼@GetAIMessage
-* ˆø@”@‚È‚µ
-* –ß‚è’l@std::stringFÅV‚ÌAI‰“šƒƒbƒZ[ƒWiShift_JISƒGƒ“ƒR[ƒhj
-* à@–¾@ÅV‚ÌAI‰“šƒƒbƒZ[ƒW‚ğæ“¾‚·‚éŠÖ”
+* é–¢æ•°åã€€GetAIMessage
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€std::stringï¼šæœ€æ–°ã®AIå¿œç­”ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼ˆShift_JISã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ï¼‰
+* èª¬ã€€æ˜ã€€æœ€æ–°ã®AIå¿œç­”ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å–å¾—ã™ã‚‹é–¢æ•°
 */
 std::string IZANAGI::GetAIMessage() {
 	std::lock_guard<std::mutex> lock(messageMutex);
@@ -300,20 +300,20 @@ std::string IZANAGI::GetAIMessage() {
 }
 
 /*
-* ŠÖ”–¼@Processing
-* ˆø@”@‚È‚µ
-* –ß‚è’l@boolFˆ—’†‚È‚çtrueA‚»‚¤‚Å‚È‚¯‚ê‚Îfalse
-* à@–¾@IZANAGIƒGƒ“ƒWƒ“‚ªŒ»İˆ—’†‚©‚Ç‚¤‚©‚ğŠm”F‚·‚éŠÖ”
+* é–¢æ•°åã€€Processing
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€boolï¼šå‡¦ç†ä¸­ãªã‚‰trueã€ãã†ã§ãªã‘ã‚Œã°false
+* èª¬ã€€æ˜ã€€IZANAGIã‚¨ãƒ³ã‚¸ãƒ³ãŒç¾åœ¨å‡¦ç†ä¸­ã‹ã©ã†ã‹ã‚’ç¢ºèªã™ã‚‹é–¢æ•°
 */
 bool IZANAGI::Processing() {
 	return isProcessing.load();
 }
 
 /*
-* ŠÖ”–¼@Shutdown
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@IZANAGIƒGƒ“ƒWƒ“‚ÌƒƒCƒ“ˆ—ƒ‹[ƒv
+* é–¢æ•°åã€€Shutdown
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€IZANAGIã‚¨ãƒ³ã‚¸ãƒ³ã®ãƒ¡ã‚¤ãƒ³å‡¦ç†ãƒ«ãƒ¼ãƒ—
 */
 void IZANAGI::ProcessingLoop() {
 	while (!shouldExit.load()) {
@@ -346,10 +346,10 @@ void IZANAGI::ProcessingLoop() {
 }
 
 /*
-* ŠÖ”–¼@GenerateResponse
-* ˆø@”@const std::string& userMessageFƒ†[ƒU[ƒƒbƒZ[ƒW
-* –ß‚è’l@std::stringF¶¬‚³‚ê‚½‰“šƒƒbƒZ[ƒW
-* à@–¾@ƒ†[ƒU[ƒƒbƒZ[ƒW‚ÉŠî‚Ã‚¢‚Ä‰“šƒƒbƒZ[ƒW‚ğ¶¬‚·‚éŠÖ”
+* é–¢æ•°åã€€GenerateResponse
+* å¼•ã€€æ•°ã€€const std::string& userMessageï¼šãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+* æˆ»ã‚Šå€¤ã€€std::stringï¼šç”Ÿæˆã•ã‚ŒãŸå¿œç­”ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+* èª¬ã€€æ˜ã€€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«åŸºã¥ã„ã¦å¿œç­”ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ç”Ÿæˆã™ã‚‹é–¢æ•°
 */
 std::string IZANAGI::GenerateResponse(const std::string& userMessage) {
 	auto start_time = std::chrono::high_resolution_clock::now();
@@ -361,7 +361,7 @@ std::string IZANAGI::GenerateResponse(const std::string& userMessage) {
 	std::vector<llama_token> tokens = Tokenize(prompt, false);
 
 	if (tokens.empty()) {
-		return "ƒGƒ‰[: ƒg[ƒNƒ“‰»‚É¸”s‚µ‚Ü‚µ‚½";
+		return "ã‚¨ãƒ©ãƒ¼: ãƒˆãƒ¼ã‚¯ãƒ³åŒ–ã«å¤±æ•—ã—ã¾ã—ãŸ";
 	}
 
 	uint32_t n_ctx = llama_n_ctx(context);
@@ -374,7 +374,7 @@ std::string IZANAGI::GenerateResponse(const std::string& userMessage) {
 			tokens = Tokenize(prompt, false);
 
 			if (tokens.size() >= n_ctx) {
-				return "ƒGƒ‰[: ƒvƒƒ“ƒvƒg‚ª’·‚·‚¬‚Ü‚·i‰ï˜b—š—ğ‚ğíŒ¸‚µ‚Ä‚àû‚Ü‚è‚Ü‚¹‚ñj";
+				return "ã‚¨ãƒ©ãƒ¼: ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆãŒé•·ã™ãã¾ã™ï¼ˆä¼šè©±å±¥æ­´ã‚’å‰Šæ¸›ã—ã¦ã‚‚åã¾ã‚Šã¾ã›ã‚“ï¼‰";
 			}
 		}
 	}
@@ -395,7 +395,7 @@ std::string IZANAGI::GenerateResponse(const std::string& userMessage) {
 	auto decode_ms = std::chrono::duration_cast<std::chrono::milliseconds>(decode_end - decode_start).count();
 
 	if (decode_result != 0) {
-		return "ƒGƒ‰[: „˜_‚É¸”s‚µ‚Ü‚µ‚½";
+		return "ã‚¨ãƒ©ãƒ¼: æ¨è«–ã«å¤±æ•—ã—ã¾ã—ãŸ";
 	}
 
 	std::string response;
@@ -464,11 +464,11 @@ std::string IZANAGI::GenerateResponse(const std::string& userMessage) {
 }
 
 /*
-* ŠÖ”–¼@Tokenize
-* ˆø@”@const std::string& textFƒg[ƒNƒ“‰»‚·‚éƒeƒLƒXƒg
-* 	   bool addBosFæ“ª‚ÉBOSƒg[ƒNƒ“‚ğ’Ç‰Á‚·‚é‚©‚Ç‚¤‚©
-* –ß‚è’l@std::vector<llama_token>Fƒg[ƒNƒ“‚ÌƒxƒNƒ^[
-* à@–¾@w’è‚³‚ê‚½ƒeƒLƒXƒg‚ğƒg[ƒNƒ“‰»‚·‚éŠÖ”
+* é–¢æ•°åã€€Tokenize
+* å¼•ã€€æ•°ã€€const std::string& textï¼šãƒˆãƒ¼ã‚¯ãƒ³åŒ–ã™ã‚‹ãƒ†ã‚­ã‚¹ãƒˆ
+* 	   bool addBosï¼šå…ˆé ­ã«BOSãƒˆãƒ¼ã‚¯ãƒ³ã‚’è¿½åŠ ã™ã‚‹ã‹ã©ã†ã‹
+* æˆ»ã‚Šå€¤ã€€std::vector<llama_token>ï¼šãƒˆãƒ¼ã‚¯ãƒ³ã®ãƒ™ã‚¯ã‚¿ãƒ¼
+* èª¬ã€€æ˜ã€€æŒ‡å®šã•ã‚ŒãŸãƒ†ã‚­ã‚¹ãƒˆã‚’ãƒˆãƒ¼ã‚¯ãƒ³åŒ–ã™ã‚‹é–¢æ•°
 */
 std::vector<llama_token> IZANAGI::Tokenize(const std::string& text, bool addBos) {
 	int nTokens = text.length() + (addBos ? 1 : 0) + 1;
@@ -488,10 +488,10 @@ std::vector<llama_token> IZANAGI::Tokenize(const std::string& text, bool addBos)
 }
 
 /*
-* ŠÖ”–¼@FormatPrompt
-* ˆø@”@const std::string& userMessageFƒ†[ƒU[ƒƒbƒZ[ƒW
-* –ß‚è’l@std::stringFƒtƒH[ƒ}ƒbƒg‚³‚ê‚½ƒvƒƒ“ƒvƒg•¶š—ñ
-* à@–¾@ƒ†[ƒU[ƒƒbƒZ[ƒW‚Æ‰ï˜b—š—ğ‚ğŠî‚Éƒvƒƒ“ƒvƒg‚ğƒtƒH[ƒ}ƒbƒg‚·‚éŠÖ”
+* é–¢æ•°åã€€FormatPrompt
+* å¼•ã€€æ•°ã€€const std::string& userMessageï¼šãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+* æˆ»ã‚Šå€¤ã€€std::stringï¼šãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã•ã‚ŒãŸãƒ—ãƒ­ãƒ³ãƒ—ãƒˆæ–‡å­—åˆ—
+* èª¬ã€€æ˜ã€€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¨ä¼šè©±å±¥æ­´ã‚’åŸºã«ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã‚’ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã™ã‚‹é–¢æ•°
 */
 std::string IZANAGI::FormatPrompt(const std::string& userMessage) {
 	std::stringstream ss;
@@ -499,7 +499,7 @@ std::string IZANAGI::FormatPrompt(const std::string& userMessage) {
 	ss << "<|im_start|>system\n";
 	ss << systemPrompt << "<|im_end|>\n";
 
-	// yÅ“K‰»z‰ï˜b—š—ğ‚ğÅV5Œ‚Ì‚İ‚É§ŒÀi10¨5j
+	// ã€æœ€é©åŒ–ã€‘ä¼šè©±å±¥æ­´ã‚’æœ€æ–°5ä»¶ã®ã¿ã«åˆ¶é™ï¼ˆ10â†’5ï¼‰
 	int historyStart = std::max(0, (int)conversationHistory.size() - 5);
 	for (int i = historyStart; i < conversationHistory.size(); ++i) {
 		if (conversationHistory[i].find("User: ") == 0) {
@@ -520,10 +520,10 @@ std::string IZANAGI::FormatPrompt(const std::string& userMessage) {
 }
 
 /*
-* ŠÖ”–¼@Shutdown
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@IZANAGIƒGƒ“ƒWƒ“‚ğƒVƒƒƒbƒgƒ_ƒEƒ“‚·‚éŠÖ”
+* é–¢æ•°åã€€Shutdown
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€IZANAGIã‚¨ãƒ³ã‚¸ãƒ³ã‚’ã‚·ãƒ£ãƒƒãƒˆãƒ€ã‚¦ãƒ³ã™ã‚‹é–¢æ•°
 */
 void IZANAGI::Shutdown() {
 	if (!isInitialized) {

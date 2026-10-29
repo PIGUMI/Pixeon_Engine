@@ -1,4 +1,4 @@
-#include "System.h"
+ï»¿#include "System.h"
 #include "ShaderManager.h"
 #include "DirectXTex/TextureLoad.h"
 #include "IMGUI/imgui.h"
@@ -227,7 +227,7 @@ void DirectX11::ApplyToneMappingPass()
 	if (vs && ps) {
 		g_pContext->VSSetShader(vs, nullptr, 0);
 		g_pContext->PSSetShader(ps, nullptr, 0);
-		// HDRƒeƒNƒXƒ`ƒƒ‚ðƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚ÉƒZƒbƒg
+		// HDRãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«ã‚»ãƒƒãƒˆ
 		g_pContext->PSSetShaderResources(0, 1, _hdrSRV.GetAddressOf());
 	}
 }
@@ -239,8 +239,8 @@ void DirectX11::Uninit()
 	delete g_pRTV;
 	g_pRTV = nullptr;
 
-	// ComPtr‚ÍŽ©“®‰ð•ú‚³‚ê‚é‚½‚ß–¾Ž¦“I‚ÈRelease‚Í•s—v
-	// ‚½‚¾‚µContext‚ÌClearState‚ÆSwapChain‚Ìƒtƒ‹ƒXƒNƒŠ[ƒ“‰ðœ‚Í•K—v
+	// ComPtrã¯è‡ªå‹•è§£æ”¾ã•ã‚Œã‚‹ãŸã‚æ˜Žç¤ºçš„ãªReleaseã¯ä¸è¦
+	// ãŸã ã—Contextã®ClearStateã¨SwapChainã®ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³è§£é™¤ã¯å¿…è¦
 	if (g_pContext)
 		g_pContext->ClearState();
 	if (g_pSwapChain)

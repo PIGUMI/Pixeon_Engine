@@ -1,5 +1,5 @@
-// AssetManager
-// ƒAƒZƒbƒg‚Ìi/o‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+ï»¿// AssetManager
+// ã‚¢ã‚»ãƒƒãƒˆã®i/oã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
 
 #ifndef ASSETMANAGER_H
 #define ASSETMANAGER_H
