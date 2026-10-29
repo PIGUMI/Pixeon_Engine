@@ -8,6 +8,7 @@
 #include "GBuffer.h"
 #include "LightingPass.h"
 #include "GUI.h"
+#include "Builder.h"
 #include "AssetManager.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
@@ -114,6 +115,7 @@ int MainFrame::Init(const EngineConfig& InPut)
 	_finalRenderTarget->SetRenderZBuffer(false);
 
 	GUI::GetInstance()->Init();
+	if (IsEditorMode()) Builder::GetInstance()->Init();
 	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
 	ComponentManager::GetInstance()->Init();
 	ScriptManager::Instance().RegisterAllScripts();
@@ -492,6 +494,7 @@ void MainFrame::UnInit()
 	AssetManager::Instance()->ListenerRemove(_assetListenerId);
 	AssetManager::Instance()->WatchStop();
 	if (IsEditorMode()) SettingManager::GetInstance()->SaveConfig();
+	Builder::DeleteInstance();
 	GUI::DestroyInstance();
 	ComponentManager::DestroyInstance();
 	SettingManager::DestroyInstance();

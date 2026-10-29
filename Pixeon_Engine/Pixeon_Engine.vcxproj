@@ -217,6 +217,10 @@
     <ClInclude Include="..\Common\HashUtil.h" />
     <ClInclude Include="..\Common\PixArchive.h" />
     <ClInclude Include="..\Common\VirtualFileSystem.h" />
+    <ClInclude Include="..\Common\GameBuilder.h" />
+    <ClInclude Include="..\Common\ShaderCompiler.h" />
+    <ClInclude Include="..\Common\ShaderBindings.h" />
+    <ClInclude Include="..\Common\EngineApi.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -290,6 +294,8 @@
     <ClCompile Include="..\Common\HashUtil.cpp" />
     <ClCompile Include="..\Common\PixArchive.cpp" />
     <ClCompile Include="..\Common\VirtualFileSystem.cpp" />
+    <ClCompile Include="..\Common\GameBuilder.cpp" />
+    <ClCompile Include="..\Common\ShaderCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="今後の修正.txt" />

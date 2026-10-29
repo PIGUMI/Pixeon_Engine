@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // Editor GUI Class
 #include "IMGUI/imgui.h"
 #include "IMGUI/imgui_impl_dx11.h"
@@ -47,6 +47,7 @@ public:
 	bool bShaderEditorWindow_;
 	bool bEffectManagerWindow_;
 	bool bAISettingWindow_;
+	bool bBuildWindow_ = false;
 private:
 	GUI() = default;
 	~GUI() = default;

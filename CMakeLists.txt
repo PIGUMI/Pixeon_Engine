@@ -22,9 +22,11 @@ endif()
 add_library(PixCommon STATIC
   Common/AssetType.cpp
   Common/FileUtil.cpp
+  Common/GameBuilder.cpp
   Common/GameManifest.cpp
   Common/HashUtil.cpp
   Common/PixArchive.cpp
+  Common/ShaderCompiler.cpp
   Common/VirtualFileSystem.cpp
 )
 target_include_directories(PixCommon PUBLIC Common Pixeon_Engine)
@@ -34,6 +36,10 @@ target_link_libraries(PixCommon PUBLIC Threads::Threads)
 # ---- アセットパッキングツール ---------------------------------------------
 add_executable(PixAssetPacker "Asset packaging tool/main.cpp")
 target_link_libraries(PixAssetPacker PRIVATE PixCommon)
+
+# ---- コマンドラインビルドツール ------------------------------------------
+add_executable(PixeonBuild BuildExe/main.cpp)
+target_link_libraries(PixeonBuild PRIVATE PixCommon)
 
 # ---- テスト ---------------------------------------------------------------
 enable_testing()

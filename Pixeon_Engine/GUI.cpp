@@ -1,4 +1,5 @@
 ﻿#include "GUI.h"
+#include "Builder.h"
 #include "System.h"
 #include "MainFrame.h"
 #include "File.h"
@@ -128,6 +129,7 @@ void GUI::BeginDraw()
 	ShaderEditorWindow();
 	EffectManagerWindow();
 	AISettingWindow();
+	Builder::GetInstance()->WindowDraw(&bBuildWindow_);
 }
 
 void GUI::EndDraw()
@@ -191,6 +193,12 @@ void GUI::MainMenuBar()
 		if (ImGui::BeginMenu(ShiftJISToUTF8("編集").c_str()))
 		{
 			if (ImGui::MenuItem(ShiftJISToUTF8("入力デバック").c_str())) bInputDebugWindow_ = true;
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu(ShiftJISToUTF8("ビルド").c_str()))
+		{
+			if (ImGui::MenuItem(ShiftJISToUTF8("ゲームをビルド...").c_str())) bBuildWindow_ = true;
 			ImGui::EndMenu();
 		}
 
