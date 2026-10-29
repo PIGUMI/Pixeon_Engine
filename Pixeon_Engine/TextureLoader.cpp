@@ -7,6 +7,22 @@
 #include "RHI/DXGI/DXGICommon.h"
 #include "DirectXTex/DirectXTex.h"
 
+#if defined(_MSC_VER)
+#if defined(_M_IX86)
+#ifdef _DEBUG
+#pragma comment(lib, "DirectXTex/Win32/Debug/DirectXTex.lib")
+#else
+#pragma comment(lib, "DirectXTex/Win32/Release/DirectXTex.lib")
+#endif
+#else
+#ifdef _DEBUG
+#pragma comment(lib, "DirectXTex/x64/Debug/DirectXTex.lib")
+#else
+#pragma comment(lib, "DirectXTex/x64/Release/DirectXTex.lib")
+#endif
+#endif
+#endif
+
 namespace TextureLoader {
 	namespace {
 		/*

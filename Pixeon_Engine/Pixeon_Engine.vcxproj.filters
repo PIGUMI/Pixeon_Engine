@@ -1,6 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Header Files\RHI\Vulkan">
+      <UniqueIdentifier>{c05abff8-bbf3-481f-b13e-f8ec0cad2216}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RHI\Vulkan">
+      <UniqueIdentifier>{e04f3667-440a-4444-96c9-22d091065cb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RHI\D3D12">
+      <UniqueIdentifier>{2c8e9b05-7f15-4a78-a0a5-395d3d925399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RHI\D3D12">
+      <UniqueIdentifier>{c645bd19-1421-4e3e-9019-ca674e37d4d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RHI\D3D11">
+      <UniqueIdentifier>{24f30b09-464a-45ed-8db1-fed0b1a13e37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RHI\D3D11">
+      <UniqueIdentifier>{c949162b-d775-4482-b520-7a8ad43bb1a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RHI\DXGI">
+      <UniqueIdentifier>{dd805e3f-2192-4263-9a82-5ce30298bc9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RHI\DXGI">
+      <UniqueIdentifier>{bcecef79-61dc-4986-91c8-b2f1163faf39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RHI">
+      <UniqueIdentifier>{4a66b348-fee8-4e4b-b4fc-d58c1a5b55e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6a18f35c-73d8-45da-9fa6-e840adb8a7dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RHI">
+      <UniqueIdentifier>{3872262c-c38f-43ae-827d-058ff46a53e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{abe8578b-9f77-449c-80a6-2057000952ef}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Editor">
       <UniqueIdentifier>{4a2bda3e-53f7-4bf0-856c-5285e0ed353e}</UniqueIdentifier>
     </Filter>
@@ -92,6 +128,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\Vulkan\SpirvReflect.cpp">
+      <Filter>Source Files\RHI\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\Vulkan\VulkanDevice.cpp">
+      <Filter>Source Files\RHI\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\D3D12\D3D12Device.cpp">
+      <Filter>Source Files\RHI\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\D3D11\D3D11ImGui.cpp">
+      <Filter>Source Files\RHI\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\D3D11\D3D11Device.cpp">
+      <Filter>Source Files\RHI\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\DXGI\DXGICommon.cpp">
+      <Filter>Source Files\RHI\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\RHIImGui.cpp">
+      <Filter>Source Files\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\RHICommon.cpp">
+      <Filter>Source Files\RHI</Filter>
+    </ClCompile>
     <ClCompile Include="..\Common\ShaderCompiler.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -260,7 +323,7 @@
     <ClCompile Include="Pixeon2_API.cpp">
       <Filter>ソース ファイル\1_MainFrame\API</Filter>
     </ClCompile>
-    <ClCompile Include="ColorGradingEffect .cpp">
+    <ClCompile Include="ColorGradingEffect.cpp">
       <Filter>ソース ファイル\1_MainFrame\PostEffect</Filter>
     </ClCompile>
     <ClCompile Include="IZANAGI.cpp">
@@ -313,6 +376,30 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\Vulkan\SpirvReflect.h">
+      <Filter>Header Files\RHI\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\D3D12\D3D12Native.h">
+      <Filter>Header Files\RHI\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\D3D11\D3D11Native.h">
+      <Filter>Header Files\RHI\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\DXGI\DXGICommon.h">
+      <Filter>Header Files\RHI\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\RHIImGuiShaders.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\RHITypes.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\RHI.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
     <ClInclude Include="..\Common\EngineApi.h">
       <Filter>Common</Filter>
     </ClInclude>

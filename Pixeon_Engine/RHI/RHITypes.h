@@ -244,6 +244,7 @@ namespace RHI {
 	struct ShaderResourceBinding {
 		std::string name;
 		uint32_t i_Slot = 0;
+		bool b_Array = false;          // Texture2DArray（Vulkan で未設定スロットのダミーを選ぶのに使う）
 	};
 	struct ShaderInputAttribute {
 		std::string semantic;          // 大文字・末尾の数字を除いたもの（"TEXCOORD"）

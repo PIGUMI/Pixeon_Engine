@@ -131,4 +131,26 @@ namespace RHI {
 		}
 		return true;
 	}
+
+	/*
+	* 関数名　DxbcCompile
+	* 引　数　source / length：HLSL　entry：エントリ関数　target：vs_5_0 など
+	* 　　　　out_bytecode：出力　out_error：エラー内容
+	* 戻り値　成功なら true
+	* 説　明　RHI が内部で使う小さなシェーダー（ImGui など）を実行時にコンパイルする
+	*/
+	bool DxbcCompile(const char* source, size_t length, const char* entry, const char* target,
+		std::vector<uint8_t>& out_bytecode, std::string* out_error)
+	{
+		Microsoft::WRL::ComPtr<ID3DBlob> code, errors;
+		const HRESULT hr = D3DCompile(source, length, nullptr, nullptr, nullptr, entry, target,
+			D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, code.GetAddressOf(), errors.GetAddressOf());
+		if (FAILED(hr)) {
+			if (out_error && errors) *out_error = std::string((const char*)errors->GetBufferPointer(), errors->GetBufferSize());
+			return false;
+		}
+		const uint8_t* p = (const uint8_t*)code->GetBufferPointer();
+		out_bytecode.assign(p, p + code->GetBufferSize());
+		return true;
+	}
 }

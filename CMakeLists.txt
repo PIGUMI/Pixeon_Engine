@@ -46,3 +46,31 @@ enable_testing()
 add_executable(PixCommonTests Tests/CommonTests.cpp)
 target_link_libraries(PixCommonTests PRIVATE PixCommon)
 add_test(NAME PixCommonTests COMMAND PixCommonTests WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+# ---- RHI Vulkan バックエンドの検証 (Linux / Windows) ----------------------
+# GPU が無い環境でも Mesa の lavapipe で実行できる
+find_package(Vulkan QUIET)
+if(Vulkan_FOUND)
+  add_library(PixRHIVulkan STATIC
+    Pixeon_Engine/RHI/RHICommon.cpp
+    Pixeon_Engine/RHI/RHIImGui.cpp
+    Pixeon_Engine/RHI/Vulkan/SpirvReflect.cpp
+    Pixeon_Engine/RHI/Vulkan/VulkanDevice.cpp
+    Pixeon_Engine/IMGUI/imgui.cpp
+    Pixeon_Engine/IMGUI/imgui_draw.cpp
+    Pixeon_Engine/IMGUI/imgui_tables.cpp
+    Pixeon_Engine/IMGUI/imgui_widgets.cpp
+  )
+  target_compile_definitions(PixRHIVulkan PUBLIC PIXEON_RHI_VULKAN)
+  target_include_directories(PixRHIVulkan PUBLIC Pixeon_Engine)
+  target_link_libraries(PixRHIVulkan PUBLIC Vulkan::Vulkan)
+  if(NOT MSVC)
+    target_compile_options(PixRHIVulkan PRIVATE -Wno-missing-field-initializers)
+  endif()
+
+  add_executable(PixRHIVulkanTests Tests/RHIVulkanTests.cpp)
+  target_link_libraries(PixRHIVulkanTests PRIVATE PixRHIVulkan)
+  target_compile_definitions(PixRHIVulkanTests PRIVATE
+    PIXEON_SHADER_DIR="${CMAKE_CURRENT_SOURCE_DIR}/Exe/SceneRoot/Shader/spv")
+  add_test(NAME PixRHIVulkanTests COMMAND PixRHIVulkanTests)
+endif()

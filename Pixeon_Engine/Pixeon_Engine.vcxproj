@@ -76,6 +76,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <!-- 描画バックエンド: D3D11 / D3D12 は常に有効。Vulkan は Vulkan SDK (環境変数 VULKAN_SDK) がある場合のみ有効 -->
+  <PropertyGroup>
+    <PixeonRhiDefines>PIXEON_RHI_D3D11;PIXEON_RHI_D3D12</PixeonRhiDefines>
+    <PixeonRhiIncludes></PixeonRhiIncludes>
+    <PixeonRhiLibDirs></PixeonRhiLibDirs>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VULKAN_SDK)' != ''">
+    <PixeonRhiDefines>$(PixeonRhiDefines);PIXEON_RHI_VULKAN</PixeonRhiDefines>
+    <PixeonRhiIncludes>$(VULKAN_SDK)\Include</PixeonRhiIncludes>
+    <PixeonRhiLibDirs>$(VULKAN_SDK)\Lib</PixeonRhiLibDirs>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -106,16 +117,17 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PixeonEngine_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PixeonEngine_EXPORTS;NOMINMAX;$(PixeonRhiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);$(VC_IncludePath);$(ProjectDir)BulletPhysics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)BulletPhysics;$(ProjectDir)Effekseer\include;$(ProjectDir)Effekseer\include\Effekseer;$(PixeonRhiIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)BulletPhysics\Dlib;$(ProjectDir)Effekseer\lib;$(PixeonRhiLibDirs);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -124,17 +136,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;PixeonEngine_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;PixeonEngine_EXPORTS;NOMINMAX;$(PixeonRhiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)BulletPhysics;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)Effekseer\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)BulletPhysics;$(ProjectDir)Effekseer\include;$(ProjectDir)Effekseer\include\Effekseer;$(PixeonRhiIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)BulletPhysics\Dlib;$(VC_IncludePath);$(ProjectDir)Effekseer\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;Effekseer.lib;EffekseerRendererDX11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)BulletPhysics\Dlib;$(ProjectDir)Effekseer\lib;$(PixeonRhiLibDirs);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -221,6 +233,14 @@
     <ClInclude Include="..\Common\ShaderCompiler.h" />
     <ClInclude Include="..\Common\ShaderBindings.h" />
     <ClInclude Include="..\Common\EngineApi.h" />
+    <ClInclude Include="RHI\RHI.h" />
+    <ClInclude Include="RHI\RHITypes.h" />
+    <ClInclude Include="RHI\RHIImGuiShaders.h" />
+    <ClInclude Include="RHI\DXGI\DXGICommon.h" />
+    <ClInclude Include="RHI\D3D11\D3D11Native.h" />
+    <ClInclude Include="RHI\D3D12\D3D12Native.h" />
+    <ClInclude Include="RHI\Vulkan\SpirvReflect.h" />
+    <ClInclude Include="TextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -239,7 +259,7 @@
     <ClCompile Include="CapsuleCollision.cpp" />
     <ClCompile Include="ChatWindow.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
-    <ClCompile Include="ColorGradingEffect .cpp" />
+    <ClCompile Include="ColorGradingEffect.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="EasingGraph.cpp" />
     <ClCompile Include="EffectComponent.cpp" />
@@ -296,6 +316,15 @@
     <ClCompile Include="..\Common\VirtualFileSystem.cpp" />
     <ClCompile Include="..\Common\GameBuilder.cpp" />
     <ClCompile Include="..\Common\ShaderCompiler.cpp" />
+    <ClCompile Include="RHI\RHICommon.cpp" />
+    <ClCompile Include="RHI\RHIImGui.cpp" />
+    <ClCompile Include="RHI\DXGI\DXGICommon.cpp" />
+    <ClCompile Include="RHI\D3D11\D3D11Device.cpp" />
+    <ClCompile Include="RHI\D3D11\D3D11ImGui.cpp" />
+    <ClCompile Include="RHI\D3D12\D3D12Device.cpp" />
+    <ClCompile Include="RHI\Vulkan\VulkanDevice.cpp" />
+    <ClCompile Include="RHI\Vulkan\SpirvReflect.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="今後の修正.txt" />

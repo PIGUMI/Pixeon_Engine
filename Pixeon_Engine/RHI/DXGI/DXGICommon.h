@@ -20,6 +20,10 @@ namespace RHI {
 
 	// DXBC から定数バッファ・テクスチャ・サンプラーの反射情報を取り出す
 	bool DxbcReflect(const void* bytecode, size_t size, ShaderReflection& out_reflection);
+
+	// HLSL ソースを DXBC にコンパイルする（d3dcompiler_47.dll。RHI 内蔵シェーダー用）
+	bool DxbcCompile(const char* source, size_t length, const char* entry, const char* target,
+		std::vector<uint8_t>& out_bytecode, std::string* out_error = nullptr);
 }
 
 #endif // !RHI_DXGI_COMMON_H
