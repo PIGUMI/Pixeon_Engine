@@ -144,7 +144,6 @@
     <ClInclude Include="Animator2DFrame.h" />
     <ClInclude Include="Animator2DManager.h" />
     <ClInclude Include="API.h" />
-    <ClInclude Include="ArchiveFormat.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetTypes.h" />
     <ClInclude Include="AtmosphericFogEffect.h" />
@@ -174,7 +173,6 @@
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GameRenderTarget.h" />
-    <ClInclude Include="HashUtill.h" />
     <ClInclude Include="ImageRender.h" />
     <ClInclude Include="IMGUI\imconfig.h" />
     <ClInclude Include="IMGUI\imgui.h" />
@@ -213,6 +211,11 @@
     <ClInclude Include="TimelineEditor.h" />
     <ClInclude Include="WeightFix.h" />
     <ClInclude Include="_Geometry.h" />
+    <ClInclude Include="..\Common\AssetType.h" />
+    <ClInclude Include="..\Common\FileUtil.h" />
+    <ClInclude Include="..\Common\GameManifest.h" />
+    <ClInclude Include="..\Common\HashUtil.h" />
+    <ClInclude Include="..\Common\PixArchive.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -247,7 +250,6 @@
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameRenderTarget.cpp" />
-    <ClCompile Include="HashUtill.cpp" />
     <ClCompile Include="ImageRender.cpp" />
     <ClCompile Include="IMGUI\imgui.cpp" />
     <ClCompile Include="IMGUI\imgui_demo.cpp" />
@@ -281,6 +283,11 @@
     <ClCompile Include="Animator2D.cpp" />
     <ClCompile Include="TimelineEditor.cpp" />
     <ClCompile Include="_Geometry.cpp" />
+    <ClCompile Include="..\Common\AssetType.cpp" />
+    <ClCompile Include="..\Common\FileUtil.cpp" />
+    <ClCompile Include="..\Common\GameManifest.cpp" />
+    <ClCompile Include="..\Common\HashUtil.cpp" />
+    <ClCompile Include="..\Common\PixArchive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="今後の修正.txt" />

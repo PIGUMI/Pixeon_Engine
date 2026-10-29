@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{fdc99fbe-2d01-46e0-9034-8c5fe7c9738b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ソース ファイル">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -86,6 +89,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\PixArchive.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\HashUtil.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\GameManifest.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\FileUtil.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\AssetType.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
     </ClCompile>
@@ -115,9 +133,6 @@
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
-    </ClCompile>
-    <ClCompile Include="HashUtill.cpp">
-      <Filter>ソース ファイル\1_MainFrame\Sys\Archive</Filter>
     </ClCompile>
     <ClCompile Include="ModelManager.cpp">
       <Filter>ソース ファイル\1_MainFrame\Manager</Filter>
@@ -286,6 +301,21 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\PixArchive.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\HashUtil.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\GameManifest.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\FileUtil.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\AssetType.h">
+      <Filter>Common</Filter>
+    </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>ソース ファイル\1_MainFrame\BaseClass</Filter>
     </ClInclude>
@@ -324,12 +354,6 @@
     </ClInclude>
     <ClInclude Include="Struct.h">
       <Filter>ソース ファイル\1_MainFrame\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="ArchiveFormat.h">
-      <Filter>ソース ファイル\1_MainFrame\Sys\Archive</Filter>
-    </ClInclude>
-    <ClInclude Include="HashUtill.h">
-      <Filter>ソース ファイル\1_MainFrame\Sys\Archive</Filter>
     </ClInclude>
     <ClInclude Include="ModelManager.h">
       <Filter>ソース ファイル\1_MainFrame\Manager</Filter>

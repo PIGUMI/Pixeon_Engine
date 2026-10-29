@@ -7,8 +7,12 @@
 #include <vector>
 
 namespace HashUtil {
+	// CRC32 テーブルの初期化（CalcCRC32 内で自動的に行われるため呼び出しは任意）
 	void InitCRC32();
 	uint32_t CalcCRC32(const void* data, size_t len, uint32_t crc = 0xFFFFFFFFu);
+
+	// FNV-1a 64bit（アセット ID などの高速ハッシュ用）
+	uint64_t CalcFNV1a64(const void* data, size_t len);
 
 	// 簡易 SHA-256 実装
 	struct SHA256Ctx {

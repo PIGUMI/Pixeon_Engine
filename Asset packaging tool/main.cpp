@@ -1,157 +1,184 @@
-﻿#include <windows.h>
-#include <cstdint>
-#include <vector>
-#include <string>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
+﻿/*
+* ファイル名　main (Asset packaging tool)
+* 説　　　明　ディレクトリを PIXPAK アーカイブへまとめるコマンドラインツール
+*
+* 使用方法
+*   旧形式 : PixAssetPacker <input_dir> <output.pak> [alignment]
+*   新形式 : PixAssetPacker --out <output.pak> [--align N] [--exclude ext,ext]
+*                           --mount <prefix>=<dir> [--mount <prefix>=<dir> ...]
+*            例) --mount assets=SceneRoot/Assets --mount scene=SceneRoot/Scene
+*   --list <archive.pak>    : アーカイブの中身を表示する
+*/
+#include "../Common/PixArchive.h"
+#include "../Common/AssetType.h"
+#include "../Common/FileUtil.h"
 #include <algorithm>
+#include <filesystem>
 #include <iomanip>
-#include "ArchiveFormat.h"
-#include "HashUtill.h"
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#if defined(_WIN32)
+#include <windows.h>
+#endif
 
 namespace fs = std::filesystem;
 
-static uint64_t AlignValue(uint64_t v, uint64_t a) { return (v + (a - 1)) & ~(a - 1); }
+namespace {
+	struct MountSpec {
+		std::string prefix;
+		std::string dir;
+	};
 
-struct TempFileEntry {
-    std::string relativePath;
-    uint64_t originalSize = 0;
-    uint64_t storedSize = 0;
-    uint64_t offset = 0;
-    uint32_t crc32 = 0;
-    uint8_t  compression = 0;
-    std::array<uint8_t, 32> sha256{};
-};
+	struct PackOptions {
+		std::string outPath;
+		uint32_t i_Alignment = PixArchive::ALIGNMENT_DEFAULT;
+		std::vector<MountSpec> mounts;
+		std::set<std::string> excludeExts;
+		std::string listPath;
+	};
 
-static void CollectFiles(const fs::path& root, std::vector<TempFileEntry>& out) {
-    for (auto& p : fs::recursive_directory_iterator(root)) {
-        if (!p.is_regular_file()) continue;
-        auto rel = fs::relative(p.path(), root);
-        std::string r = rel.generic_string();
-        std::transform(r.begin(), r.end(), r.begin(), [](unsigned char c) { return (char)tolower(c); });
-        TempFileEntry e;
-        e.relativePath = r;
-        out.push_back(std::move(e));
-    }
+	/*
+	* 関数名　UsagePrint
+	* 説　明　使用方法を表示する
+	*/
+	void UsagePrint()
+	{
+		std::cout <<
+			"使用方法:\n"
+			"  PixAssetPacker <input_dir> <output.pak> [alignment]\n"
+			"  PixAssetPacker --out <output.pak> [--align N] [--exclude ext,ext] --mount <prefix>=<dir> ...\n"
+			"  PixAssetPacker --list <archive.pak>\n";
+	}
+
+	/*
+	* 関数名　ExcludeParse
+	* 引　数　csv：カンマ区切りの拡張子　out_set：出力
+	* 説　明　除外拡張子リストを解釈する
+	*/
+	void ExcludeParse(const std::string& csv, std::set<std::string>& out_set)
+	{
+		std::stringstream ss(csv);
+		std::string item;
+		while (std::getline(ss, item, ',')) {
+			if (!item.empty() && item.front() == '.') item.erase(0, 1);
+			if (!item.empty()) out_set.insert(AssetTypeUtil::ExtensionGet("x." + item));
+		}
+	}
+
+	/*
+	* 関数名　ArgumentsParse
+	* 引　数　argc/argv：コマンドライン　out_opt：出力
+	* 戻り値　解釈できたら true
+	* 説　明　新旧どちらの形式も受け付ける
+	*/
+	bool ArgumentsParse(int argc, char* argv[], PackOptions& out_opt)
+	{
+		if (argc >= 3 && argv[1][0] != '-') {
+			out_opt.mounts.push_back({ "", argv[1] });
+			out_opt.outPath = argv[2];
+			if (argc >= 4) out_opt.i_Alignment = (uint32_t)std::max(1ul, std::stoul(argv[3]));
+			return true;
+		}
+		for (int i = 1; i < argc; ++i) {
+			const std::string a = argv[i];
+			auto next = [&]() -> std::string { return (i + 1 < argc) ? argv[++i] : ""; };
+			if (a == "--out") out_opt.outPath = next();
+			else if (a == "--align") out_opt.i_Alignment = (uint32_t)std::max(1ul, std::stoul(next()));
+			else if (a == "--exclude") ExcludeParse(next(), out_opt.excludeExts);
+			else if (a == "--list") out_opt.listPath = next();
+			else if (a == "--mount") {
+				const std::string spec = next();
+				const size_t eq = spec.find('=');
+				if (eq == std::string::npos) return false;
+				out_opt.mounts.push_back({ spec.substr(0, eq), spec.substr(eq + 1) });
+			}
+			else return false;
+		}
+		return !out_opt.listPath.empty() || (!out_opt.outPath.empty() && !out_opt.mounts.empty());
+	}
+
+	/*
+	* 関数名　MountCollect
+	* 引　数　mount：マウント指定　opt：オプション　writer：登録先
+	* 戻り値　成功なら true
+	* 説　明　ディレクトリを再帰的に走査して Writer に登録する
+	*/
+	bool MountCollect(const MountSpec& mount, const PackOptions& opt, PixArchive::Writer& writer)
+	{
+		const fs::path root = FileUtil::PathToNative(mount.dir);
+		std::error_code ec;
+		if (!fs::is_directory(root, ec)) {
+			std::cout << "入力ディレクトリが存在しません: " << mount.dir << "\n";
+			return false;
+		}
+		for (auto it = fs::recursive_directory_iterator(root, ec); !ec && it != fs::recursive_directory_iterator(); it.increment(ec)) {
+			if (!it->is_regular_file()) continue;
+			const std::string rel = FileUtil::PathToUtf8(fs::relative(it->path(), root));
+			if (opt.excludeExts.count(AssetTypeUtil::ExtensionGet(rel))) continue;
+			const std::string vpath = mount.prefix.empty() ? rel : (mount.prefix + "/" + rel);
+			writer.FileAdd(vpath, FileUtil::PathToUtf8(it->path()), (uint8_t)AssetTypeUtil::TypeFromPath(rel));
+		}
+		return true;
+	}
+
+	/*
+	* 関数名　ArchiveList
+	* 引　数　path：アーカイブ
+	* 戻り値　終了コード
+	* 説　明　アーカイブの内容を一覧表示する
+	*/
+	int ArchiveList(const std::string& path)
+	{
+		PixArchive::Reader reader;
+		if (!reader.Open(path)) {
+			std::cout << reader.GetLastError() << "\n";
+			return 1;
+		}
+		std::cout << "version=" << reader.GetVersion() << " files=" << reader.GetFileCount() << "\n";
+		for (auto& p : reader.FileListGet()) {
+			const auto* e = reader.EntryFind(p);
+			std::cout << std::setw(10) << e->originalSize << "  "
+				<< std::setw(12) << AssetTypeUtil::NameGet((AssetType)e->assetType) << "  " << p << "\n";
+		}
+		return 0;
+	}
 }
 
-int main(int argc, char* argv[]) {
-    SetConsoleOutputCP(CP_UTF8);
-    if (argc < 3 || argc > 4) {
-        std::cout << "使用方法: PixAssetPacker.exe <input_dir> <output.pak> [alignment]\n";
-        return 1;
-    }
+int main(int argc, char* argv[])
+{
+#if defined(_WIN32)
+	SetConsoleOutputCP(CP_UTF8);
+#endif
+	PackOptions opt;
+	if (!ArgumentsParse(argc, argv, opt)) {
+		UsagePrint();
+		return 1;
+	}
+	if (!opt.listPath.empty()) return ArchiveList(opt.listPath);
 
-    fs::path inputDir = argv[1];
-    fs::path outputPak = argv[2];
-    uint32_t alignment = 16;
-    if (argc == 4) alignment = std::max<uint32_t>(1, std::stoul(argv[3]));
+	PixArchive::Writer writer;
+	writer.SetAlignment(opt.i_Alignment);
+	for (auto& m : opt.mounts) {
+		if (!MountCollect(m, opt, writer)) return 1;
+	}
+	if (writer.GetFileCount() == 0) {
+		std::cout << "対象ファイルがありません\n";
+		return 1;
+	}
 
-    if (!fs::exists(inputDir) || !fs::is_directory(inputDir)) {
-        std::cout << "入力ディレクトリが存在しません\n";
-        return 1;
-    }
-
-    std::vector<TempFileEntry> files;
-    CollectFiles(inputDir, files);
-    if (files.empty()) {
-        std::cout << "対象ファイルがありません\n";
-        return 1;
-    }
-
-    HashUtil::InitCRC32();
-
-    PakHeader header{};
-    memcpy(header.magic, "PIXPAK\0", 8);
-    header.version = 2;  // v2
-    header.fileCount = (uint32_t)files.size();
-    header.tocOffset = 0;
-    header.flags = 0;
-    header.alignment = alignment;
-    memset(header.reserved, 0, sizeof(header.reserved));
-
-    std::ofstream ofs(outputPak, std::ios::binary);
-    if (!ofs) {
-        std::cout << "出力を開けません: " << outputPak << "\n";
-        return 1;
-    }
-
-    ofs.write(reinterpret_cast<const char*>(&header), sizeof(header));
-    uint64_t currentOffset = sizeof(header);
-
-    size_t idx = 0;
-    for (auto& fe : files) {
-        uint64_t aligned = AlignValue(currentOffset, header.alignment);
-        if (aligned != currentOffset) {
-            size_t pad = (size_t)(aligned - currentOffset);
-            static const char padBuf[4096]{};
-            while (pad > 0) {
-                size_t chunk = std::min<size_t>(pad, sizeof(padBuf));
-                ofs.write(padBuf, chunk);
-                pad -= chunk;
-            }
-            currentOffset = aligned;
-        }
-
-        fs::path full = inputDir / fe.relativePath;
-        std::ifstream ifs(full, std::ios::binary | std::ios::ate);
-        if (!ifs) {
-            std::cout << "読込失敗: " << full << "\n";
-            return 1;
-        }
-        uint64_t sz = (uint64_t)ifs.tellg();
-        ifs.seekg(0, std::ios::beg);
-        std::vector<uint8_t> buf;
-        buf.resize((size_t)sz);
-        if (sz > 0) {
-            if (!ifs.read(reinterpret_cast<char*>(buf.data()), sz)) {
-                std::cout << "読込中エラー: " << full << "\n";
-                return 1;
-            }
-        }
-
-        fe.originalSize = sz;
-        fe.storedSize = sz;
-        fe.offset = currentOffset;
-        fe.crc32 = HashUtil::CalcCRC32(buf.data(), buf.size());
-        auto h = HashUtil::SHA256(buf);
-        fe.sha256 = h;
-
-        if (sz > 0) ofs.write(reinterpret_cast<const char*>(buf.data()), sz);
-        currentOffset += sz;
-
-        ++idx;
-        if (idx % 10 == 0 || idx == files.size()) {
-            double prog = (double)idx / files.size() * 100.0;
-            std::cout << "\r書き込み中... " << std::fixed << std::setprecision(1) << prog << "%";
-        }
-    }
-    std::cout << "\n";
-
-    header.tocOffset = currentOffset;
-
-    // TOC 書き込み (v2)
-    for (auto& fe : files) {
-        uint16_t nameLen = (uint16_t)fe.relativePath.size();
-        ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(nameLen));
-        ofs.write(fe.relativePath.data(), nameLen);
-        ofs.write(reinterpret_cast<const char*>(&fe.compression), 1);
-        uint8_t reservedC[3]{};
-        ofs.write(reinterpret_cast<const char*>(reservedC), 3);
-        ofs.write(reinterpret_cast<const char*>(&fe.crc32), sizeof(fe.crc32));
-        ofs.write(reinterpret_cast<const char*>(&fe.originalSize), sizeof(fe.originalSize));
-        ofs.write(reinterpret_cast<const char*>(&fe.storedSize), sizeof(fe.storedSize));
-        ofs.write(reinterpret_cast<const char*>(&fe.offset), sizeof(fe.offset));
-        ofs.write(reinterpret_cast<const char*>(fe.sha256.data()), fe.sha256.size());
-    }
-
-    ofs.seekp(0, std::ios::beg);
-    ofs.write(reinterpret_cast<const char*>(&header), sizeof(header));
-    ofs.flush();
-
-    std::cout << "パック完了: " << outputPak << "\n";
-    std::cout << "ファイル数: " << files.size() << "\n";
-    std::cout << "TOC Offset: " << header.tocOffset << "\n";
-    return 0;
+	const bool ok = writer.ArchiveWrite(opt.outPath, [](size_t done, size_t total, const std::string&) {
+		if (done % 10 == 0 || done == total)
+			std::cout << "\r書き込み中... " << std::fixed << std::setprecision(1) << (100.0 * done / total) << "%" << std::flush;
+		});
+	std::cout << "\n";
+	if (!ok) {
+		std::cout << "エラー: " << writer.GetLastError() << "\n";
+		return 1;
+	}
+	std::cout << "パック完了: " << opt.outPath << " (" << writer.GetFileCount() << " files)\n";
+	return 0;
 }
