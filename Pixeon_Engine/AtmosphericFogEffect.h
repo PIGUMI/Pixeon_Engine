@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include "LayerSettings.h"
-#include <d3d11.h>
 #include <DirectXMath.h>
-#include <wrl/client.h>
 
 class AtmosphericFogEffect : public PostEffectBase
 {
@@ -11,8 +9,8 @@ public:
 	~AtmosphericFogEffect() override;
 
 	void Apply(
-		ID3D11ShaderResourceView* input,
-		ID3D11RenderTargetView* output,
+		RHI::Texture* input,
+		RHI::Texture* output,
 		int width, int height) override;
 
 	void DrawInspector() override;
@@ -22,7 +20,7 @@ public:
 	void LoadFromJson(const nlohmann::json& j)      override;
 	PostEffectBase* Clone()   const override;
 
-	void SetDepthSRV(ID3D11ShaderResourceView* srv) { m_depthSRV = srv; }
+	void SetDepthTexture(RHI::Texture* depth) { m_depth = depth; }
 
 	void SetCameraMatrices(
 		const DirectX::XMMATRIX& proj,
@@ -50,14 +48,13 @@ private:
 	bool EnsureResources();
 	void ReleaseResources();
 
-	ID3D11VertexShader* m_vs = nullptr;
-	ID3D11PixelShader* m_ps = nullptr;
+	RHI::Shader* m_vs = nullptr;   // ShaderManager が所有
+	RHI::Shader* m_ps = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer>            m_cb;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>      m_pointClamp;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_dsOff;
+	RHI::BufferRef  m_cb;
+	RHI::SamplerRef m_pointClamp;
 
-	ID3D11ShaderResourceView* m_depthSRV = nullptr;
+	RHI::Texture* m_depth = nullptr;
 	DirectX::XMMATRIX m_proj = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX m_invProj = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX m_invView = DirectX::XMMatrixIdentity();

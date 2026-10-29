@@ -7,8 +7,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <wrl/client.h>
-#include <d3d11.h>
 
 class ModelManager {
 public:
@@ -20,7 +18,7 @@ public:
 	void CacheInvalidate(const std::string& logicalName);
 	void DrawDebugGUI();
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetEmbeddedTexture(
+	RHI::TextureRef GetEmbeddedTexture(
 		const std::string& modelName, const std::string& texturePath);
 
 private:
@@ -64,7 +62,7 @@ private:
 		size_t gpuBytes = 0;
 	};
 	std::unordered_map<std::string, Entry> _cache;
-	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> _embeddedTextures;
+	std::unordered_map<std::string, RHI::TextureRef> _embeddedTextures;
 	uint64_t _frame = 0;
 	std::mutex _mtx;
 	static ModelManager* _instance;

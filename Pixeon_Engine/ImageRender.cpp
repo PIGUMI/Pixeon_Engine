@@ -3,10 +3,6 @@
 #include "GameRenderTarget.h"
 #include "SettingManager.h"
 
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImageRender::s_whiteTexSRV;
-Microsoft::WRL::ComPtr<ID3D11SamplerState>       ImageRender::s_linearSmp;
-Microsoft::WRL::ComPtr<ID3D11BlendState> ImageRender::s_alphaBlendState;
-Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImageRender::s_depthStencilState;
 
 ImageRender::ImageRender() {
 	_ComponentName = "ImageRender";
@@ -18,12 +14,12 @@ ImageRender::~ImageRender() {
 }
 
 void ImageRender::UInit() {
-	m_layout.Reset();
-	m_vs.Reset();
-	m_ps.Reset();
-	m_cbVS.Reset();
-	m_vb.Reset();
-	m_ib.Reset();
+	m_layout.reset();
+	m_vs = nullptr;
+	m_ps = nullptr;
+	m_cbVS.reset();
+	m_vb.reset();
+	m_ib.reset();
 }
 
 void ImageRender::SaveToFile(std::ostream& out) {
@@ -84,7 +80,6 @@ void ImageRender::Init(AbstractObject* owner) {
 	if (!m_textureName.empty()) {
 		m_texture = ResourceService::Instance().GetTexture(m_textureName);
 	}
-	EnsureFallbackTextures();
 	EnsureShaders(true);
 	EnsureConstantBuffer();
 	EnsureBuffers();
@@ -116,60 +111,10 @@ void ImageRender::SetTextureName(const std::string& name) {
 	m_texture = ResourceService::Instance().GetTexture(m_textureName);
 }
 
-bool ImageRender::EnsureFallbackTextures() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) return false;
-	if (!s_whiteTexSRV) {
-		uint32_t pix = 0xFFFFFFFF;
-		D3D11_TEXTURE2D_DESC td{};
-		td.Width = td.Height = 1;
-		td.MipLevels = 1; td.ArraySize = 1;
-		td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		td.SampleDesc.Count = 1;
-		td.Usage = D3D11_USAGE_DEFAULT;
-		td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		D3D11_SUBRESOURCE_DATA init{ &pix, 4, 4 };
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
-		if (SUCCEEDED(dev->CreateTexture2D(&td, &init, tex.GetAddressOf()))) {
-			dev->CreateShaderResourceView(tex.Get(), nullptr, s_whiteTexSRV.GetAddressOf());
-		}
-	}
-	if (!s_linearSmp) {
-		D3D11_SAMPLER_DESC sd{};
-		sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		sd.MinLOD = 0; sd.MaxLOD = D3D11_FLOAT32_MAX;
-		dev->CreateSamplerState(&sd, s_linearSmp.GetAddressOf());
-	}
-	return s_whiteTexSRV != nullptr;
-}
-
-bool ImageRender::EnsureBlendState() {
-	if (s_alphaBlendState) return true;
-	D3D11_BLEND_DESC desc = {};
-	desc.RenderTarget[0].BlendEnable = TRUE;
-
-	// 非プレマルチプライド（standard alpha）用の設定
-	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-
-	// アルファ合成（アルファチャネルへの書き込み）
-	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	HRESULT hr = dev->CreateBlendState(&desc, s_alphaBlendState.GetAddressOf());
-	return SUCCEEDED(hr);
-}
-
 bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
 	auto* sm = ShaderManager::GetInstance();
-	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
-	ID3D11PixelShader* ps = sm->GetPixelShader(m_psName);
+	RHI::Shader* vs = sm->GetVertexShader(m_vsName);
+	RHI::Shader* ps = sm->GetPixelShader(m_psName);
 	if (!vs || !ps) {
 		sm->UpdateAndCompileShaders();
 		vs = sm->GetVertexShader(m_vsName);
@@ -179,7 +124,7 @@ bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
 			return false;
 		}
 	}
-	bool vsChanged = (m_vs.Get() != vs);
+	bool vsChanged = (m_vs != vs);
 	bool needLayout = forceRecreateLayout || vsChanged || !m_layout;
 
 	m_vs = vs;
@@ -190,24 +135,19 @@ bool ImageRender::EnsureShaders(bool forceRecreateLayout) {
 }
 
 void ImageRender::RecreateInputLayout() {
-	m_layout.Reset();
-	const void* bc = nullptr; size_t bcSize = 0;
-	if (!ShaderManager::GetInstance()->GetVSBytecode(m_vsName, &bc, &bcSize)) {
-		OutputDebugStringA("[ImageRender] GetVSBytecode failed\n");
-		return;
-	}
-	EnsureInputLayout(bc, bcSize);
+	m_layout.reset();
+	EnsureInputLayout();
 }
 
-bool ImageRender::EnsureInputLayout(const void* vsBytecode, size_t size) {
+bool ImageRender::EnsureInputLayout() {
 	if (m_layout) return true;
-	D3D11_INPUT_ELEMENT_DESC desc[] = {
-		{ "POSITION",0, DXGI_FORMAT_R32G32B32_FLOAT, 0, (UINT)offsetof(Vertex,pos), D3D11_INPUT_PER_VERTEX_DATA,0 },
-		{ "TEXCOORD",0, DXGI_FORMAT_R32G32_FLOAT,    0, (UINT)offsetof(Vertex,uv),  D3D11_INPUT_PER_VERTEX_DATA,0 },
+	if (!m_vs) return false;
+	const RHI::InputElement desc[] = {
+		{ "POSITION", 0, RHI::Format::R32G32B32_Float, 0, (uint32_t)offsetof(Vertex, pos) },
+		{ "TEXCOORD", 0, RHI::Format::R32G32_Float,    0, (uint32_t)offsetof(Vertex, uv) },
 	};
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	HRESULT hr = dev->CreateInputLayout(desc, _countof(desc), vsBytecode, size, m_layout.GetAddressOf());
-	if (FAILED(hr)) {
+	m_layout = GraphicsSystem::GetInstance()->GetDevice()->InputLayoutCreate(desc, 2, m_vs);
+	if (!m_layout) {
 		OutputDebugStringA("[ImageRender] CreateInputLayout failed\n");
 		return false;
 	}
@@ -216,13 +156,11 @@ bool ImageRender::EnsureInputLayout(const void* vsBytecode, size_t size) {
 
 bool ImageRender::EnsureConstantBuffer() {
 	if (m_cbVS) return true;
-	D3D11_BUFFER_DESC bd{};
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.ByteWidth = sizeof(CBVS);
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	HRESULT hr = dev->CreateBuffer(&bd, nullptr, m_cbVS.GetAddressOf());
-	if (FAILED(hr)) {
+	RHI::BufferDesc bd;
+	bd.i_Size = sizeof(CBVS);
+	bd.i_BindFlags = RHI::Bind_ConstantBuffer;
+	m_cbVS = GraphicsSystem::GetInstance()->GetDevice()->BufferCreate(bd);
+	if (!m_cbVS) {
 		OutputDebugStringA("[ImageRender] Create CB failed\n");
 		return false;
 	}
@@ -230,50 +168,29 @@ bool ImageRender::EnsureConstantBuffer() {
 }
 
 bool ImageRender::EnsureBuffers() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
 	if (!m_vb) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bd.ByteWidth = sizeof(Vertex) * 4;
-		bd.Usage = D3D11_USAGE_DYNAMIC;
-		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		HRESULT hr = dev->CreateBuffer(&bd, nullptr, m_vb.GetAddressOf());
-		if (FAILED(hr)) return false;
+		RHI::BufferDesc bd;
+		bd.i_Size = sizeof(Vertex) * 4;
+		bd.i_BindFlags = RHI::Bind_VertexBuffer;
+		bd.e_Usage = RHI::Usage::Dynamic;
+		m_vb = dev->BufferCreate(bd);
+		if (!m_vb) return false;
 	}
 	if (!m_ib) {
-		uint16_t idx[6] = { 0,1,2, 0,2,3 };
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		bd.ByteWidth = sizeof(idx);
-		bd.Usage = D3D11_USAGE_IMMUTABLE;
-		D3D11_SUBRESOURCE_DATA init{ idx,0,0 };
-		HRESULT hr = dev->CreateBuffer(&bd, &init, m_ib.GetAddressOf());
-		if (FAILED(hr)) return false;
+		const uint16_t idx[6] = { 0,1,2, 0,2,3 };
+		RHI::BufferDesc bd;
+		bd.i_Size = sizeof(idx);
+		bd.i_BindFlags = RHI::Bind_IndexBuffer;
+		bd.e_Usage = RHI::Usage::Immutable;
+		m_ib = dev->BufferCreate(bd, idx);
+		if (!m_ib) return false;
 	}
 	return true;
 }
 
-bool ImageRender::EnsureDepthStencilState() {
-	if (s_depthStencilState) return true;
-	D3D11_DEPTH_STENCIL_DESC desc = {};
-
-	desc.DepthEnable = TRUE;
-	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-	desc.StencilEnable = FALSE;
-
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	HRESULT hr = dev->CreateDepthStencilState(&desc, s_depthStencilState.GetAddressOf());
-	return SUCCEEDED(hr);
-}
-
 void ImageRender::UpdateVB(const Vertex v[4]) {
-	auto ctx = DirectX11::GetInstance()->GetContext();
-	D3D11_MAPPED_SUBRESOURCE mp{};
-	if (SUCCEEDED(ctx->Map(m_vb.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mp))) {
-		memcpy(mp.pData, v, sizeof(Vertex) * 4);
-		ctx->Unmap(m_vb.Get(), 0);
-	}
+	GraphicsSystem::GetInstance()->GetDevice()->BufferUpdate(m_vb.get(), v, sizeof(Vertex) * 4);
 }
 
 void ImageRender::ApplyVertexOffsets(Vertex outV[4]) {
@@ -314,8 +231,8 @@ void ImageRender::ApplyVertexOffsets(Vertex outV[4]) {
 
 void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 	if (!cam) {
-		float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
-		float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
+		float W = (float)GraphicsSystem::GetInstance()->GetBackBuffer()->GetWidth();
+		float H = (float)GraphicsSystem::GetInstance()->GetBackBuffer()->GetHeight();
 
 		float cx = W * 0.5f + m_offset2D.x;
 		float cy = H * 0.5f + m_offset2D.y;
@@ -350,8 +267,8 @@ void ImageRender::UpdateVertices2D(Vertex outV[4], float& outZClip) {
 
 	DirectX::XMVECTOR clip = DirectX::XMVector4Transform(DirectX::XMVector4Transform(posW, V), P);
 	DirectX::XMFLOAT4 clipF; DirectX::XMStoreFloat4(&clipF, clip);
-	float W = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetWidth();
-	float H = (float)DirectX11::GetInstance()->GetDefaultRTV()->GetHeight();
+	float W = (float)GraphicsSystem::GetInstance()->GetBackBuffer()->GetWidth();
+	float H = (float)GraphicsSystem::GetInstance()->GetBackBuffer()->GetHeight();
 
 	float ndcX = clipF.x / clipF.w;
 	float ndcY = clipF.y / clipF.w;
@@ -456,29 +373,18 @@ void ImageRender::UpdateVerticesUI(Vertex outV[4])
 void ImageRender::Draw(int Layer) {
 	if (Layer != _LayerNumber) return;
 	if (!m_ready) return;
-	auto* dx = DirectX11::GetInstance();
-	auto ctx = dx->GetContext();
-	if (!ctx) return;
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
+	if (!dev) return;
 
 	if (!EnsureShaders(false)) return;
 	if (!EnsureConstantBuffer()) return;
 	if (!EnsureBuffers()) return;
-	if (!EnsureBlendState()) return;
-	if (!EnsureDepthStencilState()) return;
 
-	ID3D11BlendState* prevBlend = nullptr;
-	FLOAT prevBlendFactor[4] = { 0,0,0,0 };
-	UINT prevSampleMask = 0xFFFFFFFF;
-	ctx->OMGetBlendState(&prevBlend, prevBlendFactor, &prevSampleMask);
-
-	ID3D11DepthStencilState* prevDepthStencil = nullptr;
-	UINT prevStencilRef = 0;
-	ctx->OMGetDepthStencilState(&prevDepthStencil, &prevStencilRef);
-
-	float blendFactor[4] = { 0,0,0,0 };
-	UINT sampleMask = 0xFFFFFFFF;
-	ctx->OMSetBlendState(s_alphaBlendState.Get(), blendFactor, sampleMask);
-	ctx->OMSetDepthStencilState(s_depthStencilState.Get(), 0);
+	RHI::BlendState* prevBlend = dev->BlendStateGet();
+	RHI::DepthStencilState* prevDepthStencil = dev->DepthStencilStateGet();
+	gs->SetBlendMode(BLEND_ALPHA);
+	gs->SetDepthMode(DEPTH_LESS_EQUAL);
 
 	AbstractScene* AbstractScene = _Parent ? _Parent->GetParentScene() : nullptr;
 
@@ -573,36 +479,25 @@ void ImageRender::Draw(int Layer) {
 	cb.Color = m_color;
 	cb.mode2D = mode2DFlag;
 
-	ctx->UpdateSubresource(m_cbVS.Get(), 0, nullptr, &cb, 0, 0);
+	dev->BufferUpdate(m_cbVS.get(), &cb, sizeof(cb));
 
-	ID3D11ShaderResourceView* srv = (m_texture && m_texture->srv) ? m_texture->srv.Get() : s_whiteTexSRV.Get();
+	RHI::Texture* texture = (m_texture && m_texture->texture) ? m_texture->texture.get() : gs->GetWhiteTexture();
 
-	UINT stride = sizeof(Vertex), offset = 0;
-	ID3D11Buffer* vb = m_vb.Get();
-	ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	ctx->IASetIndexBuffer(m_ib.Get(), DXGI_FORMAT_R16_UINT, 0);
-	ctx->IASetInputLayout(m_layout.Get());
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dev->VertexBufferSet(0, m_vb.get(), sizeof(Vertex), 0);
+	dev->IndexBufferSet(m_ib.get(), RHI::IndexFormat::UInt16, 0);
+	dev->InputLayoutSet(m_layout.get());
+	dev->TopologySet(RHI::Topology::TriangleList);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, m_vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, m_ps);
+	dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 0, m_cbVS.get());
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 0, m_cbVS.get());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 0, texture);
+	gs->SetSamplerState(SAMPLER_LINEAR_CLAMP);
 
-	ctx->VSSetShader(m_vs.Get(), nullptr, 0);
-	ctx->PSSetShader(m_ps.Get(), nullptr, 0);
+	dev->IndexedDraw(6, 0, 0);
 
-	ID3D11Buffer* cbs[] = { m_cbVS.Get() };
-	ctx->VSSetConstantBuffers(0, 1, cbs);
-	ctx->PSSetConstantBuffers(0, 1, cbs);
-
-	ID3D11ShaderResourceView* srvs[] = { srv };
-	ctx->PSSetShaderResources(0, 1, srvs);
-
-	ID3D11SamplerState* smp = s_linearSmp.Get();
-	ctx->PSSetSamplers(0, 1, &smp);
-
-	ctx->DrawIndexed(6, 0, 0);
-
-	ctx->OMSetBlendState(prevBlend, prevBlendFactor, prevSampleMask);
-	ctx->OMSetDepthStencilState(prevDepthStencil, prevStencilRef);
-	if (prevBlend) prevBlend->Release();
-	if (prevDepthStencil) prevDepthStencil->Release();
+	dev->BlendStateSet(prevBlend);
+	dev->DepthStencilStateSet(prevDepthStencil);
 }
 
 void ImageRender::DrawInspector() {

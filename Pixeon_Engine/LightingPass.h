@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include <d3d11.h>
 #include <DirectXMath.h>
-#include <wrl/client.h>
+#include "RHI/RHI.h"
 
 class GBuffer;
 
@@ -14,25 +13,24 @@ class GBuffer;
 // 使い方:
 //   Init()       → 起動時に1回
 //   Execute()    → フレームごとに Geometry Pass の後に呼ぶ
+//                  （出力先のレンダーターゲットは呼び出し側でセットしておく）
 // ============================================================
 class LightingPass
 {
 public:
-	bool Init(ID3D11Device* device);
+	bool Init();
 	void Release();
 
-	// Lighting Pass を実行して output RTV に書き込む
+	// Lighting Pass を実行して現在のレンダーターゲットに書き込む
 	// gbuffer    : Geometry Pass で書き込んだ GBuffer
-	// outputRTV  : 書き込み先 RTV（layerRT の RTV）
+	// shadowMap  : シャドウマップ（深度）
 	// width/height: レンダリング解像度
 	// proj       : カメラのプロジェクション行列
 	// view       : カメラのビュー行列
 	// cameraPos  : カメラのワールド座標
 	void Execute(
-		ID3D11DeviceContext* ctx,
 		GBuffer* gbuffer,
-		ID3D11RenderTargetView* outputRTV,
-		ID3D11ShaderResourceView* shadowMapSRV,
+		RHI::Texture* shadowMap,
 		int width, int height,
 		const DirectX::XMMATRIX& proj,
 		const DirectX::XMMATRIX& view,
@@ -40,14 +38,14 @@ public:
 	);
 
 	// SSAO テクスチャをセット
-	void SetSSAOSRV(ID3D11ShaderResourceView* srv) { m_ssaoSRV = srv; }
-	void SetAOStrength(float s) { m_aoStrength = s; }
+	void SetSSAOTexture(RHI::Texture* texture) { m_cls_SSAO = texture; }
+	void SetAOStrength(float s) { m_f_AOStrength = s; }
 
 	// ライト定数バッファをセット（Scene::UploadLightsToGPU()の後に呼ぶ）
-	void SetLightBuffers(ID3D11Buffer* lightArrayCB, ID3D11Buffer* lightCountCB)
+	void SetLightBuffers(RHI::Buffer* lightArrayCB, RHI::Buffer* lightCountCB)
 	{
-		m_lightArrayCB = lightArrayCB;
-		m_lightCountCB = lightCountCB;
+		m_cls_LightArrayCB = lightArrayCB;
+		m_cls_LightCountCB = lightCountCB;
 	}
 
 private:
@@ -64,27 +62,17 @@ private:
 		float             _pad1;
 	};
 
-	// 白テクスチャ（SSAO が未設定の場合のダミー）
-	bool EnsureWhiteSRV(ID3D11Device* device);
+	RHI::BufferRef  m_cls_LightingCB;
+	RHI::SamplerRef m_cls_PointClampSmp;
+	RHI::SamplerRef m_cls_ShadowSmp;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_lightingCB;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_pointClampSmp;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_shadowSmp;
-
-	// 深度書き込みOFF用ステート（フルスクリーン描画では深度不要）
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_dsOff;
-
-	// SSAO SRV（外部からセット、なければダミー白テクスチャを使用）
-	ID3D11ShaderResourceView* m_ssaoSRV = nullptr;
-	float m_aoStrength = 1.0f;
+	// SSAO（外部からセット、なければ白テクスチャを使用）
+	RHI::Texture* m_cls_SSAO = nullptr;
+	float m_f_AOStrength = 1.0f;
 
 	// ライトCB（Scene::UploadLightsToGPU()からセット）
-	ID3D11Buffer* m_lightArrayCB = nullptr;
-	ID3D11Buffer* m_lightCountCB = nullptr;
+	RHI::Buffer* m_cls_LightArrayCB = nullptr;
+	RHI::Buffer* m_cls_LightCountCB = nullptr;
 
-	// ダミー白テクスチャ（SSAO未設定時のフォールバック）
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_whiteTex;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_whiteSRV;
-
-	bool m_initialized = false;
+	bool m_b_Initialized = false;
 };

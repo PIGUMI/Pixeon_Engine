@@ -18,8 +18,8 @@ public:
 
 	float gamma = 1.0f;
 
-	void Apply(ID3D11ShaderResourceView* input,
-		ID3D11RenderTargetView* output,
+	void Apply(RHI::Texture* input,
+		RHI::Texture* output,
 		int width, int height) override;
 
 	void DrawInspector() override;

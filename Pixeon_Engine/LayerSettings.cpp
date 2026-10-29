@@ -30,23 +30,39 @@ void Layer::AddPostEffect(PostEffectType type) {
 	}
 }
 
+PostEffectBase::ScopedOutput::ScopedOutput(RHI::Texture* output, int width, int height)
+{
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	m_str_Saved = dev->RenderTargetsGet();
+	m_str_SavedViewport = dev->ViewportGet();
+	dev->RenderTargetsSet(1, &output, nullptr);
+	RHI::Viewport vp;
+	vp.f_Width = (float)width;
+	vp.f_Height = (float)height;
+	dev->ViewportSet(vp);
+}
+
+PostEffectBase::ScopedOutput::~ScopedOutput()
+{
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	dev->TextureSet(RHI::ShaderStage::Pixel, 0, nullptr);
+	dev->RenderTargetsSet(m_str_Saved.i_Count, m_str_Saved.p_Colors, m_str_Saved.p_Depth);
+	dev->ViewportSet(m_str_SavedViewport);
+}
+
 void Layer::ApplyPostEffectsToScreen(
-	ID3D11ShaderResourceView* input,
+	RHI::Texture* input,
 	int width, int height,
 	float opacity,
-	ID3D11ShaderResourceView* depthSRV,
+	RHI::Texture* depth,
 	const DirectX::XMMATRIX* proj,
 	const DirectX::XMMATRIX* invProj,
 	const DirectX::XMMATRIX* invView,
 	const DirectX::XMFLOAT3* cameraPos
 ) {
 	if (!input) return;
-
-	auto* dx = DirectX11::GetInstance();
-	if (!dx) return;
-
-	ID3D11DeviceContext* ctx = dx->GetContext();
-	if (!ctx) return;
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return;
 
 	// 有効なエフェクトを抽出
 	std::vector<std::shared_ptr<PostEffectBase>> activeEffects;
@@ -56,20 +72,10 @@ void Layer::ApplyPostEffectsToScreen(
 		}
 	}
 
-	if (activeEffects.empty()) {
-		// エフェクトなし: 通常描画
-		ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
-			DirectX::XMFLOAT4(1, 1, 1, 1),
-			DirectX::XMFLOAT4(0, 0, 1, 1),
-			true, opacity);
-		return;
-	}
-
 	// 中間バッファを準備
-	CreateTempBuffers(width, height);
-
-	if (!tempRTV1_ || !tempSRV1_) {
-		// バッファ作成失敗: 通常描画にフォールバック
+	if (!activeEffects.empty()) CreateTempBuffers(width, height);
+	if (activeEffects.empty() || !tempTexture1_ || !tempTexture2_) {
+		// エフェクトなし（またはバッファ作成失敗）: 通常描画
 		ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
 			DirectX::XMFLOAT4(1, 1, 1, 1),
 			DirectX::XMFLOAT4(0, 0, 1, 1),
@@ -77,76 +83,60 @@ void Layer::ApplyPostEffectsToScreen(
 		return;
 	}
 
-	// 現在のレンダーターゲットを保存
-	ID3D11RenderTargetView* oldRTV = nullptr;
-	ID3D11DepthStencilView* oldDSV = nullptr;
-	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
+	// 現在のレンダーターゲット（最終出力先）を保存
+	const RHI::RenderTargetState saved = dev->RenderTargetsGet();
+	RHI::Texture* screen = saved.i_Count > 0 ? saved.p_Colors[0] : nullptr;
 
 	// 入力ソース
-	ID3D11ShaderResourceView* currentInput = input;
+	RHI::Texture* currentInput = input;
 
 	// エフェクトを順次適用
 	for (size_t i = 0; i < activeEffects.size(); i++) {
+		const bool isLastEffect = (i == activeEffects.size() - 1);
+
 		// ---- SSAO: Deferred実行済みならスキップ ----
 		if (auto* ssao = dynamic_cast<SSAOEffect*>(activeEffects[i].get()))
 		{
 			if (ssao->IsAOGenerated())
 			{
 				ssao->ResetAOGenerated();
-				bool isLast = (i == activeEffects.size() - 1);
-				if (isLast && currentInput && oldRTV)
+				if (isLastEffect && currentInput && screen)
 				{
-					ctx->OMSetRenderTargets(1, &oldRTV, nullptr);
-					D3D11_VIEWPORT vp{}; vp.Width = (float)width; vp.Height = (float)height; vp.MaxDepth = 1.0f;
-					ctx->RSSetViewports(1, &vp);
+					GraphicsSystem::GetInstance()->RenderTargetsSet(1, &screen, nullptr);
 					ImageUtils::DrawSRV(currentInput, 0.0f, 0.0f, (float)width, (float)height,
 						DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMFLOAT4(0, 0, 1, 1), true, 1.0f);
 				}
 				continue;
 			}
-			if (depthSRV)            ssao->SetDepthSRV(depthSRV);
+			if (depth)               ssao->SetDepthTexture(depth);
 			if (proj && invProj)     ssao->SetCameraMatrices(*proj, *invProj);
 		}
 
 		if (auto* fog = dynamic_cast<AtmosphericFogEffect*>(activeEffects[i].get()))
 		{
-			if (depthSRV) fog->SetDepthSRV(depthSRV);
+			if (depth) fog->SetDepthTexture(depth);
 			if (proj && invProj && invView && cameraPos)
 			{
 				fog->SetCameraMatrices(*proj, *invProj, *invView, *cameraPos);
 			}
 		}
 
-		bool isLastEffect = (i == activeEffects.size() - 1);
-
 		if (isLastEffect) {
 			// 最後のエフェクトは現在のレンダーターゲット（画面）に直接描画
-			activeEffects[i]->Apply(currentInput, oldRTV, width, height);
+			activeEffects[i]->Apply(currentInput, screen, width, height);
 		}
 		else {
 			// 中間バッファに描画
-			ID3D11RenderTargetView* tempTarget = (i % 2 == 0) ? tempRTV1_ : tempRTV2_;
-			ID3D11ShaderResourceView* tempSource = (i % 2 == 0) ? tempSRV1_ : tempSRV2_;
-
-			float clearColor[4] = { 0, 0, 0, 0 };
-			ctx->ClearRenderTargetView(tempTarget, clearColor);
-
+			RHI::Texture* tempTarget = (i % 2 == 0) ? tempTexture1_.get() : tempTexture2_.get();
+			const float clearColor[4] = { 0, 0, 0, 0 };
+			dev->RenderTargetClear(tempTarget, clearColor);
 			activeEffects[i]->Apply(currentInput, tempTarget, width, height);
-
-			// SRVバインド解除
-			ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-			ctx->PSSetShaderResources(0, 1, nullSRV);
-
-			// 次の入力を設定
-			currentInput = tempSource;
+			currentInput = tempTarget;
 		}
 	}
 
 	// レンダーターゲットを復元
-	ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
-
-	if (oldRTV) oldRTV->Release();
-	if (oldDSV) oldDSV->Release();
+	dev->RenderTargetsSet(saved.i_Count, saved.p_Colors, saved.p_Depth);
 }
 
 void Layer::RemovePostEffect(int index) {
@@ -171,124 +161,31 @@ void Layer::MovePostEffect(int fromIndex, int toIndex) {
 }
 
 void Layer::CreateTempBuffers(int width, int height) {
-	auto* dx = DirectX11::GetInstance();
-	if (!dx) return;
-
-	ID3D11Device* device = dx->GetDevice();
-	if (!device) return;
-
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return;
 	if (tempTexture1_ && bufferWidth_ == width && bufferHeight_ == height) {
 		return;
 	}
 
 	ReleaseTempBuffers();
-
 	bufferWidth_ = width;
 	bufferHeight_ = height;
 
-	D3D11_TEXTURE2D_DESC texDesc = {};
-	texDesc.Width = width;
-	texDesc.Height = height;
-	texDesc.MipLevels = 1;
-	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.SampleDesc.Quality = 0;
-	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	texDesc.CPUAccessFlags = 0;
-
-	HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, &tempTexture1_);
-	if (SUCCEEDED(hr)) {
-		device->CreateRenderTargetView(tempTexture1_, nullptr, &tempRTV1_);
-		device->CreateShaderResourceView(tempTexture1_, nullptr, &tempSRV1_);
-	}
-
-	hr = device->CreateTexture2D(&texDesc, nullptr, &tempTexture2_);
-	if (SUCCEEDED(hr)) {
-		device->CreateRenderTargetView(tempTexture2_, nullptr, &tempRTV2_);
-		device->CreateShaderResourceView(tempTexture2_, nullptr, &tempSRV2_);
-	}
+	RHI::TextureDesc td;
+	td.i_Width = (uint32_t)width;
+	td.i_Height = (uint32_t)height;
+	td.e_Format = RHI::Format::R16G16B16A16_Float;
+	td.i_BindFlags = RHI::Bind_RenderTarget | RHI::Bind_ShaderResource;
+	td.c_DebugName = "Layer.PostEffectTemp";
+	tempTexture1_ = dev->TextureCreate(td, nullptr);
+	tempTexture2_ = dev->TextureCreate(td, nullptr);
 }
 
 void Layer::ReleaseTempBuffers() {
-	if (tempSRV1_) { tempSRV1_->Release(); tempSRV1_ = nullptr; }
-	if (tempSRV2_) { tempSRV2_->Release(); tempSRV2_ = nullptr; }
-	if (tempRTV1_) { tempRTV1_->Release(); tempRTV1_ = nullptr; }
-	if (tempRTV2_) { tempRTV2_->Release(); tempRTV2_ = nullptr; }
-	if (tempTexture1_) { tempTexture1_->Release(); tempTexture1_ = nullptr; }
-	if (tempTexture2_) { tempTexture2_->Release(); tempTexture2_ = nullptr; }
-
+	tempTexture1_.reset();
+	tempTexture2_.reset();
 	bufferWidth_ = 0;
 	bufferHeight_ = 0;
-}
-
-void Layer::ApplyPostEffects(ID3D11ShaderResourceView* input,
-	ID3D11RenderTargetView* output,
-	int width, int height) {
-	if (postEffects.empty() || !input || !output) {
-		return;
-	}
-
-	auto* dx = DirectX11::GetInstance();
-	if (!dx) return;
-
-	ID3D11DeviceContext* ctx = dx->GetContext();
-	if (!ctx) return;
-
-	CreateTempBuffers(width, height);
-
-	if (!tempRTV1_ || !tempRTV2_ || !tempSRV1_ || !tempSRV2_) {
-		return;
-	}
-
-	std::vector<std::shared_ptr<PostEffectBase>> activeEffects;
-	for (auto& effect : postEffects) {
-		if (effect && effect->enabled) {
-			activeEffects.push_back(effect);
-		}
-	}
-
-	if (activeEffects.empty()) {
-		return;
-	}
-
-	ID3D11RenderTargetView* oldRTV = nullptr;
-	ID3D11DepthStencilView* oldDSV = nullptr;
-	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
-
-	ID3D11ShaderResourceView* currentInput = input;
-	ID3D11RenderTargetView* currentOutput = nullptr;
-	ID3D11ShaderResourceView* nextInput = nullptr;
-
-	for (size_t i = 0; i < activeEffects.size(); i++) {
-		bool isLastEffect = (i == activeEffects.size() - 1);
-
-		if (isLastEffect) {
-			currentOutput = output;
-		}
-		else {
-			currentOutput = (i % 2 == 0) ? tempRTV1_ : tempRTV2_;
-			nextInput = (i % 2 == 0) ? tempSRV1_ : tempSRV2_;
-		}
-
-		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		ctx->ClearRenderTargetView(currentOutput, clearColor);
-
-		activeEffects[i]->Apply(currentInput, currentOutput, width, height);
-
-		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-		ctx->PSSetShaderResources(0, 1, nullSRV);
-
-		if (!isLastEffect) {
-			currentInput = nextInput;
-		}
-	}
-
-	ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
-
-	if (oldRTV) oldRTV->Release();
-	if (oldDSV) oldDSV->Release();
 }
 
 void Layer::DrawInspector() {

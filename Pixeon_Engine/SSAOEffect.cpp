@@ -8,7 +8,6 @@
 #include <random>
 
 using namespace DirectX;
-using Microsoft::WRL::ComPtr;
 
 SSAOEffect::SSAOEffect()
 {
@@ -28,217 +27,179 @@ PostEffectBase* SSAOEffect::Clone() const
 	return c;
 }
 
-void SSAOEffect::Apply(
-	ID3D11ShaderResourceView* input,
-	ID3D11RenderTargetView* output,
-	int width, int height)
+/*
+* 関数名　PassThrough
+* 引　数　input / output：入出力　width / height：解像度
+* 戻り値　なし
+* 説　明　入力をそのまま出力へ描く
+*/
+void SSAOEffect::PassThrough(RHI::Texture* input, RHI::Texture* output, int width, int height)
 {
-	auto* dx = DirectX11::GetInstance();
-	auto* ctx = dx->GetContext();
-	auto* sm = ShaderManager::GetInstance();
-
-	if (aoGenerated_) {
-		aoGenerated_ = false; depthSRV_ = nullptr; normalSRV_ = nullptr;
-		if (input && output) {
-			ComPtr<ID3D11RenderTargetView> r; ComPtr<ID3D11DepthStencilView> d;
-			ctx->OMGetRenderTargets(1, r.GetAddressOf(), d.GetAddressOf());
-			ctx->OMSetRenderTargets(1, &output, nullptr);
-			D3D11_VIEWPORT v{}; v.Width = (float)width; v.Height = (float)height; v.MaxDepth = 1.0f;
-			ctx->RSSetViewports(1, &v);
-			ImageUtils::DrawSRV(input, 0, 0, (float)width, (float)height,
-				XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 1, 1), true, 1.0f);
-			ctx->OMSetRenderTargets(1, r.GetAddressOf(), d.Get());
-		}
-		return;
-	}
-
-	ID3D11VertexShader* fullscreenVS = sm->GetVertexShader("VS_Fullscreen");
-	ID3D11PixelShader* ssaoPS = sm->GetPixelShader("PS_SSAO");
-	ID3D11PixelShader* blurPS = sm->GetPixelShader("PS_SSAOBlur");
-	ID3D11PixelShader* compositePS = sm->GetPixelShader("PS_SSAOComposite");
-
-	if (!depthSRV_ || !fullscreenVS || !ssaoPS || !blurPS || !compositePS)
-	{
-		if (input && output)
-		{
-			ComPtr<ID3D11RenderTargetView> oldRTV;
-			ComPtr<ID3D11DepthStencilView> oldDSV;
-			ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
-			ctx->OMSetRenderTargets(1, &output, nullptr);
-			D3D11_VIEWPORT vp{};
-			vp.Width = (float)width; vp.Height = (float)height; vp.MaxDepth = 1.0f;
-			ctx->RSSetViewports(1, &vp);
-			ImageUtils::DrawSRV(input, 0.0f, 0.0f, (float)width, (float)height,
-				DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMFLOAT4(0, 0, 1, 1), true, 1.0f);
-			ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
-		}
-		depthSRV_ = nullptr;
-		return;
-	}
-
-	if (!EnsureRenderTargets(width, height)) { depthSRV_ = nullptr; return; }
-	EnsureSamplers();
-	EnsureDepthStencilState();
-	EnsureConstantBuffers();
-
-	ComPtr<ID3D11RenderTargetView>   oldRTV;
-	ComPtr<ID3D11DepthStencilView>   oldDSV;
-	ComPtr<ID3D11DepthStencilState>  oldDSS;
-	ComPtr<ID3D11BlendState>         oldBlend;
-	FLOAT oldBlendFactor[4] = {};
-	UINT  oldSampleMask = 0;
-	UINT  oldStencilRef = 0;
-	D3D11_VIEWPORT oldVP;
-	UINT numVP = 1;
-
-	ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
-	ctx->OMGetDepthStencilState(oldDSS.GetAddressOf(), &oldStencilRef);
-	ctx->OMGetBlendState(oldBlend.GetAddressOf(), oldBlendFactor, &oldSampleMask);
-	ctx->RSGetViewports(&numVP, &oldVP);
-
-	ctx->OMSetDepthStencilState(dsOff_.Get(), 0);
-
-	ctx->VSSetShader(fullscreenVS, nullptr, 0);
-
-	ctx->IASetInputLayout(nullptr);
-	ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	{
-		SSAO_Params cb{};
-		cb.proj = XMMatrixTranspose(proj_);
-		cb.invProj = XMMatrixTranspose(invProj_);
-		cb.resolution = { (float)width, (float)height };
-		cb.radius = radius;
-		cb.bias = bias;
-		cb.power = power;
-		ctx->UpdateSubresource(ssaoCB_.Get(), 0, nullptr, &cb, 0, 0);
-
-		KernelCB kcb{};
-		for (int k = 0; k < 64; ++k) kcb.kernel[k] = kernel_[k];
-		ctx->UpdateSubresource(kernelCB_.Get(), 0, nullptr, &kcb, 0, 0);
-
-		ID3D11Buffer* cbs[] = { ssaoCB_.Get(), kernelCB_.Get() };
-		ctx->PSSetConstantBuffers(1, 2, cbs);
-
-		ID3D11ShaderResourceView* srvs[] = { nullptr, depthSRV_, noiseSRV_.Get() };
-		ctx->PSSetShaderResources(0, 3, srvs);
-
-		ID3D11SamplerState* smps[] = { pointClampSmp_.Get(), pointWrapSmp_.Get() };
-		ctx->PSSetSamplers(0, 2, smps);
-
-		DrawFullscreen(ssaoPS, nullptr, 0, 0, nullptr, 0, 0, ssaoRTV_.Get(), width, height);
-	}
-
-	ID3D11ShaderResourceView* null3[3] = {};
-	ctx->PSSetShaderResources(0, 3, null3);
-
-	{
-		BlurParams bcb{};
-		bcb.texelSize = { 1.0f / width, 1.0f / height };
-		ctx->UpdateSubresource(blurCB_.Get(), 0, nullptr, &bcb, 0, 0);
-
-		ID3D11Buffer* cbs[] = { blurCB_.Get() };
-		ctx->PSSetConstantBuffers(1, 1, cbs);
-
-		ID3D11ShaderResourceView* srvs[] = { ssaoSRV_.Get() };
-		ctx->PSSetShaderResources(0, 1, srvs);
-
-		ID3D11SamplerState* smps[] = { pointClampSmp_.Get() };
-		ctx->PSSetSamplers(0, 1, smps);
-
-		DrawFullscreen(blurPS, nullptr, 0, 0, nullptr, 0, 0, blurRTV_.Get(), width, height);
-	}
-
-	ID3D11ShaderResourceView* null1[1] = {};
-	ctx->PSSetShaderResources(0, 1, null1);
-
-	{
-		CompositeParams ccb{};
-		ccb.aoStrength = aoStrength;
-		ctx->UpdateSubresource(compositeCB_.Get(), 0, nullptr, &ccb, 0, 0);
-
-		ID3D11Buffer* cbs[] = { compositeCB_.Get() };
-		ctx->PSSetConstantBuffers(1, 1, cbs);
-
-		ID3D11ShaderResourceView* srvs[] = { input, blurSRV_.Get() };
-		ctx->PSSetShaderResources(0, 2, srvs);
-
-		ID3D11SamplerState* smps[] = { linearSmp_.Get() };
-		ctx->PSSetSamplers(0, 1, smps);
-
-		DrawFullscreen(compositePS, nullptr, 0, 0, nullptr, 0, 0, output, width, height);
-	}
-
-	ID3D11ShaderResourceView* null2[2] = {};
-	ctx->PSSetShaderResources(0, 2, null2);
-
-	ctx->OMSetDepthStencilState(oldDSS.Get(), oldStencilRef);
-	ctx->OMSetBlendState(oldBlend.Get(), oldBlendFactor, oldSampleMask);
-	ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
-	ctx->RSSetViewports(1, &oldVP);
-
-	depthSRV_ = nullptr;
+	if (!input || !output) return;
+	ScopedOutput scope(output, width, height);
+	ImageUtils::DrawSRV(input, 0.0f, 0.0f, (float)width, (float)height,
+		XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 1, 1), true, 1.0f);
 }
 
-void SSAOEffect::DrawFullscreen(
-	ID3D11PixelShader* ps,
-	ID3D11ShaderResourceView* const* srvs,
-	UINT                              srvCount,
-	UINT                              srvSlot,
-	ID3D11Buffer* const* psCBs,
-	UINT                              cbCount,
-	UINT                              cbSlot,
-	ID3D11RenderTargetView* rtv,
+/*
+* 関数名　FullscreenDraw
+* 引　数　ps：ピクセルシェーダー　target：描画先　width / height：解像度
+* 戻り値　なし
+* 説　明　VS_Fullscreen の三角形 1 枚で全画面を描く（VS・トポロジ等は呼び出し側で設定済み）
+*/
+void SSAOEffect::FullscreenDraw(RHI::Shader* ps, RHI::Texture* target, int width, int height)
+{
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	dev->ShaderSet(RHI::ShaderStage::Pixel, ps);
+	dev->RenderTargetsSet(1, &target, nullptr);
+	RHI::Viewport vp;
+	vp.f_Width = (float)width;
+	vp.f_Height = (float)height;
+	dev->ViewportSet(vp);
+	dev->Draw(3, 0);
+}
+
+/*
+* 関数名　AOPassRun
+* 引　数　width / height：解像度　normal：GBuffer 法線（無ければ深度から復元）
+* 戻り値　成功なら true（結果は blurTex_）
+* 説　明　SSAO の計算とブラーを行う。描画先・ビューポート・深度ステートは元に戻す
+*/
+bool SSAOEffect::AOPassRun(int width, int height, RHI::Texture* normal)
+{
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
+	auto* sm = ShaderManager::GetInstance();
+	RHI::Shader* fullscreenVS = sm->GetVertexShader("VS_Fullscreen");
+	RHI::Shader* ssaoPS = sm->GetPixelShader("PS_SSAO");
+	RHI::Shader* blurPS = sm->GetPixelShader("PS_SSAOBlur");
+	if (normal) {
+		if (RHI::Shader* deferredPS = sm->GetPixelShader("PS_SSAO_Deferred")) ssaoPS = deferredPS;
+	}
+	if (!depth_ || !fullscreenVS || !ssaoPS || !blurPS || !EnsureRenderTargets(width, height)) return false;
+	EnsureSamplers();
+	EnsureConstantBuffers();
+
+	const RHI::RenderTargetState oldTargets = dev->RenderTargetsGet();
+	const RHI::Viewport oldVP = dev->ViewportGet();
+	RHI::DepthStencilState* oldDepth = dev->DepthStencilStateGet();
+
+	gs->SetDepthMode(DEPTH_OFF);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, fullscreenVS);
+	dev->InputLayoutSet(nullptr);
+	dev->TopologySet(RHI::Topology::TriangleList);
+
+	// ---- SSAO ----
+	SSAO_Params cb{};
+	cb.proj = XMMatrixTranspose(proj_);
+	cb.invProj = XMMatrixTranspose(invProj_);
+	cb.resolution = { (float)width, (float)height };
+	cb.radius = radius;
+	cb.bias = bias;
+	cb.power = power;
+	dev->BufferUpdate(ssaoCB_.get(), &cb, sizeof(cb));
+	KernelCB kcb{};
+	for (int k = 0; k < 64; ++k) kcb.kernel[k] = kernel_[k];
+	dev->BufferUpdate(kernelCB_.get(), &kcb, sizeof(kcb));
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 1, ssaoCB_.get());
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 2, kernelCB_.get());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 0, normal);
+	dev->TextureSet(RHI::ShaderStage::Pixel, 1, depth_);
+	dev->TextureSet(RHI::ShaderStage::Pixel, 2, noiseTex_.get());
+	dev->SamplerSet(RHI::ShaderStage::Pixel, 0, pointClampSmp_.get());
+	dev->SamplerSet(RHI::ShaderStage::Pixel, 1, pointWrapSmp_.get());
+	FullscreenDraw(ssaoPS, ssaoTex_.get(), width, height);
+	for (uint32_t i = 0; i < 3; ++i) dev->TextureSet(RHI::ShaderStage::Pixel, i, nullptr);
+
+	// ---- ブラー ----
+	BlurParams bcb{};
+	bcb.texelSize = { 1.0f / width, 1.0f / height };
+	dev->BufferUpdate(blurCB_.get(), &bcb, sizeof(bcb));
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 1, blurCB_.get());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 0, ssaoTex_.get());
+	dev->SamplerSet(RHI::ShaderStage::Pixel, 0, pointClampSmp_.get());
+	FullscreenDraw(blurPS, blurTex_.get(), width, height);
+	dev->TextureSet(RHI::ShaderStage::Pixel, 0, nullptr);
+
+	dev->DepthStencilStateSet(oldDepth);
+	dev->RenderTargetsSet(oldTargets.i_Count, oldTargets.p_Colors, oldTargets.p_Depth);
+	dev->ViewportSet(oldVP);
+	return true;
+}
+
+void SSAOEffect::Apply(
+	RHI::Texture* input,
+	RHI::Texture* output,
 	int width, int height)
 {
-	auto ctx = DirectX11::GetInstance()->GetContext();
+	if (aoGenerated_) {
+		// Deferred パスで生成済み（ライティングで使われる）なら素通し
+		aoGenerated_ = false; depth_ = nullptr; normal_ = nullptr;
+		PassThrough(input, output, width, height);
+		return;
+	}
+	RHI::Shader* compositePS = ShaderManager::GetInstance()->GetPixelShader("PS_SSAOComposite");
+	if (!input || !output || !compositePS || !AOPassRun(width, height, nullptr)) {
+		PassThrough(input, output, width, height);
+		depth_ = nullptr;
+		return;
+	}
 
-	ctx->PSSetShader(ps, nullptr, 0);
+	// ---- 合成 ----
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	RHI::DepthStencilState* oldDepth = dev->DepthStencilStateGet();
+	GraphicsSystem::GetInstance()->SetDepthMode(DEPTH_OFF);
+	{
+		ScopedOutput scope(output, width, height);
+		CompositeParams ccb{};
+		ccb.aoStrength = aoStrength;
+		dev->BufferUpdate(compositeCB_.get(), &ccb, sizeof(ccb));
+		dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 1, compositeCB_.get());
+		dev->TextureSet(RHI::ShaderStage::Pixel, 0, input);
+		dev->TextureSet(RHI::ShaderStage::Pixel, 1, blurTex_.get());
+		dev->SamplerSet(RHI::ShaderStage::Pixel, 0, linearSmp_.get());
+		dev->ShaderSet(RHI::ShaderStage::Vertex, ShaderManager::GetInstance()->GetVertexShader("VS_Fullscreen"));
+		dev->ShaderSet(RHI::ShaderStage::Pixel, compositePS);
+		dev->InputLayoutSet(nullptr);
+		dev->TopologySet(RHI::Topology::TriangleList);
+		dev->Draw(3, 0);
+		dev->TextureSet(RHI::ShaderStage::Pixel, 1, nullptr);
+	}
+	dev->DepthStencilStateSet(oldDepth);
+	depth_ = nullptr;
+}
 
-	if (srvs && srvCount > 0)
-		ctx->PSSetShaderResources(srvSlot, srvCount, srvs);
-	if (psCBs && cbCount > 0)
-		ctx->PSSetConstantBuffers(cbSlot, cbCount, psCBs);
-
-	ctx->OMSetRenderTargets(1, &rtv, nullptr);
-
-	D3D11_VIEWPORT vp{};
-	vp.Width = (float)width; vp.Height = (float)height; vp.MaxDepth = 1.0f;
-	ctx->RSSetViewports(1, &vp);
-
-	ctx->Draw(3, 0);
+/*
+* 関数名　GenerateAO
+* 引　数　width / height：解像度
+* 戻り値　なし
+* 説　明　Deferred 用に GBuffer の法線と深度から AO を生成する（LightingPass が参照する）
+*/
+void SSAOEffect::GenerateAO(int width, int height)
+{
+	if (!depth_) return;
+	const bool ok = AOPassRun(width, height, normal_);
+	depth_ = nullptr;
+	normal_ = nullptr;
+	aoGenerated_ = ok;
 }
 
 bool SSAOEffect::EnsureRenderTargets(int width, int height)
 {
-	if (cachedWidth_ == width && cachedHeight_ == height && ssaoRTV_) return true;
-
+	if (cachedWidth_ == width && cachedHeight_ == height && ssaoTex_ && blurTex_) return true;
 	cachedWidth_ = width;
 	cachedHeight_ = height;
-
-	ssaoTex_.Reset(); ssaoRTV_.Reset(); ssaoSRV_.Reset();
-	blurTex_.Reset(); blurRTV_.Reset(); blurSRV_.Reset();
-
-	auto dev = DirectX11::GetInstance()->GetDevice();
-
-	D3D11_TEXTURE2D_DESC td{};
-	td.Width = width; td.Height = height;
-	td.MipLevels = 1; td.ArraySize = 1;
-	td.Format = DXGI_FORMAT_R8_UNORM;
-	td.SampleDesc.Count = 1;
-	td.Usage = D3D11_USAGE_DEFAULT;
-	td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-
-	if (FAILED(dev->CreateTexture2D(&td, nullptr, ssaoTex_.GetAddressOf()))) return false;
-	dev->CreateRenderTargetView(ssaoTex_.Get(), nullptr, ssaoRTV_.GetAddressOf());
-	dev->CreateShaderResourceView(ssaoTex_.Get(), nullptr, ssaoSRV_.GetAddressOf());
-
-	if (FAILED(dev->CreateTexture2D(&td, nullptr, blurTex_.GetAddressOf()))) return false;
-	dev->CreateRenderTargetView(blurTex_.Get(), nullptr, blurRTV_.GetAddressOf());
-	dev->CreateShaderResourceView(blurTex_.Get(), nullptr, blurSRV_.GetAddressOf());
-
-	return ssaoRTV_ && blurRTV_;
+	RHI::TextureDesc td;
+	td.i_Width = (uint32_t)width;
+	td.i_Height = (uint32_t)height;
+	td.e_Format = RHI::Format::R8_UNorm;
+	td.i_BindFlags = RHI::Bind_RenderTarget | RHI::Bind_ShaderResource;
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	td.c_DebugName = "SSAO.AO";
+	ssaoTex_ = dev->TextureCreate(td, nullptr);
+	td.c_DebugName = "SSAO.Blur";
+	blurTex_ = dev->TextureCreate(td, nullptr);
+	return ssaoTex_ && blurTex_;
 }
 
 void SSAOEffect::EnsureKernel()
@@ -269,7 +230,7 @@ void SSAOEffect::EnsureKernel()
 
 void SSAOEffect::EnsureNoise()
 {
-	if (noiseSRV_) return;
+	if (noiseTex_) return;
 
 	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 	std::default_random_engine rng(123);
@@ -286,64 +247,41 @@ void SSAOEffect::EnsureNoise()
 		data[i * 4 + 3] = 255;
 	}
 
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	D3D11_TEXTURE2D_DESC td{};
-	td.Width = 4; td.Height = 4; td.MipLevels = 1; td.ArraySize = 1;
-	td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	td.SampleDesc.Count = 1;
-	td.Usage = D3D11_USAGE_IMMUTABLE;
-	td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	D3D11_SUBRESOURCE_DATA init{ data, 4 * 4, 0 };
-	dev->CreateTexture2D(&td, &init, noiseTex_.GetAddressOf());
-	dev->CreateShaderResourceView(noiseTex_.Get(), nullptr, noiseSRV_.GetAddressOf());
+	RHI::TextureDesc td;
+	td.i_Width = 4;
+	td.i_Height = 4;
+	td.e_Format = RHI::Format::R8G8B8A8_UNorm;
+	td.e_Usage = RHI::Usage::Immutable;
+	const RHI::SubresourceData init{ data, 4 * 4, 4 * 4 * 4 };
+	noiseTex_ = GraphicsSystem::GetInstance()->GetDevice()->TextureCreate(td, &init);
 }
 
 void SSAOEffect::EnsureSamplers()
 {
 	if (pointClampSmp_) return;
-
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	D3D11_SAMPLER_DESC sd{};
-	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	sd.MaxLOD = D3D11_FLOAT32_MAX;
-
-	sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	dev->CreateSamplerState(&sd, pointClampSmp_.GetAddressOf());
-
-	sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	dev->CreateSamplerState(&sd, pointWrapSmp_.GetAddressOf());
-
-	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	dev->CreateSamplerState(&sd, linearSmp_.GetAddressOf());
-}
-
-void SSAOEffect::EnsureDepthStencilState()
-{
-	if (dsOff_) return;
-
-	D3D11_DEPTH_STENCIL_DESC dsd{};
-	dsd.DepthEnable = FALSE;
-	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	dsd.StencilEnable = FALSE;
-	DirectX11::GetInstance()->GetDevice()->CreateDepthStencilState(&dsd, dsOff_.GetAddressOf());
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	RHI::SamplerDesc sd;
+	sd.e_Filter = RHI::Filter::Point;
+	sd.e_Compare = RHI::CompareFunc::Always;
+	sd.e_AddressU = sd.e_AddressV = sd.e_AddressW = RHI::AddressMode::Clamp;
+	pointClampSmp_ = dev->SamplerCreate(sd);
+	sd.e_AddressU = sd.e_AddressV = sd.e_AddressW = RHI::AddressMode::Wrap;
+	pointWrapSmp_ = dev->SamplerCreate(sd);
+	sd.e_Filter = RHI::Filter::Linear;
+	sd.e_AddressU = sd.e_AddressV = sd.e_AddressW = RHI::AddressMode::Clamp;
+	linearSmp_ = dev->SamplerCreate(sd);
 }
 
 void SSAOEffect::EnsureConstantBuffers()
 {
 	if (ssaoCB_) return;
-
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	D3D11_BUFFER_DESC bd{};
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	bd.ByteWidth = sizeof(SSAO_Params);     dev->CreateBuffer(&bd, nullptr, ssaoCB_.GetAddressOf());
-	bd.ByteWidth = sizeof(KernelCB);        dev->CreateBuffer(&bd, nullptr, kernelCB_.GetAddressOf());
-	bd.ByteWidth = sizeof(BlurParams);      dev->CreateBuffer(&bd, nullptr, blurCB_.GetAddressOf());
-	bd.ByteWidth = sizeof(CompositeParams); dev->CreateBuffer(&bd, nullptr, compositeCB_.GetAddressOf());
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	RHI::BufferDesc bd;
+	bd.i_BindFlags = RHI::Bind_ConstantBuffer;
+	bd.i_Size = sizeof(SSAO_Params);     ssaoCB_ = dev->BufferCreate(bd);
+	bd.i_Size = sizeof(KernelCB);        kernelCB_ = dev->BufferCreate(bd);
+	bd.i_Size = sizeof(BlurParams);      blurCB_ = dev->BufferCreate(bd);
+	bd.i_Size = sizeof(CompositeParams); compositeCB_ = dev->BufferCreate(bd);
 }
 
 void SSAOEffect::DrawInspector()
@@ -368,97 +306,4 @@ void SSAOEffect::LoadFromJson(const nlohmann::json& j)
 	bias = j.value("bias", 0.025f);
 	power = j.value("power", 2.0f);
 	aoStrength = j.value("aoStrength", 0.8f);
-}
-
-void SSAOEffect::GenerateAO(int width, int height)
-{
-	if (!depthSRV_) return;
-
-	auto* ctx = DirectX11::GetInstance()->GetContext();
-	auto* sm = ShaderManager::GetInstance();
-
-	ID3D11VertexShader* fullscreenVS = sm->GetVertexShader("VS_Fullscreen");
-	ID3D11PixelShader* ssaoPS = sm->GetPixelShader("PS_SSAO");
-	ID3D11PixelShader* blurPS = sm->GetPixelShader("PS_SSAOBlur");
-
-	if (!fullscreenVS || !ssaoPS || !blurPS)
-	{
-		depthSRV_ = nullptr; normalSRV_ = nullptr; return;
-	}
-	if (!EnsureRenderTargets(width, height))
-	{
-		depthSRV_ = nullptr; normalSRV_ = nullptr; return;
-	}
-	EnsureSamplers();
-	EnsureDepthStencilState();
-	EnsureConstantBuffers();
-
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  oldRTV;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  oldDSV;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> oldDSS;
-	UINT oldStencilRef = 0;
-	D3D11_VIEWPORT oldVP; UINT numVP = 1;
-	ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
-	ctx->OMGetDepthStencilState(oldDSS.GetAddressOf(), &oldStencilRef);
-	ctx->RSGetViewports(&numVP, &oldVP);
-
-	ctx->OMSetDepthStencilState(dsOff_.Get(), 0);
-	ctx->VSSetShader(fullscreenVS, nullptr, 0);
-	ctx->IASetInputLayout(nullptr);
-	ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	{
-		SSAO_Params cb{};
-		cb.proj = DirectX::XMMatrixTranspose(proj_);
-		cb.invProj = DirectX::XMMatrixTranspose(invProj_);
-		cb.resolution = { (float)width, (float)height };
-		cb.radius = radius; cb.bias = bias; cb.power = power;
-		ctx->UpdateSubresource(ssaoCB_.Get(), 0, nullptr, &cb, 0, 0);
-		KernelCB kcb{};
-		for (int k = 0; k < 64; ++k) kcb.kernel[k] = kernel_[k];
-		ctx->UpdateSubresource(kernelCB_.Get(), 0, nullptr, &kcb, 0, 0);
-		ID3D11Buffer* cbs[] = { ssaoCB_.Get(), kernelCB_.Get() };
-		ctx->PSSetConstantBuffers(1, 2, cbs);
-		ID3D11SamplerState* smps[] = { pointClampSmp_.Get(), pointWrapSmp_.Get() };
-		ctx->PSSetSamplers(0, 2, smps);
-
-		ID3D11PixelShader* activePS = ssaoPS;
-		if (normalSRV_)
-		{
-			ID3D11PixelShader* deferredPS = sm->GetPixelShader("PS_SSAO_Deferred");
-			if (deferredPS) activePS = deferredPS;
-			ID3D11ShaderResourceView* srvs[] = { normalSRV_, depthSRV_, noiseSRV_.Get() };
-			ctx->PSSetShaderResources(0, 3, srvs);
-		}
-		else
-		{
-			ID3D11ShaderResourceView* srvs[] = { nullptr, depthSRV_, noiseSRV_.Get() };
-			ctx->PSSetShaderResources(0, 3, srvs);
-		}
-		DrawFullscreen(activePS, nullptr, 0, 0, nullptr, 0, 0, ssaoRTV_.Get(), width, height);
-		ID3D11ShaderResourceView* nulls3[3] = {};
-		ctx->PSSetShaderResources(0, 3, nulls3);
-	}
-
-	{
-		BlurParams bcb{}; bcb.texelSize = { 1.0f / width, 1.0f / height };
-		ctx->UpdateSubresource(blurCB_.Get(), 0, nullptr, &bcb, 0, 0);
-		ID3D11Buffer* cbs[] = { blurCB_.Get() };
-		ctx->PSSetConstantBuffers(1, 1, cbs);
-		ID3D11ShaderResourceView* srvs[] = { ssaoSRV_.Get() };
-		ctx->PSSetShaderResources(0, 1, srvs);
-		ID3D11SamplerState* smps[] = { pointClampSmp_.Get() };
-		ctx->PSSetSamplers(0, 1, smps);
-		DrawFullscreen(blurPS, nullptr, 0, 0, nullptr, 0, 0, blurRTV_.Get(), width, height);
-		ID3D11ShaderResourceView* nulls1[1] = {};
-		ctx->PSSetShaderResources(0, 1, nulls1);
-	}
-
-	ctx->OMSetDepthStencilState(oldDSS.Get(), oldStencilRef);
-	ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
-	ctx->RSSetViewports(1, &oldVP);
-	depthSRV_ = nullptr;
-	normalSRV_ = nullptr;
-	aoGenerated_ = true;
 }

@@ -1,34 +1,38 @@
-﻿// GameRenderTarget.h への修正
+﻿/*
+* ファイル名　GameRenderTarget
+* 説　　　明　レイヤーごとのオフスクリーン描画先（カラー + 深度）
+*/
 #pragma once
-#include<d3d11.h>
+#include "RHI/RHI.h"
 
 class GameRenderTarget
 {
 public:
-	void Init(ID3D11Device* device, int width, int height);
-	void InitWithDepthSRV(ID3D11Device* device, int width, int height); // DoF用の初期化
-	void Begin(ID3D11DeviceContext* context, bool clearTarget = true);
+	void Init(int width, int height);
+	void InitWithDepthSRV(int width, int height); // 深度もシェーダーから読める版（DoF / フォグ用）
+	void Begin(bool clearTarget = true);
 	void End();
-	void Clear(ID3D11DeviceContext* context, float r, float g, float b, float a);
-	ID3D11ShaderResourceView* GetShaderResourceView() const { return m_pSRV; }
-	ID3D11RenderTargetView* GetRenderTargetView() { return m_pRTV; }
-	ID3D11ShaderResourceView* GetDepthShaderResourceView() const { return m_pDepthSRV; } // DoF用
+	void Clear(float r, float g, float b, float a);
 
-	void SetRenderZBuffer(bool isRenderZBuffer) { m_isRenderZBuffer = isRenderZBuffer; }
-	bool IsRenderZBuffer() const { return m_isRenderZBuffer; }
-	int GetWidth() const { return (int)m_viewport.Width; }
-	int GetHeight() const { return (int)m_viewport.Height; }
-	void SetBlend(bool Enable);
+	RHI::Texture* GetTexture() const { return m_cls_Color.get(); }
+	RHI::Texture* GetDepthTexture() const { return m_cls_Depth.get(); }
+	// 深度を SRV として読めるか（InitWithDepthSRV で作成した場合のみ）
+	RHI::Texture* GetDepthShaderResource() const { return m_b_DepthReadable ? m_cls_Depth.get() : nullptr; }
+
+	void SetRenderZBuffer(bool isRenderZBuffer) { m_b_RenderZBuffer = isRenderZBuffer; }
+	bool IsRenderZBuffer() const { return m_b_RenderZBuffer; }
+	int GetWidth() const { return m_i_Width; }
+	int GetHeight() const { return m_i_Height; }
+	void SetBlend(bool Enable) { m_b_BlendEnabled = Enable; }
 
 private:
-	ID3D11Texture2D* m_pTexture = nullptr;
-	ID3D11RenderTargetView* m_pRTV = nullptr;
-	ID3D11ShaderResourceView* m_pSRV = nullptr;
-	D3D11_VIEWPORT m_viewport = {};
-	ID3D11Texture2D* m_pDepthStencilTexture = nullptr;
-	ID3D11DepthStencilView* m_pDSV = nullptr;
-	ID3D11ShaderResourceView* m_pDepthSRV = nullptr;
+	bool TargetsCreate(int width, int height, bool depthReadable);
 
-	bool m_isRenderZBuffer = false;
-	bool m_isBlendEnabled = false;
+	RHI::TextureRef m_cls_Color;
+	RHI::TextureRef m_cls_Depth;
+	int  m_i_Width = 0;
+	int  m_i_Height = 0;
+	bool m_b_DepthReadable = false;
+	bool m_b_RenderZBuffer = false;
+	bool m_b_BlendEnabled = false;
 };

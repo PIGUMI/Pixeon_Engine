@@ -17,7 +17,7 @@
 #include <algorithm>
 #include "BoneNodeMapping.h"
 #include <functional>
-#include "DirectXTex/DirectXTex.h"
+#include "TextureLoader.h"
 #include "MatrixUtil.h"
 
 #if _MSC_VER >= 1930
@@ -192,29 +192,27 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::strin
 	std::vector<uint32_t> indices;
 	ProcessNode(scene->mRootNode, scene, vertices, indices, shared);
 
-	auto device = DirectX11::GetInstance()->GetDevice();
-	if (!device) {
+	RHI::Device* device = GraphicsSystem::GetInstance()->GetDevice();
+	if (!device || vertices.empty() || indices.empty()) {
 		return nullptr;
 	}
 	{ // VB
-		D3D11_BUFFER_DESC bd{};
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = (UINT)(vertices.size() * sizeof(ModelVertex));
-		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		D3D11_SUBRESOURCE_DATA srd{ vertices.data(),0,0 };
-		if (FAILED(device->CreateBuffer(&bd, &srd, shared->vb.GetAddressOf()))) {
-			return nullptr;
-		}
+		RHI::BufferDesc bd;
+		bd.i_Size = (uint32_t)(vertices.size() * sizeof(ModelVertex));
+		bd.i_BindFlags = RHI::Bind_VertexBuffer;
+		bd.e_Usage = RHI::Usage::Immutable;
+		bd.i_Stride = sizeof(ModelVertex);
+		shared->vb = device->BufferCreate(bd, vertices.data());
 	}
 	{ // IB
-		D3D11_BUFFER_DESC bd{};
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = (UINT)(indices.size() * sizeof(uint32_t));
-		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		D3D11_SUBRESOURCE_DATA srd{ indices.data(),0,0 };
-		if (FAILED(device->CreateBuffer(&bd, &srd, shared->ib.GetAddressOf()))) {
-			return nullptr;
-		}
+		RHI::BufferDesc bd;
+		bd.i_Size = (uint32_t)(indices.size() * sizeof(uint32_t));
+		bd.i_BindFlags = RHI::Bind_IndexBuffer;
+		bd.e_Usage = RHI::Usage::Immutable;
+		shared->ib = device->BufferCreate(bd, indices.data());
+	}
+	if (!shared->vb || !shared->ib) {
+		return nullptr;
 	}
 	shared->vertexCount = (uint32_t)vertices.size();
 	shared->indexCount = (uint32_t)indices.size();
@@ -263,9 +261,6 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 {
 	if (!scene->HasTextures()) return;
 
-	auto device = DirectX11::GetInstance()->GetDevice();
-	if (!device) return;
-
 	for (unsigned int i = 0; i < scene->mNumTextures; ++i) {
 		aiTexture* tex = scene->mTextures[i];
 
@@ -277,165 +272,33 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 			continue;
 		}
 
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-
+		RHI::TextureRef texture;
 		if (tex->mHeight == 0) {
-			// 圧縮フォーマット (PNG, JPG, DDS など)
-#ifdef _DEBUG
-			OutputDebugStringA(("[ModelManager] Embedded compressed texture detected: " + texKey +
-				" format=" + std::string(tex->achFormatHint) +
-				" size=" + std::to_string(tex->mWidth) + " bytes\n").c_str());
-#endif
-
-			// DirectXTexを使用して圧縮テクスチャを読み込む
-			DirectX::TexMetadata metadata;
-			DirectX::ScratchImage image;
-			HRESULT hr = E_FAIL;
-
-			// フォーマットヒントから適切な読み込み方法を選択
+			// 圧縮フォーマット (PNG, JPG, DDS など)。フォーマットヒントが不明なら順に試す
 			std::string formatHint = tex->achFormatHint;
-
-			// バッファポインタをuint8_t*にキャスト
-			const uint8_t* buffer = reinterpret_cast<const uint8_t*>(tex->pcData);
-			size_t bufferSize = static_cast<size_t>(tex->mWidth);
-
-			if (formatHint == "png" || formatHint == "jpg" || formatHint == "jpeg" ||
-				formatHint == "bmp" || formatHint == "tiff" || formatHint == "gif" ||
-				formatHint == "tga") {
-				// WIC経由で読み込み (PNG, JPG, BMP, TIFFなど)
-				hr = DirectX::LoadFromWICMemory(
-					buffer,
-					bufferSize,
-					DirectX::WIC_FLAGS_NONE,
-					&metadata,
-					image
-				);
-
-				if (FAILED(hr)) {
-#ifdef _DEBUG
-					OutputDebugStringA(("[ModelManager] WIC load failed, trying as TGA: " + texKey + "\n").c_str());
-#endif
-					// WICで失敗した場合、TGAとして試行
-					hr = DirectX::LoadFromTGAMemory(
-						buffer,
-						bufferSize,
-						&metadata,
-						image
-					);
-				}
-			}
-			else if (formatHint == "dds") {
-				// DDS形式
-				hr = DirectX::LoadFromDDSMemory(
-					buffer,
-					bufferSize,
-					DirectX::DDS_FLAGS_NONE,
-					&metadata,
-					image
-				);
-			}
-			else {
-				// 不明な形式の場合はWICで試行
-				hr = DirectX::LoadFromWICMemory(
-					buffer,
-					bufferSize,
-					DirectX::WIC_FLAGS_NONE,
-					&metadata,
-					image
-				);
-
-				// WICで失敗したらTGAを試行
-				if (FAILED(hr)) {
-					hr = DirectX::LoadFromTGAMemory(
-						buffer,
-						bufferSize,
-						&metadata,
-						image
-					);
-				}
-
-				// それでも失敗したらDDSを試行
-				if (FAILED(hr)) {
-					hr = DirectX::LoadFromDDSMemory(
-						buffer,
-						bufferSize,
-						DirectX::DDS_FLAGS_NONE,
-						&metadata,
-						image
-					);
-				}
-			}
-
-			if (SUCCEEDED(hr)) {
-				// SRV作成
-				hr = DirectX::CreateShaderResourceView(
-					device,
-					image.GetImages(),
-					image.GetImageCount(),
-					metadata,
-					srv.GetAddressOf()
-				);
-
-				if (SUCCEEDED(hr)) {
-					_embeddedTextures[texKey] = srv;
-#ifdef _DEBUG
-					OutputDebugStringA(("[ModelManager] Embedded texture loaded successfully: " +
-						texKey + " (" + std::to_string(metadata.width) + "x" +
-						std::to_string(metadata.height) + ")\n").c_str());
-#endif
-				}
-				else {
-#ifdef _DEBUG
-					OutputDebugStringA(("[ModelManager] Failed to create SRV for embedded texture: " +
-						texKey + "\n").c_str());
-#endif
-				}
-			}
-			else {
-#ifdef _DEBUG
-				OutputDebugStringA(("[ModelManager] Failed to load embedded texture from memory: " +
-					texKey + " format=" + formatHint + "\n").c_str());
-#endif
-			}
+			if (formatHint != "dds" && formatHint != "tga" && formatHint != "hdr" &&
+				formatHint != "png" && formatHint != "jpg" && formatHint != "jpeg" && formatHint != "bmp") formatHint.clear();
+			auto result = TextureLoader::FromMemory(tex->pcData, (size_t)tex->mWidth, formatHint, false);
+			if (!result.texture && !formatHint.empty()) result = TextureLoader::FromMemory(tex->pcData, (size_t)tex->mWidth, "", false);
+			texture = result.texture;
 		}
 		else {
-			// 非圧縮RGBA
-#ifdef _DEBUG
-			OutputDebugStringA(("[ModelManager] Embedded uncompressed texture: " + texKey +
-				" size=" + std::to_string(tex->mWidth) + "x" + std::to_string(tex->mHeight) + "\n").c_str());
-#endif
-
-			D3D11_TEXTURE2D_DESC desc{};
-			desc.Width = tex->mWidth;
-			desc.Height = tex->mHeight;
-			desc.MipLevels = 1;
-			desc.ArraySize = 1;
-			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			desc.SampleDesc.Count = 1;
-			desc.Usage = D3D11_USAGE_DEFAULT;
-			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-			std::vector<uint8_t> rgba(tex->mWidth * tex->mHeight * 4);
+			// 非圧縮 (aiTexel は BGRA 順)
+			std::vector<uint8_t> rgba((size_t)tex->mWidth * tex->mHeight * 4);
 			for (unsigned int p = 0; p < tex->mWidth * tex->mHeight; ++p) {
 				rgba[p * 4 + 0] = tex->pcData[p].r;
 				rgba[p * 4 + 1] = tex->pcData[p].g;
 				rgba[p * 4 + 2] = tex->pcData[p].b;
 				rgba[p * 4 + 3] = tex->pcData[p].a;
 			}
+			texture = TextureLoader::FromRGBA8(rgba.data(), tex->mWidth, tex->mHeight);
+		}
 
-			D3D11_SUBRESOURCE_DATA initData{};
-			initData.pSysMem = rgba.data();
-			initData.SysMemPitch = tex->mWidth * 4;
-
-			Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
-			if (SUCCEEDED(device->CreateTexture2D(&desc, &initData, texture.GetAddressOf()))) {
-				if (SUCCEEDED(device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf()))) {
-					_embeddedTextures[texKey] = srv;
-#ifdef _DEBUG
-					OutputDebugStringA(("[ModelManager] Embedded uncompressed texture loaded: " + texKey + "\n").c_str());
-#endif
-				}
-			}
+		if (texture) {
+			_embeddedTextures[texKey] = texture;
+		}
+		else {
+			OutputDebugStringA(("[ModelManager] Failed to load embedded texture: " + texKey + "\n").c_str());
 		}
 	}
 }
@@ -444,10 +307,10 @@ void ModelManager::ProcessEmbeddedTextures(const aiScene* scene,
 * 関数名　: GetEmbeddedTexture
 * 引　数  : const std::string& modelName : モデルの論理名
 *          : const std::string& texturePath : テクスチャのパス
-* 戻り値  : Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> : 埋め込みテクスチャのSRV
+* 戻り値  : RHI::TextureRef : 埋め込みテクスチャ（見つからなければ nullptr）
 * 説　明　: 埋め込みテクスチャを取得する
 */
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelManager::GetEmbeddedTexture(
+RHI::TextureRef ModelManager::GetEmbeddedTexture(
 	const std::string& modelName, const std::string& texturePath)
 {
 	if (texturePath.empty() || texturePath[0] != '*') {
@@ -461,24 +324,8 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelManager::GetEmbeddedTextur
 		normalizedPath.end()
 	);
 
-	std::string key = modelName + "::" + normalizedPath;
-
-	// Release環境でもログ出力
-	static std::ofstream debugLog("embedded_texture_log.txt", std::ios::app);
-	debugLog << "Searching: " << key << std::endl;
-
-	auto it = _embeddedTextures.find(key);
-	if (it != _embeddedTextures.end()) {
-		debugLog << "  -> FOUND!" << std::endl;
-		return it->second;
-	}
-
-	debugLog << "  -> NOT FOUND. Available keys:" << std::endl;
-	for (const auto& kv : _embeddedTextures) {
-		debugLog << "    - " << kv.first << std::endl;
-	}
-
-	return nullptr;
+	auto it = _embeddedTextures.find(modelName + "::" + normalizedPath);
+	return (it != _embeddedTextures.end()) ? it->second : nullptr;
 }
 /*
 * 関数名　: ProcessNode

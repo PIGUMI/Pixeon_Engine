@@ -1,7 +1,7 @@
 ﻿#include "TextureManager.h"
 #include "AssetManager.h"
 #include "System.h"
-#include "DirectXTex/DirectXTex.h"
+#include "TextureLoader.h"
 #include "IMGUI/imgui.h"
 #include <algorithm>
 #include <Windows.h>
@@ -105,7 +105,7 @@ std::shared_ptr<TextureResource> TextureManager::LoadOrGet(const std::string& lo
 */
 bool TextureManager::LoadTexture(const std::string& name) {
 	auto tex = LoadOrGet(name);
-	if (tex && tex->srv) {
+	if (tex && tex->texture) {
 		std::lock_guard<std::mutex> lk(_mtx);
 		_pinned[name] = tex;
 		return true;
@@ -120,13 +120,30 @@ bool TextureManager::LoadTexture(const std::string& name) {
 * 概　要　： テクスチャを再読み込みする
 */
 bool TextureManager::Reload(const std::string& name) {
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		_cache.erase(name);
-		_pinned.erase(name);
-		_failReasons.erase(name);
+	std::lock_guard<std::mutex> lk(_mtx);
+	auto fresh = LoadInternal(name);
+	if (!fresh) return false;
+	_failReasons.erase(name);
+
+	// 使用中のリソースは中身だけ差し替える（保持しているコンポーネントにも即座に反映される）
+	auto it = _cache.find(name);
+	if (it != _cache.end()) {
+		if (auto alive = it->second.weak.lock()) {
+			alive->texture = fresh->texture;
+			alive->width = fresh->width;
+			alive->height = fresh->height;
+			alive->gpuBytes = fresh->gpuBytes;
+			it->second.bytes = fresh->gpuBytes;
+			return true;
+		}
 	}
-	return LoadTexture(name);
+	Entry e;
+	e.weak = fresh;
+	e.lastUse = ++_frame;
+	e.bytes = fresh->gpuBytes;
+	_cache[name] = e;
+	_pinned[name] = fresh;
+	return true;
 }
 
 /*
@@ -201,83 +218,32 @@ bool TextureManager::IsPinned(const std::string& name) {
 * 概　要　： テクスチャを内部的に読み込み
 */
 std::shared_ptr<TextureResource> TextureManager::LoadInternal(const std::string& logicalName) {
-	// (1) Raw  ǂݍ
+	// (1) 生データの読み込み
 	std::vector<uint8_t> data;
 	if (!AssetManager::Instance()->AssetLoad(logicalName, data) || data.empty()) {
 		SetFail(logicalName, "RawLoadFailed(size=0 or not found)");
 		return nullptr;
 	}
 
-	// (2)  g   q
-	std::string ext;
-	if (auto p = logicalName.find_last_of('.'); p != std::string::npos) {
-		ext = logicalName.substr(p + 1);
-		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-	}
-
-	DirectX::ScratchImage img;
-	HRESULT hr = E_FAIL;
-
-	if (ext == "dds") {
-		hr = DirectX::LoadFromDDSMemory(data.data(), data.size(), DirectX::DDS_FLAGS_NONE, nullptr, img);
-	}
-	else if (ext == "tga") {
-		hr = DirectX::LoadFromTGAMemory(data.data(), data.size(), nullptr, img);
-	}
-	else if (ext == "hdr") {
-		hr = DirectX::LoadFromHDRMemory(data.data(), data.size(), nullptr, img);
-	}
-	else {
-		hr = DirectX::LoadFromWICMemory(data.data(), data.size(), DirectX::WIC_FLAGS_NONE, nullptr, img);
-	}
-	if (FAILED(hr)) {
-		// ヘッダバイト情報を含めた詳細なエラーレポート（デバッグ用）
-		char buf[256];
-		char headerHex[32] = "";
+	// (2) デコード → ミップ生成 → GPU テクスチャ作成
+	const std::string ext = AssetTypeUtil::ExtensionGet(logicalName);
+	TextureLoader::Result result = TextureLoader::FromMemory(data.data(), data.size(), ext, true);
+	if (!result.texture) {
+		char header[32] = "";
 		if (data.size() >= 8) {
-			sprintf_s(headerHex, "%02X%02X%02X%02X%02X%02X%02X%02X",
+			sprintf_s(header, "%02X%02X%02X%02X%02X%02X%02X%02X",
 				data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 		}
-		sprintf_s(buf, "DecodeFailed hr=0x%08X ext=%s header=%s size=%zu",
-			(unsigned)hr, ext.c_str(), headerHex, data.size());
-		SetFail(logicalName, buf);
-		return nullptr;
-	}
-
-	// (3) Mip      (   s ͌x   ̂ )
-	if (img.GetMetadata().mipLevels <= 1) {
-		DirectX::ScratchImage mip;
-		HRESULT hrMip = DirectX::GenerateMipMaps(img.GetImages(), img.GetImageCount(), img.GetMetadata(),
-			DirectX::TEX_FILTER_DEFAULT, 0, mip);
-		if (SUCCEEDED(hrMip)) {
-			img = std::move(mip);
-		}
-	}
-
-	// (4)  f o C X m F
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) {
-		SetFail(logicalName, "DeviceNull");
-		return nullptr;
-	}
-
-	// (5) SRV  쐬
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-	hr = DirectX::CreateShaderResourceView(dev, img.GetImages(), img.GetImageCount(),
-		img.GetMetadata(), srv.GetAddressOf());
-	if (FAILED(hr)) {
-		char buf[128];
-		sprintf_s(buf, "CreateSRVFailed hr=0x%08X", (unsigned)hr);
-		SetFail(logicalName, buf);
+		SetFail(logicalName, result.error + " header=" + header);
 		return nullptr;
 	}
 
 	auto tex = std::make_shared<TextureResource>();
 	tex->name = logicalName;
-	tex->srv = srv;
-	tex->width = (uint32_t)img.GetMetadata().width;
-	tex->height = (uint32_t)img.GetMetadata().height;
-	tex->gpuBytes = tex->width * tex->height * 4ull;
+	tex->texture = result.texture;
+	tex->width = result.i_Width;
+	tex->height = result.i_Height;
+	tex->gpuBytes = result.i_GpuBytes;
 
 	OutputDebugStringA(("[TextureManager] Load OK: " + logicalName + "\n").c_str());
 	return tex;

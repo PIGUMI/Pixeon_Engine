@@ -11,27 +11,72 @@ LineRenderer* LineRenderer::GetInstance() { static LineRenderer inst; return &in
 
 void LineRenderer::Initialize()
 {
-	auto device = DirectX11::GetInstance()->GetDevice();
-
-	const void* vsBytecode = nullptr; size_t vsByteSize = 0;
-	if (!ShaderManager::GetInstance()->GetVSBytecode("VS_Line", &vsBytecode, &vsByteSize)) {
-		MessageBoxA(nullptr, "GetVSBytecode(VS_Line) failed", "LineRenderer", MB_OK);
+	RHI::Shader* vs = ShaderManager::GetInstance()->GetVertexShader("VS_Line");
+	if (!vs) {
+		MessageBoxA(nullptr, "VS_Line not found", "LineRenderer", MB_OK);
 		return;
 	}
-
-	D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,     0, 0 , D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT,  0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	const RHI::InputElement layout[] = {
+		{ "POSITION", 0, RHI::Format::R32G32B32_Float,    0, 0 },
+		{ "COLOR",    0, RHI::Format::R32G32B32A32_Float, 0, 12 },
 	};
-	HRESULT hr = device->CreateInputLayout(layout, 2, vsBytecode, vsByteSize, &m_inputLayout);
-	if (FAILED(hr)) {
+	m_cls_InputLayout = GraphicsSystem::GetInstance()->GetDevice()->InputLayoutCreate(layout, 2, vs);
+	if (!m_cls_InputLayout) {
 		MessageBoxA(nullptr, "CreateInputLayout failed", "LineRenderer", MB_OK);
 	}
 }
 
 void LineRenderer::Finalize()
 {
-	SAFE_RELEASE(m_inputLayout);
+	m_cls_InputLayout.reset();
+	m_cls_VertexBuffer.reset();
+	m_i_Capacity = 0;
+}
+
+/*
+* 関数名　VertexBufferEnsure
+* 引　数　vertexCount：必要な頂点数
+* 戻り値　成功なら true
+* 説　明　Dynamic 頂点バッファを使い回し、足りなければ倍々で拡張する
+*         （以前は線 1 本ごとに頂点バッファを生成・破棄していた）
+*/
+bool LineRenderer::VertexBufferEnsure(uint32_t vertexCount)
+{
+	if (m_cls_VertexBuffer && vertexCount <= m_i_Capacity) return true;
+	uint32_t capacity = std::max<uint32_t>(m_i_Capacity, 256);
+	while (capacity < vertexCount) capacity *= 2;
+	RHI::BufferDesc bd;
+	bd.i_Size = capacity * sizeof(LineVertex);
+	bd.i_BindFlags = RHI::Bind_VertexBuffer;
+	bd.e_Usage = RHI::Usage::Dynamic;
+	bd.i_Stride = sizeof(LineVertex);
+	m_cls_VertexBuffer = GraphicsSystem::GetInstance()->GetDevice()->BufferCreate(bd);
+	m_i_Capacity = m_cls_VertexBuffer ? capacity : 0;
+	return m_cls_VertexBuffer != nullptr;
+}
+
+void LineRenderer::DrawLines(const LineVertex* vertices, uint32_t vertexCount,
+	const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& proj)
+{
+	if (!vertices || vertexCount < 2 || !m_cls_InputLayout) return;
+	ShaderManager* sm = ShaderManager::GetInstance();
+	RHI::Shader* vs = sm->GetVertexShader("VS_Line");
+	RHI::Shader* ps = sm->GetPixelShader("PS_Line");
+	if (!vs || !ps || !VertexBufferEnsure(vertexCount)) return;
+
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	dev->BufferUpdate(m_cls_VertexBuffer.get(), vertices, vertexCount * (uint32_t)sizeof(LineVertex));
+
+	struct MatCB { DirectX::XMFLOAT4X4 world, view, proj; } cb{ world, view, proj };
+	sm->SetCBufferRaw(ShaderStage::VS, "VS_Line", "CameraCB", &cb, sizeof(cb));
+	sm->CommitAndBind(ShaderStage::VS, "VS_Line");
+
+	dev->VertexBufferSet(0, m_cls_VertexBuffer.get(), sizeof(LineVertex), 0);
+	dev->InputLayoutSet(m_cls_InputLayout.get());
+	dev->TopologySet(RHI::Topology::LineList);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, ps);
+	dev->Draw(vertexCount, 0);
 }
 
 void LineRenderer::DrawLine(const DirectX::XMFLOAT3& s, const DirectX::XMFLOAT3& e, const DirectX::XMFLOAT4& color,
@@ -40,57 +85,21 @@ void LineRenderer::DrawLine(const DirectX::XMFLOAT3& s, const DirectX::XMFLOAT3&
 	const DirectX::XMFLOAT4X4& proj,
 	float /*thickness*/)
 {
-	struct LineVertex { float pos[3]; float color[4]; };
-
-	LineVertex verts[2];
-	verts[0] = { { s.x, s.y, s.z }, { color.x, color.y, color.z, color.w } };
-	verts[1] = { { e.x, e.y, e.z }, { color.x, color.y, color.z, color.w } };
-
-	auto device = DirectX11::GetInstance()->GetDevice();
-	auto context = DirectX11::GetInstance()->GetContext();
-
-	D3D11_BUFFER_DESC vbDesc = {};
-	vbDesc.Usage = D3D11_USAGE_DEFAULT;
-	vbDesc.ByteWidth = sizeof(verts);
-	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	D3D11_SUBRESOURCE_DATA vdat = {};
-	vdat.pSysMem = verts;
-	ID3D11Buffer* vb = nullptr;
-	if (FAILED(device->CreateBuffer(&vbDesc, &vdat, &vb))) return;
-
-	struct MatCB { DirectX::XMFLOAT4X4 world, view, proj; } cb;
-	cb.world = world;
-	cb.view = view;
-	cb.proj = proj;
-
-	ShaderManager* sm = ShaderManager::GetInstance();
-
-	sm->SetCBufferRaw(ShaderStage::VS, "VS_Line", "CameraCB", &cb, sizeof(cb));
-	sm->CommitAndBind(ShaderStage::VS, "VS_Line");
-
-	auto vs = sm->GetVertexShader("VS_Line");
-	auto ps = sm->GetPixelShader("PS_Line");
-	if (!vs || !ps) {
-		MessageBoxA(nullptr, "VS_Line/PS_Line not found", "LineRenderer", MB_OK);
-		SAFE_RELEASE(vb);
-		return;
-	}
-
-	UINT stride = sizeof(LineVertex), offset = 0;
-	context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	context->IASetInputLayout(m_inputLayout);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	context->VSSetShader(vs, nullptr, 0);
-	context->PSSetShader(ps, nullptr, 0);
-
-	context->Draw(2, 0);
-
-	SAFE_RELEASE(vb);
+	const LineVertex verts[2] = {
+		{ { s.x, s.y, s.z }, { color.x, color.y, color.z, color.w } },
+		{ { e.x, e.y, e.z }, { color.x, color.y, color.z, color.w } },
+	};
+	DrawLines(verts, 2, world, view, proj);
 }
 
+/*
+* 関数名　Draw1mGrid
+* 引　数　size：グリッドの一辺　view / proj：カメラ行列　cameraPosXZ：カメラ位置
+* 戻り値　なし
+* 説　明　カメラ周辺の 1m グリッドを描く。全線分を 1 回の描画にまとめる
+*/
 void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& proj, const DirectX::XMFLOAT3& cameraPosXZ)
 {
-	auto lr = LineRenderer::GetInstance();
 	DirectX::XMFLOAT4X4 identity;
 	DirectX::XMStoreFloat4x4(&identity, DirectX::XMMatrixIdentity());
 
@@ -99,42 +108,26 @@ void Draw1mGrid(float size, const DirectX::XMFLOAT4X4& view, const DirectX::XMFL
 	int end_x = static_cast<int>(cameraPosXZ.x + half);
 	int start_z = static_cast<int>(cameraPosXZ.z - half);
 	int end_z = static_cast<int>(cameraPosXZ.z + half);
-
 	float maxDistance = half * 1.5f;
 
+	std::vector<LineRenderer::LineVertex> verts;
+	verts.reserve((size_t)(end_x - start + 2) * (end_z - start_z + 2) * 4);
+	auto segment = [&](float x0, float z0, float x1, float z1, bool axis) {
+		const float midX = (x0 + x1) * 0.5f, midZ = (z0 + z1) * 0.5f;
+		const float dist = std::sqrt((midX - cameraPosXZ.x) * (midX - cameraPosXZ.x) + (midZ - cameraPosXZ.z) * (midZ - cameraPosXZ.z));
+		const float alpha = 1.0f - std::max(0.0f, std::min(dist / maxDistance, 1.0f));
+		const float c = axis ? 1.0f : 0.5f;
+		verts.push_back({ { x0, 0.0f, z0 }, { c, c, c, alpha } });
+		verts.push_back({ { x1, 0.0f, z1 }, { c, c, c, alpha } });
+	};
+
 	for (int i = start; i <= end_x; ++i) {
-		float x = static_cast<float>(i);
-		for (int j = start_z; j < end_z; ++j) {
-			float z0 = static_cast<float>(j), z1 = z0 + 1.0f;
-
-			float midX = x, midZ = (z0 + z1) * 0.5f;
-			float dist = std::sqrt((midX - cameraPosXZ.x) * (midX - cameraPosXZ.x) + (midZ - cameraPosXZ.z) * (midZ - cameraPosXZ.z));
-			float alpha = 1.0f - std::max(0.0f, std::min(dist / maxDistance, 1.0f));
-
-			DirectX::XMFLOAT4 color = (std::abs(x) < 0.01f) ? DirectX::XMFLOAT4(1, 1, 1, alpha) : DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, alpha);
-
-			lr->DrawLine(
-				DirectX::XMFLOAT3(x, 0, z0),
-				DirectX::XMFLOAT3(x, 0, z1),
-				color, identity, view, proj, 1.0f
-			);
-		}
+		const float x = static_cast<float>(i);
+		for (int j = start_z; j < end_z; ++j) segment(x, (float)j, x, (float)j + 1.0f, std::abs(x) < 0.01f);
 	}
-
 	for (int j = start_z; j <= end_z; ++j) {
-		float z = static_cast<float>(j);
-		for (int i = start; i < end_x; ++i) {
-			float x0 = static_cast<float>(i), x1 = x0 + 1.0f;
-			float midX = (x0 + x1) * 0.5f, midZ = z;
-			float dist = std::sqrt((midX - cameraPosXZ.x) * (midX - cameraPosXZ.x) + (midZ - cameraPosXZ.z) * (midZ - cameraPosXZ.z));
-			float alpha = 1.0f - std::max(0.0f, std::min(dist / maxDistance, 1.0f));
-			DirectX::XMFLOAT4 color = (std::abs(z) < 0.01f) ? DirectX::XMFLOAT4(1, 1, 1, alpha) : DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, alpha);
-
-			lr->DrawLine(
-				DirectX::XMFLOAT3(x0, 0, z),
-				DirectX::XMFLOAT3(x1, 0, z),
-				color, identity, view, proj, 1.0f
-			);
-		}
+		const float z = static_cast<float>(j);
+		for (int i = start; i < end_x; ++i) segment((float)i, z, (float)i + 1.0f, z, std::abs(z) < 0.01f);
 	}
+	LineRenderer::GetInstance()->DrawLines(verts.data(), (uint32_t)verts.size(), identity, view, proj);
 }

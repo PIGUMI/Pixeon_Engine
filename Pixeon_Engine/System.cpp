@@ -1,565 +1,290 @@
-﻿#include "System.h"
-#include "ShaderManager.h"
-#include "DirectXTex/TextureLoad.h"
-#include "IMGUI/imgui.h"
-#include "IMGUI/imgui_impl_dx11.h"
-#include "SettingManager.h"
+﻿/*
+* ファイル名　System
+* 説　　　明　描画システム（RHI デバイスと共通ステートの管理）
+*/
+#include "System.h"
 
-DirectX11* DirectX11::instance;
+GraphicsSystem* GraphicsSystem::m_cls_Instance = nullptr;
 
-DirectX11* DirectX11::GetInstance()
-{
-	if (instance == nullptr) {
-		instance = new DirectX11();
-	}
-	return instance;
-}
-
-void DirectX11::DestroyInstance()
-{
-	if (instance != nullptr) {
-		instance->Uninit();
-		delete instance;
-		instance = nullptr;
-	}
-}
-
-HRESULT DirectX11::Init(HWND hWnd, UINT width, UINT height, bool fullScreen)
-{
-	HRESULT result = E_FAIL;
-
-	DXGI_SWAP_CHAIN_DESC sd;
-	ZeroMemory(&sd, sizeof(sd));
-	sd.BufferDesc.Width = width;
-	sd.BufferDesc.Height = height;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.SampleDesc.Count = 1;
-	sd.BufferDesc.RefreshRate.Numerator = 1000;
-	sd.BufferDesc.RefreshRate.Denominator = 1;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.BufferCount = 1;
-	sd.OutputWindow = hWnd;
-	sd.Windowed = fullScreen ? FALSE : TRUE;
-	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-	D3D_DRIVER_TYPE driverTypes[] = {
-		D3D_DRIVER_TYPE_HARDWARE,
-		D3D_DRIVER_TYPE_WARP,
-		D3D_DRIVER_TYPE_REFERENCE
-	};
-	UINT numDriverTypes = ARRAYSIZE(driverTypes);
-
-	UINT createDeviceFlags = 0;
-	D3D_FEATURE_LEVEL featureLevels[] = {
-		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0,
-		D3D_FEATURE_LEVEL_10_1,
-		D3D_FEATURE_LEVEL_10_0,
-		D3D_FEATURE_LEVEL_9_3,
-		D3D_FEATURE_LEVEL_9_2,
-		D3D_FEATURE_LEVEL_9_1
-	};
-	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
-
-	D3D_DRIVER_TYPE driverType;
-	D3D_FEATURE_LEVEL featureLevel;
-
-	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; ++driverTypeIndex)
+namespace {
+	RHI::Backend BackendConvert(GraphicsBackend backend)
 	{
-		driverType = driverTypes[driverTypeIndex];
-		result = D3D11CreateDeviceAndSwapChain(
-			NULL,
-			driverType,
-			NULL,
-			createDeviceFlags,
-			featureLevels,
-			numFeatureLevels,
-			D3D11_SDK_VERSION,
-			&sd,
-			g_pSwapChain.GetAddressOf(),
-			g_pDevice.GetAddressOf(),
-			&featureLevel,
-			g_pContext.GetAddressOf());
-		if (SUCCEEDED(result)) {
-			break;
+		switch (backend) {
+		case GraphicsBackend::D3D12:  return RHI::Backend::D3D12;
+		case GraphicsBackend::Vulkan: return RHI::Backend::Vulkan;
+		default:                      return RHI::Backend::D3D11;
 		}
 	}
-	if (FAILED(result)) {
-		return result;
-	}
+}
 
-	g_pRTV = new RenderTarget();
-	if (FAILED(result = g_pRTV->CreateFromScreen()))return result;
-	g_pDSV = new DepthStencil();
-	if (FAILED(result = g_pDSV->Create(g_pRTV->GetWidth(), g_pRTV->GetHeight(), false)))return result;
-	SetRenderTargets(1, &g_pRTV, nullptr);
+/*
+* 関数名　GetInstance
+* 引　数　なし
+* 戻り値　インスタンス
+* 説　明　シングルトンインスタンスを取得する
+*/
+GraphicsSystem* GraphicsSystem::GetInstance()
+{
+	if (m_cls_Instance == nullptr) m_cls_Instance = new GraphicsSystem();
+	return m_cls_Instance;
+}
 
-	D3D11_RASTERIZER_DESC rasterizer = {};
-	D3D11_CULL_MODE cull[] = {
-		D3D11_CULL_NONE,
-		D3D11_CULL_FRONT,
-		D3D11_CULL_BACK
-	};
-	rasterizer.FillMode = D3D11_FILL_SOLID;
-	rasterizer.FrontCounterClockwise = false;
-	for (int i = 0; i < CULL_MAX; ++i)
-	{
-		rasterizer.CullMode = cull[i];
-		result = g_pDevice->CreateRasterizerState(&rasterizer, g_pRasterizerState[i].GetAddressOf());
-		if (FAILED(result)) { return result; }
+void GraphicsSystem::DestroyInstance()
+{
+	if (m_cls_Instance != nullptr) {
+		m_cls_Instance->Uninit();
+		delete m_cls_Instance;
+		m_cls_Instance = nullptr;
 	}
+}
+
+/*
+* 関数名　Init
+* 引　数　hWnd：ウィンドウ　width / height：サイズ　fullScreen / vsync：表示設定
+* 　　　　backend：描画 API　out_error：エラー内容
+* 戻り値　成功なら true
+* 説　明　RHI デバイスを生成し、共通ステートと既定の深度バッファを用意する
+*         指定のバックエンドが使えない場合は D3D11 で再試行する
+*/
+bool GraphicsSystem::Init(HWND hWnd, UINT width, UINT height, bool fullScreen, bool vsync, GraphicsBackend backend, std::string* out_error)
+{
+	RHI::DeviceCreateInfo info;
+	info.p_WindowHandle = hWnd;
+	info.i_Width = width;
+	info.i_Height = height;
+	info.b_Fullscreen = fullScreen;
+	info.b_VSync = vsync;
+#if defined(_DEBUG)
+	info.b_Debug = true;
+#endif
+	std::string error;
+	m_cls_Device = RHI::DeviceCreate(BackendConvert(backend), info, &error);
+	if (!m_cls_Device && backend != GraphicsBackend::D3D11) {
+		RHI::LogWrite("%s の初期化に失敗したため DirectX 11 で起動します: %s", GraphicsBackendUtil::NameGet(backend), error.c_str());
+		m_cls_Device = RHI::DeviceCreate(RHI::Backend::D3D11, info, &error);
+	}
+	if (!m_cls_Device) {
+		if (out_error) *out_error = error;
+		return false;
+	}
+	RHI::DeviceSet(m_cls_Device.get());
+	m_i_Width = width;
+	m_i_Height = height;
+
+	if (!StatesCreate() || !DefaultTargetsCreate(width, height)) {
+		if (out_error) *out_error = "共通ステートの作成に失敗しました";
+		return false;
+	}
+	m_cls_ImGui = RHI::ImGuiRendererCreate(m_cls_Device.get());
+
 	SetCullingMode(CULL_BACK);
-
-	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = FALSE;
-	blendDesc.IndependentBlendEnable = FALSE;
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	D3D11_BLEND blend[BLEND_MAX][2] = {
-		{D3D11_BLEND_ONE, D3D11_BLEND_ZERO},
-		{D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA},
-		{D3D11_BLEND_ONE, D3D11_BLEND_ONE},
-		{D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_ONE},
-		{D3D11_BLEND_ZERO, D3D11_BLEND_INV_SRC_COLOR},
-		{D3D11_BLEND_INV_DEST_COLOR, D3D11_BLEND_ONE},
-	};
-	for (int i = 0; i < BLEND_MAX; ++i)
-	{
-		blendDesc.RenderTarget[0].SrcBlend = blend[i][0];
-		blendDesc.RenderTarget[0].DestBlend = blend[i][1];
-		result = g_pDevice->CreateBlendState(&blendDesc, g_pBlendState[i].GetAddressOf());
-		if (FAILED(result)) { return result; }
-	}
 	SetBlendMode(BLEND_ALPHA);
-
-	D3D11_SAMPLER_DESC samplerDesc = {};
-	D3D11_FILTER filter[] = {
-		D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D11_FILTER_MIN_MAG_MIP_POINT,
-	};
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	for (int i = 0; i < SAMPLER_MAX; ++i)
-	{
-		samplerDesc.Filter = filter[i];
-		result = g_pDevice->CreateSamplerState(&samplerDesc, g_pSamplerState[i].GetAddressOf());
-		if (FAILED(result)) { return result; }
-	}
 	SetSamplerState(SAMPLER_LINEAR);
-
-	g_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(g_Debug.GetAddressOf()));
-
-	return S_OK;
+	BackBufferTargetSet(false);
+	return true;
 }
 
-void DirectX11::InitializeHDRPipeline(UINT width, UINT height)
+/*
+* 関数名　StatesCreate
+* 引　数　なし
+* 戻り値　成功なら true
+* 説　明　旧 DirectX11 クラスと同じ組み合わせのステートを作成する
+*/
+bool GraphicsSystem::StatesCreate()
 {
-	HRESULT hr;
-
-	D3D11_TEXTURE2D_DESC hdrTexDesc = {};
-	hdrTexDesc.Width = width;
-	hdrTexDesc.Height = height;
-	hdrTexDesc.MipLevels = 1;
-	hdrTexDesc.ArraySize = 1;
-	hdrTexDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	hdrTexDesc.SampleDesc.Count = 1;
-	hdrTexDesc.SampleDesc.Quality = 0;
-	hdrTexDesc.Usage = D3D11_USAGE_DEFAULT;
-	hdrTexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	hdrTexDesc.CPUAccessFlags = 0;
-	hdrTexDesc.MiscFlags = 0;
-
-	hr = g_pDevice->CreateTexture2D(&hdrTexDesc, nullptr, _hdrTexture.GetAddressOf());
-	if (FAILED(hr)) {
-		OutputDebugStringA("[HDR] Failed to create HDR texture\n");
-		return;
+	RHI::Device* dev = m_cls_Device.get();
+	const RHI::CullMode culls[CULL_MAX] = { RHI::CullMode::None, RHI::CullMode::Front, RHI::CullMode::Back };
+	for (int i = 0; i < CULL_MAX; ++i) {
+		RHI::RasterizerDesc rd;
+		rd.e_Cull = culls[i];
+		m_RasterizerStates[i] = dev->RasterizerStateCreate(rd);
 	}
 
-	hr = g_pDevice->CreateRenderTargetView(_hdrTexture.Get(), nullptr, _hdrRTV.GetAddressOf());
-	if (FAILED(hr)) {
-		OutputDebugStringA("[HDR] Failed to create HDR RTV\n");
-		return;
+	using RHI::Blend;
+	const Blend blends[BLEND_MAX][2] = {
+		{ Blend::One, Blend::Zero },
+		{ Blend::SrcAlpha, Blend::InvSrcAlpha },
+		{ Blend::One, Blend::One },
+		{ Blend::SrcAlpha, Blend::One },
+		{ Blend::Zero, Blend::InvSrcColor },
+		{ Blend::InvDestColor, Blend::One },
+		{ Blend::One, Blend::InvSrcAlpha },
+		{ Blend::One, Blend::One },
+	};
+	for (int i = 0; i < BLEND_MAX; ++i) {
+		RHI::BlendDesc bd;
+		auto& rt = bd.renderTarget[0];
+		rt.b_BlendEnable = true;
+		rt.e_SrcBlend = blends[i][0];
+		rt.e_DestBlend = blends[i][1];
+		rt.e_SrcBlendAlpha = Blend::One;
+		rt.e_DestBlendAlpha = (i == BLEND_ADD_ALL) ? Blend::One : Blend::InvSrcAlpha;
+		m_BlendStates[i] = dev->BlendStateCreate(bd);
 	}
 
-	hr = g_pDevice->CreateShaderResourceView(_hdrTexture.Get(), nullptr, _hdrSRV.GetAddressOf());
-	if (FAILED(hr)) {
-		OutputDebugStringA("[HDR] Failed to create HDR SRV\n");
-		return;
+	struct SamplerPreset { RHI::Filter filter; RHI::AddressMode address; };
+	const SamplerPreset presets[SAMPLER_MAX] = {
+		{ RHI::Filter::Linear, RHI::AddressMode::Wrap },
+		{ RHI::Filter::Point, RHI::AddressMode::Wrap },
+		{ RHI::Filter::Linear, RHI::AddressMode::Clamp },
+		{ RHI::Filter::Point, RHI::AddressMode::Clamp },
+		{ RHI::Filter::ComparisonMinMagLinearMipPoint, RHI::AddressMode::Border },
+	};
+	for (int i = 0; i < SAMPLER_MAX; ++i) {
+		RHI::SamplerDesc sd;
+		sd.e_Filter = presets[i].filter;
+		sd.e_AddressU = sd.e_AddressV = sd.e_AddressW = presets[i].address;
+		if (i == SAMPLER_SHADOW) {
+			sd.e_Compare = RHI::CompareFunc::LessEqual;
+			for (float& c : sd.f_BorderColor) c = 1.0f;
+		}
+		m_Samplers[i] = dev->SamplerCreate(sd);
 	}
 
-	D3D11_BUFFER_DESC cbDesc = {};
-	cbDesc.Usage = D3D11_USAGE_DEFAULT;
-	cbDesc.ByteWidth = sizeof(TonemapParams);
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	hr = g_pDevice->CreateBuffer(&cbDesc, nullptr, _tonemapCB.GetAddressOf());
-	if (FAILED(hr)) {
-		OutputDebugStringA("[HDR] Failed to create tonemap CB\n");
-		return;
-	}
+	RHI::DepthStencilDesc dd;
+	m_DepthStates[DEPTH_DEFAULT] = dev->DepthStencilStateCreate(dd);
+	dd.b_DepthEnable = false;
+	dd.b_DepthWrite = false;
+	m_DepthStates[DEPTH_OFF] = dev->DepthStencilStateCreate(dd);
+	dd.b_DepthEnable = true;
+	dd.e_DepthFunc = RHI::CompareFunc::LessEqual;
+	m_DepthStates[DEPTH_READ_ONLY] = dev->DepthStencilStateCreate(dd);
+	dd.b_DepthWrite = true;
+	m_DepthStates[DEPTH_LESS_EQUAL] = dev->DepthStencilStateCreate(dd);
 
-	OutputDebugStringA("[HDR] HDR Pipeline initialized successfully\n");
+	const uint32_t white = 0xFFFFFFFFu;
+	RHI::TextureDesc td;
+	RHI::SubresourceData init{ &white, 4, 4 };
+	m_cls_WhiteTexture = dev->TextureCreate(td, &init);
+
+	for (auto& s : m_RasterizerStates) if (!s) return false;
+	for (auto& s : m_BlendStates) if (!s) return false;
+	for (auto& s : m_Samplers) if (!s) return false;
+	for (auto& s : m_DepthStates) if (!s) return false;
+	return m_cls_WhiteTexture != nullptr;
 }
 
-void DirectX11::RenderHDRScene()
+/*
+* 関数名　DefaultTargetsCreate
+* 引　数　width / height：サイズ
+* 戻り値　成功なら true
+* 説　明　バックバッファと組で使う深度バッファ（シェーダーからも読める）を作る
+*/
+bool GraphicsSystem::DefaultTargetsCreate(UINT width, UINT height)
 {
+	RHI::TextureDesc td;
+	td.i_Width = width;
+	td.i_Height = height;
+	td.e_Format = RHI::Format::D32_Float;
+	td.i_BindFlags = RHI::Bind_DepthStencil | RHI::Bind_ShaderResource;
+	td.c_DebugName = "DefaultDepth";
+	m_cls_DefaultDepth = m_cls_Device->TextureCreate(td, nullptr);
+	return m_cls_DefaultDepth != nullptr;
 }
 
-void DirectX11::ApplyToneMappingPass()
+/*
+* 関数名　Uninit
+* 引　数　なし
+* 戻り値　なし
+* 説　明　GPU の処理完了を待ってから解放する
+*/
+void GraphicsSystem::Uninit()
 {
-	TonemapParams params;
-	params.exposure = 1.0f;
-	params.gamma = 2.2f;
-	params.pad1 = 0.0f;
-	params.pad2 = 0.0f;
-
-	g_pContext->UpdateSubresource(_tonemapCB.Get(), 0, nullptr, &params, 0, 0);
-	g_pContext->PSSetConstantBuffers(0, 1, _tonemapCB.GetAddressOf());
-
-	ShaderManager* sm = ShaderManager::GetInstance();
-	ID3D11VertexShader* vs = sm->GetVertexShader("VS_Fullscreen");
-	ID3D11PixelShader* ps = sm->GetPixelShader("PS_Tonemap");
-
-	if (vs && ps) {
-		g_pContext->VSSetShader(vs, nullptr, 0);
-		g_pContext->PSSetShader(ps, nullptr, 0);
-		// HDRテクスチャをピクセルシェーダーにセット
-		g_pContext->PSSetShaderResources(0, 1, _hdrSRV.GetAddressOf());
-	}
+	if (!m_cls_Device) return;
+	m_cls_Device->IdleWait();
+	m_cls_Device->StateClear();
+	m_cls_ImGui.reset();
+	m_cls_DefaultDepth.reset();
+	m_cls_WhiteTexture.reset();
+	for (auto& s : m_RasterizerStates) s.reset();
+	for (auto& s : m_BlendStates) s.reset();
+	for (auto& s : m_Samplers) s.reset();
+	for (auto& s : m_DepthStates) s.reset();
+	RHI::DeviceSet(nullptr);
+	m_cls_Device.reset();
 }
 
-void DirectX11::Uninit()
+/*
+* 関数名　BeginDraw
+* 引　数　なし
+* 戻り値　なし
+* 説　明　バックバッファを描画先にしてクリアする
+*/
+void GraphicsSystem::BeginDraw()
 {
-	delete g_pDSV;
-	g_pDSV = nullptr;
-	delete g_pRTV;
-	g_pRTV = nullptr;
-
-	// ComPtrは自動解放されるため明示的なReleaseは不要
-	// ただしContextのClearStateとSwapChainのフルスクリーン解除は必要
-	if (g_pContext)
-		g_pContext->ClearState();
-	if (g_pSwapChain)
-		g_pSwapChain->SetFullscreenState(false, NULL);
+	const float color[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	m_cls_Device->RenderTargetClear(GetBackBuffer(), color);
+	m_cls_Device->DepthStencilClear(m_cls_DefaultDepth.get(), true, true, 1.0f, 0);
+	BackBufferTargetSet(false);
 }
 
-void DirectX11::BeginDraw()
+void GraphicsSystem::EndDraw()
 {
-	float color[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	g_pRTV->Clear(color);
-	g_pDSV->Clear();
+	m_cls_Device->Present();
 }
 
-void DirectX11::EndDraw()
+/*
+* 関数名　OnResize
+* 引　数　width / height：新しいクライアントサイズ
+* 戻り値　なし
+* 説　明　スワップチェーンと既定の深度バッファを作り直す
+*/
+void GraphicsSystem::OnResize(UINT width, UINT height)
 {
-	g_pSwapChain->Present(0, 0);
+	if (!m_cls_Device || width == 0 || height == 0) return;
+	if (m_cls_ImGui) m_cls_ImGui->DeviceObjectsInvalidate();
+	m_cls_Device->IdleWait();
+	m_cls_Device->SwapChainResize(width, height);
+	m_i_Width = width;
+	m_i_Height = height;
+	DefaultTargetsCreate(width, height);
+	BackBufferTargetSet(true);
+	if (m_cls_ImGui) m_cls_ImGui->DeviceObjectsCreate();
 }
 
-void DirectX11::OnResize(UINT width, UINT height) {
-	if (width == 0 || height == 0) return;
-
-	ImGui_ImplDX11_InvalidateDeviceObjects();
-
-	_hdrSRV.Reset();
-	_hdrRTV.Reset();
-	_hdrTexture.Reset();
-
-	delete g_pRTV;
-	g_pRTV = nullptr;
-	delete g_pDSV;
-	g_pDSV = nullptr;
-
-	HRESULT hr = g_pSwapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
-	if (FAILED(hr)) {
-		MessageBox(nullptr, "ResizeBuffers Failed", "Error", MB_OK);
-		return;
-	}
-
-	g_pRTV = new RenderTarget();
-	g_pRTV->CreateFromScreen();
-	g_pDSV = new DepthStencil();
-	g_pDSV->Create(g_pRTV->GetWidth(), g_pRTV->GetHeight(), false);
-
-	SetRenderTargets(1, &g_pRTV, g_pDSV);
-
-	InitializeHDRPipeline(width, height);
-
-	ImGui_ImplDX11_CreateDeviceObjects();
-}
-
-void DirectX11::SetRenderTargets(UINT num, RenderTarget** ppViews, DepthStencil* pView)
+void GraphicsSystem::BackBufferTargetSet(bool with_depth)
 {
-	static ID3D11RenderTargetView* rtvs[4];
-
-	if (num > 4) num = 4;
-	for (UINT i = 0; i < num; ++i)
-		rtvs[i] = ppViews[i]->GetView();
-	g_pContext->OMSetRenderTargets(num, rtvs, pView ? pView->GetView() : nullptr);
-
-	D3D11_VIEWPORT vp;
-	vp.TopLeftX = 0.0f;
-	vp.TopLeftY = 0.0f;
-	vp.Width = (float)ppViews[0]->GetWidth();
-	vp.Height = (float)ppViews[0]->GetHeight();
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	g_pContext->RSSetViewports(1, &vp);
+	RHI::Texture* bb = GetBackBuffer();
+	RenderTargetsSet(1, &bb, with_depth ? m_cls_DefaultDepth.get() : nullptr);
 }
 
-void DirectX11::SetCullingMode(CullMode cull)
+/*
+* 関数名　RenderTargetsSet
+* 引　数　num / colors：カラーターゲット　depth：深度ターゲット
+* 戻り値　なし
+* 説　明　描画先を切り替え、先頭ターゲットのサイズでビューポートを設定する
+*/
+void GraphicsSystem::RenderTargetsSet(UINT num, RHI::Texture* const* colors, RHI::Texture* depth)
+{
+	m_cls_Device->RenderTargetsSet(num, colors, depth);
+	RHI::Texture* ref = (num > 0 && colors && colors[0]) ? colors[0] : depth;
+	if (!ref) return;
+	RHI::Viewport vp;
+	vp.f_Width = (float)ref->GetWidth();
+	vp.f_Height = (float)ref->GetHeight();
+	m_cls_Device->ViewportSet(vp);
+}
+
+void GraphicsSystem::SetCullingMode(CullMode cull)
 {
 	if (cull < 0 || cull >= CULL_MAX) return;
-	g_pContext->RSSetState(g_pRasterizerState[cull].Get());
+	m_cls_Device->RasterizerStateSet(m_RasterizerStates[cull].get());
 }
 
-void DirectX11::SetBlendMode(BlendMode blend)
+void GraphicsSystem::SetBlendMode(BlendMode blend)
 {
 	if (blend < 0 || blend >= BLEND_MAX) return;
-	FLOAT blendFactor[4] = { D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO };
-	g_pContext->OMSetBlendState(g_pBlendState[blend].Get(), blendFactor, 0xffffffff);
+	m_cls_Device->BlendStateSet(m_BlendStates[blend].get());
 }
 
-void DirectX11::SetSamplerState(SamplerState state)
+void GraphicsSystem::SetSamplerState(SamplerState state, UINT slot, RHI::ShaderStage stage)
 {
 	if (state < 0 || state >= SAMPLER_MAX) return;
-	g_pContext->PSSetSamplers(0, 1, g_pSamplerState[state].GetAddressOf());
+	m_cls_Device->SamplerSet(stage, slot, m_Samplers[state].get());
 }
 
-ID3D11Buffer* DirectX11::CreateVertexBuffer(void* vtxData, UINT vtxNum)
+void GraphicsSystem::SetDepthMode(DepthMode mode)
 {
-	D3D11_BUFFER_DESC vtxBufDesc;
-	ZeroMemory(&vtxBufDesc, sizeof(vtxBufDesc));
-	vtxBufDesc.ByteWidth = sizeof(Vertex) * vtxNum;
-	vtxBufDesc.Usage = D3D11_USAGE_DEFAULT;
-	vtxBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-	D3D11_SUBRESOURCE_DATA vtxSubResource;
-	ZeroMemory(&vtxSubResource, sizeof(vtxSubResource));
-	vtxSubResource.pSysMem = vtxData;
-
-	HRESULT hr;
-	ID3D11Buffer* pVtxBuf;
-	hr = GetDevice()->CreateBuffer(&vtxBufDesc, &vtxSubResource, &pVtxBuf);
-	if (FAILED(hr)) { return nullptr; }
-	return pVtxBuf;
-}
-
-// Render class
-
-Render::Render()
-	:m_width(0), m_height(0)
-	, m_pTex(nullptr)
-	, m_pSRV(nullptr)
-{
-}
-
-Render::~Render()
-{
-	if (m_pSRV) { m_pSRV->Release(); m_pSRV = nullptr; }
-	if (m_pTex) { m_pTex->Release(); m_pTex = nullptr; }
-}
-
-HRESULT Render::Create(const char* fileName)
-{
-	HRESULT result = S_OK;
-
-	wchar_t wPath[260];
-	size_t wLen = 0;
-	MultiByteToWideChar(0, 0, fileName, -1, wPath, MAX_PATH);
-
-	DirectX::TexMetadata	mdata;
-	DirectX::ScratchImage	image;
-
-	if (strstr(fileName, ".tag"))result = DirectX::LoadFromTGAFile(wPath, &mdata, image);
-	else result = DirectX::LoadFromWICFile(wPath, DirectX::WIC_FLAGS_NONE, &mdata, image);
-	if (FAILED(result)) return result;
-
-	result = DirectX::CreateShaderResourceView(DirectX11::GetInstance()->GetDevice(), image.GetImages(), image.GetImageCount(), mdata, &m_pSRV);
-	if (SUCCEEDED(result))
-	{
-		m_width = (UINT)mdata.width;
-		m_height = (UINT)mdata.height;
-	}
-	return result;
-}
-
-HRESULT Render::Create(DXGI_FORMAT format, UINT width, UINT height, const void* pData)
-{
-	D3D11_TEXTURE2D_DESC desc = MakeTexDesc(format, width, height);
-	return CreateResource(desc, pData);
-}
-
-UINT Render::GetWidth() const
-{
-	return m_width;
-}
-
-UINT Render::GetHeight() const
-{
-	return m_height;
-}
-
-ID3D11ShaderResourceView* Render::GetResource() const
-{
-	return m_pSRV;
-}
-
-D3D11_TEXTURE2D_DESC Render::MakeTexDesc(DXGI_FORMAT format, UINT width, UINT height)
-{
-	D3D11_TEXTURE2D_DESC desc = {};
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.Format = format;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.Width = width;
-	desc.Height = height;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.SampleDesc.Count = 1;
-	return desc;
-}
-
-HRESULT Render::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
-{
-	HRESULT hr = E_FAIL;
-
-	D3D11_SUBRESOURCE_DATA data = {};
-	data.pSysMem = pData;
-	data.SysMemPitch = desc.Width * 4;
-	hr = DirectX11::GetInstance()->GetDevice()->CreateTexture2D(&desc, pData ? &data : nullptr, &m_pTex);
-	if (FAILED(hr)) { return hr; }
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	switch (desc.Format)
-	{
-	default:						srvDesc.Format = desc.Format;			break;
-	case DXGI_FORMAT_R32_TYPELESS: 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;	break;
-	}
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-
-	hr = DirectX11::GetInstance()->GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
-	if (SUCCEEDED(hr))
-	{
-		m_width = desc.Width;
-		m_height = desc.Height;
-	}
-	return hr;
-}
-
-// RenderTarget class
-
-RenderTarget::RenderTarget()
-	:m_pRTV(nullptr)
-{
-}
-
-RenderTarget::~RenderTarget()
-{
-	if (m_pRTV) { m_pRTV->Release(); m_pRTV = nullptr; }
-}
-
-void RenderTarget::Clear()
-{
-	static float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Clear(color);
-}
-
-void RenderTarget::Clear(const float* color)
-{
-	DirectX11::GetInstance()->GetContext()->ClearRenderTargetView(m_pRTV, color);
-}
-
-HRESULT RenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
-{
-	D3D11_TEXTURE2D_DESC desc = MakeTexDesc(format, width, height);
-	desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-	return CreateResource(desc);
-}
-
-HRESULT RenderTarget::CreateFromScreen()
-{
-	HRESULT hr;
-
-	ID3D11Texture2D* pBackBuffer = NULL;
-	hr = DirectX11::GetInstance()->GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_pTex);
-	if (FAILED(hr)) { return hr; }
-
-	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	rtvDesc.Texture2D.MipSlice = 0;
-	hr = DirectX11::GetInstance()->GetDevice()->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
-	if (SUCCEEDED(hr))
-	{
-		D3D11_TEXTURE2D_DESC desc;
-		m_pTex->GetDesc(&desc);
-		m_width = desc.Width;
-		m_height = desc.Height;
-	}
-	return hr;
-}
-
-ID3D11RenderTargetView* RenderTarget::GetView() const
-{
-	return m_pRTV;
-}
-
-HRESULT RenderTarget::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
-{
-	HRESULT hr = Render::CreateResource(desc, nullptr);
-	if (FAILED(hr)) { return hr; }
-
-	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-	rtvDesc.Format = desc.Format;
-	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-
-	return DirectX11::GetInstance()->GetDevice()->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
-}
-
-// DepthStencil class
-
-DepthStencil::DepthStencil()
-	:m_pDSV(nullptr)
-{
-}
-
-DepthStencil::~DepthStencil()
-{
-	if (m_pDSV) { m_pDSV->Release(); m_pDSV = nullptr; }
-}
-
-void DepthStencil::Clear()
-{
-	DirectX11::GetInstance()->GetContext()->ClearDepthStencilView(m_pDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
-HRESULT DepthStencil::Create(UINT width, UINT height, bool useStencil)
-{
-	D3D11_TEXTURE2D_DESC desc = MakeTexDesc(useStencil ? DXGI_FORMAT_R24G8_TYPELESS : DXGI_FORMAT_R32_TYPELESS, width, height);
-	desc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
-	return CreateResource(desc);
-}
-
-ID3D11DepthStencilView* DepthStencil::GetView() const
-{
-	return m_pDSV;
-}
-
-HRESULT DepthStencil::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
-{
-	bool useStencil = (desc.Format == DXGI_FORMAT_R24G8_TYPELESS);
-
-	desc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
-	HRESULT hr = Render::CreateResource(desc, nullptr);
-	if (FAILED(hr)) { return hr; }
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	dsvDesc.Format = useStencil ? DXGI_FORMAT_D24_UNORM_S8_UINT : DXGI_FORMAT_D32_FLOAT;
-	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-
-	return DirectX11::GetInstance()->GetDevice()->CreateDepthStencilView(m_pTex, &dsvDesc, &m_pDSV);
+	if (mode < 0 || mode >= DEPTH_MAX) return;
+	m_cls_Device->DepthStencilStateSet(m_DepthStates[mode].get());
 }

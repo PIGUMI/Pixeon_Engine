@@ -33,9 +33,37 @@ void GUI::DestroyInstance()
 {
 	if (instance != nullptr)
 	{
+		instance->Shutdown();
 		delete instance;
 		instance = nullptr;
 	}
+}
+
+/*
+* 関数名　Shutdown
+* 引　数　なし
+* 戻り値　なし
+* 説　明　ImGui の描画バックエンド・Win32 バックエンド・コンテキストを破棄する
+*/
+void GUI::Shutdown()
+{
+	if (!ImGui::GetCurrentContext()) return;
+	if (auto* renderer = GraphicsSystem::GetInstance()->GetImGuiRenderer()) renderer->Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+}
+
+/*
+* 関数名　TextureIdGet
+* 引　数　texture：表示するテクスチャ
+* 戻り値　ImGui::Image に渡す ID
+* 説　明　描画 API ごとに異なるテクスチャ ID を取得する
+*/
+ImTextureID GUI::TextureIdGet(RHI::Texture* texture)
+{
+	auto* renderer = GraphicsSystem::GetInstance()->GetImGuiRenderer();
+	if (!texture || !renderer) return (ImTextureID)0;
+	return (ImTextureID)(uintptr_t)renderer->TextureIdGet(texture);
 }
 
 void GUI::Init()
@@ -45,7 +73,7 @@ void GUI::Init()
 	auto& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	// マルチビューポートは別ウィンドウの描画 (RenderPlatformWindowsDefault) を行っていなかったため無効化
 
 	io.IniFilename = nullptr;
 
@@ -72,7 +100,7 @@ void GUI::Init()
 	io.Fonts->Build();
 
 	ImGui_ImplWin32_Init(MainFrame::GetInstance()->GetWindowHandle());
-	ImGui_ImplDX11_Init(DirectX11::GetInstance()->GetDevice(), DirectX11::GetInstance()->GetContext());
+	if (auto* renderer = GraphicsSystem::GetInstance()->GetImGuiRenderer()) renderer->Init();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec4* colors = style.Colors;
@@ -113,7 +141,7 @@ void GUI::Init()
 
 void GUI::BeginDraw()
 {
-	ImGui_ImplDX11_NewFrame();
+	if (auto* renderer = GraphicsSystem::GetInstance()->GetImGuiRenderer()) renderer->NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
@@ -135,7 +163,7 @@ void GUI::BeginDraw()
 void GUI::EndDraw()
 {
 	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	if (auto* renderer = GraphicsSystem::GetInstance()->GetImGuiRenderer()) renderer->Render(ImGui::GetDrawData());
 }
 
 void GUI::MainMenuBar()
@@ -566,53 +594,4 @@ std::string GUI::ShiftJISToUTF8(const std::string& str)
 	WideCharToMultiByte(CP_UTF8, 0, wstr.data(), lenW, &u8str[0], lenU8, nullptr, nullptr);
 
 	return u8str;
-}
-
-ID3D11ShaderResourceView* GUI::LoadImg(const std::wstring& filename, ID3D11Device* device)
-{
-	IWICImagingFactory* factory = nullptr;
-	IWICBitmapDecoder* decoder = nullptr;
-	IWICBitmapFrameDecode* frame = nullptr;
-	IWICFormatConverter* converter = nullptr;
-	ID3D11ShaderResourceView* srv = nullptr;
-
-	// COM は Main::Init() で既に初期化されているため、ここでは初期化不要
-	HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory));
-	if (SUCCEEDED(hr)) hr = factory->CreateDecoderFromFilename(filename.c_str(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &decoder);
-	if (SUCCEEDED(hr)) hr = decoder->GetFrame(0, &frame);
-	if (SUCCEEDED(hr)) hr = factory->CreateFormatConverter(&converter);
-	if (SUCCEEDED(hr)) hr = converter->Initialize(frame, GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom);
-
-	UINT width = 0, height = 0;
-	if (SUCCEEDED(hr)) hr = frame->GetSize(&width, &height);
-
-	std::vector<BYTE> buffer;
-	if (SUCCEEDED(hr)) {
-		buffer.resize(width * height * 4);
-		hr = converter->CopyPixels(nullptr, width * 4, (UINT)buffer.size(), buffer.data());
-	}
-	if (SUCCEEDED(hr)) {
-		D3D11_TEXTURE2D_DESC desc = {};
-		desc.Width = width;
-		desc.Height = height;
-		desc.MipLevels = 1;
-		desc.ArraySize = 1;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		desc.SampleDesc.Count = 1;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		D3D11_SUBRESOURCE_DATA initData = { buffer.data(), width * 4, 0 };
-		ID3D11Texture2D* tex = nullptr;
-		hr = device->CreateTexture2D(&desc, &initData, &tex);
-		if (SUCCEEDED(hr)) hr = device->CreateShaderResourceView(tex, nullptr, &srv);
-		if (tex) tex->Release();
-	}
-
-	if (converter) converter->Release();
-	if (frame) frame->Release();
-	if (decoder) decoder->Release();
-	if (factory) factory->Release();
-	// COM は Main::UnInit() で終了処理されるため、ここでは終了処理不要
-
-	return srv;
 }

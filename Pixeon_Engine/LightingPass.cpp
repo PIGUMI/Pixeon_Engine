@@ -8,85 +8,31 @@ using namespace DirectX;
 // ============================================================
 // Init
 // ============================================================
-bool LightingPass::Init(ID3D11Device* device)
+bool LightingPass::Init()
 {
-	if (!device) return false;
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return false;
 
 	// ---- 定数バッファ ----
-	{
-		D3D11_BUFFER_DESC bd = {};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(LightingCB);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		if (FAILED(device->CreateBuffer(&bd, nullptr, m_lightingCB.GetAddressOf())))
-			return false;
-	}
+	RHI::BufferDesc bd;
+	bd.i_Size = sizeof(LightingCB);
+	bd.i_BindFlags = RHI::Bind_ConstantBuffer;
+	m_cls_LightingCB = dev->BufferCreate(bd);
 
 	// ---- PointClamp サンプラー（GBuffer 読み取り用）----
-	{
-		D3D11_SAMPLER_DESC sd = {};
-		sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		sd.MaxLOD = D3D11_FLOAT32_MAX;
-		if (FAILED(device->CreateSamplerState(&sd, m_pointClampSmp.GetAddressOf())))
-			return false;
-	}
+	RHI::SamplerDesc sd;
+	sd.e_Filter = RHI::Filter::Point;
+	sd.e_AddressU = sd.e_AddressV = sd.e_AddressW = RHI::AddressMode::Clamp;
+	sd.e_Compare = RHI::CompareFunc::Always;
+	m_cls_PointClampSmp = dev->SamplerCreate(sd);
 
 	// ---- シャドウサンプラー（Comparison Sampler）----
-	{
-		D3D11_SAMPLER_DESC sd = {};
-		sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-		sd.MaxLOD = D3D11_FLOAT32_MAX;
-		if (FAILED(device->CreateSamplerState(&sd, m_shadowSmp.GetAddressOf())))
-			return false;
-	}
+	sd.e_Filter = RHI::Filter::ComparisonMinMagLinearMipPoint;
+	sd.e_Compare = RHI::CompareFunc::LessEqual;
+	m_cls_ShadowSmp = dev->SamplerCreate(sd);
 
-	// ---- 深度書き込みOFF ステート ----
-	{
-		D3D11_DEPTH_STENCIL_DESC dd = {};
-		dd.DepthEnable = FALSE;
-		dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		dd.DepthFunc = D3D11_COMPARISON_ALWAYS;
-		if (FAILED(device->CreateDepthStencilState(&dd, m_dsOff.GetAddressOf())))
-			return false;
-	}
-
-	// ---- ダミー白テクスチャ（SSAO 未設定時のフォールバック）----
-	if (!EnsureWhiteSRV(device)) return false;
-
-	m_initialized = true;
-	return true;
-}
-
-// ============================================================
-// EnsureWhiteSRV
-// ============================================================
-bool LightingPass::EnsureWhiteSRV(ID3D11Device* device)
-{
-	if (m_whiteSRV) return true;
-
-	uint32_t pixel = 0xFFFFFFFF; // 白（R=1, G=1, B=1, A=1）
-	D3D11_TEXTURE2D_DESC td = {};
-	td.Width = td.Height = 1;
-	td.MipLevels = 1; td.ArraySize = 1;
-	td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	td.SampleDesc.Count = 1;
-	td.Usage = D3D11_USAGE_DEFAULT;
-	td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	D3D11_SUBRESOURCE_DATA init = {};
-	init.pSysMem = &pixel;
-	init.SysMemPitch = 4;
-
-	if (FAILED(device->CreateTexture2D(&td, &init, m_whiteTex.GetAddressOf())))
-		return false;
-	if (FAILED(device->CreateShaderResourceView(m_whiteTex.Get(), nullptr, m_whiteSRV.GetAddressOf())))
-		return false;
-
-	return true;
+	m_b_Initialized = m_cls_LightingCB && m_cls_PointClampSmp && m_cls_ShadowSmp;
+	return m_b_Initialized;
 }
 
 // ============================================================
@@ -94,37 +40,34 @@ bool LightingPass::EnsureWhiteSRV(ID3D11Device* device)
 // ============================================================
 void LightingPass::Release()
 {
-	m_lightingCB.Reset();
-	m_pointClampSmp.Reset();
-	m_shadowSmp.Reset();
-	m_dsOff.Reset();
-	m_whiteTex.Reset();
-	m_whiteSRV.Reset();
-	m_ssaoSRV = nullptr;
-	m_initialized = false;
+	m_cls_LightingCB.reset();
+	m_cls_PointClampSmp.reset();
+	m_cls_ShadowSmp.reset();
+	m_cls_SSAO = nullptr;
+	m_b_Initialized = false;
 }
 
 // ============================================================
 // Execute
-// GBuffer を読んで outputRTV にライティング結果を書き込む
+// GBuffer を読んで現在のレンダーターゲットにライティング結果を書き込む
 // ============================================================
 void LightingPass::Execute(
-	ID3D11DeviceContext* ctx,
 	GBuffer* gbuffer,
-	ID3D11RenderTargetView* outputRTV,
-	ID3D11ShaderResourceView* shadowMapSRV,
+	RHI::Texture* shadowMap,
 	int width, int height,
 	const XMMATRIX& proj,
 	const XMMATRIX& view,
 	const XMFLOAT3& cameraPos)
 {
-	if (!m_initialized || !gbuffer || !outputRTV) return;
+	if (!m_b_Initialized || !gbuffer) return;
 
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
 	auto* sm = ShaderManager::GetInstance();
 
 	// シェーダー取得
-	ID3D11VertexShader* vs = sm->GetVertexShader("VS_Fullscreen");
-	ID3D11PixelShader* ps = sm->GetPixelShader("PS_Lighting");
+	RHI::Shader* vs = sm->GetVertexShader("VS_Fullscreen");
+	RHI::Shader* ps = sm->GetPixelShader("PS_Lighting");
 	if (!vs || !ps) return;
 
 	// ---- 定数バッファ更新 ----
@@ -134,61 +77,46 @@ void LightingPass::Execute(
 	cb.view = XMMatrixTranspose(view);
 	cb.cameraPos = cameraPos;
 	cb.resolution = XMFLOAT2((float)width, (float)height);
-	cb.aoStrength = m_aoStrength;
-	ctx->UpdateSubresource(m_lightingCB.Get(), 0, nullptr, &cb, 0, 0);
+	cb.aoStrength = m_f_AOStrength;
+	dev->BufferUpdate(m_cls_LightingCB.get(), &cb, sizeof(cb));
 
 	// ---- 深度書き込みOFF（フルスクリーン描画では深度不要）----
-	// RT のセットは呼び出し側（MainFrame）で行う
-	ctx->OMSetDepthStencilState(m_dsOff.Get(), 0);
+	gs->SetDepthMode(DEPTH_OFF);
 
 	// ---- ビューポート ----
-	D3D11_VIEWPORT vp = {};
-	vp.Width = (float)width;
-	vp.Height = (float)height;
-	vp.MaxDepth = 1.0f;
-	ctx->RSSetViewports(1, &vp);
+	RHI::Viewport vp;
+	vp.f_Width = (float)width;
+	vp.f_Height = (float)height;
+	dev->ViewportSet(vp);
 
-	// ---- シェーダーセット ----
-	ctx->VSSetShader(vs, nullptr, 0);
-	ctx->PSSetShader(ps, nullptr, 0);
-
-	// ---- 定数バッファ ----
-	ID3D11Buffer* cbs[] = { m_lightingCB.Get() };
-	ctx->PSSetConstantBuffers(0, 1, cbs);
-
+	// ---- シェーダー・定数バッファ ----
+	dev->ShaderSet(RHI::ShaderStage::Vertex, vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, ps);
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 0, m_cls_LightingCB.get());
 	// b1/b2: ライトCBを再セット（GeometryPassでPSが切り替わった後も確実に反映）
-	if (m_lightArrayCB) { ID3D11Buffer* b[] = { m_lightArrayCB }; ctx->PSSetConstantBuffers(1, 1, b); }
-	if (m_lightCountCB) { ID3D11Buffer* b[] = { m_lightCountCB }; ctx->PSSetConstantBuffers(2, 1, b); }
+	if (m_cls_LightArrayCB) dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 1, m_cls_LightArrayCB);
+	if (m_cls_LightCountCB) dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 2, m_cls_LightCountCB);
 
-	// ---- SRV セット ----
+	// ---- テクスチャ ----
 	// t0=Albedo, t1=Normal, t2=Depth, t3=SSAO, t4=ShadowMap
-	ID3D11ShaderResourceView* ssaoSRV = m_ssaoSRV ? m_ssaoSRV : m_whiteSRV.Get();
-	ID3D11ShaderResourceView* srvs[] = {
-		gbuffer->GetAlbedoSRV(),  // t0
-		gbuffer->GetNormalSRV(),  // t1
-		gbuffer->GetDepthSRV(),   // t2
-		ssaoSRV,                  // t3
-		shadowMapSRV,             // t4
-	};
-	ctx->PSSetShaderResources(0, 5, srvs);
+	dev->TextureSet(RHI::ShaderStage::Pixel, 0, gbuffer->GetAlbedo());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 1, gbuffer->GetNormal());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 2, gbuffer->GetDepth());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 3, m_cls_SSAO ? m_cls_SSAO : gs->GetWhiteTexture());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 4, shadowMap);
 
 	// ---- サンプラー ----
-	ID3D11SamplerState* smps[] = {
-		m_pointClampSmp.Get(),  // s0: GBuffer 読み取り
-		m_shadowSmp.Get(),      // s1: シャドウマップ
-	};
-	ctx->PSSetSamplers(0, 2, smps);
+	dev->SamplerSet(RHI::ShaderStage::Pixel, 0, m_cls_PointClampSmp.get());  // s0: GBuffer 読み取り
+	dev->SamplerSet(RHI::ShaderStage::Pixel, 1, m_cls_ShadowSmp.get());      // s1: シャドウマップ
 
 	// ---- フルスクリーン三角形描画（頂点バッファ不要）----
-	ctx->IASetInputLayout(nullptr);
-	ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ctx->Draw(3, 0);
+	dev->InputLayoutSet(nullptr);
+	dev->TopologySet(RHI::Topology::TriangleList);
+	dev->Draw(3, 0);
 
-	// ---- SRV バインド解除（次フレームで RTV として使えるように）----
-	ID3D11ShaderResourceView* nullSRVs[5] = {};
-	ctx->PSSetShaderResources(0, 5, nullSRVs);
+	// ---- テクスチャのバインド解除（次フレームで RT として使えるように）----
+	for (uint32_t i = 0; i < 5; ++i) dev->TextureSet(RHI::ShaderStage::Pixel, i, nullptr);
 
 	// ---- 深度ステートを戻す ----
-	ctx->OMSetDepthStencilState(nullptr, 0);
+	dev->DepthStencilStateSet(nullptr);
 }

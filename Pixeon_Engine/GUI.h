@@ -1,12 +1,10 @@
 ﻿#pragma once
 // Editor GUI Class
 #include "IMGUI/imgui.h"
-#include "IMGUI/imgui_impl_dx11.h"
 #include "IMGUI/imgui_impl_win32.h"
 #include "IMGUI/imgui_internal.h"
+#include "RHI/RHI.h"
 #include <string>
-#include <d3d11.h>
-#include <wincodec.h>
 #include <iostream>
 #include <filesystem>
 
@@ -20,9 +18,10 @@ public:
 	void BeginDraw();
 	void EndDraw();
 public:
-	ID3D11ShaderResourceView* LoadImg(const std::wstring& filename, ID3D11Device* device);
 	std::string ShiftJISToUTF8(const std::string& str);
+	ImTextureID TextureIdGet(RHI::Texture* texture);
 private:
+	void Shutdown();
 	void MainMenuBar();
 	void SceneCreateWindow();
 	void ShaderListWindow();

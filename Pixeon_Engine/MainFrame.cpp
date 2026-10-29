@@ -29,6 +29,7 @@
 #include "Scene.h"
 #include "SSAOEffect.h"
 #include "IZANAGI.h"
+#include "_Geometry.h"
 #include <crtdbg.h>
 
 MainFrame* MainFrame::instance_ = nullptr;
@@ -81,29 +82,33 @@ int MainFrame::Init(const EngineConfig& InPut)
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr)) return -1;
 
-	hr = DirectX11::GetInstance()->Init(_wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
-	if (FAILED(hr)) { CoUninitialize(); return -1; }
-
-	DirectX11::GetInstance()->InitializeHDRPipeline(InPut.screenWidth, InPut.screenHeight);
+	std::string graphicsError;
+	if (!GraphicsSystem::GetInstance()->Init(_wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen,
+		InPut.vsync, InPut.backend, &graphicsError)) {
+		MessageBox(nullptr, ("描画デバイスの初期化に失敗しました\n" + graphicsError).c_str(), "エラー", MB_OK | MB_ICONERROR);
+		CoUninitialize();
+		return -1;
+	}
+	ShaderManager::GetInstance()->Initialize(GraphicsSystem::GetInstance()->GetDevice());
 	AssetHotReloadRegister();
-	EffectManager::Instance()->Init(DirectX11::GetInstance()->GetDevice(), DirectX11::GetInstance()->GetContext());
+	EffectManager::Instance()->Init(GraphicsSystem::GetInstance()->GetDevice());
 
 	for (int layer = 0; layer < MAX_LAYER_COUNT; layer++)
 	{
 		GameRenderTarget* layerRT = new GameRenderTarget();
-		layerRT->InitWithDepthSRV(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+		layerRT->InitWithDepthSRV(InPut.screenWidth, InPut.screenHeight);
 		layerRT->SetRenderZBuffer(SettingManager::GetInstance()->GetZBuffer());
 		_layerRenderTargets.push_back(layerRT);
 
 		GBuffer* gb = new GBuffer();
-		if (!gb->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight))
+		if (!gb->Init(InPut.screenWidth, InPut.screenHeight))
 		{
 			delete gb; gb = nullptr;
 		}
 		_gBuffers.push_back(gb);
 
 		LightingPass* lp = new LightingPass();
-		if (!lp->Init(DirectX11::GetInstance()->GetDevice()))
+		if (!lp->Init())
 		{
 			delete lp; lp = nullptr;
 		}
@@ -111,12 +116,11 @@ int MainFrame::Init(const EngineConfig& InPut)
 	}
 
 	_finalRenderTarget = new GameRenderTarget();
-	_finalRenderTarget->Init(DirectX11::GetInstance()->GetDevice(), InPut.screenWidth, InPut.screenHeight);
+	_finalRenderTarget->Init(InPut.screenWidth, InPut.screenHeight);
 	_finalRenderTarget->SetRenderZBuffer(false);
 
 	GUI::GetInstance()->Init();
 	if (IsEditorMode()) Builder::GetInstance()->Init();
-	ShaderManager::GetInstance()->Initialize(DirectX11::GetInstance()->GetDevice());
 	ComponentManager::GetInstance()->Init();
 	ScriptManager::Instance().RegisterAllScripts();
 	InitInput();
@@ -228,17 +232,13 @@ void MainFrame::Update()
 void MainFrame::DrawGeometryPass(int layerIndex, GBuffer* gbuffer)
 {
 	if (!gbuffer) return;
-	ID3D11DeviceContext* ctx = DirectX11::GetInstance()->GetContext();
-
-	gbuffer->BeginGeometryPass(ctx);
-
+	gbuffer->BeginGeometryPass();
 	if (_softwareMode == SoftWareMode::ENGINE)
 	{
 		if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
 			scene->DrawForGBuffer(layerIndex);
 	}
-
-	gbuffer->EndGeometryPass(ctx);
+	gbuffer->EndGeometryPass();
 }
 
 /*
@@ -263,202 +263,187 @@ void MainFrame::Draw()
 {
 	if (!_updateDraw) return;
 
-	auto* dx11 = DirectX11::GetInstance();
-	ID3D11DeviceContext* ctx = dx11->GetContext();
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
+	dev->DepthStencilClear(gs->GetDefaultDepth(), true, true, 1.0f, 0);
 
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	ctx->ClearRenderTargetView(dx11->GetHDRRTV(), clearColor);
-	ctx->ClearDepthStencilView(dx11->GetDefaultDSV()->GetView(),
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	int  Layer_Index = 0;
-	auto layerRTIt = _layerRenderTargets.begin();
-	int  lpIdx = 0;
-
-	for (; layerRTIt != _layerRenderTargets.end() && Layer_Index < MAX_LAYER_COUNT;
-		++layerRTIt, ++Layer_Index, ++lpIdx)
+	// ---- 各レイヤーをオフスクリーンへ描画 ----
+	int layerIndex = 0;
+	for (auto it = _layerRenderTargets.begin(); it != _layerRenderTargets.end() && layerIndex < MAX_LAYER_COUNT; ++it, ++layerIndex)
 	{
-		auto layerRT = *layerRTIt;
-
-		Layer* layerSettings = nullptr;
-		if (_softwareMode == SoftWareMode::ENGINE)
-			if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
-				layerSettings = scene->GetLayer(Layer_Index);
-
+		Layer* layerSettings = LayerSettingsGet(layerIndex);
 		if (layerSettings && !layerSettings->visible) continue;
-
-		if (_softwareMode == SoftWareMode::ENGINE)
-		{
-			auto scene = SceneManger::GetInstance()->GetCurrentScene();
-			if (scene)
-			{
-				GBuffer* gb = GetGBuffer(Layer_Index);
-				LightingPass* lp = (lpIdx < (int)_lightingPasses.size()) ? _lightingPasses[lpIdx] : nullptr;
-
-				scene->PrepareShadowAndLights(Layer_Index);
-
-				if (lp) lp->SetLightBuffers(
-					scene->GetLightArrayCB(),
-					scene->GetLightCountCB());
-
-				DrawGeometryPass(Layer_Index, gb);
-
-				ID3D11ShaderResourceView* aoSRV = nullptr;
-				if (layerSettings && gb)
-				{
-					for (std::shared_ptr<PostEffectBase>& fx : layerSettings->postEffects)
-					{
-						if (!fx || !fx->enabled) continue;
-						SSAOEffect* ssao = dynamic_cast<SSAOEffect*>(fx.get());
-						if (ssao)
-						{
-							auto cam2 = scene->GetMainCamera();
-							if (cam2)
-							{
-								ssao->SetNormalSRV(gb->GetNormalSRV());
-								ssao->SetDepthSRV(gb->GetDepthSRV());
-								ssao->SetCameraMatrices(
-									cam2->GetProjection(),
-									DirectX::XMMatrixInverse(nullptr, cam2->GetProjection()));
-								ssao->GenerateAO(_engineConfig.screenWidth, _engineConfig.screenHeight);
-								aoSRV = ssao->GetAOSRV();
-							}
-							break;
-						}
-					}
-				}
-
-				if (lp && gb)
-				{
-					lp->SetSSAOSRV(aoSRV);
-					auto cam = scene->GetMainCamera();
-
-					layerRT->SetBlend(true);
-					layerRT->SetRenderZBuffer(false);
-					layerRT->Begin(ctx);
-
-					if (cam)
-					{
-						lp->Execute(
-							ctx,
-							gb,
-							layerRT->GetRenderTargetView(),
-							scene->GetShadowMapSRV(),
-							_engineConfig.screenWidth,
-							_engineConfig.screenHeight,
-							cam->GetProjection(),
-							cam->GetView(),
-							cam->GetWorldPosition()
-						);
-					}
-
-					layerRT->SetBlend(true);
-					ID3D11RenderTargetView* layerRTV = layerRT->GetRenderTargetView();
-					ctx->OMSetRenderTargets(1, &layerRTV, gb->GetDSV());
-					ctx->OMSetDepthStencilState(nullptr, 0);
-					dx11->SetBlendMode(BLEND_ALPHA);
-					scene->DrawForwardObjects(Layer_Index);
-					if (cam)
-						scene->DrawEffects(Layer_Index, cam);
-
-					layerRT->End();
-				}
-			}
-		}
-		else if (_softwareMode == SoftWareMode::ANIMTOR2D)
-		{
-			layerRT->SetBlend(true);
-			layerRT->SetRenderZBuffer(false);
-			layerRT->Begin(ctx);
-			if (Layer_Index == 0) Animator2DFrame::GetInstance()->Draw();
-			layerRT->End();
-		}
+		if (_softwareMode == SoftWareMode::ENGINE) LayerSceneDraw(layerIndex, *it, layerSettings);
+		else if (_softwareMode == SoftWareMode::ANIMTOR2D) LayerAnimator2DDraw(layerIndex, *it);
 	}
 
+	// ---- レイヤーを合成（ポストエフェクト適用）----
 	_finalRenderTarget->SetRenderZBuffer(false);
-	_finalRenderTarget->Begin(ctx);
-	dx11->SetBlendMode(BLEND_ALPHA);
-	dx11->ApplyToneMappingPass();
-
-	Layer_Index = 0;
-	layerRTIt = _layerRenderTargets.begin();
-
-	for (; layerRTIt != _layerRenderTargets.end() && Layer_Index < MAX_LAYER_COUNT;
-		++layerRTIt, ++Layer_Index)
+	_finalRenderTarget->Begin();
+	gs->SetBlendMode(BLEND_ALPHA);
+	layerIndex = 0;
+	for (auto it = _layerRenderTargets.begin(); it != _layerRenderTargets.end() && layerIndex < MAX_LAYER_COUNT; ++it, ++layerIndex)
 	{
-		auto layerRT = *layerRTIt;
-
-		Layer* layerSettings = nullptr;
-		if (_softwareMode == SoftWareMode::ENGINE)
-			if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
-				layerSettings = scene->GetLayer(Layer_Index);
-
+		Layer* layerSettings = LayerSettingsGet(layerIndex);
 		if (layerSettings && !layerSettings->visible) continue;
-
-		float opacity = layerSettings ? layerSettings->opacity : 1.0f;
-
-		if (layerSettings && !layerSettings->postEffects.empty())
-		{
-			// ★★★ 修正: GBufferの深度SRVを優先して使用 ★★★
-			// デファードレンダリングでは深度はGBufferに書かれている
-			// GBufferがない場合はlayerRTのdepthにフォールバック
-			GBuffer* gb = GetGBuffer(Layer_Index);
-			ID3D11ShaderResourceView* depthSRV =
-				(gb != nullptr) ? gb->GetDepthSRV()
-				: layerRT->GetDepthShaderResourceView();
-
-			DirectX::XMMATRIX proj = DirectX::XMMatrixIdentity();
-			DirectX::XMMATRIX invProj = DirectX::XMMatrixIdentity();
-			DirectX::XMMATRIX invView = DirectX::XMMatrixIdentity();
-			DirectX::XMFLOAT3 cameraPos = { 0.f, 0.f, 0.f };
-
-			if (_softwareMode == SoftWareMode::ENGINE)
-				if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
-					if (auto cam = scene->GetMainCamera())
-					{
-						proj = cam->GetProjection();
-						invProj = DirectX::XMMatrixInverse(nullptr, proj);
-						DirectX::XMMATRIX view = cam->GetView();
-						invView = DirectX::XMMatrixInverse(nullptr, view);
-						cameraPos = cam->GetWorldPosition();
-					}
-
-			layerSettings->ApplyPostEffectsToScreen(
-				layerRT->GetShaderResourceView(),
-				_engineConfig.screenWidth, _engineConfig.screenHeight,
-				opacity,
-				depthSRV,
-				&proj,
-				&invProj,
-				&invView,
-				&cameraPos
-			);
-		}
-		else
-		{
-			ImageUtils::DrawSRV(
-				layerRT->GetShaderResourceView(),
-				0.0f, 0.0f,
-				(float)_engineConfig.screenWidth, (float)_engineConfig.screenHeight,
-				DirectX::XMFLOAT4(1, 1, 1, 1),
-				DirectX::XMFLOAT4(0, 0, 1, 1),
-				true, opacity);
-		}
+		LayerComposite(layerIndex, *it, layerSettings);
 	}
-
 	_finalRenderTarget->End();
 
-	dx11->BeginDraw();
-	GUI::GetInstance()->BeginDraw();
-	switch (_softwareMode)
-	{
-	case SoftWareMode::ENGINE:    EngineFrame::GetInstance()->DrawGUI(); break;
-	case SoftWareMode::ANIMTOR2D: Animator2DFrame::GetInstance()->DrawGUI(); break;
+	// ---- バックバッファへ（エディタは GUI の GameView、ゲームは全画面に表示）----
+	gs->BeginDraw();
+	if (IsEditorMode()) {
+		GUI::GetInstance()->BeginDraw();
+		switch (_softwareMode)
+		{
+		case SoftWareMode::ENGINE:    EngineFrame::GetInstance()->DrawGUI(); break;
+		case SoftWareMode::ANIMTOR2D: Animator2DFrame::GetInstance()->DrawGUI(); break;
+		}
+		GUI::GetInstance()->EndDraw();
 	}
-	GUI::GetInstance()->EndDraw();
-	dx11->EndDraw();
+	else {
+		RHI::Texture* bb = gs->GetBackBuffer();
+		ImageUtils::DrawSRV(_finalRenderTarget->GetTexture(), 0.0f, 0.0f,
+			(float)bb->GetWidth(), (float)bb->GetHeight(),
+			DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMFLOAT4(0, 0, 1, 1), false, 1.0f);
+	}
+	gs->EndDraw();
 
 	_updateDraw = false;
+}
+
+/*
+* 関数名：LayerSettingsGet
+* 引　数：int layerIndex - レイヤー番号
+* 戻り値：Layer* - 現在のシーンのレイヤー設定（無ければ nullptr）
+* 説　明：エンジンモードのときだけシーンのレイヤー設定を返す
+*/
+Layer* MainFrame::LayerSettingsGet(int layerIndex) const
+{
+	if (_softwareMode != SoftWareMode::ENGINE) return nullptr;
+	auto scene = SceneManger::GetInstance()->GetCurrentScene();
+	return scene ? scene->GetLayer(layerIndex) : nullptr;
+}
+
+/*
+* 関数名：LayerSceneDraw
+* 引　数：layerIndex / layerRT / layerSettings - 対象レイヤー
+* 戻り値：なし
+* 説　明：シャドウ → ジオメトリ (GBuffer) → SSAO → ライティング → 前方描画 → エフェクト の順に描く
+*/
+void MainFrame::LayerSceneDraw(int layerIndex, GameRenderTarget* layerRT, Layer* layerSettings)
+{
+	auto scene = SceneManger::GetInstance()->GetCurrentScene();
+	if (!scene) return;
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
+	GBuffer* gb = GetGBuffer(layerIndex);
+	LightingPass* lp = (layerIndex < (int)_lightingPasses.size()) ? _lightingPasses[layerIndex] : nullptr;
+
+	scene->PrepareShadowAndLights(layerIndex);
+	if (lp) lp->SetLightBuffers(scene->GetLightArrayCB(), scene->GetLightCountCB());
+	DrawGeometryPass(layerIndex, gb);
+	if (!lp || !gb) return;
+
+	lp->SetSSAOTexture(DeferredSSAOGenerate(scene, layerSettings, gb));
+	auto cam = scene->GetMainCamera();
+
+	layerRT->SetBlend(true);
+	layerRT->SetRenderZBuffer(false);
+	layerRT->Begin();
+	if (cam)
+	{
+		lp->Execute(gb, scene->GetShadowMap(), _engineConfig.screenWidth, _engineConfig.screenHeight,
+			cam->GetProjection(), cam->GetView(), cam->GetWorldPosition());
+	}
+
+	// 前方描画は GBuffer の深度を使ってライティング結果の上に重ねる
+	RHI::Texture* color = layerRT->GetTexture();
+	gs->RenderTargetsSet(1, &color, gb->GetDepth());
+	dev->DepthStencilStateSet(nullptr);
+	gs->SetBlendMode(BLEND_ALPHA);
+	scene->DrawForwardObjects(layerIndex);
+	if (cam) scene->DrawEffects(layerIndex, cam);
+	layerRT->End();
+}
+
+/*
+* 関数名：DeferredSSAOGenerate
+* 引　数：scene / layerSettings / gb - 対象
+* 戻り値：RHI::Texture* - 生成した AO テクスチャ（SSAO が無効なら nullptr）
+* 説　明：レイヤーに SSAO があれば GBuffer の法線・深度から AO を生成する
+*/
+RHI::Texture* MainFrame::DeferredSSAOGenerate(AbstractScene* scene, Layer* layerSettings, GBuffer* gb)
+{
+	if (!layerSettings || !gb) return nullptr;
+	for (std::shared_ptr<PostEffectBase>& fx : layerSettings->postEffects)
+	{
+		if (!fx || !fx->enabled) continue;
+		SSAOEffect* ssao = dynamic_cast<SSAOEffect*>(fx.get());
+		if (!ssao) continue;
+		auto cam = scene->GetMainCamera();
+		if (!cam) return nullptr;
+		ssao->SetNormalTexture(gb->GetNormal());
+		ssao->SetDepthTexture(gb->GetDepth());
+		ssao->SetCameraMatrices(cam->GetProjection(), DirectX::XMMatrixInverse(nullptr, cam->GetProjection()));
+		ssao->GenerateAO(_engineConfig.screenWidth, _engineConfig.screenHeight);
+		return ssao->IsAOGenerated() ? ssao->GetAOTexture() : nullptr;
+	}
+	return nullptr;
+}
+
+/*
+* 関数名：LayerAnimator2DDraw
+* 引　数：layerIndex / layerRT - 対象レイヤー
+* 戻り値：なし
+* 説　明：Animator2D モードではレイヤー 0 にエディタのプレビューを描く
+*/
+void MainFrame::LayerAnimator2DDraw(int layerIndex, GameRenderTarget* layerRT)
+{
+	layerRT->SetBlend(true);
+	layerRT->SetRenderZBuffer(false);
+	layerRT->Begin();
+	if (layerIndex == 0) Animator2DFrame::GetInstance()->Draw();
+	layerRT->End();
+}
+
+/*
+* 関数名：LayerComposite
+* 引　数：layerIndex / layerRT / layerSettings - 対象レイヤー
+* 戻り値：なし
+* 説　明：レイヤーを最終ターゲットへ合成する。ポストエフェクトがあれば適用しながら描く
+*/
+void MainFrame::LayerComposite(int layerIndex, GameRenderTarget* layerRT, Layer* layerSettings)
+{
+	const float opacity = layerSettings ? layerSettings->opacity : 1.0f;
+	if (!layerSettings || layerSettings->postEffects.empty())
+	{
+		ImageUtils::DrawSRV(layerRT->GetTexture(), 0.0f, 0.0f,
+			(float)_engineConfig.screenWidth, (float)_engineConfig.screenHeight,
+			DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMFLOAT4(0, 0, 1, 1), true, opacity);
+		return;
+	}
+
+	// デファードでは深度は GBuffer に書かれている。無ければレイヤーの深度にフォールバック
+	GBuffer* gb = GetGBuffer(layerIndex);
+	RHI::Texture* depth = gb ? gb->GetDepth() : layerRT->GetDepthShaderResource();
+
+	DirectX::XMMATRIX proj = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX invProj = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX invView = DirectX::XMMatrixIdentity();
+	DirectX::XMFLOAT3 cameraPos = { 0.f, 0.f, 0.f };
+	if (auto scene = SceneManger::GetInstance()->GetCurrentScene())
+		if (auto cam = scene->GetMainCamera())
+		{
+			proj = cam->GetProjection();
+			invProj = DirectX::XMMatrixInverse(nullptr, proj);
+			invView = DirectX::XMMatrixInverse(nullptr, cam->GetView());
+			cameraPos = cam->GetWorldPosition();
+		}
+
+	layerSettings->ApplyPostEffectsToScreen(layerRT->GetTexture(),
+		_engineConfig.screenWidth, _engineConfig.screenHeight, opacity,
+		depth, &proj, &invProj, &invView, &cameraPos);
 }
 
 /*
@@ -496,6 +481,8 @@ void MainFrame::UnInit()
 	if (IsEditorMode()) SettingManager::GetInstance()->SaveConfig();
 	Builder::DeleteInstance();
 	GUI::DestroyInstance();
+	LineRenderer::GetInstance()->Finalize();
+	ImageUtils::Release();
 	ComponentManager::DestroyInstance();
 	SettingManager::DestroyInstance();
 	ScriptManager::Release();
@@ -506,7 +493,8 @@ void MainFrame::UnInit()
 	TextureManager::DeleteInstance();
 	SoundManager::DeleteInstance();
 	ResourceService::DeleteInstance();
-	DirectX11::DestroyInstance();
+	EffectManager::Instance()->UnInit();
+	GraphicsSystem::DestroyInstance();
 	if (IsEditorMode()) {
 		IZANAGI::GetInstance()->Shutdown();
 		IZANAGI::DestroyInstance();
@@ -515,13 +503,12 @@ void MainFrame::UnInit()
 }
 
 /*
-* 関数名：GetFinalRenderTargetSRV
+* 関数名：GetFinalRenderTarget
 * 引　数：なし
-* 戻り値：ID3D11ShaderResourceView* - 最終的なレンダリング結果を格納するレンダーターゲットのシェーダーリソースビュー。レンダーターゲットが存在しない場合はnullptrを返す。
-* 説　明：最終的なレンダリング結果を格納するレンダーターゲットのシェーダーリソースビューを取得する関数。
+* 戻り値：RHI::Texture* - 最終的なレンダリング結果（レンダーターゲットが存在しない場合は nullptr）
+* 説　明：最終的なレンダリング結果のテクスチャを取得する関数（GameView 表示用）。
 */
-ID3D11ShaderResourceView* MainFrame::GetFinalRenderTargetSRV()
+RHI::Texture* MainFrame::GetFinalRenderTarget()
 {
-	if (_finalRenderTarget) return _finalRenderTarget->GetShaderResourceView();
-	return nullptr;
+	return _finalRenderTarget ? _finalRenderTarget->GetTexture() : nullptr;
 }

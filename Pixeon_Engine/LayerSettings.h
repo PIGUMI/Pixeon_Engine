@@ -3,8 +3,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <d3d11.h>
 #include <DirectXMath.h>
+#include "RHI/RHI.h"
 #include "GUI.h"
 #include <nlohmann/json.hpp>
 
@@ -23,8 +23,9 @@ enum class PostEffectType {
 class PostEffectBase {
 public:
 	virtual ~PostEffectBase() = default;
-	virtual void Apply(ID3D11ShaderResourceView* input,
-		ID3D11RenderTargetView* output,
+	// input を読み、output（レンダーターゲット）へ結果を書き込む
+	virtual void Apply(RHI::Texture* input,
+		RHI::Texture* output,
 		int width, int height) = 0;
 	virtual void DrawInspector() = 0;
 	virtual std::string GetName() const = 0;
@@ -35,6 +36,17 @@ public:
 
 	bool enabled = true;
 	int priority = 0;
+
+protected:
+	// 描画先を output に切り替え、スコープを抜けると元の描画先に戻す
+	class ScopedOutput {
+	public:
+		ScopedOutput(RHI::Texture* output, int width, int height);
+		~ScopedOutput();
+	private:
+		RHI::RenderTargetState m_str_Saved;
+		RHI::Viewport m_str_SavedViewport;
+	};
 };
 
 class Layer {
@@ -53,10 +65,10 @@ public:
 
 	// ★ invView と cameraPos を追加
 	void ApplyPostEffectsToScreen(
-		ID3D11ShaderResourceView* input,
+		RHI::Texture* input,
 		int width, int height,
 		float opacity,
-		ID3D11ShaderResourceView* depthSRV = nullptr,
+		RHI::Texture* depth = nullptr,
 		const DirectX::XMMATRIX* proj = nullptr,
 		const DirectX::XMMATRIX* invProj = nullptr,
 		const DirectX::XMMATRIX* invView = nullptr,   // ★追加
@@ -65,20 +77,14 @@ public:
 
 	void RemovePostEffect(int index);
 	void MovePostEffect(int fromIndex, int toIndex);
-	void ApplyPostEffects(ID3D11ShaderResourceView* input,
-		ID3D11RenderTargetView* output,
-		int width, int height);
 	void DrawInspector();
 	void SaveToJson(nlohmann::json& j) const;
 	void LoadFromJson(const nlohmann::json& j);
 
 private:
-	ID3D11Texture2D* tempTexture1_ = nullptr;
-	ID3D11Texture2D* tempTexture2_ = nullptr;
-	ID3D11RenderTargetView* tempRTV1_ = nullptr;
-	ID3D11RenderTargetView* tempRTV2_ = nullptr;
-	ID3D11ShaderResourceView* tempSRV1_ = nullptr;
-	ID3D11ShaderResourceView* tempSRV2_ = nullptr;
+	// エフェクトを連続適用するためのピンポンバッファ
+	RHI::TextureRef tempTexture1_;
+	RHI::TextureRef tempTexture2_;
 
 	int bufferWidth_ = 0;
 	int bufferHeight_ = 0;

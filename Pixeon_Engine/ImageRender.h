@@ -13,8 +13,6 @@
 #include "AssetManager.h"
 #include "System.h"
 
-#include <wrl/client.h>
-#include <d3d11.h>
 #include <DirectXMath.h>
 #include <string>
 #include <vector>
@@ -90,11 +88,9 @@ private:
 	// 内部処理
 	bool EnsureShaders(bool forceRecreateLayout = false);
 	void RecreateInputLayout();
-	bool EnsureInputLayout(const void* vsBytecode, size_t size);
+	bool EnsureInputLayout();
 	bool EnsureConstantBuffer();
 	bool EnsureBuffers();
-	bool EnsureBlendState();
-	bool EnsureDepthStencilState();
 
 	void UpdateVertices2D(Vertex outV[4], float& outZClip);
 	void UpdateVerticesBillboard(Vertex outV[4]);
@@ -106,11 +102,6 @@ private:
 	// 頂点オフセットを適用
 	void ApplyVertexOffsets(Vertex outV[4]);
 
-	static bool EnsureFallbackTextures();
-	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_whiteTexSRV;
-	static Microsoft::WRL::ComPtr<ID3D11SamplerState> s_linearSmp;
-	static Microsoft::WRL::ComPtr<ID3D11BlendState> s_alphaBlendState;
-	static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> s_depthStencilState;
 private:
 	// リソース
 	std::string m_textureName;
@@ -143,13 +134,13 @@ private:
 	std::string m_vsName = "VS_ImgQuad_Lit";
 	std::string m_psName = "PS_ImgQuad";
 
-	// D3D
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ps;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_layout;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cbVS;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_vb;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_ib;
+	// GPU リソース
+	RHI::Shader*        m_vs = nullptr;   // ShaderManager が所有
+	RHI::Shader*        m_ps = nullptr;
+	RHI::InputLayoutRef m_layout;
+	RHI::BufferRef      m_cbVS;
+	RHI::BufferRef      m_vb;
+	RHI::BufferRef      m_ib;
 
 	bool m_ready = false;
 };

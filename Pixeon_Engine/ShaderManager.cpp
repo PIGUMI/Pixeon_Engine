@@ -1,12 +1,57 @@
-﻿#include <d3d11shader.h>
+﻿/*
+* ファイル名　ShaderManager
+* 説　　　明　シェーダー管理の実装
+*/
 #include "ShaderManager.h"
+#include "AssetManager.h"
+#include "MainFrame.h"
 #include "SettingManager.h"
-#include <fstream>
+#include "../Common/FileUtil.h"
+#include "../Common/ShaderCompiler.h"
 #include <d3dcompiler.h>
+#include <algorithm>
+#include <cstring>
+#include <fstream>
 
 #pragma comment(lib, "d3dcompiler.lib")
 
 ShaderManager* ShaderManager::instance = nullptr;
+
+namespace {
+	UINT Align16(UINT v) { return (v + 15) & ~15u; }
+
+	RHI::ShaderStage StageConvert(ShaderStage s)
+	{
+		return (s == ShaderStage::VS) ? RHI::ShaderStage::Vertex : RHI::ShaderStage::Pixel;
+	}
+
+	/*
+	* 関数名　DxbcCompile
+	* 引　数　hlslPath：入力　target：vs_5_0 / ps_5_0　csoPath：出力
+	* 戻り値　成功なら true
+	* 説　明　d3dcompiler で HLSL を DXBC にコンパイルしてファイルへ保存する
+	*/
+	bool DxbcCompile(const std::string& hlslPath, const char* target, const std::string& csoPath)
+	{
+		ID3DBlob* code = nullptr;
+		ID3DBlob* error = nullptr;
+		const std::wstring wpath = FileUtil::PathToNative(hlslPath).wstring();
+		HRESULT hr = D3DCompileFromFile(wpath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			"main", target, 0, 0, &code, &error);
+		if (FAILED(hr)) {
+			if (error) {
+				MessageBoxA(nullptr, (char*)error->GetBufferPointer(), "HLSL Compile Error", MB_ICONERROR);
+				error->Release();
+			}
+			if (code) code->Release();
+			return false;
+		}
+		if (error) error->Release();
+		const bool ok = FileUtil::FileWriteAll(csoPath, code->GetBufferPointer(), code->GetBufferSize());
+		code->Release();
+		return ok;
+	}
+}
 
 ShaderManager* ShaderManager::GetInstance() {
 	if (instance == nullptr) {
@@ -23,36 +68,43 @@ void ShaderManager::DestroyInstance() {
 	}
 }
 
-void ShaderManager::Initialize(ID3D11Device* device) {
-	m_device = device;
+/*
+* 関数名　Initialize
+* 引　数　device：RHI デバイス
+* 戻り値　なし
+* 説　明　エディタなら HLSL をコンパイルし、その後バイナリを全て読み込む
+*/
+void ShaderManager::Initialize(RHI::Device* device) {
+	m_cls_Device = device;
+	if (IsSpirvBackend()) m_SpirvCompiler = ShaderCompiler::SpirvCompilerFind();
 	UpdateAndCompileShaders();
+	BinariesLoad();
 }
 
 void ShaderManager::Finalize() {
-	for (auto& kv : m_vsShaders) if (kv.second) kv.second->Release();
-	for (auto& kv : m_psShaders) if (kv.second) kv.second->Release();
 	m_vsShaders.clear();
 	m_psShaders.clear();
-
-	m_vsBytecodes.clear();
-	m_psBytecodes.clear();
-
-	for (auto& kv : m_vsRef) {
-		for (auto& cb : kv.second.cbuffers) if (cb.gpuBuffer) cb.gpuBuffer->Release();
-	}
-	for (auto& kv : m_psRef) {
-		for (auto& cb : kv.second.cbuffers) if (cb.gpuBuffer) cb.gpuBuffer->Release();
-	}
 	m_vsRef.clear();
 	m_psRef.clear();
-
-	for (auto& kv : m_constantBuffers) {
-		for (auto* buf : kv.second) if (buf) buf->Release();
-	}
 	m_constantBuffers.clear();
+	m_hlslUpdateTimes.clear();
+	m_retiredShaders.clear();
 }
 
-static UINT Align16(UINT v) { return (v + 15) & ~15u; }
+bool ShaderManager::IsSpirvBackend() const
+{
+	return m_cls_Device && m_cls_Device->BackendGet() == RHI::Backend::Vulkan;
+}
+
+std::string ShaderManager::BinaryPrefixGet() const
+{
+	return std::string(VfsPrefix::SHADER) + (IsSpirvBackend() ? "spv/" : "cso/");
+}
+
+std::string ShaderManager::BinaryExtensionGet() const
+{
+	return IsSpirvBackend() ? ".spv" : ".cso";
+}
 
 bool ShaderManager::CreateHLSLTemplate(const std::string& shaderName, const std::string& type) {
 	std::string path = SettingManager::GetInstance()->GetShaderFilePath() + shaderName + ".hlsl";
@@ -101,330 +153,248 @@ bool ShaderManager::CreateHLSLTemplate(const std::string& shaderName, const std:
 	return true;
 }
 
-bool ShaderManager::CompileHLSL(const std::string& hlslPath, const std::string& entry,
-	const std::string& target, const std::string& csoPath) {
-	ID3DBlob* code = nullptr;
-	ID3DBlob* error = nullptr;
-	HRESULT hr = D3DCompileFromFile(
-		std::wstring(hlslPath.begin(), hlslPath.end()).c_str(),
-		nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		entry.c_str(), target.c_str(),
-		0, 0, &code, &error);
-	if (FAILED(hr)) {
-		if (error) {
-			MessageBoxA(nullptr, (char*)error->GetBufferPointer(), "HLSL Compile Error", MB_ICONERROR);
-			error->Release();
-		}
-		if (code) code->Release();
+/*
+* 関数名　SourceCompile
+* 引　数　hlslPath：HLSL のパス　shaderName：シェーダー名 (VS_xxx / PS_xxx)
+* 戻り値　成功なら true
+* 説　明　現在のバックエンド用のバイナリを生成する
+*/
+bool ShaderManager::SourceCompile(const std::string& hlslPath, const std::string& shaderName)
+{
+	ShaderBindings::Stage stage{};
+	if (!ShaderCompiler::StageFromName(shaderName, stage)) return false;
+	SettingManager* settings = SettingManager::GetInstance();
+	if (!IsSpirvBackend()) {
+		const char* target = (stage == ShaderBindings::Stage::Vertex) ? "vs_5_0" : "ps_5_0";
+		return DxbcCompile(hlslPath, target, settings->GetCSOFilePath() + shaderName + ".cso");
+	}
+	if (m_SpirvCompiler.empty()) return false;   // コンパイラが無ければ同梱の .spv を使う
+	std::string log;
+	if (!ShaderCompiler::SpirvCompile(m_SpirvCompiler, hlslPath, stage, settings->GetSPIRVFilePath() + shaderName + ".spv", log)) {
+		MessageBoxA(nullptr, log.c_str(), "HLSL -> SPIR-V Compile Error", MB_ICONERROR);
 		return false;
 	}
-	std::ofstream ofs(csoPath, std::ios::binary);
-	ofs.write((char*)code->GetBufferPointer(), code->GetBufferSize());
-	code->Release();
 	return true;
 }
 
+/*
+* 関数名　UpdateAndCompileShaders
+* 引　数　なし
+* 戻り値　なし
+* 説　明　更新時刻が変わった HLSL だけをコンパイルし直して読み込む（ゲームでは何もしない）
+*         初回は、既存のバイナリが HLSL より新しければコンパイルを省略する
+*/
 void ShaderManager::UpdateAndCompileShaders() {
-	std::string hlslDir = SettingManager::GetInstance()->GetShaderFilePath();
-	std::string csoDir = SettingManager::GetInstance()->GetCSOFilePath();
+	if (!m_cls_Device || !MainFrame::GetInstance()->IsEditorMode()) return;
+	SettingManager* settings = SettingManager::GetInstance();
+	const std::string hlslDir = settings->GetShaderFilePath();
+	const std::string binDir = IsSpirvBackend() ? settings->GetSPIRVFilePath() : settings->GetCSOFilePath();
+	std::error_code ec;
+	for (auto it = std::filesystem::directory_iterator(FileUtil::PathToNative(hlslDir), ec);
+		!ec && it != std::filesystem::directory_iterator(); it.increment(ec)) {
+		if (!it->is_regular_file() || it->path().extension() != ".hlsl") continue;
+		const std::string hlslPath = FileUtil::PathToUtf8(it->path());
+		const std::string shaderName = it->path().stem().string();
+		std::error_code ec2;
+		const auto writeTime = it->last_write_time(ec2);
+		auto found = m_hlslUpdateTimes.find(hlslPath);
+		const bool firstScan = (found == m_hlslUpdateTimes.end());
+		if (!firstScan && found->second == writeTime) continue;
+		m_hlslUpdateTimes[hlslPath] = writeTime;
 
-	for (const auto& entry : std::filesystem::directory_iterator(hlslDir)) {
-		std::string hlslPath = entry.path().string();
-		std::string shaderName = entry.path().stem().string();
-
-		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
-		GetFileAttributesExA(hlslPath.c_str(), GetFileExInfoStandard, &fileInfo);
-		auto it = m_hlslUpdateTimes.find(hlslPath);
-		if (it == m_hlslUpdateTimes.end() || CompareFileTime(&it->second, &fileInfo.ftLastWriteTime) < 0) {
-			if (shaderName.find("VS_") != std::string::npos) {
-				std::string csoPath = csoDir + shaderName + ".cso";
-				if (CompileHLSL(hlslPath, "main", "vs_5_0", csoPath))
-					LoadCSO(csoPath, "VS", shaderName);
-			}
-			else if (shaderName.find("PS_") != std::string::npos) {
-				std::string csoPath = csoDir + shaderName + ".cso";
-				if (CompileHLSL(hlslPath, "main", "ps_5_0", csoPath))
-					LoadCSO(csoPath, "PS", shaderName);
-			}
-			m_hlslUpdateTimes[hlslPath] = fileInfo.ftLastWriteTime;
-		}
+		const auto binTime = std::filesystem::last_write_time(FileUtil::PathToNative(binDir + shaderName + BinaryExtensionGet()), ec2);
+		const bool upToDate = firstScan && !ec2 && binTime >= writeTime;
+		if (!upToDate && !SourceCompile(hlslPath, shaderName)) continue;
+		if (firstScan) continue;
+		AssetManager::Instance()->CacheClear();   // 再コンパイル直後に古い内容を読まないように
+		BinaryLoad(BinaryPrefixGet() + shaderName + BinaryExtensionGet(), shaderName);
 	}
 }
 
-bool ShaderManager::LoadCSO(const std::string& csoPath, const std::string& type, const std::string& name) {
-	std::ifstream ifs(csoPath, std::ios::binary | std::ios::ate);
-	if (!ifs) return false;
-	std::streamsize size = ifs.tellg();
-	ifs.seekg(0, std::ios::beg);
-	std::vector<char> buffer(size);
-	if (!ifs.read(buffer.data(), size)) return false;
+/*
+* 関数名　BinariesLoad
+* 引　数　なし
+* 戻り値　なし
+* 説　明　仮想パス shader/cso/ (Vulkan は shader/spv/) にある全バイナリを読み込む
+*/
+void ShaderManager::BinariesLoad()
+{
+	const std::string prefix = BinaryPrefixGet();
+	for (auto& info : AssetManager::Instance()->FileListGet(prefix)) {
+		const std::string file = info.path.substr(prefix.size());
+		const size_t dot = file.find_last_of('.');
+		if (dot == std::string::npos || file.find('/') != std::string::npos) continue;
+		BinaryLoad(info.path, file.substr(0, dot));
+	}
+}
 
-	HRESULT hr = S_OK;
-	if (type == "VS") {
-		ID3D11VertexShader* vs = nullptr;
-		hr = m_device->CreateVertexShader(buffer.data(), size, nullptr, &vs);
-		if (SUCCEEDED(hr)) {
-			m_vsShaders[name] = vs;
-			m_vsBytecodes[name] = buffer;
-			ReflectShader(ShaderStage::VS, name, buffer.data(), buffer.size());
-		}
-	}
-	else if (type == "PS") {
-		ID3D11PixelShader* ps = nullptr;
-		hr = m_device->CreatePixelShader(buffer.data(), size, nullptr, &ps);
-		if (SUCCEEDED(hr)) {
-			m_psShaders[name] = ps;
-			m_psBytecodes[name] = buffer;
-			ReflectShader(ShaderStage::PS, name, buffer.data(), buffer.size());
-		}
-	}
-	return SUCCEEDED(hr);
+/*
+* 関数名　BinaryLoad
+* 引　数　virtualPath：バイナリの仮想パス　name：シェーダー名
+* 戻り値　成功なら true
+* 説　明　バイナリから RHI シェーダーを生成し、反射情報から定数バッファを用意する
+*/
+bool ShaderManager::BinaryLoad(const std::string& virtualPath, const std::string& name) {
+	ShaderBindings::Stage stage{};
+	if (!ShaderCompiler::StageFromName(name, stage)) return false;
+	std::vector<uint8_t> code;
+	if (!AssetManager::Instance()->FileRead(virtualPath, code) || code.empty()) return false;
+
+	const bool vs = (stage == ShaderBindings::Stage::Vertex);
+	RHI::ShaderRef shader = m_cls_Device->ShaderCreate(vs ? RHI::ShaderStage::Vertex : RHI::ShaderStage::Pixel,
+		code.data(), code.size(), name.c_str());
+	if (!shader) return false;
+	// 置き換え前のシェーダーを保持しているコンポーネントがあるため、古いものは破棄せず退避する
+	auto& slot = (vs ? m_vsShaders : m_psShaders)[name];
+	if (slot) m_retiredShaders.push_back(slot);
+	slot = shader;
+	ReflectionBuild(vs ? ShaderStage::VS : ShaderStage::PS, name, shader->ReflectionGet());
+	return true;
 }
 
 std::vector<std::string> ShaderManager::GetShaderList(const std::string& type) const {
 	std::vector<std::string> result;
-	if (type == "VS") {
-		for (const auto& kv : m_vsShaders) result.push_back(kv.first);
-	}
-	else if (type == "PS") {
-		for (const auto& kv : m_psShaders) result.push_back(kv.first);
-	}
+	if (type != "VS" && type != "PS") return result;
+	const auto& map = (type == "VS") ? m_vsShaders : m_psShaders;
+	for (const auto& kv : map) result.push_back(kv.first);
+	std::sort(result.begin(), result.end());
 	return result;
 }
 
-ID3D11VertexShader* ShaderManager::GetVertexShader(const std::string& name) {
+RHI::Shader* ShaderManager::GetVertexShader(const std::string& name) {
 	auto it = m_vsShaders.find(name);
-	return (it != m_vsShaders.end()) ? it->second : nullptr;
+	return (it != m_vsShaders.end()) ? it->second.get() : nullptr;
 }
 
-ID3D11PixelShader* ShaderManager::GetPixelShader(const std::string& name) {
+RHI::Shader* ShaderManager::GetPixelShader(const std::string& name) {
 	auto it = m_psShaders.find(name);
-	return (it != m_psShaders.end()) ? it->second : nullptr;
+	return (it != m_psShaders.end()) ? it->second.get() : nullptr;
 }
 
 bool ShaderManager::CreateConstantBuffer(const std::string& key, UINT bufferSize) {
-	if (!m_device) return false;
-	D3D11_BUFFER_DESC desc = {};
-	desc.ByteWidth = Align16(bufferSize);
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	ID3D11Buffer* buffer = nullptr;
-	HRESULT hr = m_device->CreateBuffer(&desc, nullptr, &buffer);
-	if (FAILED(hr)) return false;
-
+	if (!m_cls_Device) return false;
+	RHI::BufferDesc desc;
+	desc.i_Size = Align16(bufferSize);
+	desc.i_BindFlags = RHI::Bind_ConstantBuffer;
+	RHI::BufferRef buffer = m_cls_Device->BufferCreate(desc);
+	if (!buffer) return false;
 	m_constantBuffers[key].push_back(buffer);
 	return true;
 }
 
 bool ShaderManager::WriteBuffer(const std::string& key, UINT slot, void* pData, UINT dataSize) {
-	auto it = m_constantBuffers.find(key);
-	if (it == m_constantBuffers.end()) return false;
-	if (slot >= it->second.size()) return false;
-
-	ID3D11DeviceContext* pContext = nullptr;
-	m_device->GetImmediateContext(&pContext);
-	if (!pContext) return false;
-
-	pContext->UpdateSubresource(it->second[slot], 0, nullptr, pData, 0, 0);
-	pContext->Release();
+	RHI::Buffer* buffer = GetConstantBuffer(key, slot);
+	if (!buffer) return false;
+	m_cls_Device->BufferUpdate(buffer, pData, dataSize);
 	return true;
 }
 
-ID3D11Buffer* ShaderManager::GetConstantBuffer(const std::string& key, UINT slot) {
+RHI::Buffer* ShaderManager::GetConstantBuffer(const std::string& key, UINT slot) {
 	auto it = m_constantBuffers.find(key);
-	if (it == m_constantBuffers.end()) return nullptr;
-	if (slot >= it->second.size()) return nullptr;
-	return it->second[slot];
+	if (it == m_constantBuffers.end() || slot >= it->second.size()) return nullptr;
+	return it->second[slot].get();
 }
 
-bool ShaderManager::GetVSBytecode(const std::string& name, const void** ppData, size_t* pSize) const {
-	auto it = m_vsBytecodes.find(name);
-	if (it == m_vsBytecodes.end()) return false;
-	if (ppData) *ppData = it->second.data();
-	if (pSize)  *pSize = it->second.size();
-	return true;
-}
-
-bool ShaderManager::ReflectShader(ShaderStage stage, const std::string& shaderName,
-	const void* bytecode, size_t size) {
-	ID3D11ShaderReflection* refl = nullptr;
-	HRESULT hr = D3DReflect(bytecode, size, __uuidof(ID3D11ShaderReflection), (void**)&refl);
-	if (FAILED(hr) || !refl) return false;
-
-	D3D11_SHADER_DESC sdesc = {};
-	refl->GetDesc(&sdesc);
-
+/*
+* 関数名　ReflectionBuild
+* 引　数　stage / shaderName：対象　reflection：RHI の反射情報
+* 戻り値　なし
+* 説　明　定数バッファごとに GPU バッファと CPU 側の書き込み領域を用意する
+*/
+void ShaderManager::ReflectionBuild(ShaderStage stage, const std::string& shaderName, const RHI::ShaderReflection& reflection)
+{
 	ShaderReflectionData refData;
-
-	std::unordered_map<std::string, UINT> bindPointByCBufferName;
-	for (UINT r = 0; r < sdesc.BoundResources; ++r) {
-		D3D11_SHADER_INPUT_BIND_DESC bindDesc = {};
-		refl->GetResourceBindingDesc(r, &bindDesc);
-		if (bindDesc.Type == D3D_SIT_CBUFFER) {
-			bindPointByCBufferName[bindDesc.Name] = bindDesc.BindPoint;
-		}
-		else if (bindDesc.Type == D3D_SIT_TEXTURE) {
-			TextureBindDesc td;
-			td.name = bindDesc.Name ? bindDesc.Name : "";
-			td.bindPoint = bindDesc.BindPoint;
-			refData.texBindPointByName[td.name] = td.bindPoint;
-			refData.textures.push_back(td);
-		}
+	for (auto& t : reflection.textures) {
+		refData.texBindPointByName[t.name] = t.i_Slot;
+		refData.textures.push_back({ t.name, t.i_Slot });
 	}
-
-	for (UINT i = 0; i < sdesc.ConstantBuffers; ++i) {
-		ID3D11ShaderReflectionConstantBuffer* cb = refl->GetConstantBufferByIndex(i);
-		D3D11_SHADER_BUFFER_DESC cbdesc = {};
-		cb->GetDesc(&cbdesc);
-
+	for (auto& cb : reflection.constantBuffers) {
 		CBufferRuntime runtime;
-		runtime.name = cbdesc.Name ? cbdesc.Name : "";
-		runtime.size = Align16(cbdesc.Size);
-		auto itBP = bindPointByCBufferName.find(runtime.name);
-		runtime.bindPoint = (itBP != bindPointByCBufferName.end()) ? itBP->second : 0;
-
-		for (UINT v = 0; v < cbdesc.Variables; ++v) {
-			ID3D11ShaderReflectionVariable* var = cb->GetVariableByIndex(v);
-			D3D11_SHADER_VARIABLE_DESC vdesc = {};
-			var->GetDesc(&vdesc);
-
-			VariableDesc vd;
-			vd.name = vdesc.Name ? vdesc.Name : "";
-			vd.offset = vdesc.StartOffset;
-			vd.size = vdesc.Size;
-			runtime.varsByName[vd.name] = vd;
-		}
-
-		D3D11_BUFFER_DESC bd = {};
-		bd.ByteWidth = runtime.size;
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		ID3D11Buffer* buf = nullptr;
-		hr = m_device->CreateBuffer(&bd, nullptr, &buf);
-		if (FAILED(hr)) { refl->Release(); return false; }
-
-		runtime.gpuBuffer = buf;
-		runtime.cpuData.resize(runtime.size, 0);
-		runtime.dirty = false;
-
-		refData.cbufIndexByName[runtime.name] = (UINT)refData.cbuffers.size();
+		runtime.name = cb.name;
+		runtime.bindPoint = cb.i_Slot;
+		runtime.size = Align16(cb.i_Size);
+		for (auto& v : cb.variables) runtime.varsByName[v.name] = { v.name, v.i_Offset, v.i_Size };
+		RHI::BufferDesc desc;
+		desc.i_Size = runtime.size;
+		desc.i_BindFlags = RHI::Bind_ConstantBuffer;
+		runtime.gpuBuffer = m_cls_Device->BufferCreate(desc);
+		runtime.cpuData.assign(runtime.size, 0);
+		refData.cbufIndexByName[runtime.name] = refData.cbuffers.size();
 		refData.cbuffers.push_back(std::move(runtime));
 	}
-
-	if (stage == ShaderStage::VS) {
-		auto itOld = m_vsRef.find(shaderName);
-		if (itOld != m_vsRef.end()) {
-			for (auto& cb : itOld->second.cbuffers) if (cb.gpuBuffer) cb.gpuBuffer->Release();
-		}
-		m_vsRef[shaderName] = std::move(refData);
-	}
-	else {
-		auto itOld = m_psRef.find(shaderName);
-		if (itOld != m_psRef.end()) {
-			for (auto& cb : itOld->second.cbuffers) if (cb.gpuBuffer) cb.gpuBuffer->Release();
-		}
-		m_psRef[shaderName] = std::move(refData);
-	}
-
-	refl->Release();
-	return true;
+	(stage == ShaderStage::VS ? m_vsRef : m_psRef)[shaderName] = std::move(refData);
 }
 
 const ShaderManager::ShaderReflectionData* ShaderManager::GetReflection(
 	ShaderStage stage, const std::string& shaderName) const {
-	if (stage == ShaderStage::VS) {
-		auto it = m_vsRef.find(shaderName);
-		return (it != m_vsRef.end()) ? &it->second : nullptr;
-	}
-	else {
-		auto it = m_psRef.find(shaderName);
-		return (it != m_psRef.end()) ? &it->second : nullptr;
-	}
+	const auto& map = (stage == ShaderStage::VS) ? m_vsRef : m_psRef;
+	auto it = map.find(shaderName);
+	return (it != map.end()) ? &it->second : nullptr;
 }
 
 bool ShaderManager::SetCBufferVariable(ShaderStage stage, const std::string& shaderName,
 	const std::string& cbName, const std::string& varName,
 	const void* data, UINT size) {
-	auto* ref = GetReflection(stage, shaderName);
-	if (!ref) return false;
-	auto itCB = ref->cbufIndexByName.find(cbName);
-	if (itCB == ref->cbufIndexByName.end()) return false;
-
 	auto& refMap = (stage == ShaderStage::VS) ? m_vsRef : m_psRef;
-	auto& runtime = refMap[shaderName].cbuffers[itCB->second];
+	auto itRef = refMap.find(shaderName);
+	if (itRef == refMap.end()) return false;
+	auto itCB = itRef->second.cbufIndexByName.find(cbName);
+	if (itCB == itRef->second.cbufIndexByName.end()) return false;
+	auto& runtime = itRef->second.cbuffers[itCB->second];
 
 	auto itVar = runtime.varsByName.find(varName);
 	if (itVar == runtime.varsByName.end()) return false;
-
 	const auto& vd = itVar->second;
 	const UINT copySize = (size < vd.size) ? size : vd.size;
 	if (vd.offset + copySize > runtime.cpuData.size()) return false;
 
-	memcpy(runtime.cpuData.data() + vd.offset, data, copySize);
+	std::memcpy(runtime.cpuData.data() + vd.offset, data, copySize);
 	runtime.dirty = true;
 	return true;
 }
 
 bool ShaderManager::SetCBufferRaw(ShaderStage stage, const std::string& shaderName,
 	const std::string& cbName, const void* data, UINT size) {
-	auto* ref = GetReflection(stage, shaderName);
-	if (!ref) return false;
-	auto itCB = ref->cbufIndexByName.find(cbName);
-	if (itCB == ref->cbufIndexByName.end()) return false;
-
 	auto& refMap = (stage == ShaderStage::VS) ? m_vsRef : m_psRef;
-	auto& runtime = refMap[shaderName].cbuffers[itCB->second];
+	auto itRef = refMap.find(shaderName);
+	if (itRef == refMap.end()) return false;
+	auto itCB = itRef->second.cbufIndexByName.find(cbName);
+	if (itCB == itRef->second.cbufIndexByName.end()) return false;
+	auto& runtime = itRef->second.cbuffers[itCB->second];
 
-	if (size != runtime.size) return false;
-	memcpy(runtime.cpuData.data(), data, size);
+	if (size > runtime.size) return false;
+	std::memcpy(runtime.cpuData.data(), data, size);
 	runtime.dirty = true;
 	return true;
 }
 
+/*
+* 関数名　CommitAndBind
+* 引　数　stage / shaderName：対象
+* 戻り値　成功なら true
+* 説　明　書き換えた定数バッファを GPU へ送り、反射情報のスロットにバインドする
+*/
 bool ShaderManager::CommitAndBind(ShaderStage stage, const std::string& shaderName) {
-	auto* ref = GetReflection(stage, shaderName);
-	if (!ref) return false;
-
-	ID3D11DeviceContext* ctx = nullptr;
-	m_device->GetImmediateContext(&ctx);
-	if (!ctx) return false;
-
-	for (size_t i = 0; i < ref->cbuffers.size(); ++i) {
-		auto& refMap = (stage == ShaderStage::VS) ? m_vsRef : m_psRef;
-		auto& cb = refMap[shaderName].cbuffers[i];
+	auto& refMap = (stage == ShaderStage::VS) ? m_vsRef : m_psRef;
+	auto itRef = refMap.find(shaderName);
+	if (itRef == refMap.end() || !m_cls_Device) return false;
+	for (auto& cb : itRef->second.cbuffers) {
 		if (!cb.gpuBuffer) continue;
-
 		if (cb.dirty) {
-			ctx->UpdateSubresource(cb.gpuBuffer, 0, nullptr, cb.cpuData.data(), 0, 0);
+			m_cls_Device->BufferUpdate(cb.gpuBuffer.get(), cb.cpuData.data(), (uint32_t)cb.cpuData.size());
 			cb.dirty = false;
 		}
-		if (stage == ShaderStage::VS)
-			ctx->VSSetConstantBuffers(cb.bindPoint, 1, &cb.gpuBuffer);
-		else
-			ctx->PSSetConstantBuffers(cb.bindPoint, 1, &cb.gpuBuffer);
+		m_cls_Device->ConstantBufferSet(StageConvert(stage), cb.bindPoint, cb.gpuBuffer.get());
 	}
-	ctx->Release();
 	return true;
 }
 
 bool ShaderManager::BindSRV(ShaderStage stage, const std::string& shaderName,
-	const std::string& texVarName, ID3D11ShaderResourceView* srv) {
+	const std::string& texVarName, RHI::Texture* texture) {
 	auto* ref = GetReflection(stage, shaderName);
-	if (!ref) return false;
+	if (!ref || !m_cls_Device) return false;
 	auto it = ref->texBindPointByName.find(texVarName);
 	if (it == ref->texBindPointByName.end()) return false;
-
-	ID3D11DeviceContext* ctx = nullptr;
-	m_device->GetImmediateContext(&ctx);
-	if (!ctx) return false;
-
-	UINT slot = it->second;
-	if (stage == ShaderStage::VS)
-		ctx->VSSetShaderResources(slot, 1, &srv);
-	else
-		ctx->PSSetShaderResources(slot, 1, &srv);
-
-	ctx->Release();
+	m_cls_Device->TextureSet(StageConvert(stage), it->second, texture);
 	return true;
 }

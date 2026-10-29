@@ -7,7 +7,6 @@
 #include "System.h"
 #include "Input.h"
 #include "IMGUI/imgui_impl_win32.h"
-#include "IMGUI/imgui_impl_dx11.h"
 #include "IMGUI/imgui.h"
 #include "StartUp.h"
 #include "MainFrame.h"
@@ -218,7 +217,7 @@ extern "C" {
 				UINT height = HIWORD(lparam);
 				screenHeight = height;
 				screenWidth = width;
-				DirectX11::GetInstance()->OnResize(width, height);
+				GraphicsSystem::GetInstance()->OnResize(width, height);
 			}
 			return 0;
 		}

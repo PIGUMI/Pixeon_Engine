@@ -2,10 +2,29 @@
 #include "AssetManager.h"
 #include "IMGUI/imgui.h"
 
+#include "TextureLoader.h"
+#include "../Common/AssetType.h"
+#include "RHI/D3D11/D3D11Native.h"
+#include "RHI/D3D12/D3D12Native.h"
+#include "Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
+#include "Effekseer/include/EffekseerRendererDX12/EffekseerRendererDX12.h"
+
 #include <Windows.h>
 #include <algorithm>
 
-#include "DirectXTex/TextureLoad.h"
+#if defined(_MSC_VER)
+#ifdef _DEBUG
+#pragma comment(lib, "Effekseerd.lib")
+#pragma comment(lib, "EffekseerRendererDX11d.lib")
+#pragma comment(lib, "EffekseerRendererDX12d.lib")
+#pragma comment(lib, "LLGId.lib")
+#else
+#pragma comment(lib, "Effekseer.lib")
+#pragma comment(lib, "EffekseerRendererDX11.lib")
+#pragma comment(lib, "EffekseerRendererDX12.lib")
+#pragma comment(lib, "LLGI.lib")
+#endif
+#endif
 
 EffectManager* EffectManager::_instance = nullptr;
 
@@ -95,9 +114,6 @@ public:
 		if (!_owner || !_owner->_initialized) return nullptr;
 
 		std::string utf8Path = EffectManager::Utf16ToUtf8(path);
-
-		const bool mipEnabled = Effekseer::TextureLoaderHelper::GetIsMipmapEnabled(std::u16string(path));
-
 		auto it = _owner->_textureCache.find(utf8Path);
 		if (it != _owner->_textureCache.end()) {
 			return it->second.tex;
@@ -107,55 +123,22 @@ public:
 		if (!AssetManager::Instance()->AssetLoad(utf8Path, fileData)) {
 			return nullptr;
 		}
-
-		int w = 0, h = 0;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-		if (!CreateSRVFromMemory(fileData.data(), (int32_t)fileData.size(), mipEnabled, srv, w, h)) {
-			return nullptr;
-		}
-
-		auto gd = _owner->_renderer->GetGraphicsDevice();
-		Effekseer::Backend::TextureRef backendTex =
-			EffekseerRendererDX11::CreateTexture(gd, srv.Get(), nullptr, nullptr);
-
-		if (backendTex == nullptr) {
-			return nullptr;
-		}
-
-		Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
-		effTex->SetBackend(backendTex);
-
-		EffectManager::TextureCacheEntry e;
-		e.tex = effTex;
-		e.srv = srv;
-		e.w = w;
-		e.h = h;
-		e.bytes = (uint64_t)w * (uint64_t)h * 4;
-
+		const bool mipEnabled = Effekseer::TextureLoaderHelper::GetIsMipmapEnabled(std::u16string(path));
+		TextureCacheEntry e;
+		e.tex = Create(fileData.data(), fileData.size(), AssetTypeUtil::ExtensionGet(utf8Path), mipEnabled, e);
+		if (e.tex == nullptr) return nullptr;
+		Effekseer::TextureRef result = e.tex;
 		_owner->_textureCache.emplace(utf8Path, std::move(e));
-		return effTex;
+		return result;
 	}
 
 	Effekseer::TextureRef Load(const void* data, int32_t size, Effekseer::TextureType /*textureType*/, bool isMipMapEnabled) override
 	{
-		if (!_owner || !_owner->_initialized) return nullptr;
-
-		int w = 0, h = 0;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-		if (!CreateSRVFromMemory(data, size, isMipMapEnabled, srv, w, h)) {
-			return nullptr;
-		}
-
-		auto gd = _owner->_renderer->GetGraphicsDevice();
-		Effekseer::Backend::TextureRef backendTex =
-			EffekseerRendererDX11::CreateTexture(gd, srv.Get(), nullptr, nullptr);
-
-		if (backendTex == nullptr) return nullptr;
-
-		Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
-		effTex->SetBackend(backendTex);
-
-		return effTex;
+		if (!_owner || !_owner->_initialized || !data || size <= 0) return nullptr;
+		TextureCacheEntry e;
+		Effekseer::TextureRef tex = Create(data, (size_t)size, "", isMipMapEnabled, e);
+		if (tex != nullptr) _owner->_memoryTextures.push_back(std::move(e));
+		return tex;
 	}
 
 	void Unload(Effekseer::TextureRef /*data*/) override
@@ -163,83 +146,29 @@ public:
 	}
 
 private:
-	bool CreateSRVFromMemory(const void* data, int32_t size, bool mipEnabled,
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& outSRV,
-		int& outW, int& outH)
+	/*
+	* 関数名　Create
+	* 引　数　data / size：画像ファイル　ext：拡張子　mip：ミップを生成するか　out_entry：キャッシュ情報
+	* 戻り値　Effekseer のテクスチャ
+	* 説　明　共通の TextureLoader で RHI テクスチャを作り、Effekseer のバックエンドテクスチャで包む
+	*/
+	Effekseer::TextureRef Create(const void* data, size_t size, const std::string& ext, bool mip, TextureCacheEntry& out_entry)
 	{
-		if (!_owner || !_owner->_device || !data || size <= 0) return false;
+		::TextureLoader::Result result = ::TextureLoader::FromMemory(data, size, ext, mip);
+		if (!result.texture) return nullptr;
+		Effekseer::Backend::TextureRef backend = _owner->BackendTextureCreate(result.texture.get());
+		if (backend == nullptr) return nullptr;
 
-		DirectX::ScratchImage scratch;
-		DirectX::TexMetadata meta{};
-
-		// DDSフォーマットを優先的に試す
-		HRESULT hr = DirectX::LoadFromDDSMemory(data, (size_t)size, DirectX::DDS_FLAGS_NONE, &meta, scratch);
-		if (FAILED(hr))
-		{
-			// WICで読み込む(sRGBを無視)
-			hr = DirectX::LoadFromWICMemory(data, (size_t)size, DirectX::WIC_FLAGS_IGNORE_SRGB, &meta, scratch);
-			if (FAILED(hr)) return false;
-
-			// R8G8B8A8_UNORMに変換
-			const DXGI_FORMAT targetFmt = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-			if (meta.format != targetFmt)
-			{
-				DirectX::ScratchImage converted;
-				hr = DirectX::Convert(
-					scratch.GetImages(),
-					scratch.GetImageCount(),
-					scratch.GetMetadata(),
-					targetFmt,
-					DirectX::TEX_FILTER_DEFAULT,
-					DirectX::TEX_THRESHOLD_DEFAULT,
-					converted);
-
-				if (FAILED(hr)) return false;
-
-				scratch = std::move(converted);
-				meta = scratch.GetMetadata();
-			}
-		}
-		if (mipEnabled)
-		{
-			if (meta.mipLevels <= 1)
-			{
-				DirectX::ScratchImage mipChain;
-				hr = DirectX::GenerateMipMaps(
-					scratch.GetImages(),
-					scratch.GetImageCount(),
-					scratch.GetMetadata(),
-					DirectX::TEX_FILTER_DEFAULT,
-					0,
-					mipChain);
-
-				if (SUCCEEDED(hr))
-				{
-					scratch = std::move(mipChain);
-					meta = scratch.GetMetadata();
-				}
-			}
-		}
-
-		outW = (int)meta.width;
-		outH = (int)meta.height;
-
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-		hr = DirectX::CreateShaderResourceView(
-			_owner->_device,
-			scratch.GetImages(),
-			scratch.GetImageCount(),
-			meta,
-			srv.GetAddressOf());
-
-		if (FAILED(hr) || !srv) return false;
-
-		outSRV = srv;
-		return true;
+		Effekseer::TextureRef effTex = Effekseer::MakeRefPtr<Effekseer::Texture>();
+		effTex->SetBackend(backend);
+		out_entry.tex = effTex;
+		out_entry.texture = result.texture;
+		out_entry.w = (int)result.i_Width;
+		out_entry.h = (int)result.i_Height;
+		out_entry.bytes = result.i_GpuBytes;
+		return effTex;
 	}
 
-private:
 	EffectManager* _owner = nullptr;
 };
 
@@ -265,20 +194,27 @@ EffectManager::~EffectManager()
 	UnInit();
 }
 
-bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int maxParticles)
+/*
+* 関数名　Init
+* 引　数　device：RHI デバイス　maxParticles：最大スプライト数
+* 戻り値　成功なら true（Vulkan などレンダラーが無い場合は false で、エフェクトは描画されない）
+* 説　明　Effekseer のマネージャーとバックエンドに合ったレンダラーを作成する
+*/
+bool EffectManager::Init(RHI::Device* device, int maxParticles)
 {
 	if (_initialized) return true;
-	if (!device || !context) return false;
-
+	if (!device) return false;
 	_device = device;
-	_context = context;
 	_maxParticles = maxParticles;
+
+	if (!RendererCreate()) {
+		RHI::LogWrite("Effekseer: %s 用のレンダラーが無いためエフェクトを無効化します", RHI::BackendNameGet(device->BackendGet()));
+		_renderer.Reset();
+		return false;
+	}
 
 	_manager = Effekseer::Manager::Create(maxParticles);
 	if (_manager == nullptr) return false;
-
-	_renderer = EffekseerRendererDX11::Renderer::Create(device, context, maxParticles);
-	if (_renderer == nullptr) return false;
 
 	_manager->GetSetting()->SetEffectLoader(Effekseer::MakeRefPtr<EffectLoader>());
 	_manager->GetSetting()->SetTextureLoader(Effekseer::MakeRefPtr<TextureLoader>(this));
@@ -292,8 +228,65 @@ bool EffectManager::Init(ID3D11Device* device, ID3D11DeviceContext* context, int
 
 	_manager->SetCoordinateSystem(Effekseer::CoordinateSystem::LH);
 
+	// エフェクト描画時のブレンド（通常のアルファブレンド）
+	RHI::BlendDesc bd;
+	bd.renderTarget[0].b_BlendEnable = true;
+	bd.renderTarget[0].e_SrcBlend = RHI::Blend::SrcAlpha;
+	bd.renderTarget[0].e_DestBlend = RHI::Blend::InvSrcAlpha;
+	bd.renderTarget[0].e_SrcBlendAlpha = RHI::Blend::One;
+	bd.renderTarget[0].e_DestBlendAlpha = RHI::Blend::InvSrcAlpha;
+	_blendState = device->BlendStateCreate(bd);
+
 	_initialized = true;
 	return true;
+}
+
+/*
+* 関数名　RendererCreate
+* 引　数　なし
+* 戻り値　成功なら true
+* 説　明　D3D11 / D3D12 用の Effekseer レンダラーを作る
+*         描画先はレイヤーのレンダーターゲット (RGBA8 + D24S8)
+*/
+bool EffectManager::RendererCreate()
+{
+	const RHI::NativeHandles h = _device->NativeHandlesGet();
+	switch (_device->BackendGet()) {
+	case RHI::Backend::D3D11:
+		_renderer = EffekseerRendererDX11::Renderer::Create((ID3D11Device*)h.p_Device, (ID3D11DeviceContext*)h.p_Context, _maxParticles);
+		return _renderer != nullptr;
+	case RHI::Backend::D3D12: {
+		DXGI_FORMAT formats[] = { DXGI_FORMAT_R8G8B8A8_UNORM };
+		_renderer = EffekseerRendererDX12::Create((ID3D12Device*)h.p_Device, (ID3D12CommandQueue*)h.p_Queue,
+			(int32_t)RHI::D3D12FramesInFlightGet(_device), formats, 1, DXGI_FORMAT_D24_UNORM_S8_UINT, false, _maxParticles);
+		if (_renderer == nullptr) return false;
+		_memoryPool = EffekseerRenderer::CreateSingleFrameMemoryPool(_renderer->GetGraphicsDevice());
+		_commandList = EffekseerRenderer::CreateCommandList(_renderer->GetGraphicsDevice(), _memoryPool);
+		return _memoryPool != nullptr && _commandList != nullptr;
+	}
+	default:
+		return false;
+	}
+}
+
+/*
+* 関数名　BackendTextureCreate
+* 引　数　texture：RHI テクスチャ
+* 戻り値　Effekseer のバックエンドテクスチャ
+* 説　明　RHI テクスチャのネイティブリソースを Effekseer に渡す
+*/
+Effekseer::Backend::TextureRef EffectManager::BackendTextureCreate(RHI::Texture* texture)
+{
+	if (!texture || _renderer == nullptr) return nullptr;
+	auto gd = _renderer->GetGraphicsDevice();
+	switch (_device->BackendGet()) {
+	case RHI::Backend::D3D11:
+		return EffekseerRendererDX11::CreateTexture(gd, RHI::D3D11SrvGet(texture), nullptr, nullptr);
+	case RHI::Backend::D3D12:
+		return EffekseerRendererDX12::CreateTexture(gd, RHI::D3D12ResourceGet(texture));
+	default:
+		return nullptr;
+	}
 }
 
 void EffectManager::UnInit()
@@ -302,14 +295,18 @@ void EffectManager::UnInit()
 
 	StopAllEffects();
 	ClearAllEffects();
+	if (_device) _device->IdleWait();
 
 	_textureCache.clear();
+	_memoryTextures.clear();
 
 	if (_manager != nullptr) _manager.Reset();
+	_commandList.Reset();
+	_memoryPool.Reset();
 	if (_renderer != nullptr) _renderer.Reset();
+	_blendState.reset();
 
 	_device = nullptr;
-	_context = nullptr;
 	_initialized = false;
 }
 
@@ -434,45 +431,39 @@ void EffectManager::Update(float deltaTime)
 {
 	if (!_initialized) return;
 
+	if (_memoryPool != nullptr) _memoryPool->NewFrame();
 	_manager->Update(deltaTime * 60.0f);
 }
 
+/*
+* 関数名　Draw
+* 引　数　なし
+* 戻り値　なし
+* 説　明　現在の描画先へエフェクトを描く
+*         D3D12 では RHI のコマンドリストへ Effekseer のコマンドを記録する
+*/
 void EffectManager::Draw()
 {
 	if (!_initialized) return;
 
-	ID3D11BlendState* prevBlendState = nullptr;
-	FLOAT prevBlendFactor[4];
-	UINT prevSampleMask;
-	_context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
+	RHI::BlendState* prevBlend = _device->BlendStateGet();
+	_device->BlendStateSet(_blendState.get());
+	void* native = _device->NativeCommandsBegin();
 
-	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = FALSE;
-	blendDesc.IndependentBlendEnable = FALSE;
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-
-	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	ID3D11BlendState* effekseerBlend = nullptr;
-	_device->CreateBlendState(&blendDesc, &effekseerBlend);
-
-	FLOAT blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	_context->OMSetBlendState(effekseerBlend, blendFactor, 0xffffffff);
-
+	if (_commandList != nullptr) {
+		EffekseerRendererDX12::BeginCommandList(_commandList, (ID3D12GraphicsCommandList*)native);
+		_renderer->SetCommandList(_commandList);
+	}
 	_renderer->BeginRendering();
 	_manager->Draw();
 	_renderer->EndRendering();
+	if (_commandList != nullptr) {
+		_renderer->SetCommandList(nullptr);
+		EffekseerRendererDX12::EndCommandList(_commandList);
+	}
 
-	_context->OMSetBlendState(prevBlendState, prevBlendFactor, prevSampleMask);
-
-	if (effekseerBlend) effekseerBlend->Release();
-	if (prevBlendState) prevBlendState->Release();
+	_device->NativeCommandsEnd();
+	_device->BlendStateSet(prevBlend);
 }
 
 int EffectManager::GetPlayingEffectsCount() const
@@ -483,7 +474,7 @@ int EffectManager::GetPlayingEffectsCount() const
 
 void EffectManager::DrawDebugGUI()
 {
-	ImGui::TextUnformatted("EffectManager (EffekseerForCpp 1.7.2.0 / DX11)");
+	ImGui::Text("EffectManager (EffekseerForCpp 1.7.2.0 / %s)", _device ? RHI::BackendNameGet(_device->BackendGet()) : "-");
 	ImGui::Separator();
 
 	ImGui::Text("Initialized: %s", _initialized ? "Yes" : "No");

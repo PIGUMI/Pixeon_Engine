@@ -10,12 +10,25 @@
 
 using namespace DirectX;
 
-Microsoft::WRL::ComPtr<ID3D11SamplerState>       ModelRenderComponent::s_linearSmp;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_whiteTexSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_magentaTexSRV;
-Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullBack;
-Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullFront;
-Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullNone;
+namespace {
+	// 共通ステート（GraphicsSystem が保持する）
+	RHI::Texture* WhiteTextureGet() { return GraphicsSystem::GetInstance()->GetWhiteTexture(); }
+
+	RHI::RasterizerState* RasterizerGet(ModelRenderComponent::CullMode mode)
+	{
+		GraphicsSystem* gs = GraphicsSystem::GetInstance();
+		switch (mode) {
+		case ModelRenderComponent::CullMode::Front: return gs->GetRasterizerState(CULL_FRONT);
+		case ModelRenderComponent::CullMode::None:  return gs->GetRasterizerState(CULL_NONE);
+		default:                                    return gs->GetRasterizerState(CULL_BACK);
+		}
+	}
+
+	RHI::Texture* TextureOf(const std::shared_ptr<TextureResource>& tex)
+	{
+		return (tex && tex->texture) ? tex->texture.get() : nullptr;
+	}
+}
 
 void ModelRenderComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
@@ -49,7 +62,6 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 	RefreshMaterialCache();
 	if (!EnsureShaders(true)) return false;
 	if (!EnsureConstantBuffer()) return false;
-	if (!EnsureRasterizerStates()) return false;
 	m_texIssueReported.assign(m_model->submeshes.size(), 0);
 	m_ready = true;
 	return true;
@@ -74,19 +86,12 @@ void ModelRenderComponent::RefreshMaterialCache() {
 
 		if (!modelMat.baseColorTex.empty()) {
 			if (modelMat.isEmbedded && modelMat.baseColorTex[0] == '*') {
-				auto srv = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, modelMat.baseColorTex);
-				if (srv) {
+				auto embedded = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, modelMat.baseColorTex);
+				if (embedded) {
 					auto texRes = std::make_shared<TextureResource>();
-					texRes->srv = srv;
-					Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-					srv->GetResource(resource.GetAddressOf());
-					Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
-					if (SUCCEEDED(resource.As(&tex2D))) {
-						D3D11_TEXTURE2D_DESC desc;
-						tex2D->GetDesc(&desc);
-						texRes->width = desc.Width;
-						texRes->height = desc.Height;
-					}
+					texRes->texture = embedded;
+					texRes->width = embedded->GetWidth();
+					texRes->height = embedded->GetHeight();
 					rt.tex = texRes;
 				}
 			}
@@ -102,8 +107,8 @@ void ModelRenderComponent::RefreshMaterialCache() {
 bool ModelRenderComponent::EnsureShaders(bool forceRecreateLayout) {
 	auto* sm = ShaderManager::GetInstance();
 
-	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
-	ID3D11PixelShader* ps = sm->GetPixelShader(m_psName);
+	RHI::Shader* vs = sm->GetVertexShader(m_vsName);
+	RHI::Shader* ps = sm->GetPixelShader(m_psName);
 
 	if (!vs || !ps) {
 		sm->UpdateAndCompileShaders();
@@ -112,26 +117,13 @@ bool ModelRenderComponent::EnsureShaders(bool forceRecreateLayout) {
 		if (!vs || !ps) return false;
 	}
 
-	bool vsChanged = (m_vs.Get() != vs);
+	bool vsChanged = (m_vs != vs);
 	bool needLayout = forceRecreateLayout || vsChanged || !m_layout;
 
 	m_vs = vs;
 	m_ps = ps;
 
 	if (needLayout) RecreateInputLayout();
-
-	if (!s_linearSmp) {
-		D3D11_SAMPLER_DESC sd{};
-		sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		sd.MinLOD = 0;
-		sd.MaxLOD = D3D11_FLOAT32_MAX;
-		auto dev = DirectX11::GetInstance()->GetDevice();
-		dev->CreateSamplerState(&sd, s_linearSmp.GetAddressOf());
-	}
-	EnsureDebugFallbackTextures();
-	EnsureRasterizerStates();
 
 	RebuildShaderTextureSlots();
 
@@ -163,48 +155,39 @@ void ModelRenderComponent::RebuildShaderTextureSlots() {
 }
 
 void ModelRenderComponent::RecreateInputLayout() {
-	m_layout.Reset();
-	const void* bc = nullptr;
-	size_t      bcSize = 0;
-	if (!ShaderManager::GetInstance()->GetVSBytecode(m_vsName, &bc, &bcSize)) return;
-	EnsureInputLayout(bc, bcSize);
+	m_layout.reset();
+	EnsureInputLayout(m_vs);
 }
 
-bool ModelRenderComponent::EnsureInputLayout(const void* vsBytecode, size_t size) {
+bool ModelRenderComponent::EnsureInputLayout(RHI::Shader* vertexShader) {
 	if (m_layout) return true;
-	D3D11_INPUT_ELEMENT_DESC desc[] = {
-		{ "POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, (UINT)offsetof(ModelVertex, position),    D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT,    0, (UINT)offsetof(ModelVertex, normal),      D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT",      0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, (UINT)offsetof(ModelVertex, tangent),     D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,       0, (UINT)offsetof(ModelVertex, uv),          D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BLENDINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT,  0, (UINT)offsetof(ModelVertex, boneIndices), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BLENDWEIGHT",  0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, (UINT)offsetof(ModelVertex, boneWeights), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	if (!vertexShader) return false;
+	const RHI::InputElement desc[] = {
+		{ "POSITION",     0, RHI::Format::R32G32B32_Float,    0, (uint32_t)offsetof(ModelVertex, position) },
+		{ "NORMAL",       0, RHI::Format::R32G32B32_Float,    0, (uint32_t)offsetof(ModelVertex, normal) },
+		{ "TANGENT",      0, RHI::Format::R32G32B32A32_Float, 0, (uint32_t)offsetof(ModelVertex, tangent) },
+		{ "TEXCOORD",     0, RHI::Format::R32G32_Float,       0, (uint32_t)offsetof(ModelVertex, uv) },
+		{ "BLENDINDICES", 0, RHI::Format::R32G32B32A32_UInt,  0, (uint32_t)offsetof(ModelVertex, boneIndices) },
+		{ "BLENDWEIGHT",  0, RHI::Format::R32G32B32A32_Float, 0, (uint32_t)offsetof(ModelVertex, boneWeights) },
 	};
-	auto    dev = DirectX11::GetInstance()->GetDevice();
-	HRESULT hr = dev->CreateInputLayout(desc, _countof(desc), vsBytecode, size, m_layout.GetAddressOf());
-	return SUCCEEDED(hr);
+	m_layout = GraphicsSystem::GetInstance()->GetDevice()->InputLayoutCreate(desc, (uint32_t)std::size(desc), vertexShader);
+	return m_layout != nullptr;
 }
 
 bool ModelRenderComponent::EnsureConstantBuffer() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return false;
+	RHI::BufferDesc bd;
+	bd.i_BindFlags = RHI::Bind_ConstantBuffer;
 	if (!m_cb) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(CBData);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		if (FAILED(dev->CreateBuffer(&bd, nullptr, m_cb.GetAddressOf()))) return false;
+		bd.i_Size = sizeof(CBData);
+		m_cb = dev->BufferCreate(bd);
 	}
-
 	if (!m_cameraCb) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(CameraCBData);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		if (FAILED(dev->CreateBuffer(&bd, nullptr, m_cameraCb.GetAddressOf()))) return false;
+		bd.i_Size = sizeof(CameraCBData);
+		m_cameraCb = dev->BufferCreate(bd);
 	}
-
-	return true;
+	return m_cb && m_cameraCb;
 }
 
 DirectX::XMMATRIX ModelRenderComponent::BuildWorldMatrix() const {
@@ -215,94 +198,9 @@ DirectX::XMMATRIX ModelRenderComponent::BuildWorldMatrix() const {
 	return S * R * T;
 }
 
-bool ModelRenderComponent::EnsureWhiteTexture() {
-	if (s_whiteTexSRV) return true;
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) return false;
-	uint32_t pixel = 0xFFFFFFFF;
-	D3D11_TEXTURE2D_DESC td{};
-	td.Width = 1; td.Height = 1;
-	td.MipLevels = 1; td.ArraySize = 1;
-	td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	td.SampleDesc.Count = 1;
-	td.Usage = D3D11_USAGE_DEFAULT;
-	td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	D3D11_SUBRESOURCE_DATA init{};
-	init.pSysMem = &pixel; init.SysMemPitch = 4;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
-	if (FAILED(dev->CreateTexture2D(&td, &init, tex.GetAddressOf()))) return false;
-	if (FAILED(dev->CreateShaderResourceView(tex.Get(), nullptr, s_whiteTexSRV.GetAddressOf()))) return false;
-	return true;
-}
-
-bool ModelRenderComponent::EnsureDebugFallbackTextures() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) return false;
-	if (!s_whiteTexSRV) {
-		uint32_t pixel = 0xFFFFFFFF;
-		D3D11_TEXTURE2D_DESC td{};
-		td.Width = td.Height = 1;
-		td.MipLevels = 1; td.ArraySize = 1;
-		td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		td.SampleDesc.Count = 1;
-		td.Usage = D3D11_USAGE_DEFAULT;
-		td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		D3D11_SUBRESOURCE_DATA init{ &pixel, 4, 4 };
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
-		if (SUCCEEDED(dev->CreateTexture2D(&td, &init, tex.GetAddressOf())))
-			dev->CreateShaderResourceView(tex.Get(), nullptr, s_whiteTexSRV.GetAddressOf());
-	}
-	if (!s_magentaTexSRV) {
-		uint8_t pix[4] = { 255, 255, 255, 255 };
-		D3D11_TEXTURE2D_DESC td{};
-		td.Width = td.Height = 1;
-		td.MipLevels = 1; td.ArraySize = 1;
-		td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		td.SampleDesc.Count = 1;
-		td.Usage = D3D11_USAGE_DEFAULT;
-		td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		D3D11_SUBRESOURCE_DATA init{ pix, 4, 4 };
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
-		if (SUCCEEDED(dev->CreateTexture2D(&td, &init, tex.GetAddressOf())))
-			dev->CreateShaderResourceView(tex.Get(), nullptr, s_magentaTexSRV.GetAddressOf());
-	}
-	return (s_whiteTexSRV && s_magentaTexSRV);
-}
-
-bool ModelRenderComponent::EnsureRasterizerStates() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) return false;
-
-	if (!s_rasterizerCullBack) {
-		D3D11_RASTERIZER_DESC rd{};
-		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_BACK;
-		rd.FrontCounterClockwise = FALSE;
-		rd.DepthClipEnable = TRUE;
-		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullBack.GetAddressOf()))) return false;
-	}
-	if (!s_rasterizerCullFront) {
-		D3D11_RASTERIZER_DESC rd{};
-		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_FRONT;
-		rd.FrontCounterClockwise = FALSE;
-		rd.DepthClipEnable = TRUE;
-		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullFront.GetAddressOf()))) return false;
-	}
-	if (!s_rasterizerCullNone) {
-		D3D11_RASTERIZER_DESC rd{};
-		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_NONE;
-		rd.FrontCounterClockwise = FALSE;
-		rd.DepthClipEnable = TRUE;
-		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullNone.GetAddressOf()))) return false;
-	}
-	return true;
-}
-
 void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 	const SubMesh& sm, const MaterialRuntime* mat,
-	ID3D11ShaderResourceView* chosenSRV, bool usedMagentaFallback, bool usedWhiteFallback)
+	RHI::Texture* chosenTexture, bool usedMagentaFallback, bool usedWhiteFallback)
 {
 	if (submeshIdx >= m_texIssueReported.size()) return;
 	if (m_texIssueReported[submeshIdx]) return;
@@ -329,9 +227,9 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 				issue = TextureIssue::TextureLoadFailed;
 				detail = "LoadOrGet null " + mrt->texName;
 			}
-			else if (mrt->tex && !mrt->tex->srv) {
+			else if (mrt->tex && !mrt->tex->texture) {
 				issue = TextureIssue::TextureSRVNull;
-				detail = "SRV null " + mrt->texName;
+				detail = "Texture null " + mrt->texName;
 			}
 			if (issue == TextureIssue::None) {
 				if (!sm.hasUV) { issue = TextureIssue::NoUVChannel; detail = "No UV"; }
@@ -339,7 +237,7 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 			}
 		}
 	}
-	if (issue == TextureIssue::None && !s_linearSmp) {
+	if (issue == TextureIssue::None && !GraphicsSystem::GetInstance()->GetSampler(SAMPLER_LINEAR)) {
 		issue = TextureIssue::SamplerMissing; detail = "Sampler missing";
 	}
 	if (issue == TextureIssue::None) {
@@ -584,35 +482,26 @@ void ModelRenderComponent::Draw(int Layer) {
 	XMMATRIX proj = cam->GetProjection();
 	XMFLOAT3 camPos = cam->GetPosition();
 
-	auto ctx = DirectX11::GetInstance()->GetContext();
-
-	UINT stride = sizeof(ModelVertex);
-	UINT offset = 0;
-	ID3D11Buffer* vb = m_model->vb.Get();
-	ID3D11Buffer* ib = m_model->ib.Get();
-	ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-	ctx->IASetInputLayout(m_layout.Get());
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	ctx->VSSetShader(m_vs.Get(), nullptr, 0);
-	ctx->PSSetShader(m_ps.Get(), nullptr, 0);
-
-	ID3D11SamplerState* smp = s_linearSmp.Get();
-	ctx->PSSetSamplers(0, 1, &smp);
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	dev->VertexBufferSet(0, m_model->vb.get(), sizeof(ModelVertex), 0);
+	dev->IndexBufferSet(m_model->ib.get(), RHI::IndexFormat::UInt32, 0);
+	dev->InputLayoutSet(m_layout.get());
+	dev->TopologySet(RHI::Topology::TriangleList);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, m_vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, m_ps);
+	GraphicsSystem::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
 
 	if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty())
-		SetupBoneMatricesForShader(ctx);
-
-	EnsureDebugFallbackTextures();
+		SetupBoneMatricesForShader();
 
 	auto* sm = ShaderManager::GetInstance();
+	RHI::Texture* white = WhiteTextureGet();
 
 	for (size_t i = 0; i < m_model->submeshes.size(); ++i) {
 		const SubMesh& smesh = m_model->submeshes[i];
 		size_t matIndex = smesh.materialIndex;
 
-		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
+		RHI::Texture* texture = white;
 		XMFLOAT4 materialColor = m_color;
 		XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
@@ -636,34 +525,25 @@ void ModelRenderComponent::Draw(int Layer) {
 			meshRotation = mat.meshRotation;
 			cullMode = mat.cullMode;
 
-			if (mat.tex && mat.tex->srv) {
-				srv = mat.tex->srv.Get();
+			if (RHI::Texture* matTex = TextureOf(mat.tex)) {
+				texture = matTex;
 				usedWhite = false;
 			}
 			else if (mat.color.x != 1.0f || mat.color.y != 1.0f ||
 				mat.color.z != 1.0f || mat.color.w != 1.0f) {
-				srv = s_whiteTexSRV.Get();
 				usedWhite = false;
 			}
 			else if (!mat.texName.empty()) {
-				srv = s_magentaTexSRV.Get();
 				usedMagenta = true;
 				usedWhite = false;
 			}
 		}
 		else {
-			srv = s_magentaTexSRV.Get();
 			usedMagenta = true;
 			usedWhite = false;
 		}
 
-		ID3D11RasterizerState* rasterizerState = nullptr;
-		switch (cullMode) {
-		case CullMode::Back:  rasterizerState = s_rasterizerCullBack.Get();  break;
-		case CullMode::Front: rasterizerState = s_rasterizerCullFront.Get(); break;
-		case CullMode::None:  rasterizerState = s_rasterizerCullNone.Get();  break;
-		}
-		if (rasterizerState) ctx->RSSetState(rasterizerState);
+		dev->RasterizerStateSet(RasterizerGet(cullMode));
 
 		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale, meshRotation);
 
@@ -672,58 +552,55 @@ void ModelRenderComponent::Draw(int Layer) {
 		cbd.View = XMMatrixTranspose(view);
 		cbd.Proj = XMMatrixTranspose(proj);
 		cbd.BaseColor = materialColor;
-
-		ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
-		ID3D11Buffer* cbs[] = { m_cb.Get() };
-		ctx->VSSetConstantBuffers(0, 1, cbs);
-		ctx->PSSetConstantBuffers(0, 1, cbs);
+		dev->BufferUpdate(m_cb.get(), &cbd, sizeof(cbd));
+		dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 0, m_cb.get());
+		dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 0, m_cb.get());
 
 		CameraCBData camCbd;
 		camCbd.CameraPos = camPos;
 		camCbd._pad = 0.0f;
-		ctx->UpdateSubresource(m_cameraCb.Get(), 0, nullptr, &camCbd, 0, 0);
-		ID3D11Buffer* camCbs[] = { m_cameraCb.Get() };
-		ctx->PSSetConstantBuffers(4, 1, camCbs);
+		dev->BufferUpdate(m_cameraCb.get(), &camCbd, sizeof(camCbd));
+		dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 4, m_cameraCb.get());
 
-		ctx->PSSetShaderResources(0, 1, &srv);
+		dev->TextureSet(RHI::ShaderStage::Pixel, 0, texture);
 
 		for (auto& slot : m_shaderTexSlots) {
-			ID3D11ShaderResourceView* slotSRV =
-				(slot.tex && slot.tex->srv) ? slot.tex->srv.Get() : s_whiteTexSRV.Get();
-			sm->BindSRV(ShaderStage::PS, m_psName, slot.varName, slotSRV);
+			RHI::Texture* slotTex = TextureOf(slot.tex);
+			sm->BindSRV(ShaderStage::PS, m_psName, slot.varName, slotTex ? slotTex : white);
 		}
 
-		ctx->DrawIndexed(smesh.indexCount, smesh.indexOffset, 0);
+		dev->IndexedDraw(smesh.indexCount, smesh.indexOffset, 0);
 
 		if (usedWhite || usedMagenta)
-			DiagnoseAndReportTextureIssue(i, smesh, matPtr, srv, usedMagenta, usedWhite);
+			DiagnoseAndReportTextureIssue(i, smesh, matPtr, texture, usedMagenta, usedWhite);
 	}
 
-	ctx->RSSetState(s_rasterizerCullBack.Get());
+	dev->RasterizerStateSet(RasterizerGet(CullMode::Back));
 }
 
-void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) {
-	static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;
-	if (!s_boneCB) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(DirectX::XMFLOAT4X4) * 256;
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		auto dev = DirectX11::GetInstance()->GetDevice();
-		if (FAILED(dev->CreateBuffer(&bd, nullptr, s_boneCB.GetAddressOf()))) return;
+/*
+* 関数名　: SetupBoneMatricesForShader
+* 引　数  : なし
+* 戻り値  : なし
+* 説　明　: ボーン行列 (最大 256) を頂点シェーダーの b1 に設定する
+*/
+void ModelRenderComponent::SetupBoneMatricesForShader() {
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!m_boneCb) {
+		RHI::BufferDesc bd;
+		bd.i_Size = sizeof(DirectX::XMFLOAT4X4) * 256;
+		bd.i_BindFlags = RHI::Bind_ConstantBuffer;
+		m_boneCb = dev->BufferCreate(bd);
+		if (!m_boneCb) return;
 	}
 	struct BoneCB { DirectX::XMFLOAT4X4 m[256]; } data;
 	size_t count = std::min(m_boneMatrices.size(), size_t(256));
-	for (size_t i = 0; i < count; ++i) {
-		DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&m_boneMatrices[i]);
-		DirectX::XMStoreFloat4x4(&data.m[i], M);
-	}
+	for (size_t i = 0; i < count; ++i) data.m[i] = m_boneMatrices[i];
 	for (size_t i = count; i < 256; ++i)
 		DirectX::XMStoreFloat4x4(&data.m[i], DirectX::XMMatrixIdentity());
 
-	ctx->UpdateSubresource(s_boneCB.Get(), 0, nullptr, &data, 0, 0);
-	ID3D11Buffer* cbs[] = { s_boneCB.Get() };
-	ctx->VSSetConstantBuffers(1, 1, cbs);
+	dev->BufferUpdate(m_boneCb.get(), &data, sizeof(data));
+	dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 1, m_boneCb.get());
 }
 
 bool ModelRenderComponent::SetMaterialTexture(int materialIndex, const std::string& texLogicalPath) {
@@ -1132,7 +1009,7 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 			ImGui::TextDisabled("[未設定]");
 		}
 		else {
-			bool loaded = slot.tex && slot.tex->srv;
+			bool loaded = TextureOf(slot.tex) != nullptr;
 			ImGui::TextColored(
 				loaded ? ImVec4(0.5f, 0.9f, 0.5f, 1.0f) : ImVec4(1.0f, 0.4f, 0.4f, 1.0f),
 				"%s", slot.assignedTexName.c_str());
@@ -1149,8 +1026,8 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 			slot.tex.reset();
 		}
 
-		if (slot.tex && slot.tex->srv) {
-			ImGui::Image((ImTextureID)slot.tex->srv.Get(), ImVec2(48, 48));
+		if (RHI::Texture* preview = TextureOf(slot.tex)) {
+			ImGui::Image(GUI::GetInstance()->TextureIdGet(preview), ImVec2(48, 48));
 		}
 
 		ImGui::PopID();
@@ -1454,43 +1331,35 @@ void ModelRenderComponent::DrawForGBuffer(int Layer) {
 	CameraComponent* cam = scene->GetMainCamera();
 	if (!cam) return;
 
-	auto ctx = DirectX11::GetInstance()->GetContext();
 	auto* sm = ShaderManager::GetInstance();
-
-	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
-	ID3D11PixelShader* ps = sm->GetPixelShader("PS_GBuffer");
+	RHI::Shader* vs = sm->GetVertexShader(m_vsName);
+	RHI::Shader* ps = sm->GetPixelShader("PS_GBuffer");
 	if (!vs || !ps) return;
+	if (!m_layout && !EnsureInputLayout(vs)) return;
 
 	if (m_model->hasSkin && m_boneMatrices.empty()) EnsureDefaultBoneMatrices();
 
 	XMMATRIX view = cam->GetView();
 	XMMATRIX proj = cam->GetProjection();
 
-	UINT stride = sizeof(ModelVertex);
-	UINT offset = 0;
-	ID3D11Buffer* vb = m_model->vb.Get();
-	ID3D11Buffer* ib = m_model->ib.Get();
-	ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-	ctx->IASetInputLayout(m_layout.Get());
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	ctx->VSSetShader(vs, nullptr, 0);
-	ctx->PSSetShader(ps, nullptr, 0);
-
-	ID3D11SamplerState* smp = s_linearSmp.Get();
-	ctx->PSSetSamplers(0, 1, &smp);
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	dev->VertexBufferSet(0, m_model->vb.get(), sizeof(ModelVertex), 0);
+	dev->IndexBufferSet(m_model->ib.get(), RHI::IndexFormat::UInt32, 0);
+	dev->InputLayoutSet(m_layout.get());
+	dev->TopologySet(RHI::Topology::TriangleList);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, ps);
+	GraphicsSystem::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
 
 	if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty())
-		SetupBoneMatricesForShader(ctx);
+		SetupBoneMatricesForShader();
 
-	EnsureDebugFallbackTextures();
-
+	RHI::Texture* white = WhiteTextureGet();
 	for (size_t i = 0; i < m_model->submeshes.size(); ++i) {
 		const SubMesh& sm2 = m_model->submeshes[i];
 		size_t matIndex = sm2.materialIndex;
 
-		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
+		RHI::Texture* texture = white;
 		XMFLOAT4 materialColor = m_color;
 		XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
@@ -1507,17 +1376,10 @@ void ModelRenderComponent::DrawForGBuffer(int Layer) {
 			meshScale = mat.meshScale;
 			meshRotation = mat.meshRotation;
 			cullMode = mat.cullMode;
-			if (mat.tex && mat.tex->srv) srv = mat.tex->srv.Get();
-			else if (!mat.texName.empty()) srv = s_magentaTexSRV.Get();
+			if (RHI::Texture* matTex = TextureOf(mat.tex)) texture = matTex;
 		}
 
-		ID3D11RasterizerState* rs = nullptr;
-		switch (cullMode) {
-		case CullMode::Back:  rs = s_rasterizerCullBack.Get();  break;
-		case CullMode::Front: rs = s_rasterizerCullFront.Get(); break;
-		case CullMode::None:  rs = s_rasterizerCullNone.Get();  break;
-		}
-		if (rs) ctx->RSSetState(rs);
+		dev->RasterizerStateSet(RasterizerGet(cullMode));
 
 		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale, meshRotation);
 		CBData cbd;
@@ -1525,15 +1387,13 @@ void ModelRenderComponent::DrawForGBuffer(int Layer) {
 		cbd.View = XMMatrixTranspose(view);
 		cbd.Proj = XMMatrixTranspose(proj);
 		cbd.BaseColor = materialColor;
+		dev->BufferUpdate(m_cb.get(), &cbd, sizeof(cbd));
+		dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 0, m_cb.get());
+		dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 0, m_cb.get());
 
-		ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
-		ID3D11Buffer* cbs[] = { m_cb.Get() };
-		ctx->VSSetConstantBuffers(0, 1, cbs);
-		ctx->PSSetConstantBuffers(0, 1, cbs);
-
-		ctx->PSSetShaderResources(0, 1, &srv);
-		ctx->DrawIndexed(sm2.indexCount, sm2.indexOffset, 0);
+		dev->TextureSet(RHI::ShaderStage::Pixel, 0, texture);
+		dev->IndexedDraw(sm2.indexCount, sm2.indexOffset, 0);
 	}
 
-	ctx->RSSetState(s_rasterizerCullBack.Get());
+	dev->RasterizerStateSet(RasterizerGet(CullMode::Back));
 }

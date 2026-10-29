@@ -76,7 +76,7 @@ void Animator2DFrame::DrawTimeline()
 void Animator2DFrame::DrawView()
 {
 	ImGui::Begin(GUI::GetInstance()->ShiftJISToUTF8("Animator2DView").c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
-	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
+	RHI::Texture* finalTexture = MainFrame::GetInstance()->GetFinalRenderTarget();
 	ImVec2 size = ImGui::GetContentRegionAvail();
 	// アスペクト比16:9に合わせる
 	float aspect = 16.0f / 9.0f;
@@ -90,8 +90,8 @@ void Animator2DFrame::DrawView()
 	ImVec2 pos = ImGui::GetCursorPos();
 	pos.x += (ImGui::GetContentRegionAvail().x - size.x) * 0.5f;
 	ImGui::SetCursorPosX(pos.x);
-	if (srv)
-		ImGui::Image((ImTextureID)srv, size);
+	if (finalTexture)
+		ImGui::Image(GUI::GetInstance()->TextureIdGet(finalTexture), size);
 	else
 		ImGui::Text("SRVがNullです");
 	ImGui::End();

@@ -1,14 +1,13 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <memory>
 #include <vector>
-#include <wrl/client.h>
-#include <d3d11.h>
 #include <DirectXMath.h>
+#include "RHI/RHI.h"
 
 struct TextureResource {
 	std::string name;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+	RHI::TextureRef texture;
 	uint32_t width = 0;
 	uint32_t height = 0;
 	size_t   gpuBytes = 0;
@@ -62,8 +61,8 @@ struct AnimationClip {
 
 struct ModelSharedResource {
 	std::string source;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> vb;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> ib;
+	RHI::BufferRef vb;
+	RHI::BufferRef ib;
 	uint32_t vertexCount = 0;
 	uint32_t indexCount = 0;
 	std::vector<SubMesh> submeshes;

@@ -1,205 +1,91 @@
-﻿#include "GameRenderTarget.h"
+﻿/*
+* ファイル名　GameRenderTarget
+* 説　　　明　レイヤーごとのオフスクリーン描画先の実装
+*/
+#include "GameRenderTarget.h"
 #include "System.h"
 #include "SettingManager.h"
 
-void GameRenderTarget::Init(ID3D11Device* device, int width, int height)
+/*
+* 関数名　TargetsCreate
+* 引　数　width / height：サイズ　depthReadable：深度を SRV でも使うか
+* 戻り値　成功なら true
+* 説　明　RGBA8 のカラーと D24S8 の深度を作成する
+*/
+bool GameRenderTarget::TargetsCreate(int width, int height, bool depthReadable)
 {
-	// 既存の実装をそのまま維持
-	if (!device || width <= 0 || height <= 0)
-	{
-		return;
-	}
+	if (width <= 0 || height <= 0) return false;
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return false;
 
-	D3D11_TEXTURE2D_DESC texDesc = {};
-	texDesc.Width = width;
-	texDesc.Height = height;
-	texDesc.MipLevels = 1;
-	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	RHI::TextureDesc color;
+	color.i_Width = (uint32_t)width;
+	color.i_Height = (uint32_t)height;
+	color.e_Format = RHI::Format::R8G8B8A8_UNorm;
+	color.i_BindFlags = RHI::Bind_RenderTarget | RHI::Bind_ShaderResource;
+	color.c_DebugName = "GameRenderTarget.Color";
+	m_cls_Color = dev->TextureCreate(color, nullptr);
 
-	HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, &m_pTexture);
-	if (FAILED(hr) || !m_pTexture)
-	{
-		return;
-	}
+	RHI::TextureDesc depth;
+	depth.i_Width = (uint32_t)width;
+	depth.i_Height = (uint32_t)height;
+	depth.e_Format = RHI::Format::D24_UNorm_S8_UInt;
+	depth.i_BindFlags = RHI::Bind_DepthStencil | (depthReadable ? RHI::Bind_ShaderResource : 0);
+	depth.c_DebugName = "GameRenderTarget.Depth";
+	m_cls_Depth = dev->TextureCreate(depth, nullptr);
 
-	hr = device->CreateRenderTargetView(m_pTexture, nullptr, &m_pRTV);
-	if (FAILED(hr) || !m_pRTV)
-	{
-		return;
-	}
-
-	hr = device->CreateShaderResourceView(m_pTexture, nullptr, &m_pSRV);
-	if (FAILED(hr) || !m_pSRV)
-	{
-		return;
-	}
-
-	m_viewport.Width = (FLOAT)width;
-	m_viewport.Height = (FLOAT)height;
-	m_viewport.MinDepth = 0.0f;
-	m_viewport.MaxDepth = 1.0f;
-	m_viewport.TopLeftX = 0;
-	m_viewport.TopLeftY = 0;
-
-	// 深度バッファ作成（通常版）
-	D3D11_TEXTURE2D_DESC depthDesc = {};
-	depthDesc.Width = width;
-	depthDesc.Height = height;
-	depthDesc.MipLevels = 1;
-	depthDesc.ArraySize = 1;
-	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthDesc.SampleDesc.Count = 1;
-	depthDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-	hr = device->CreateTexture2D(&depthDesc, nullptr, &m_pDepthStencilTexture);
-	if (FAILED(hr) || !m_pDepthStencilTexture)
-	{
-		return;
-	}
-
-	hr = device->CreateDepthStencilView(m_pDepthStencilTexture, nullptr, &m_pDSV);
-	if (FAILED(hr) || !m_pDSV)
-	{
-		return;
-	}
+	m_i_Width = width;
+	m_i_Height = height;
+	m_b_DepthReadable = depthReadable;
+	return m_cls_Color && m_cls_Depth;
 }
 
-void GameRenderTarget::InitWithDepthSRV(ID3D11Device* device, int width, int height)
+void GameRenderTarget::Init(int width, int height)
 {
-	// DoF用の初期化（深度バッファもSRVとして使用可能）
-	if (!device || width <= 0 || height <= 0)
-	{
-		return;
-	}
-
-	// カラーテクスチャの作成
-	D3D11_TEXTURE2D_DESC texDesc = {};
-	texDesc.Width = width;
-	texDesc.Height = height;
-	texDesc.MipLevels = 1;
-	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-
-	HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, &m_pTexture);
-	if (FAILED(hr) || !m_pTexture)
-	{
-		return;
-	}
-
-	hr = device->CreateRenderTargetView(m_pTexture, nullptr, &m_pRTV);
-	if (FAILED(hr) || !m_pRTV)
-	{
-		return;
-	}
-
-	hr = device->CreateShaderResourceView(m_pTexture, nullptr, &m_pSRV);
-	if (FAILED(hr) || !m_pSRV)
-	{
-		return;
-	}
-
-	// ビューポート設定
-	m_viewport.Width = (FLOAT)width;
-	m_viewport.Height = (FLOAT)height;
-	m_viewport.MinDepth = 0.0f;
-	m_viewport.MaxDepth = 1.0f;
-	m_viewport.TopLeftX = 0;
-	m_viewport.TopLeftY = 0;
-
-	// 深度バッファをSRVとしても使用できるように作成
-	D3D11_TEXTURE2D_DESC depthDesc = {};
-	depthDesc.Width = width;
-	depthDesc.Height = height;
-	depthDesc.MipLevels = 1;
-	depthDesc.ArraySize = 1;
-	depthDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // SRVとDSVの両方で使用可能
-	depthDesc.SampleDesc.Count = 1;
-	depthDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-
-	hr = device->CreateTexture2D(&depthDesc, nullptr, &m_pDepthStencilTexture);
-	if (FAILED(hr) || !m_pDepthStencilTexture)
-	{
-		return;
-	}
-
-	// DSV作成
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	hr = device->CreateDepthStencilView(m_pDepthStencilTexture, &dsvDesc, &m_pDSV);
-	if (FAILED(hr) || !m_pDSV)
-	{
-		return;
-	}
-
-	// SRV作成（深度テクスチャ用）
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-	hr = device->CreateShaderResourceView(m_pDepthStencilTexture, &srvDesc, &m_pDepthSRV);
-	if (FAILED(hr) || !m_pDepthSRV)
-	{
-		return;
-	}
+	TargetsCreate(width, height, false);
 }
 
-void GameRenderTarget::Begin(ID3D11DeviceContext* context, bool clearTarget)
+void GameRenderTarget::InitWithDepthSRV(int width, int height)
 {
-	if (m_isRenderZBuffer)
-		context->OMSetRenderTargets(1, &m_pRTV, m_pDSV);
-	else
-		context->OMSetRenderTargets(1, &m_pRTV, nullptr);
+	TargetsCreate(width, height, true);
+}
 
-	context->RSSetViewports(1, &m_viewport);
+/*
+* 関数名　Begin
+* 引　数　clearTarget：カラーをクリアするか
+* 戻り値　なし
+* 説　明　描画先をこのターゲットに切り替える。ブレンド有効時は透明、無効時は背景色でクリアする
+*/
+void GameRenderTarget::Begin(bool clearTarget)
+{
+	if (!m_cls_Color) return;
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
+	RHI::Texture* color = m_cls_Color.get();
+	gs->RenderTargetsSet(1, &color, m_b_RenderZBuffer ? m_cls_Depth.get() : nullptr);
 
-	if (clearTarget)
-	{
-		if (m_isBlendEnabled)
-		{
-			float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-			context->ClearRenderTargetView(m_pRTV, clearColor);
+	if (clearTarget) {
+		if (m_b_BlendEnabled) {
+			const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			dev->RenderTargetClear(color, clearColor);
 		}
-		else
-		{
-			DirectX::XMFLOAT4 Temp = SettingManager::GetInstance()->GetBackgroundColor();
-			float clearColor[4] = { Temp.x, Temp.y, Temp.z, 1.0f };
-			context->ClearRenderTargetView(m_pRTV, clearColor);
+		else {
+			DirectX::XMFLOAT4 bg = SettingManager::GetInstance()->GetBackgroundColor();
+			const float clearColor[4] = { bg.x, bg.y, bg.z, 1.0f };
+			dev->RenderTargetClear(color, clearColor);
 		}
 	}
-
-	if (m_pDSV)
-		context->ClearDepthStencilView(m_pDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	if (m_cls_Depth) dev->DepthStencilClear(m_cls_Depth.get(), true, true, 1.0f, 0);
 }
 
 void GameRenderTarget::End()
 {
-	RenderTarget* defaultRTV = DirectX11::GetInstance()->GetDefaultRTV();
-	DepthStencil* defaultDSV = DirectX11::GetInstance()->GetDefaultDSV();
-
-	if (defaultRTV)
-	{
-		DirectX11::GetInstance()->SetRenderTargets(1, &defaultRTV, defaultDSV);
-	}
+	GraphicsSystem::GetInstance()->BackBufferTargetSet(true);
 }
 
-void GameRenderTarget::Clear(ID3D11DeviceContext* context, float r, float g, float b, float a)
+void GameRenderTarget::Clear(float r, float g, float b, float a)
 {
-	if (!context || !m_pRTV) return;
-	float clearColor[4] = { r, g, b, a };
-	context->ClearRenderTargetView(m_pRTV, clearColor);
-}
-
-void GameRenderTarget::SetBlend(bool Enable)
-{
-	m_isBlendEnabled = Enable;
+	if (!m_cls_Color) return;
+	const float clearColor[4] = { r, g, b, a };
+	GraphicsSystem::GetInstance()->GetDevice()->RenderTargetClear(m_cls_Color.get(), clearColor);
 }

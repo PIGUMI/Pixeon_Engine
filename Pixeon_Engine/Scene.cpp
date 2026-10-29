@@ -13,6 +13,7 @@
 #include "EffectComponent.h"
 #include "RigidBody.h"
 #include "_Geometry.h"
+#include "ShaderManager.h"
 #include <thread>
 #include <mutex>
 #include <nlohmann/json.hpp>
@@ -32,9 +33,28 @@ struct LightGPU {
 	float pad;
 };
 
-static ID3D11Buffer* gLightCB = nullptr;
 static const int kMaxLights = 8;
-static ID3D11Buffer* gLightCountCB = nullptr;
+
+namespace {
+	struct ShadowPSCB {
+		DirectX::XMMATRIX lightViewProj;
+	};
+	struct ShadowVSCB {
+		DirectX::XMMATRIX lightViewProj;
+		DirectX::XMMATRIX world;
+	};
+	struct LightCountCB { int count; float pad[3]; };
+
+	// 定数バッファを 1 つ作る
+	RHI::BufferRef ConstantBufferMake(uint32_t size, RHI::Usage usage = RHI::Usage::Default)
+	{
+		RHI::BufferDesc bd;
+		bd.i_Size = size;
+		bd.i_BindFlags = RHI::Bind_ConstantBuffer;
+		bd.e_Usage = usage;
+		return GraphicsSystem::GetInstance()->GetDevice()->BufferCreate(bd);
+	}
+}
 
 AbstractScene::~AbstractScene()
 {
@@ -391,38 +411,7 @@ void AbstractScene::PlayUpdate() {
 }
 
 void AbstractScene::Draw(int Layer) {
-	RenderShadowMap();
-	UploadLightsToGPU();
-
-	auto ctx = DirectX11::GetInstance()->GetContext();
-	DirectX::XMMATRIX lightVP = GetLightViewProjection();
-
-	struct ShadowCB {
-		DirectX::XMMATRIX lightViewProj;
-	};
-
-	static Microsoft::WRL::ComPtr<ID3D11Buffer> shadowCB;
-	if (!shadowCB) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(ShadowCB);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowCB.GetAddressOf());
-	}
-
-	ShadowCB shadowData;
-	shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightVP);
-	ctx->UpdateSubresource(shadowCB.Get(), 0, nullptr, &shadowData, 0, 0);
-
-	ID3D11Buffer* cbs3[] = { shadowCB.Get() };
-	ctx->PSSetConstantBuffers(3, 1, cbs3);
-
-	ID3D11ShaderResourceView* srvs[] = { m_shadowMapSRV.Get() };
-	ctx->PSSetShaderResources(1, 1, srvs);
-
-	ID3D11SamplerState* samplers[] = { m_shadowSampler.Get() };
-	ctx->PSSetSamplers(1, 1, samplers);
-
+	PrepareShadowAndLights(Layer);
 	for (auto& obj : _objects) {
 		if (obj) {
 			obj->Draw(Layer);
@@ -702,19 +691,12 @@ void AbstractScene::ProcessThreadSafeAdditions() {
 }
 
 void AbstractScene::UploadLightsToGPU() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	auto ctx = DirectX11::GetInstance()->GetContext();
-	if (!dev || !ctx) return;
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return;
 
-	if (!gLightCB) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(LightGPU) * kMaxLights;
-		bd.Usage = D3D11_USAGE_DYNAMIC;
-		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		dev->CreateBuffer(&bd, nullptr, &gLightCB);
-	}
-	if (!gLightCB) return;
+	if (!m_lightArrayCB) m_lightArrayCB = ConstantBufferMake(sizeof(LightGPU) * kMaxLights, RHI::Usage::Dynamic);
+	if (!m_lightCountCB) m_lightCountCB = ConstantBufferMake(sizeof(LightCountCB), RHI::Usage::Dynamic);
+	if (!m_lightArrayCB || !m_lightCountCB) return;
 
 	LightGPU lights[kMaxLights];
 	memset(lights, 0, sizeof(LightGPU) * kMaxLights);
@@ -751,43 +733,12 @@ void AbstractScene::UploadLightsToGPU() {
 		if (count >= kMaxLights) break;
 	}
 
-	struct LightCountCB { int count; float pad[3]; };
+	const LightCountCB countData{ count, { 0.0f, 0.0f, 0.0f } };
+	dev->BufferUpdate(m_lightArrayCB.get(), lights, sizeof(lights));
+	dev->BufferUpdate(m_lightCountCB.get(), &countData, sizeof(countData));
 
-	if (!gLightCountCB) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(LightCountCB);
-		bd.Usage = D3D11_USAGE_DYNAMIC;
-		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		dev->CreateBuffer(&bd, nullptr, &gLightCountCB);
-	}
-
-	{
-		D3D11_MAPPED_SUBRESOURCE mp{};
-		if (SUCCEEDED(ctx->Map(gLightCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mp))) {
-			memcpy(mp.pData, lights, sizeof(LightGPU) * kMaxLights);
-			ctx->Unmap(gLightCB, 0);
-		}
-	}
-
-	if (gLightCountCB) {
-		D3D11_MAPPED_SUBRESOURCE mp2{};
-		if (SUCCEEDED(ctx->Map(gLightCountCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mp2))) {
-			LightCountCB* countData = (LightCountCB*)mp2.pData;
-			countData->count = count;
-			countData->pad[0] = 0.0f;
-			countData->pad[1] = 0.0f;
-			countData->pad[2] = 0.0f;
-			ctx->Unmap(gLightCountCB, 0);
-		}
-	}
-
-	ID3D11Buffer* cbs1[] = { gLightCB };
-	ctx->PSSetConstantBuffers(1, 1, cbs1);
-	ID3D11Buffer* cbs2[] = { gLightCountCB };
-	ctx->PSSetConstantBuffers(2, 1, cbs2);
-	m_lightArrayCB = gLightCB;
-	m_lightCountCB = gLightCountCB;
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 1, m_lightArrayCB.get());
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 2, m_lightCountCB.get());
 }
 
 void AbstractScene::InitPhysics()
@@ -878,61 +829,25 @@ void AbstractScene::CleanupAndReinitializePhysics()
 
 bool AbstractScene::CreateShadowMapResources()
 {
-	auto dev = DirectX11::GetInstance()->GetDevice();
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
 	if (!dev) return false;
 
-	D3D11_TEXTURE2D_DESC texDesc{};
-	texDesc.Width = SHADOW_MAP_SIZE;
-	texDesc.Height = SHADOW_MAP_SIZE;
-	texDesc.MipLevels = 1;
-	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	RHI::TextureDesc td;
+	td.i_Width = SHADOW_MAP_SIZE;
+	td.i_Height = SHADOW_MAP_SIZE;
+	td.e_Format = RHI::Format::D32_Float;
+	td.i_BindFlags = RHI::Bind_DepthStencil | RHI::Bind_ShaderResource;
+	td.c_DebugName = "ShadowMap";
+	m_shadowMap = dev->TextureCreate(td, nullptr);
 
-	if (FAILED(dev->CreateTexture2D(&texDesc, nullptr, m_shadowMapTexture.GetAddressOf()))) {
-		return false;
-	}
+	RHI::SamplerDesc sd;
+	sd.e_Filter = RHI::Filter::ComparisonMinMagLinearMipPoint;
+	sd.e_AddressU = sd.e_AddressV = sd.e_AddressW = RHI::AddressMode::Border;
+	for (float& c : sd.f_BorderColor) c = 1.0f;
+	sd.e_Compare = RHI::CompareFunc::LessEqual;
+	m_shadowSampler = dev->SamplerCreate(sd);
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	dsvDesc.Texture2D.MipSlice = 0;
-
-	if (FAILED(dev->CreateDepthStencilView(m_shadowMapTexture.Get(), &dsvDesc,
-		m_shadowMapDSV.GetAddressOf()))) {
-		return false;
-	}
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-
-	if (FAILED(dev->CreateShaderResourceView(m_shadowMapTexture.Get(), &srvDesc,
-		m_shadowMapSRV.GetAddressOf()))) {
-		return false;
-	}
-
-	D3D11_SAMPLER_DESC sampDesc{};
-	sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	sampDesc.BorderColor[0] = 1.0f;
-	sampDesc.BorderColor[1] = 1.0f;
-	sampDesc.BorderColor[2] = 1.0f;
-	sampDesc.BorderColor[3] = 1.0f;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	if (FAILED(dev->CreateSamplerState(&sampDesc, m_shadowSampler.GetAddressOf()))) {
-		return false;
-	}
-
-	return true;
+	return m_shadowMap && m_shadowSampler;
 }
 
 DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
@@ -973,144 +888,93 @@ DirectX::XMMATRIX AbstractScene::GetLightViewProjection()
 }
 
 void AbstractScene::RenderShadowMap() {
-	auto ctx = DirectX11::GetInstance()->GetContext();
-	if (!ctx || !m_shadowMapDSV) return;
-
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> oldRTV;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> oldDSV;
-	ctx->OMGetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.GetAddressOf());
-
-	D3D11_VIEWPORT oldViewport;
-	UINT numViewports = 1;
-	ctx->RSGetViewports(&numViewports, &oldViewport);
-
-	D3D11_VIEWPORT shadowViewport{};
-	shadowViewport.Width = static_cast<float>(SHADOW_MAP_SIZE);
-	shadowViewport.Height = static_cast<float>(SHADOW_MAP_SIZE);
-	shadowViewport.MinDepth = 0.0f;
-	shadowViewport.MaxDepth = 1.0f;
-	ctx->RSSetViewports(1, &shadowViewport);
-
-	ctx->ClearDepthStencilView(m_shadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	ID3D11RenderTargetView* nullRTV = nullptr;
-	ctx->OMSetRenderTargets(1, &nullRTV, m_shadowMapDSV.Get());
-
-	DirectX::XMMATRIX lightViewProj = GetLightViewProjection();
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
+	if (!dev || !m_shadowMap) return;
 
 	auto* sm = ShaderManager::GetInstance();
-	ID3D11VertexShader* shadowVS = sm->GetVertexShader("VS_ShadowMap");
-	ID3D11PixelShader* shadowPS = sm->GetPixelShader("PS_ShadowMap");
+	RHI::Shader* shadowVS = sm->GetVertexShader("VS_ShadowMap");
+	RHI::Shader* shadowPS = sm->GetPixelShader("PS_ShadowMap");
+	if (!shadowVS || !shadowPS) return;
 
-	if (shadowVS && shadowPS) {
-		ctx->VSSetShader(shadowVS, nullptr, 0);
-		ctx->PSSetShader(shadowPS, nullptr, 0);
+	const RHI::RenderTargetState oldTargets = dev->RenderTargetsGet();
+	const RHI::Viewport oldViewport = dev->ViewportGet();
 
-		struct ShadowCB {
-			DirectX::XMMATRIX lightViewProj;
-			DirectX::XMMATRIX world;
+	gs->RenderTargetsSet(0, nullptr, m_shadowMap.get());
+	dev->DepthStencilClear(m_shadowMap.get(), true, false, 1.0f, 0);
+
+	if (!m_shadowVSCB) m_shadowVSCB = ConstantBufferMake(sizeof(ShadowVSCB));
+	if (!m_shadowLayout) {
+		const RHI::InputElement desc[] = {
+			{ "POSITION", 0, RHI::Format::R32G32B32_Float, 0, offsetof(ModelVertex, position) },
+			{ "NORMAL", 0, RHI::Format::R32G32B32_Float, 0, offsetof(ModelVertex, normal) },
+			{ "TANGENT", 0, RHI::Format::R32G32B32A32_Float, 0, offsetof(ModelVertex, tangent) },
+			{ "TEXCOORD", 0, RHI::Format::R32G32_Float, 0, offsetof(ModelVertex, uv) },
+			{ "BLENDINDICES", 0, RHI::Format::R32G32B32A32_UInt, 0, offsetof(ModelVertex, boneIndices) },
+			{ "BLENDWEIGHT", 0, RHI::Format::R32G32B32A32_Float, 0, offsetof(ModelVertex, boneWeights) },
 		};
+		m_shadowLayout = dev->InputLayoutCreate(desc, (uint32_t)std::size(desc), shadowVS);
+	}
 
-		static Microsoft::WRL::ComPtr<ID3D11Buffer> shadowVSCB;
-		if (!shadowVSCB) {
-			D3D11_BUFFER_DESC bd{};
-			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bd.ByteWidth = sizeof(ShadowCB);
-			bd.Usage = D3D11_USAGE_DEFAULT;
-			DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowVSCB.GetAddressOf());
+	dev->ShaderSet(RHI::ShaderStage::Vertex, shadowVS);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, shadowPS);
+	dev->InputLayoutSet(m_shadowLayout.get());
+	dev->TopologySet(RHI::Topology::TriangleList);
+
+	const DirectX::XMMATRIX lightViewProj = GetLightViewProjection();
+	std::function<void(AbstractObject*)> RenderObjectShadow = [&](AbstractObject* obj) {
+		if (!obj) return;
+		bool isSaveObject = std::find(_SaveObjects.begin(), _SaveObjects.end(), obj) != _SaveObjects.end();
+		if (isSaveObject) return;
+
+		for (auto* modelComp : obj->GetComponentsByType<ModelRenderComponent>()) {
+			if (!modelComp) continue;
+			auto model = modelComp->GetModel();
+			if (!model || !model->vb || !model->ib) continue;
+
+			Transform t = obj->GetWorldTransform();
+			DirectX::XMMATRIX world = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z) *
+				DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z) *
+				DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
+
+			DirectX::XMFLOAT3 globalOffset = modelComp->GetGlobalOffset();
+			DirectX::XMFLOAT3 globalScale = modelComp->GetGlobalScale();
+			DirectX::XMFLOAT3 globalRotation = modelComp->GetGlobalRotation();
+			DirectX::XMMATRIX globalTransform =
+				DirectX::XMMatrixScaling(globalScale.x, globalScale.y, globalScale.z) *
+				DirectX::XMMatrixRotationRollPitchYaw(globalRotation.x, globalRotation.y, globalRotation.z) *
+				DirectX::XMMatrixTranslation(globalOffset.x, globalOffset.y, globalOffset.z);
+
+			ShadowVSCB shadowData;
+			shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightViewProj);
+			shadowData.world = DirectX::XMMatrixTranspose(globalTransform * world);
+			dev->BufferUpdate(m_shadowVSCB.get(), &shadowData, sizeof(shadowData));
+			dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 0, m_shadowVSCB.get());
+
+			if (model->hasSkin && modelComp->HasBoneMatrices()) {
+				modelComp->SetupBoneMatricesForShader();
+			}
+
+			dev->VertexBufferSet(0, model->vb.get(), sizeof(ModelVertex), 0);
+			dev->IndexBufferSet(model->ib.get(), RHI::IndexFormat::UInt32, 0);
+			for (const auto& submesh : model->submeshes) {
+				dev->IndexedDraw(submesh.indexCount, submesh.indexOffset, 0);
+			}
 		}
 
-		std::function<void(AbstractObject*)> RenderObjectShadow = [&](AbstractObject* obj) {
-			if (!obj) return;
+		for (auto* child : obj->GetChildren()) {
+			RenderObjectShadow(child);
+		}
+	};
 
-			bool isSaveObject = std::find(_SaveObjects.begin(), _SaveObjects.end(), obj) != _SaveObjects.end();
-			if (isSaveObject) return;
-
-			auto modelComps = obj->GetComponentsByType<ModelRenderComponent>();
-			for (auto* modelComp : modelComps) {
-				if (!modelComp) continue;
-
-				auto model = modelComp->GetModel();
-				if (!model) continue;
-
-				Transform t = obj->GetWorldTransform();
-				DirectX::XMMATRIX world = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z) *
-					DirectX::XMMatrixRotationRollPitchYaw(t.rotation.x, t.rotation.y, t.rotation.z) *
-					DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
-
-				DirectX::XMFLOAT3 globalOffset = modelComp->GetGlobalOffset();
-				DirectX::XMFLOAT3 globalScale = modelComp->GetGlobalScale();
-				DirectX::XMFLOAT3 globalRotation = modelComp->GetGlobalRotation();
-
-				DirectX::XMMATRIX globalTransform =
-					DirectX::XMMatrixScaling(globalScale.x, globalScale.y, globalScale.z) *
-					DirectX::XMMatrixRotationRollPitchYaw(globalRotation.x, globalRotation.y, globalRotation.z) *
-					DirectX::XMMatrixTranslation(globalOffset.x, globalOffset.y, globalOffset.z);
-
-				DirectX::XMMATRIX finalWorld = globalTransform * world;
-
-				ShadowCB shadowData;
-				shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightViewProj);
-				shadowData.world = DirectX::XMMatrixTranspose(finalWorld);
-				ctx->UpdateSubresource(shadowVSCB.Get(), 0, nullptr, &shadowData, 0, 0);
-
-				ID3D11Buffer* cbs[] = { shadowVSCB.Get() };
-				ctx->VSSetConstantBuffers(0, 1, cbs);
-
-				if (model->hasSkin && modelComp->HasBoneMatrices()) {
-					modelComp->SetupBoneMatricesForShader(ctx);
-				}
-
-				UINT stride = sizeof(ModelVertex);
-				UINT offset = 0;
-				ID3D11Buffer* vb = model->vb.Get();
-				ID3D11Buffer* ib = model->ib.Get();
-
-				if (!vb || !ib) continue;
-
-				ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-				ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-				ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-				const void* bc = nullptr;
-				size_t bcSize = 0;
-				if (sm->GetVSBytecode("VS_ShadowMap", &bc, &bcSize)) {
-					static Microsoft::WRL::ComPtr<ID3D11InputLayout> shadowLayout;
-					if (!shadowLayout) {
-						D3D11_INPUT_ELEMENT_DESC desc[] = {
-							{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(ModelVertex, position), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-							{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(ModelVertex, normal), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-							{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(ModelVertex, tangent), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-							{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(ModelVertex, uv), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-							{ "BLENDINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, offsetof(ModelVertex, boneIndices), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-							{ "BLENDWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(ModelVertex, boneWeights), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-						};
-						DirectX11::GetInstance()->GetDevice()->CreateInputLayout(desc, _countof(desc), bc, bcSize, shadowLayout.GetAddressOf());
-					}
-					if (shadowLayout) {
-						ctx->IASetInputLayout(shadowLayout.Get());
-					}
-				}
-
-				for (const auto& submesh : model->submeshes) {
-					ctx->DrawIndexed(submesh.indexCount, submesh.indexOffset, 0);
-				}
-			}
-
-			for (auto* child : obj->GetChildren()) {
-				RenderObjectShadow(child);
-			}
-			};
-
-		for (auto& obj : _objects) {
-			if (obj && obj->GetParent() == nullptr) {
-				RenderObjectShadow(obj);
-			}
+	for (auto& obj : _objects) {
+		if (obj && obj->GetParent() == nullptr) {
+			RenderObjectShadow(obj);
 		}
 	}
 
-	ctx->OMSetRenderTargets(1, oldRTV.GetAddressOf(), oldDSV.Get());
-	ctx->RSSetViewports(1, &oldViewport);
+	dev->RenderTargetsSet(oldTargets.i_Count, oldTargets.p_Colors, oldTargets.p_Depth);
+	dev->ViewportSet(oldViewport);
 }
 
 std::vector<EffectComponent*> AbstractScene::CollectEffectComponents(int layer)
@@ -1197,7 +1061,6 @@ Layer* AbstractScene::GetLayer(int index)
 
 void AbstractScene::DrawForwardObjects(int Layer)
 {
-	auto ctx = DirectX11::GetInstance()->GetContext();
 
 	if (!InGame)
 	{
@@ -1238,32 +1101,13 @@ void AbstractScene::PrepareShadowAndLights(int Layer)
 	RenderShadowMap();
 	UploadLightsToGPU();
 
-	auto ctx = DirectX11::GetInstance()->GetContext();
-	DirectX::XMMATRIX lightVP = GetLightViewProjection();
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!m_shadowPSCB) m_shadowPSCB = ConstantBufferMake(sizeof(ShadowPSCB));
+	ShadowPSCB shadowData;
+	shadowData.lightViewProj = DirectX::XMMatrixTranspose(GetLightViewProjection());
+	dev->BufferUpdate(m_shadowPSCB.get(), &shadowData, sizeof(shadowData));
 
-	struct ShadowCB {
-		DirectX::XMMATRIX lightViewProj;
-	};
-
-	static Microsoft::WRL::ComPtr<ID3D11Buffer> shadowCB;
-	if (!shadowCB) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(ShadowCB);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		DirectX11::GetInstance()->GetDevice()->CreateBuffer(&bd, nullptr, shadowCB.GetAddressOf());
-	}
-
-	ShadowCB shadowData;
-	shadowData.lightViewProj = DirectX::XMMatrixTranspose(lightVP);
-	ctx->UpdateSubresource(shadowCB.Get(), 0, nullptr, &shadowData, 0, 0);
-
-	ID3D11Buffer* cbs3[] = { shadowCB.Get() };
-	ctx->PSSetConstantBuffers(3, 1, cbs3);
-
-	ID3D11ShaderResourceView* srvs[] = { m_shadowMapSRV.Get() };
-	ctx->PSSetShaderResources(1, 1, srvs);
-
-	ID3D11SamplerState* samplers[] = { m_shadowSampler.Get() };
-	ctx->PSSetSamplers(1, 1, samplers);
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 3, m_shadowPSCB.get());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 1, m_shadowMap.get());
+	dev->SamplerSet(RHI::ShaderStage::Pixel, 1, m_shadowSampler.get());
 }
