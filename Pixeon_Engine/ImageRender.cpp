@@ -623,7 +623,7 @@ void ImageRender::DrawInspector() {
 	if (ImGui::BeginPopupModal("ImgTexSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
-		auto texList = AssetManager::Instance()->GetCachedTextureNames();
+		auto texList = AssetManager::Instance()->AssetListGet(AssetType::Texture);
 		ImGui::BeginChild("ImgTexList", ImVec2(420, 260), true);
 		for (int i = 0; i < (int)texList.size(); ++i) {
 			const std::string& n = texList[i];

@@ -3,11 +3,10 @@
 * 説　　　明　アセット管理クラス
 */
 #include "AssetManager.h"
-#include <fstream>
-#include <Windows.h>
 #include "IMGUI/imgui.h"
+#include <algorithm>
 
-AssetManager* AssetManager::_instance = nullptr;
+AssetManager* AssetManager::m_cls_Instance = nullptr;
 
 /*
 * 関数名　Instance
@@ -17,10 +16,8 @@ AssetManager* AssetManager::_instance = nullptr;
 */
 AssetManager* AssetManager::Instance()
 {
-	if (!_instance) {
-		_instance = new AssetManager();
-	}
-	return _instance;
+	if (!m_cls_Instance) m_cls_Instance = new AssetManager();
+	return m_cls_Instance;
 }
 
 /*
@@ -31,447 +28,240 @@ AssetManager* AssetManager::Instance()
 */
 void AssetManager::DeleteInstance()
 {
-	if (_instance) {
-		_instance->UnInit();
-		delete _instance;
-		_instance = nullptr;
+	if (m_cls_Instance) {
+		m_cls_Instance->UnInit();
+		delete m_cls_Instance;
+		m_cls_Instance = nullptr;
 	}
+}
+
+AssetManager::~AssetManager()
+{
+	WatchStop();
 }
 
 /*
 * 関数名　UnInit
 * 引　数　なし
 * 戻り値　なし
-* 説　明　AssetManagerのアンイニシャライズ処理
+* 説　明　監視を止め、マウントとキャッシュを解放する
 */
 void AssetManager::UnInit()
 {
-	StopAutoSync();
-	ClearRawCache();
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		_recentChanges.clear();
-	}
+	WatchStop();
+	m_cls_Vfs.SourcesClear();
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	m_RecentChanges.clear();
+	m_Listeners.clear();
 }
 
 /*
-* 関数名　~AssetManager
+* 関数名　DirectoryMount
+* 引　数　prefix：マウント先 (VfsPrefix)　dir：実ディレクトリ　watch：変更監視するか
+* 戻り値　ディレクトリが存在すれば true
+* 説　明　ディレクトリをマウントする
+*/
+bool AssetManager::DirectoryMount(const std::string& prefix, const std::string& dir, bool watch)
+{
+	return m_cls_Vfs.DirectoryMount(prefix, dir, watch);
+}
+
+/*
+* 関数名　ArchiveMount
+* 引　数　archive_path：アーカイブ　out_error：エラー内容
+* 戻り値　成功なら true
+* 説　明　ビルド済みアーカイブをマウントする（ディレクトリより優先される）
+*/
+bool AssetManager::ArchiveMount(const std::string& archive_path, std::string* out_error)
+{
+	return m_cls_Vfs.ArchiveMount(archive_path, out_error);
+}
+
+/*
+* 関数名　AssetPathMake
+* 引　数　logical_name：Assets ルートからの相対名
+* 戻り値　仮想パス
+* 説　明　論理名を assets/ 以下の仮想パスへ変換する
+*/
+std::string AssetManager::AssetPathMake(const std::string& logical_name)
+{
+	return std::string(VfsPrefix::ASSETS) + PixArchive::PathClean(logical_name);
+}
+
+/*
+* 関数名　AssetLoad
+* 引　数　logical_name：論理アセット名　out_data：読み込み先
+* 戻り値　成功なら true
+* 説　明　アセットの生データを読み込む
+*/
+bool AssetManager::AssetLoad(const std::string& logical_name, std::vector<uint8_t>& out_data)
+{
+	return m_cls_Vfs.FileRead(AssetPathMake(logical_name), out_data);
+}
+
+/*
+* 関数名　AssetExists
+* 引　数　logical_name：論理アセット名
+* 戻り値　存在すれば true
+* 説　明　アセットの存在を確認する
+*/
+bool AssetManager::AssetExists(const std::string& logical_name) const
+{
+	return m_cls_Vfs.FileExists(AssetPathMake(logical_name));
+}
+
+/*
+* 関数名　AssetListGet
+* 引　数　types：取得する種別
+* 戻り値　論理アセット名の一覧（昇順）
+* 説　明　索引から指定種別のアセット名を列挙する（ファイル内容は読まない）
+*/
+std::vector<std::string> AssetManager::AssetListGet(std::initializer_list<AssetType> types) const
+{
+	const size_t prefix_len = std::char_traits<char>::length(VfsPrefix::ASSETS);
+	std::vector<std::string> result;
+	for (auto& info : m_cls_Vfs.FileListGet(VfsPrefix::ASSETS)) {
+		const AssetType t = AssetTypeUtil::TypeFromPath(info.path);
+		if (std::find(types.begin(), types.end(), t) != types.end()) {
+			result.push_back(info.path.substr(prefix_len));
+		}
+	}
+	return result;
+}
+
+std::vector<std::string> AssetManager::AssetListGet(AssetType type) const
+{
+	return AssetListGet({ type });
+}
+
+bool AssetManager::FileRead(const std::string& virtual_path, std::vector<uint8_t>& out_data)
+{
+	return m_cls_Vfs.FileRead(virtual_path, out_data);
+}
+
+bool AssetManager::TextRead(const std::string& virtual_path, std::string& out_text)
+{
+	return m_cls_Vfs.TextRead(virtual_path, out_text);
+}
+
+bool AssetManager::FileExists(const std::string& virtual_path) const
+{
+	return m_cls_Vfs.FileExists(virtual_path);
+}
+
+std::vector<FileInfo> AssetManager::FileListGet(const std::string& prefix) const
+{
+	return m_cls_Vfs.FileListGet(prefix);
+}
+
+/*
+* 関数名　WatchStart
+* 引　数　interval：走査間隔
+* 戻り値　なし
+* 説　明　監視対象ディレクトリの変更検出を開始する
+*/
+void AssetManager::WatchStart(std::chrono::milliseconds interval)
+{
+	m_cls_Vfs.WatchStart(interval);
+}
+
+void AssetManager::WatchStop()
+{
+	m_cls_Vfs.WatchStop();
+}
+
+/*
+* 関数名　ListenerAdd
+* 引　数　listener：変更通知を受け取る関数
+* 戻り値　解除用の ID
+* 説　明　ファイル変更の通知先を登録する
+*/
+int AssetManager::ListenerAdd(ChangeListener listener)
+{
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	const int id = m_i_NextListenerId++;
+	m_Listeners.emplace_back(id, std::move(listener));
+	return id;
+}
+
+void AssetManager::ListenerRemove(int id)
+{
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	m_Listeners.erase(std::remove_if(m_Listeners.begin(), m_Listeners.end(),
+		[id](const auto& p) { return p.first == id; }), m_Listeners.end());
+}
+
+/*
+* 関数名　ChangesDispatch
 * 引　数　なし
 * 戻り値　なし
-* 説　明　AssetManagerのデストラクタ
+* 説　明　監視スレッドが検出した変更をメインスレッドでリスナーへ配信する
+*         （GPU リソースの再生成はメインスレッドで行う必要があるため）
 */
-AssetManager::~AssetManager() {
-	StopAutoSync();
-}
+void AssetManager::ChangesDispatch()
+{
+	std::vector<FileChange> changes;
+	if (m_cls_Vfs.ChangesPoll(changes) == 0) return;
 
-/*
-* 関数名　SetRoot
-* 引　数　root：アセットルートディレクトリのパス
-* 戻り値　なし
-* 説　明　アセットルートディレクトリを設定する
-*/
-void AssetManager::SetRoot(const std::string& root) { _root = root; }
-
-/*
-* 関数名　SetLoadMode
-* 引　数　m：ロードモード
-* 戻り値　なし
-* 説　明　アセットのロードモードを設定する
-*/
-void AssetManager::SetLoadMode(LoadMode m) { _mode = m; }
-
-/*
-* 関数名　Normalize
-* 引　数　name：正規化するアセット名
-* 戻り値　正規化されたアセット名
-* 説　明　アセット名のパス区切り文字を統一する
-*/
-std::string AssetManager::Normalize(const std::string& name) const {
-	std::string s = name;
-	for (auto& c : s) if (c == '\\') c = '/';
-	return s;
-}
-
-/*
-* 関数名　Exists
-* 引　数　logicalName：論理アセット名
-* 戻り値　存在する場合true、存在しない場合false
-* 説　明　アセットが存在するかどうかを確認する
-*/
-bool AssetManager::Exists(const std::string& logicalName) {
-	std::string norm = Normalize(logicalName);
+	std::vector<std::pair<int, ChangeListener>> listeners;
 	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		if (_cache.find(norm) != _cache.end()) return true;
-	}
-	std::filesystem::path p = std::filesystem::path(_root) / norm;
-	return std::filesystem::exists(p);
-}
-
-/*
-* 関数名　LoadAsset
-* 引　数　logicalName：論理アセット名
-* 　　　　outData：読み込んだアセットデータの出力先
-* 戻り値　読み込みに成功した場合true、失敗した場合false
-* 説　明　アセットを読み込み、生バイトデータを取得する
-*/
-bool AssetManager::LoadAsset(const std::string& logicalName, std::vector<uint8_t>& outData) {
-	std::string norm = Normalize(logicalName);
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		auto it = _cache.find(norm);
-		if (it != _cache.end()) {
-			outData = it->second;
-			return true;
+		std::lock_guard<std::mutex> lk(m_Mutex);
+		listeners = m_Listeners;
+		for (auto& c : changes) {
+			if (m_RecentChanges.size() >= MAX_RECENT_CHANGES) m_RecentChanges.pop_front();
+			m_RecentChanges.push_back({ c, m_cls_Vfs.ScanCountGet() });
 		}
 	}
-
-	std::filesystem::path p = std::filesystem::path(_root) / norm;
-	std::ifstream ifs(p, std::ios::binary);
-	if (!ifs) {
-		return false;
-	}
-	ifs.seekg(0, std::ios::end);
-	size_t sz = (size_t)ifs.tellg();
-	ifs.seekg(0, std::ios::beg);
-	outData.resize(sz);
-	ifs.read((char*)outData.data(), sz);
-	if (!ifs) {
-		return false;
-	}
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		_cache[norm] = outData;
-	}
-	return true;
-}
-
-/*
-* 関数名　ClearRawCache
-* 引　数　なし
-* 戻り値　なし
-* 説　明　生バイトキャッシュをクリアする
-*/
-void AssetManager::ClearRawCache() {
-	std::lock_guard<std::mutex> lk(_mtx);
-	_cache.clear();
-	_fileMeta.clear();
-}
-
-/*
-* 関数名　PushChange
-* 引　数　type：変更タイプ
-* 　　　　path：変更されたアセットのパス
-* 戻り値　なし
-* 説　明　変更ログを追加する
-*/
-void AssetManager::PushChange(ChangeType type, const std::string& path) {
-	std::lock_guard<std::mutex> lk(_mtx);
-	if (_recentChanges.size() >= _kMaxRecentChanges)
-		_recentChanges.pop_front();
-	_recentChanges.push_back({ type, path, _scanCount.load() });
-}
-
-/*
-* 関数名　StartAutoSync
-* 引　数　interval：スキャン間隔
-* 　　　　recursive：再帰的にサブディレクトリも監視するかどうか
-* 戻り値　なし
-* 説　明　自動同期監視を開始する
-*/
-void AssetManager::StartAutoSync(std::chrono::milliseconds interval, bool recursive) {
-	if (_watchRunning.load()) return;
-	if (_root.empty()) {
-		return;
-	}
-	_interval = interval;
-	_recursive = recursive;
-	_watchRunning = true;
-	_watchThread = std::thread(&AssetManager::WatchLoop, this);
-}
-
-/*
-* 関数名　StopAutoSync
-* 引　数　なし
-* 戻り値　なし
-* 説　明　自動同期監視を停止する
-*/
-void AssetManager::StopAutoSync() {
-	if (!_watchRunning.load()) return;
-	_watchRunning = false;
-	if (_watchThread.joinable()) _watchThread.join();
-}
-
-/*
-* 関数名　WatchLoop
-* 引　数　なし
-* 戻り値　なし
-* 説　明　自動同期監視ループ
-*/
-void AssetManager::WatchLoop() {
-	PerformScan();
-	while (_watchRunning.load()) {
-		auto t0 = std::chrono::steady_clock::now();
-		PerformScan();
-		auto t1 = std::chrono::steady_clock::now();
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-		_lastScanDurationMs.store((uint64_t)elapsed);
-		std::this_thread::sleep_for(_interval);
+	for (auto& c : changes) {
+		for (auto& l : listeners) l.second(c);
 	}
 }
 
 /*
-* 関数名　PerformScan
-* 引　数　なし
-* 戻り値　なし
-* 説　明　アセットディレクトリのスキャンを実行し、変更を検出して適用する
-*/
-void AssetManager::PerformScan() {
-	using namespace std::filesystem;
-
-	std::unordered_map<std::string, FileMeta> current;
-	std::vector<std::string> additions;
-	std::vector<std::string> modifications;
-	std::vector<std::string> deletions;
-
-	const path root_Path(_root);
-	if (!exists(root_Path)) {
-		return;
-	}
-
-	auto scan_Start = std::chrono::steady_clock::now();
-
-	std::error_code ec;
-	if (_recursive) {
-		for (recursive_directory_iterator it(root_Path, ec), end; it != end && !ec; ++it) {
-			if (!it->is_regular_file()) continue;
-			auto rel = relative(it->path(), root_Path, ec);
-			if (ec) continue;
-			std::string relStr = Normalize(rel.generic_string());
-			FileMeta meta;
-			meta.size = (uint64_t)file_size(it->path(), ec);
-			meta.writeTime = last_write_time(it->path(), ec);
-			current[relStr] = meta;
-		}
-	}
-	else {
-		for (directory_iterator it(root_Path, ec), end; it != end && !ec; ++it) {
-			if (!it->is_regular_file()) continue;
-			auto rel = relative(it->path(), root_Path, ec);
-			if (ec) continue;
-			std::string relStr = Normalize(rel.generic_string());
-			FileMeta meta;
-			meta.size = (uint64_t)file_size(it->path(), ec);
-			meta.writeTime = last_write_time(it->path(), ec);
-			current[relStr] = meta;
-		}
-	}
-
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		for (auto& kv : current) {
-			auto itOld = _fileMeta.find(kv.first);
-			if (itOld == _fileMeta.end()) {
-				additions.push_back(kv.first);
-			}
-			else {
-				if (kv.second.size != itOld->second.size ||
-					kv.second.writeTime != itOld->second.writeTime) {
-					modifications.push_back(kv.first);
-				}
-			}
-		}
-		for (auto& old : _fileMeta) {
-			if (current.find(old.first) == current.end()) {
-				deletions.push_back(old.first);
-			}
-		}
-	}
-
-	for (auto& add : additions) {
-		std::vector<uint8_t> dummy;
-		if (LoadAsset(add, dummy)) {
-			PushChange(ChangeType::Added, add);
-		}
-		else {
-			PushChange(ChangeType::ReloadFailed, add);
-		}
-	}
-	for (auto& mod : modifications) {
-		std::vector<uint8_t> dummy;
-		if (LoadAsset(mod, dummy)) {
-			PushChange(ChangeType::Modified, mod);
-		}
-		else {
-			PushChange(ChangeType::ReloadFailed, mod);
-		}
-	}
-
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		for (auto& del : deletions) {
-			_cache.erase(del);
-			_fileMeta.erase(del);
-			PushChange(ChangeType::Removed, del);
-		}
-		for (auto& kv : current) {
-			_fileMeta[kv.first] = kv.second;
-		}
-	}
-
-	_lastDiffAdds.store(additions.size());
-	_lastDiffMods.store(modifications.size());
-	_lastDiffRemoves.store(deletions.size());
-	_scanCount.fetch_add(1);
-}
-
-/*
-* 関数名　DrawDebugGUI
+* 関数名　DebugGUIDraw
 * 引　数　なし
 * 戻り値　なし
 * 説　明　デバッグ用GUIを描画する
 */
-void AssetManager::DrawDebugGUI()
+void AssetManager::DebugGUIDraw()
 {
-	std::lock_guard<std::mutex> lk(_mtx);
 	ImGui::TextUnformatted("AssetManager");
 	ImGui::Separator();
-	ImGui::Text("Root: %s", _root.c_str());
-	ImGui::Text("Mode: %s", (_mode == LoadMode::FromSource) ? "FromSource" : "FromArchive");
-	ImGui::Text("Cached Raw Files: %zu", _cache.size());
-	ImGui::Text("AutoSync: %s", _watchRunning.load() ? "Running" : "Stopped");
-	ImGui::Text("ScanCount: %llu", (unsigned long long)_scanCount.load());
-	ImGui::Text("LastDiff A=%llu M=%llu R=%llu",
-		(unsigned long long)_lastDiffAdds.load(),
-		(unsigned long long)_lastDiffMods.load(),
-		(unsigned long long)_lastDiffRemoves.load());
-	ImGui::Text("LastScanDuration: %llu ms", (unsigned long long)_lastScanDurationMs.load());
+	ImGui::TextUnformatted("Mounts (上ほど優先):");
+	for (auto& name : m_cls_Vfs.SourceNamesGet()) ImGui::BulletText("%s", name.c_str());
+
+	const auto st = m_cls_Vfs.CacheStatsGet();
+	ImGui::Text("Raw Cache: %zu files, %.2f / %.2f MB (hit %llu / miss %llu)",
+		st.i_Entries, st.i_Bytes / (1024.0 * 1024.0), st.i_Budget / (1024.0 * 1024.0),
+		(unsigned long long)st.i_Hits, (unsigned long long)st.i_Misses);
+	ImGui::Text("AutoSync: %s  ScanCount: %llu", IsWatching() ? "Running" : "Stopped",
+		(unsigned long long)m_cls_Vfs.ScanCountGet());
 
 	static char filter[128] = "";
 	ImGui::InputText("Filter (substring)", filter, sizeof(filter));
-
-	if (ImGui::Button("Clear Raw Cache")) {
-		_cache.clear();
-		_fileMeta.clear();
-	}
+	if (ImGui::Button("Clear Raw Cache")) m_cls_Vfs.CacheClear();
 	ImGui::SameLine();
-	if (ImGui::Button("Clear Change Log")) {
-		_recentChanges.clear();
-	}
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	if (ImGui::Button("Clear Change Log")) m_RecentChanges.clear();
 
 	ImGui::Separator();
 	ImGui::TextUnformatted("Recent Changes:");
 	ImGui::BeginChild("AssetManagerChanges", ImVec2(0, 120), true);
-	for (auto it = _recentChanges.rbegin(); it != _recentChanges.rend(); ++it) {
-		const char* t = "";
-		switch (it->type) {
-		case ChangeType::Added: t = "ADD"; break;
-		case ChangeType::Removed: t = "DEL"; break;
-		case ChangeType::Modified: t = "MOD"; break;
-		case ChangeType::ReloadFailed: t = "ERR"; break;
-		}
-		if (filter[0] && it->path.find(filter) == std::string::npos) continue;
-		ImGui::Text("[%s] %s (scan=%llu)", t, it->path.c_str(), (unsigned long long)it->timestampFrame);
+	for (auto it = m_RecentChanges.rbegin(); it != m_RecentChanges.rend(); ++it) {
+		const char* t = (it->change.e_Type == FileChange::Type::Added) ? "ADD"
+			: (it->change.e_Type == FileChange::Type::Removed) ? "DEL" : "MOD";
+		if (filter[0] && it->change.path.find(filter) == std::string::npos) continue;
+		ImGui::Text("[%s] %s (scan=%llu)", t, it->change.path.c_str(), (unsigned long long)it->i_Scan);
 	}
 	ImGui::EndChild();
 
 	ImGui::Separator();
-	ImGui::TextUnformatted("Cache Entries:");
-	ImGui::BeginChild("AssetManagerCacheList", ImVec2(0, 160), true);
-	for (auto& kv : _cache) {
-		if (filter[0] && kv.first.find(filter) == std::string::npos) continue;
-		ImGui::Text("%s (size=%zu bytes)", kv.first.c_str(), kv.second.size());
+	ImGui::TextUnformatted("Files:");
+	ImGui::BeginChild("AssetManagerFileList", ImVec2(0, 160), true);
+	for (auto& info : m_cls_Vfs.FileListGet("")) {
+		if (filter[0] && info.path.find(filter) == std::string::npos) continue;
+		ImGui::Text("%-12s %s (%llu bytes)", AssetTypeUtil::NameGet(AssetTypeUtil::TypeFromPath(info.path)),
+			info.path.c_str(), (unsigned long long)info.i_Size);
 	}
 	ImGui::EndChild();
-}
-
-/*
-* 関数名　GetCachedAssetNames
-* 引　数　onlyModelExt：モデル拡張子のみ取得するかどうか
-* 戻り値　キャッシュされているアセット名のリスト
-* 説　明　キャッシュされているアセット名のリストを取得する
-*/
-std::vector<std::string> AssetManager::GetCachedAssetNames(bool onlyModelExt) const {
-	std::vector<std::string> result;
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		result.reserve(_cache.size());
-		for (auto& kv : _cache) {
-			if (!onlyModelExt) {
-				result.push_back(kv.first);
-			}
-			else {
-				std::string lower = kv.first;
-				for (auto& c : lower) c = (char)tolower(c);
-				auto hasExt = [&](const char* ext)->bool {
-					size_t Ls = lower.size(), Le = std::strlen(ext);
-					if (Ls < Le) return false;
-					return lower.compare(Ls - Le, Le, ext) == 0;
-					};
-				if (hasExt(".fbx") || hasExt(".obj") || hasExt(".glb"))
-					result.push_back(kv.first);
-			}
-		}
-	}
-	std::sort(result.begin(), result.end());
-	return result;
-}
-
-/*
-* 関数名　GetCachedTextureNames
-* 引　数　なし
-* 戻り値　キャッシュされているテクスチャアセット名のリスト
-* 説　明　キャッシュされているテクスチャアセット名のリストを取得する
-*/
-std::vector<std::string> AssetManager::GetCachedTextureNames() const {
-	static const char* exts[] = { ".png", ".jpg", ".jpeg", ".tga", ".dds", ".bmp", ".hdr" };
-	std::vector<std::string> result;
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		result.reserve(_cache.size());
-		for (auto& kv : _cache) {
-			std::string lower = kv.first;
-			for (auto& c : lower) c = (char)tolower(c);
-			auto hasExt = [&](const char* ext)->bool {
-				size_t Ls = lower.size(), Le = std::strlen(ext);
-				if (Ls < Le) return false;
-				return lower.compare(Ls - Le, Le, ext) == 0;
-				};
-			for (auto* e : exts) {
-				if (hasExt(e)) { result.push_back(kv.first); break; }
-			}
-		}
-	}
-	std::sort(result.begin(), result.end());
-	return result;
-}
-
-/*
-* 関数名　GetCachedEffectNames
-* 引　数　なし
-* 戻り値　キャッシュされているエフェクトアセット名のリスト
-* 説　明　キャッシュされているエフェクトアセット名のリストを取得する
-*/
-std::vector<std::string> AssetManager::GetCachedEffectNames() const
-{
-	static const char* exts[] = { ".efkefc", ".efk" };
-	std::vector<std::string> result;
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		result.reserve(_cache.size());
-		for (auto& kv : _cache) {
-			std::string lower = kv.first;
-			for (auto& c : lower) c = (char)tolower(c);
-			auto hasExt = [&](const char* ext)->bool {
-				size_t Ls = lower.size(), Le = std::strlen(ext);
-				if (Ls < Le) return false;
-				return lower.compare(Ls - Le, Le, ext) == 0;
-				};
-			for (auto* e : exts) {
-				if (hasExt(e)) { result.push_back(kv.first); break; }
-			}
-		}
-	}
-	std::sort(result.begin(), result.end());
-	return result;
 }

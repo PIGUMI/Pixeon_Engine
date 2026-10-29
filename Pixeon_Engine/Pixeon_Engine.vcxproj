@@ -216,6 +216,7 @@
     <ClInclude Include="..\Common\GameManifest.h" />
     <ClInclude Include="..\Common\HashUtil.h" />
     <ClInclude Include="..\Common\PixArchive.h" />
+    <ClInclude Include="..\Common\VirtualFileSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -288,6 +289,7 @@
     <ClCompile Include="..\Common\GameManifest.cpp" />
     <ClCompile Include="..\Common\HashUtil.cpp" />
     <ClCompile Include="..\Common\PixArchive.cpp" />
+    <ClCompile Include="..\Common\VirtualFileSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="今後の修正.txt" />

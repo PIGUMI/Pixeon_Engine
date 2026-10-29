@@ -146,6 +146,17 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& 
 }
 
 /*
+* 関数名　: CacheInvalidate
+* 引　数  : const std::string& logicalName : モデルの論理名
+* 戻り値  : なし
+* 説　明　: キャッシュから外し、次回の LoadOrGet でファイルから読み直させる
+*/
+void ModelManager::CacheInvalidate(const std::string& logicalName) {
+	std::lock_guard<std::mutex> lk(_mtx);
+	_cache.erase(logicalName);
+}
+
+/*
 * 関数名　: LoadInternal
 * 引　数  : const std::string& logicalName : モデルの論理名
 * 戻り値  : std::shared_ptr<ModelSharedResource> : 読み込まれたモデルリソースの共有ポインタ
@@ -153,7 +164,7 @@ std::shared_ptr<ModelSharedResource> ModelManager::LoadOrGet(const std::string& 
 */
 std::shared_ptr<ModelSharedResource> ModelManager::LoadInternal(const std::string& logicalName) {
 	std::vector<uint8_t> data;
-	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
+	if (!AssetManager::Instance()->AssetLoad(logicalName, data) || data.empty()) {
 		return nullptr;
 	}
 	Assimp::Importer importer;
@@ -726,7 +737,7 @@ std::string ModelManager::ResolveTexturePath(const std::string& modelLogical, co
 		if (seen.insert(n).second) uniq.push_back(n);
 	}
 	for (auto& c : uniq) {
-		if (AssetManager::Instance()->Exists(c)) {
+		if (AssetManager::Instance()->AssetExists(c)) {
 			return c;
 		}
 	}
@@ -772,7 +783,7 @@ void ModelManager::ProcessBonesFinalizeHierarchy(const aiScene* scene,
 		}
 	}
 #ifdef _DEBUG
-	EditrGUI::GetInstance()->WriteLog("[ModelManager] ProcessBonesFinalizeHierarchy done");
+	OutputDebugStringA("[ModelManager] ProcessBonesFinalizeHierarchy done\n");
 #endif
 }
 

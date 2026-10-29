@@ -276,7 +276,7 @@ void EffectComponent::Pause(bool pause)
 //============================================================
 void EffectComponent::RefreshEffectList()
 {
-	effectCandidates_ = AssetManager::Instance()->GetCachedEffectNames();
+	effectCandidates_ = AssetManager::Instance()->AssetListGet(AssetType::Effect);
 
 	if (effectCandidates_.empty())
 	{

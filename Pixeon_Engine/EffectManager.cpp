@@ -42,7 +42,7 @@ public:
 		std::string utf8Path = EffectManager::Utf16ToUtf8(path);
 
 		std::vector<uint8_t> fileData;
-		if (!AssetManager::Instance()->LoadAsset(utf8Path, fileData)) {
+		if (!AssetManager::Instance()->AssetLoad(utf8Path, fileData)) {
 			return false;
 		}
 
@@ -68,7 +68,7 @@ public:
 		std::string utf8Path = EffectManager::Utf16ToUtf8(path);
 
 		std::vector<uint8_t> fileData;
-		if (!AssetManager::Instance()->LoadAsset(utf8Path, fileData)) {
+		if (!AssetManager::Instance()->AssetLoad(utf8Path, fileData)) {
 			return nullptr;
 		}
 
@@ -104,7 +104,7 @@ public:
 		}
 
 		std::vector<uint8_t> fileData;
-		if (!AssetManager::Instance()->LoadAsset(utf8Path, fileData)) {
+		if (!AssetManager::Instance()->AssetLoad(utf8Path, fileData)) {
 			return nullptr;
 		}
 
@@ -321,7 +321,7 @@ Effekseer::EffectRef EffectManager::LoadEffect(const std::string& path)
 	if (it != _effectCache.end()) return it->second;
 
 	std::vector<uint8_t> data;
-	if (!AssetManager::Instance()->LoadAsset(path, data)) {
+	if (!AssetManager::Instance()->AssetLoad(path, data)) {
 		return nullptr;
 	}
 

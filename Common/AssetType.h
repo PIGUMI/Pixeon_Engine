@@ -21,7 +21,7 @@ enum class AssetType : uint8_t {
 	Script,        // dll cpp h
 	Font,          // ttf otf
 	Config,        // json sceneconfig ini
-	Animation2D,   // a2d
+	Animation2D,   // anim2d
 	Count
 };
 

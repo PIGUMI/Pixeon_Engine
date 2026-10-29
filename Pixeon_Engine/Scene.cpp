@@ -1,10 +1,12 @@
-#include "Scene.h"
+﻿#include "Scene.h"
 #include "System.h"
 #include "Object.h"
 #include "ComponentManager.h"
 #include "ModelRender.h"
 #include "ModelManager.h"
 #include "SettingManager.h"
+#include "AssetManager.h"
+#include "MainFrame.h"
 #include "EffectManager.h"
 #include "Component.h"
 #include "LightComponent.h"
@@ -452,6 +454,9 @@ void AbstractScene::DrawEffects(int Layer, CameraComponent* camera)
 }
 
 void AbstractScene::SaveToFile() {
+	// ビルド済みゲームではシーンを書き換えない
+	if (!MainFrame::GetInstance()->IsEditorMode()) return;
+
 	std::vector<AbstractObject*> SaveObjects;
 
 	if (InGame) {
@@ -464,11 +469,6 @@ void AbstractScene::SaveToFile() {
 			}
 		}
 	}
-
-	auto Now = std::chrono::system_clock::now();
-	auto in_time_t = std::chrono::system_clock::to_time_t(Now);
-	std::tm localtime;
-	localtime_s(&localtime, &in_time_t);
 
 	nlohmann::json SceneData;
 	SceneData["SceneSettings"]["Name"] = _name;
@@ -542,17 +542,16 @@ void AbstractScene::SaveToFile() {
 }
 
 void AbstractScene::LoadToFile() {
-	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "/" + _name + ".scene";
-	std::ifstream inFile(filePath);
-	if (!inFile.is_open()) {
+	// エディタではディレクトリ、ゲームではアーカイブから同じ仮想パスで読む
+	const std::string filePath = std::string(VfsPrefix::SCENE) + _name + ".scene";
+	std::string text;
+	if (!AssetManager::Instance()->TextRead(filePath, text)) {
 		OutputDebugStringA(("[AbstractScene] Failed to open:  " + filePath + "\n").c_str());
 		return;
 	}
 
 	try {
-		nlohmann::json sceneData;
-		inFile >> sceneData;
-		inFile.close();
+		nlohmann::json sceneData = nlohmann::json::parse(text);
 
 		_name = sceneData["SceneSettings"]["Name"].get<std::string>();
 		_MainCameraNumber = sceneData["SceneSettings"]["MainCameraNumber"].get<int>();
@@ -639,7 +638,7 @@ void AbstractScene::LoadToFile() {
 		}
 	}
 	catch (const std::exception& e) {
-		inFile.close();
+		OutputDebugStringA(("[AbstractScene] Parse error: " + filePath + " : " + e.what() + "\n").c_str());
 	}
 }
 

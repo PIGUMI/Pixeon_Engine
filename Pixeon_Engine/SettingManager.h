@@ -4,7 +4,8 @@
 
 #pragma once
 #include <string>
-#include "System.h"
+#include <DirectXMath.h>
+#include "../Common/GameManifest.h"
 
 class SettingManager
 {
@@ -48,6 +49,21 @@ public:
 	std::string GetCSOFilePath() const { return CSOFilePath; }
 	void SetCSOFilePath(const std::string& path) { CSOFilePath = path; }
 
+	// Vulkan 用にコンパイルした SPIR-V の格納先
+	std::string GetSPIRVFilePath() const { return SPIRVFilePath; }
+	void SetSPIRVFilePath(const std::string& path) { SPIRVFilePath = path; }
+
+	// config.json を置くディレクトリ（エディタ時は仮想パス config/ にマウントされる）
+	std::string GetConfigDirectoryPath() const { return ConfigDirectoryPath; }
+
+	// エディタ起動時に使う描画バックエンド
+	GraphicsBackend GetEditorGraphicsBackend() const { return EditorGraphicsBackend; }
+	void SetEditorGraphicsBackend(GraphicsBackend backend) { EditorGraphicsBackend = backend; }
+
+	// ゲームビルドの出力先
+	std::string GetBuildOutputPath() const { return BuildOutputPath; }
+	void SetBuildOutputPath(const std::string& path) { BuildOutputPath = path; }
+
 	float GetMouseSensitivity() const { return MouseSensitivity; }
 	void SetMouseSensitivity(float sensitivity) { MouseSensitivity = sensitivity; }
 
@@ -77,6 +93,10 @@ private:
 	std::string ExternelTool = "SceneRoot/Tool/IN/";
 	std::string ShaderFilePath = "SceneRoot/Shader/hlsl/";
 	std::string CSOFilePath = "SceneRoot/Shader/cso/";
+	std::string SPIRVFilePath = "SceneRoot/Shader/spv/";
+	std::string ConfigDirectoryPath = "SceneRoot/config/";
+	std::string BuildOutputPath = "Build/";
+	GraphicsBackend EditorGraphicsBackend = GraphicsBackend::D3D11;
 	std::string DLLFilePath = "SceneRoot/Script/DLL/";
 	std::string ScriptFilePath = "SceneRoot/Script/Source/";
 	std::string ScriptLogFilePath = "SceneRoot/Script/Log/";

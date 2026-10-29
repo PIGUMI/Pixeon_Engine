@@ -63,24 +63,28 @@ int MainFrame::Init(const EngineConfig& InPut)
 {
 	_targetFrameTime = 1000.0f / 200.0f;
 	_lastUpdateTime = timeGetTime();
-	_wnd = InPut.wnd;
+	_wnd = (HWND)InPut.wnd;
 	_updateDraw = false;
 	_engineConfig = InPut;
+	_startSceneName = InPut.startScene ? InPut.startScene : "";
+	_archivePath = InPut.archivePath ? InPut.archivePath : "data.pak";
+	_engineConfig.startScene = nullptr;
+	_engineConfig.archivePath = nullptr;
 
-	if (!IZANAGI::GetInstance()->Initialize("SceneRoot/Tool/IZANAGI/qwen2.5-7b-instruct-q3_k_m.gguf", 8192, 4, 2))
-		MessageBox(nullptr, "IZANAGIエンジンの初期化に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+	if (IsEditorMode()) {
+		if (!IZANAGI::GetInstance()->Initialize("SceneRoot/Tool/IZANAGI/qwen2.5-7b-instruct-q3_k_m.gguf", 8192, 4, 2))
+			MessageBox(nullptr, "IZANAGIエンジンの初期化に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+	}
 
-	SettingManager::GetInstance()->LoadConfig();
+	if (!AssetsMount()) return -1;
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr)) return -1;
 
-	hr = DirectX11::GetInstance()->Init(InPut.wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
+	hr = DirectX11::GetInstance()->Init(_wnd, InPut.screenWidth, InPut.screenHeight, InPut.fullscreen);
 	if (FAILED(hr)) { CoUninitialize(); return -1; }
 
 	DirectX11::GetInstance()->InitializeHDRPipeline(InPut.screenWidth, InPut.screenHeight);
-	AssetManager::Instance()->SetRoot(SettingManager::GetInstance()->GetAssetsFilePath());
-	AssetManager::Instance()->SetLoadMode(AssetManager::LoadMode::FromSource);
-	AssetManager::Instance()->StartAutoSync(std::chrono::milliseconds(1000), true);
+	AssetHotReloadRegister();
 	EffectManager::Instance()->Init(DirectX11::GetInstance()->GetDevice(), DirectX11::GetInstance()->GetContext());
 
 	for (int layer = 0; layer < MAX_LAYER_COUNT; layer++)
@@ -120,6 +124,66 @@ int MainFrame::Init(const EngineConfig& InPut)
 }
 
 /*
+* 関数名：AssetsMount
+* 引　数：なし
+* 戻り値：bool - マウントに成功したら true
+* 説　明：起動モードに応じてアセットの供給元をマウントする
+*         エディタ: SceneRoot 以下のディレクトリ（Assets / Scene は変更を監視）
+*         ゲーム  : ビルド時に作成したアーカイブ
+*/
+bool MainFrame::AssetsMount()
+{
+	AssetManager* am = AssetManager::Instance();
+	if (!IsEditorMode()) {
+		std::string error;
+		if (!am->ArchiveMount(_archivePath, &error)) {
+			MessageBox(nullptr, ("ゲームデータを開けません: " + _archivePath + "\n" + error).c_str(), "エラー", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		SettingManager::GetInstance()->LoadConfig();
+		return true;
+	}
+
+	SettingManager* settings = SettingManager::GetInstance();
+	am->DirectoryMount(VfsPrefix::CONFIG, settings->GetConfigDirectoryPath(), false);
+	settings->LoadConfig();
+	am->DirectoryMount(std::string(VfsPrefix::SHADER) + "cso", settings->GetCSOFilePath(), false);
+	am->DirectoryMount(std::string(VfsPrefix::SHADER) + "spv", settings->GetSPIRVFilePath(), false);
+	am->DirectoryMount(VfsPrefix::ANIM2D, settings->GetAnimator2DProjectFilePath(), false);
+	am->DirectoryMount(VfsPrefix::SCENE, settings->GetSceneFilePath(), true);
+	am->DirectoryMount(VfsPrefix::ASSETS, settings->GetAssetsFilePath(), true);
+	am->WatchStart(std::chrono::milliseconds(1000));
+	return true;
+}
+
+/*
+* 関数名：AssetHotReloadRegister
+* 引　数：なし
+* 戻り値：なし
+* 説　明：アセットの変更通知を受けて、読み込み済みのテクスチャを再読込する
+*/
+void MainFrame::AssetHotReloadRegister()
+{
+	_assetListenerId = AssetManager::Instance()->ListenerAdd([](const FileChange& change) {
+		const std::string prefix = VfsPrefix::ASSETS;
+		if (change.e_Type != FileChange::Type::Modified) return;
+		if (PixArchive::PathNormalize(change.path).rfind(prefix, 0) != 0) return;
+		const std::string name = change.path.substr(prefix.size());
+		switch (AssetTypeUtil::TypeFromPath(name)) {
+		case AssetType::Texture:
+			if (TextureManager::Instance()->IsLoaded(name)) TextureManager::Instance()->Reload(name);
+			break;
+		case AssetType::Model:
+			// 使用中のモデルはボーン構成が変わり得るため差し替えず、次回の読み込みから新しい内容を使う
+			ModelManager::Instance()->CacheInvalidate(name);
+			break;
+		default:
+			break;
+		}
+		});
+}
+
+/*
 * 関数名：Update
 * 引　数：なし
 * 戻り値：なし
@@ -132,6 +196,7 @@ void MainFrame::Update()
 
 	if (delta_Time >= _targetFrameTime) {
 		_deltaTime = delta_Time * 0.001f;
+		AssetManager::Instance()->ChangesDispatch();
 		UpdateInput(GetWindowHandle());
 
 		switch (_softwareMode)
@@ -424,8 +489,9 @@ void MainFrame::UnInit()
 	EngineFrame::GetInstance()->UnInit();
 	EngineFrame::DestroyInstance();
 	UninitInput();
-	AssetManager::Instance()->StopAutoSync();
-	SettingManager::GetInstance()->SaveConfig();
+	AssetManager::Instance()->ListenerRemove(_assetListenerId);
+	AssetManager::Instance()->WatchStop();
+	if (IsEditorMode()) SettingManager::GetInstance()->SaveConfig();
 	GUI::DestroyInstance();
 	ComponentManager::DestroyInstance();
 	SettingManager::DestroyInstance();
@@ -438,8 +504,10 @@ void MainFrame::UnInit()
 	SoundManager::DeleteInstance();
 	ResourceService::DeleteInstance();
 	DirectX11::DestroyInstance();
-	IZANAGI::GetInstance()->Shutdown();
-	IZANAGI::DestroyInstance();
+	if (IsEditorMode()) {
+		IZANAGI::GetInstance()->Shutdown();
+		IZANAGI::DestroyInstance();
+	}
 	CoUninitialize();
 }
 

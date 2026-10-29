@@ -203,7 +203,7 @@ bool TextureManager::IsPinned(const std::string& name) {
 std::shared_ptr<TextureResource> TextureManager::LoadInternal(const std::string& logicalName) {
 	// (1) Raw  ǂݍ
 	std::vector<uint8_t> data;
-	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
+	if (!AssetManager::Instance()->AssetLoad(logicalName, data) || data.empty()) {
 		SetFail(logicalName, "RawLoadFailed(size=0 or not found)");
 		return nullptr;
 	}
@@ -354,7 +354,7 @@ void TextureManager::DrawDebugGUI() {
 	ImGui::TextUnformatted("Asset Textures (Load / Pin)");
 	static char filterAsset[128] = "";
 	ImGui::InputText("Filter Assets", filterAsset, sizeof(filterAsset));
-	auto assetTexList = AssetManager::Instance()->GetCachedTextureNames();
+	auto assetTexList = AssetManager::Instance()->AssetListGet(AssetType::Texture);
 
 	int unloadedCount = 0;
 	for (auto& n : assetTexList) {

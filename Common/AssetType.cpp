@@ -45,7 +45,7 @@ namespace AssetTypeUtil {
 			{ "dll", AssetType::Script }, { "cpp", AssetType::Script }, { "h", AssetType::Script },
 			{ "ttf", AssetType::Font }, { "otf", AssetType::Font },
 			{ "json", AssetType::Config }, { "sceneconfig", AssetType::Config }, { "ini", AssetType::Config },
-			{ "a2d", AssetType::Animation2D },
+			{ "anim2d", AssetType::Animation2D },
 		};
 		std::string ext = extension;
 		if (!ext.empty() && ext.front() == '.') ext.erase(0, 1);

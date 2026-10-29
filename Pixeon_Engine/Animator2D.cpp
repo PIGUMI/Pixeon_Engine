@@ -3,6 +3,8 @@
 * 説　　　明　: 2Dアニメーションを管理するコンポーネント
 */
 #include "Animator2D.h"
+#include "AssetManager.h"
+#include "../Common/FileUtil.h"
 #include "SettingManager.h"
 #include "GUI.h"
 #include "Math.h"
@@ -393,13 +395,13 @@ void Animator2D::SaveFile()
 */
 void Animator2D::LoadFile(std::string FilePath)
 {
-	std::ifstream inFile(FilePath);
-	if (!inFile.is_open()) {
+	// ディスク上のパス（エディタ）→ 仮想パス（anim2d/ 以下、ゲームではアーカイブ）の順に探す
+	std::string text;
+	if (!FileUtil::TextReadAll(FilePath, text) && !AssetManager::Instance()->TextRead(FilePath, text)) {
 		return;
 	}
-	nlohmann::json LoadJson;
-	inFile >> LoadJson;
-	inFile.close();
+	nlohmann::json LoadJson = nlohmann::json::parse(text, nullptr, false);
+	if (!LoadJson.is_object()) return;
 	// プロジェクト名
 	if (LoadJson.contains("ProjectName")) {
 		Name_ = LoadJson["ProjectName"].get<std::string>();

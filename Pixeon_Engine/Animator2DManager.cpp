@@ -3,6 +3,7 @@
 * 説　　　明　Animator2Dの管理を行うシングルトンクラス
 */
 #include "Animator2DManager.h"
+#include "AssetManager.h"
 #include "SettingManager.h"
 
 Animator2DManager* Animator2DManager::_instance = nullptr;
@@ -58,7 +59,7 @@ Animator2D* Animator2DManager::GetAnimator2D(const std::string& name)
 
 	// キャッシュにない場合は新規ロード
 	Animator2D* newAnimator = new Animator2D();
-	newAnimator->LoadFile(SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + name);
+	newAnimator->LoadFile(std::string(VfsPrefix::ANIM2D) + name);
 	_animator2Ds.push_back(newAnimator);
 	return newAnimator->Copy();
 }
@@ -87,7 +88,7 @@ void Animator2DManager::PreloadAnimator2D(const std::string& name)
 		}
 	}
 	Animator2D* newAnimator = new Animator2D();
-	newAnimator->LoadFile(SettingManager::GetInstance()->GetAnimator2DProjectFilePath() + name);
+	newAnimator->LoadFile(std::string(VfsPrefix::ANIM2D) + name);
 	_animator2Ds.push_back(newAnimator);
 
 	auto end = std::chrono::high_resolution_clock::now();

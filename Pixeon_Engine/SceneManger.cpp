@@ -1,6 +1,8 @@
 ﻿#include "SceneManger.h"
 #include "Scene.h"
 #include "SettingManager.h"
+#include "AssetManager.h"
+#include "MainFrame.h"
 
 SceneManger* SceneManger::instance = nullptr;
 
@@ -139,30 +141,30 @@ void SceneManger::RegisterScene(std::string Name, std::function<AbstractScene* (
 	_SceneCreators[Name] = creator;
 }
 
-// ファイル名の取得
+/*
+* 関数名　ListSceneFiles
+* 引　数　なし
+* 戻り値　シーンファイル名（"Name.scene"）の一覧
+* 説　明　仮想ファイルシステムの scene/ 以下から .scene を列挙する
+*         （以前は FindFirstFile で直接ディレクトリを走査していたため、ビルド後のゲームで使えなかった）
+*/
 std::vector<std::string> SceneManger::ListSceneFiles() {
 	std::vector<std::string> sceneFiles;
-	std::string sceneDir = SettingManager::GetInstance()->GetSceneFilePath();
-	std::string searchPath = sceneDir + "\\*.Scene";
-	WIN32_FIND_DATAA findData;
-	HANDLE hFind = FindFirstFileA(searchPath.c_str(), &findData);
+	const std::string prefix = VfsPrefix::SCENE;
+	for (auto& info : AssetManager::Instance()->FileListGet(prefix)) {
+		if (AssetTypeUtil::TypeFromPath(info.path) != AssetType::Scene) continue;
+		const std::string rel = info.path.substr(prefix.size());
+		if (rel.find('/') != std::string::npos) continue;  // サブディレクトリは対象外
+		sceneFiles.push_back(rel);
+	}
 
-	if (hFind == INVALID_HANDLE_VALUE) {
-		// シーンファイルが見つからない場合
+	if (sceneFiles.empty() && MainFrame::GetInstance()->IsEditorMode()) {
 		MessageBox(nullptr, "シーンが見つからないため\n自動作成を行います", "Info", MB_OK);
 		if (!CreateAndRegisterScene("SampleScene")) {
 			MessageBox(nullptr, "正常に作成ができませんでした", "Error", MB_OK);
 		}
 		_StartSceneName = "SampleScene";
 	}
-
-	do {
-		if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-			sceneFiles.push_back(findData.cFileName);
-		}
-	} while (FindNextFileA(hFind, &findData));
-	FindClose(hFind);
-
 	return sceneFiles;
 }
 
@@ -191,6 +193,7 @@ bool SceneManger::RenameFileInDirectory(const std::string& oldName, const std::s
 }
 
 void SceneManger::Save() {
+	if (!MainFrame::GetInstance()->IsEditorMode()) return;
 	if (_currentScene) {
 		_currentScene->SaveToFile();
 	}
@@ -217,18 +220,23 @@ void SceneManger::Save() {
 }
 
 void SceneManger::Load() {
-	std::string PATH = SettingManager::GetInstance()->GetSceneFilePath();
-	PATH += "SceneConfig.sceneconfig";
+	// 起動設定（ビルド済みゲームの game.json など）で開始シーンが指定されていれば優先する
+	const std::string& overrideScene = MainFrame::GetInstance()->GetStartSceneOverride();
+	if (!overrideScene.empty()) {
+		_StartSceneName = overrideScene;
+		ChangeScene(_StartSceneName);
+		return;
+	}
 
-	std::ifstream configFile(PATH);
-	if (!configFile.is_open()) {
-		MessageBox(nullptr, "シーン設定ファイルが見つからないため\nデフォルトのシーンを読み込みます", "Info", MB_OK);
+	std::string text;
+	if (!AssetManager::Instance()->TextRead(std::string(VfsPrefix::SCENE) + "SceneConfig.sceneconfig", text)) {
+		if (MainFrame::GetInstance()->IsEditorMode())
+			MessageBox(nullptr, "シーン設定ファイルが見つからないため\nデフォルトのシーンを読み込みます", "Info", MB_OK);
 		_StartSceneName = "SampleScene";
 		return;
 	}
-	nlohmann::json configJson;
-	configFile >> configJson;
-	if (configJson.contains("StartScene")) {
+	nlohmann::json configJson = nlohmann::json::parse(text, nullptr, false);
+	if (configJson.is_object() && configJson.contains("StartScene")) {
 		_StartSceneName = configJson["StartScene"].get<std::string>();
 	}
 

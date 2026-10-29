@@ -17,6 +17,7 @@ public:
 	std::shared_ptr<ModelSharedResource> LoadOrGet(const std::string& logicalName);
 	void UnInit();
 	void GarbageCollect();
+	void CacheInvalidate(const std::string& logicalName);
 	void DrawDebugGUI();
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetEmbeddedTexture(

@@ -87,7 +87,7 @@ std::shared_ptr<SoundResource> SoundManager::LoadOrGet(const std::string& logica
 */
 std::shared_ptr<SoundResource> SoundManager::LoadInternal(const std::string& logicalName, bool streaming) {
 	std::vector<uint8_t> data;
-	if (!AssetManager::Instance()->LoadAsset(logicalName, data) || data.empty()) {
+	if (!AssetManager::Instance()->AssetLoad(logicalName, data) || data.empty()) {
 		OutputDebugStringA(("[SoundManager] Raw load failed: " + logicalName + "\n").c_str());
 		return nullptr;
 	}

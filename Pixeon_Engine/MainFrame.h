@@ -5,6 +5,7 @@
 #define PIXEON_ENGINE_INEDITOR true
 
 #include <Windows.h>
+#include "../Common/EngineApi.h"
 #include <string>
 #include <d3d11.h>
 #include <chrono>
@@ -24,15 +25,7 @@ class MainFrame {
 private:
 	using clock = std::chrono::steady_clock;
 public:
-	struct EngineConfig {
-		HWND        wnd;
-		int         screenWidth;
-		int         screenHeight;
-		const char* windowTitle;
-		bool        fullscreen;
-		float       targetFPS;
-		const char* startScene;
-	};
+	using EngineConfig = ::EngineConfig;
 public:
 	static MainFrame* GetInstance();
 	static void DeleteInstance();
@@ -43,6 +36,10 @@ public:
 	void UnInit();
 public:
 	HWND GetWindowHandle() const { return _wnd; }
+	bool IsEditorMode() const { return _engineConfig.runMode == EngineRunMode::Editor; }
+	const EngineConfig& GetEngineConfig() const { return _engineConfig; }
+	// 起動引数で指定された開始シーン（空ならシーン設定ファイルに従う）
+	const std::string& GetStartSceneOverride() const { return _startSceneName; }
 	float GetDeltaTime() { return _deltaTime; }
 	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
 	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
@@ -69,6 +66,11 @@ private:
 	bool _fixedMouseCursorFlag = false;
 
 	void DrawGeometryPass(int layerIndex, GBuffer* gbuffer);
+	bool AssetsMount();
+	void AssetHotReloadRegister();
+	std::string _startSceneName;
+	std::string _archivePath;
+	int _assetListenerId = 0;
 
 private:
 	MainFrame() = default;

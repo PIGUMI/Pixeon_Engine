@@ -63,21 +63,17 @@ namespace PixArchive {
 	}
 
 	/*
-	* 関数名　PathNormalize
+	* 関数名　PathClean
 	* 引　数　path：パス
-	* 戻り値　正規化されたパス
-	* 説　明　区切り文字を '/' に、英字を小文字に統一し、先頭の "./" "/" を除去する
+	* 戻り値　区切りを整えたパス
+	* 説　明　区切り文字を '/' に統一し、先頭の "./" "/" と連続する '/' を除去する
 	*/
-	std::string PathNormalize(const std::string& path)
+	std::string PathClean(const std::string& path)
 	{
 		std::string s = path;
-		for (auto& c : s) {
-			if (c == '\\') c = '/';
-			else if (c >= 'A' && c <= 'Z') c = (char)(c - 'A' + 'a');
-		}
+		for (auto& c : s) if (c == '\\') c = '/';
 		while (s.rfind("./", 0) == 0) s.erase(0, 2);
 		while (!s.empty() && s.front() == '/') s.erase(0, 1);
-		// 連続する '/' をまとめる
 		std::string out;
 		out.reserve(s.size());
 		for (char c : s) {
@@ -85,6 +81,19 @@ namespace PixArchive {
 			out.push_back(c);
 		}
 		return out;
+	}
+
+	/*
+	* 関数名　PathNormalize
+	* 引　数　path：パス
+	* 戻り値　検索キー
+	* 説　明　PathClean したうえで英字を小文字に統一する
+	*/
+	std::string PathNormalize(const std::string& path)
+	{
+		std::string s = PathClean(path);
+		for (auto& c : s) if (c >= 'A' && c <= 'Z') c = (char)(c - 'A' + 'a');
+		return s;
 	}
 
 	// ================================================================
@@ -201,7 +210,7 @@ namespace PixArchive {
 				m_LastError = "TOC の解析に失敗しました (index=" + std::to_string(i) + ")";
 				return false;
 			}
-			m_IndexByPath[e.path] = m_Entries.size();
+			m_IndexByPath[PathNormalize(e.path)] = m_Entries.size();
 			m_Entries.push_back(std::move(e));
 		}
 		return true;
@@ -218,7 +227,7 @@ namespace PixArchive {
 		uint16_t name_len = 0;
 		if (!ValueRead(cursor, end, name_len)) return false;
 		if ((size_t)(end - cursor) < name_len) return false;
-		out_entry.path = PathNormalize(std::string((const char*)cursor, name_len));
+		out_entry.path = PathClean(std::string((const char*)cursor, name_len));
 		cursor += name_len;
 
 		uint8_t reserved[3]{};
@@ -305,8 +314,8 @@ namespace PixArchive {
 	{
 		const std::string norm = PathNormalize(prefix);
 		std::vector<std::string> result;
-		for (auto& e : m_Entries) {
-			if (e.path.rfind(norm, 0) == 0) result.push_back(e.path);
+		for (auto& kv : m_IndexByPath) {
+			if (kv.first.rfind(norm, 0) == 0) result.push_back(m_Entries[kv.second].path);
 		}
 		std::sort(result.begin(), result.end());
 		return result;
@@ -325,7 +334,7 @@ namespace PixArchive {
 	void Writer::FileAdd(const std::string& virtual_path, const std::string& disk_path, uint8_t asset_type)
 	{
 		Source s;
-		s.virtualPath = PathNormalize(virtual_path);
+		s.virtualPath = PathClean(virtual_path);
 		s.diskPath = disk_path;
 		s.assetType = asset_type;
 		m_Sources.push_back(std::move(s));
@@ -340,7 +349,7 @@ namespace PixArchive {
 	void Writer::MemoryAdd(const std::string& virtual_path, std::vector<uint8_t> data, uint8_t asset_type)
 	{
 		Source s;
-		s.virtualPath = PathNormalize(virtual_path);
+		s.virtualPath = PathClean(virtual_path);
 		s.memory = std::move(data);
 		s.assetType = asset_type;
 		m_Sources.push_back(std::move(s));
@@ -394,10 +403,12 @@ namespace PixArchive {
 	*/
 	bool Writer::ArchiveWrite(const std::string& out_path, const ProgressCallback& progress)
 	{
-		std::sort(m_Sources.begin(), m_Sources.end(),
-			[](const Source& a, const Source& b) { return a.virtualPath < b.virtualPath; });
+		std::sort(m_Sources.begin(), m_Sources.end(), [](const Source& a, const Source& b) {
+			const std::string ka = PathNormalize(a.virtualPath), kb = PathNormalize(b.virtualPath);
+			return (ka != kb) ? (ka < kb) : (a.virtualPath < b.virtualPath);
+			});
 		for (size_t i = 1; i < m_Sources.size(); ++i) {
-			if (m_Sources[i].virtualPath == m_Sources[i - 1].virtualPath) {
+			if (PathNormalize(m_Sources[i].virtualPath) == PathNormalize(m_Sources[i - 1].virtualPath)) {
 				m_LastError = "仮想パスが重複しています: " + m_Sources[i].virtualPath;
 				return false;
 			}

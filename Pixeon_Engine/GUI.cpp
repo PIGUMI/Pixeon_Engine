@@ -290,7 +290,7 @@ void GUI::AssetsManagerWindow()
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 	if (ImGui::Begin(ShiftJISToUTF8("アセットマネージャー").c_str(), &bAssetsManagerWindow_, flags)) {
-		AssetManager::Instance()->DrawDebugGUI();
+		AssetManager::Instance()->DebugGUIDraw();
 		ImGui::End();
 	}
 }

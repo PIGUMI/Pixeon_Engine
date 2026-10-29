@@ -861,10 +861,14 @@ DirectX::XMFLOAT3 RigidBody::QuaternionToEuler(const btQuaternion& quat)
 	DirectX::XMVECTOR q = DirectX::XMVectorSet(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
 	DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationQuaternion(q);
 
+	// m128_f32 は MSVC 専用のため、XMFLOAT4X4 に取り出して参照する
+	DirectX::XMFLOAT4X4 m;
+	DirectX::XMStoreFloat4x4(&m, rotMatrix);
+
 	DirectX::XMFLOAT3 euler;
-	euler.x = asinf(-rotMatrix.r[2].m128_f32[1]);                        // Pitch
-	euler.y = atan2f(rotMatrix.r[2].m128_f32[0], rotMatrix.r[2].m128_f32[2]); // Yaw
-	euler.z = atan2f(rotMatrix.r[0].m128_f32[1], rotMatrix.r[1].m128_f32[1]); // Roll
+	euler.x = asinf(-m._32);              // Pitch
+	euler.y = atan2f(m._31, m._33);       // Yaw
+	euler.z = atan2f(m._12, m._22);       // Roll
 
 	return euler;
 }

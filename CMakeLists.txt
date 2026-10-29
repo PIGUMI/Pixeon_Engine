@@ -25,8 +25,11 @@ add_library(PixCommon STATIC
   Common/GameManifest.cpp
   Common/HashUtil.cpp
   Common/PixArchive.cpp
+  Common/VirtualFileSystem.cpp
 )
 target_include_directories(PixCommon PUBLIC Common Pixeon_Engine)
+find_package(Threads REQUIRED)
+target_link_libraries(PixCommon PUBLIC Threads::Threads)
 
 # ---- アセットパッキングツール ---------------------------------------------
 add_executable(PixAssetPacker "Asset packaging tool/main.cpp")

@@ -8,6 +8,8 @@
 #include "GameManifest.h"
 #include "HashUtil.h"
 #include "PixArchive.h"
+#include "VirtualFileSystem.h"
+#include <thread>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -86,6 +88,7 @@ PIX_TEST(ArchiveRoundTrip)
 	PIX_CHECK(r.EntryFind("assets/big.bin")->offset % 4096 == 0);
 	PIX_CHECK(!r.FileRead("assets/missing.png", out));
 	PIX_CHECK(r.FileListGet("assets/").size() == 3);
+	PIX_CHECK(r.FileListGet("ASSETS/tex/")[0] == "assets/Tex/B.png");  // 大文字小文字は保持される
 }
 
 PIX_TEST(ArchiveDeterministic)
@@ -178,6 +181,93 @@ PIX_TEST(ManifestRoundTrip)
 	PIX_CHECK(!GraphicsBackendUtil::NameParse("metal", b));
 	std::string err;
 	PIX_CHECK(!m2.JsonFromString("{\"Graphics\":{\"Backend\":\"metal\"}}", &err) && !err.empty());
+}
+
+PIX_TEST(VfsMountAndPriority)
+{
+	const fs::path dir = TempDirMake("vfs");
+	TextWrite(dir / "Assets/Tex/A.png", "dirA");
+	TextWrite(dir / "Assets/model.fbx", "fbx");
+	TextWrite(dir / "Scene/SampleScene.scene", "{}");
+
+	VirtualFileSystem vfs;
+	PIX_CHECK(vfs.DirectoryMount("assets", (dir / "Assets").string(), false));
+	PIX_CHECK(vfs.DirectoryMount("scene/", (dir / "Scene").string(), false));
+	PIX_CHECK(!vfs.DirectoryMount("missing", (dir / "Nope").string(), false));
+
+	std::string text;
+	PIX_CHECK(vfs.TextRead("assets/Tex/A.png", text) && text == "dirA");
+	PIX_CHECK(vfs.TextRead("ASSETS/tex/a.PNG", text) && text == "dirA");  // 大文字小文字を区別しない
+	PIX_CHECK(vfs.FileExists("scene/SampleScene.scene"));
+	PIX_CHECK(!vfs.FileExists("assets/none.png"));
+
+	auto scenes = vfs.FileListGet("scene/");
+	PIX_CHECK(scenes.size() == 1 && scenes[0].path == "scene/SampleScene.scene");
+	PIX_CHECK(vfs.FileListGet("assets/").size() == 2);
+
+	// アーカイブを後からマウントすると優先される
+	PixArchive::Writer w;
+	w.MemoryAdd("assets/Tex/A.png", std::vector<uint8_t>{ 'p', 'a', 'k' });
+	w.MemoryAdd("assets/OnlyInPak.wav", std::vector<uint8_t>{ 'w' });
+	const std::string pak = (dir / "data.pak").string();
+	PIX_CHECK(w.ArchiveWrite(pak));
+	PIX_CHECK(vfs.ArchiveMount(pak));
+	PIX_CHECK(vfs.TextRead("assets/Tex/A.png", text) && text == "pak");
+	PIX_CHECK(vfs.FileListGet("assets/").size() == 3);
+	std::string err;
+	PIX_CHECK(!vfs.ArchiveMount((dir / "none.pak").string(), &err) && !err.empty());
+}
+
+PIX_TEST(VfsCacheAndHotReload)
+{
+	const fs::path dir = TempDirMake("vfswatch");
+	TextWrite(dir / "a.txt", "v1");
+	VirtualFileSystem vfs;
+	vfs.DirectoryMount("assets", dir.string(), true);
+	std::string text;
+	PIX_CHECK(vfs.TextRead("assets/a.txt", text) && text == "v1");
+	PIX_CHECK(vfs.TextRead("assets/a.txt", text) && text == "v1");
+	PIX_CHECK(vfs.CacheStatsGet().i_Hits == 1);
+
+	// 内容とサイズを変える → 走査でキャッシュが破棄され、変更イベントが届く
+	TextWrite(dir / "a.txt", "version2");
+	TextWrite(dir / "b.txt", "new");
+	vfs.ChangesScanNow();
+	std::vector<FileChange> changes;
+	PIX_CHECK(vfs.ChangesPoll(changes) == 2);
+	bool modified = false, added = false;
+	for (auto& c : changes) {
+		modified |= (c.e_Type == FileChange::Type::Modified && c.path == "assets/a.txt");
+		added |= (c.e_Type == FileChange::Type::Added && c.path == "assets/b.txt");
+	}
+	PIX_CHECK(modified && added);
+	PIX_CHECK(vfs.TextRead("assets/a.txt", text) && text == "version2");
+
+	fs::remove(dir / "b.txt");
+	vfs.ChangesScanNow();
+	changes.clear();
+	PIX_CHECK(vfs.ChangesPoll(changes) == 1 && changes[0].e_Type == FileChange::Type::Removed);
+
+	// バックグラウンド監視の開始・停止
+	vfs.WatchStart(std::chrono::milliseconds(10));
+	const uint64_t before = vfs.ScanCountGet();
+	for (int i = 0; i < 200 && vfs.ScanCountGet() < before + 2; ++i) std::this_thread::sleep_for(std::chrono::milliseconds(5));
+	PIX_CHECK(vfs.ScanCountGet() >= before + 2);
+	vfs.WatchStop();
+	PIX_CHECK(!vfs.IsWatching());
+}
+
+PIX_TEST(VfsCacheBudget)
+{
+	const fs::path dir = TempDirMake("vfsbudget");
+	for (int i = 0; i < 10; ++i) TextWrite(dir / (std::to_string(i) + ".bin"), std::string(1000, 'a'));
+	VirtualFileSystem vfs;
+	vfs.CacheBudgetSet(4500);  // 1 ファイルは予算の 1/4 未満 → キャッシュ対象
+	vfs.DirectoryMount("", dir.string(), false);
+	std::vector<uint8_t> d;
+	for (int i = 0; i < 10; ++i) PIX_CHECK(vfs.FileRead(std::to_string(i) + ".bin", d));
+	auto st = vfs.CacheStatsGet();
+	PIX_CHECK(st.i_Bytes <= 4500 && st.i_Entries == 4);
 }
 
 int main()

@@ -1,5 +1,6 @@
 ﻿#define NOMINMAX
 #include "IZANAGI.h"
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <fstream>

@@ -1060,7 +1060,7 @@ void ModelRenderComponent::DrawInspector() {
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
-		auto list = AssetManager::Instance()->GetCachedTextureNames();
+		auto list = AssetManager::Instance()->AssetListGet(AssetType::Texture);
 		ImGui::Text("%s:  %zu", SJ("件数").c_str(), list.size());
 		ImGui::Separator();
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
@@ -1166,7 +1166,7 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 		ImGui::Separator();
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルター").c_str(), filter, sizeof(filter));
-		auto texList = AssetManager::Instance()->GetCachedTextureNames();
+		auto texList = AssetManager::Instance()->AssetListGet(AssetType::Texture);
 		ImGui::BeginChild("ShaderTexList", ImVec2(300, 300), true);
 		for (auto& name : texList) {
 			if (filter[0] && name.find(filter) == std::string::npos) continue;
@@ -1194,7 +1194,7 @@ void ModelRenderComponent::ShowModelSelectPopup() {
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ(部分一致)").c_str(), filter, sizeof(filter));
-		auto list = AssetManager::Instance()->GetCachedAssetNames(true);
+		auto list = AssetManager::Instance()->AssetListGet(AssetType::Model);
 		{
 			std::string label = SJ("登録モデル数:  ") + std::to_string(list.size());
 			ImGui::Text("%s", label.c_str());
@@ -1244,7 +1244,7 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
 		ImGui::InputText(SJ("フィルタ").c_str(), filter, sizeof(filter));
-		auto list = AssetManager::Instance()->GetCachedTextureNames();
+		auto list = AssetManager::Instance()->AssetListGet(AssetType::Texture);
 		ImGui::Text("%s: %zu", SJ("件数").c_str(), list.size());
 		ImGui::Separator();
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);

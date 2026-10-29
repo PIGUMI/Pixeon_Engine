@@ -53,7 +53,7 @@ namespace PixArchive {
 
 	// TOC エントリ（メモリ上の表現）
 	struct Entry {
-		std::string path;                 // 正規化済み仮想パス（小文字・'/' 区切り）
+		std::string path;                 // 仮想パス（'/' 区切り・大文字小文字は登録時のまま）
 		uint8_t  compression = 0;
 		uint8_t  assetType = 0;           // AssetType の値
 		uint32_t crc32 = 0;
@@ -63,7 +63,10 @@ namespace PixArchive {
 		std::array<uint8_t, 32> sha256{};
 	};
 
-	// 仮想パスを正規化する（'\' → '/'、小文字化、先頭の "./" と "/" を除去）
+	// 仮想パスの区切りを整える（'\' → '/'、先頭の "./" と "/" と重複 '/' を除去）
+	std::string PathClean(const std::string& path);
+
+	// 検索キー用に正規化する（PathClean + 小文字化）。検索は大文字小文字を区別しない
 	std::string PathNormalize(const std::string& path);
 
 	// ================================================================
