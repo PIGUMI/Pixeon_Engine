@@ -5,7 +5,6 @@
 #include "IMGUI/imgui.h"
 
 using namespace DirectX;
-using Microsoft::WRL::ComPtr;
 
 AtmosphericFogEffect::AtmosphericFogEffect()
 {
@@ -20,67 +19,47 @@ AtmosphericFogEffect::~AtmosphericFogEffect()
 bool AtmosphericFogEffect::EnsureResources()
 {
 	if (m_resourcesReady) return true;
-
-	auto* dx = DirectX11::GetInstance();
-	if (!dx) return false;
-	ID3D11Device* device = dx->GetDevice();
-	if (!device) return false;
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return false;
 
 	auto* sm = ShaderManager::GetInstance();
 	m_vs = sm->GetVertexShader("VS_Fullscreen");
 	m_ps = sm->GetPixelShader("PS_AtmosphericFog");
 	if (!m_vs || !m_ps) return false;
 
-	{
-		D3D11_BUFFER_DESC bd = {};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(FogCB);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		if (FAILED(device->CreateBuffer(&bd, nullptr, m_cb.GetAddressOf())))
-			return false;
-	}
-	{
-		D3D11_SAMPLER_DESC sd = {};
-		sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		sd.MaxLOD = D3D11_FLOAT32_MAX;
-		device->CreateSamplerState(&sd, m_pointClamp.GetAddressOf());
-	}
-	{
-		D3D11_DEPTH_STENCIL_DESC dd = {};
-		dd.DepthEnable = FALSE;
-		dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		dd.DepthFunc = D3D11_COMPARISON_ALWAYS;
-		device->CreateDepthStencilState(&dd, m_dsOff.GetAddressOf());
-	}
+	RHI::BufferDesc bd;
+	bd.i_Size = sizeof(FogCB);
+	bd.i_BindFlags = RHI::Bind_ConstantBuffer;
+	m_cb = dev->BufferCreate(bd);
 
-	m_resourcesReady = true;
-	return true;
+	RHI::SamplerDesc sd;
+	sd.e_Filter = RHI::Filter::Point;
+	sd.e_AddressU = sd.e_AddressV = sd.e_AddressW = RHI::AddressMode::Clamp;
+	sd.e_Compare = RHI::CompareFunc::Always;
+	m_pointClamp = dev->SamplerCreate(sd);
+
+	m_resourcesReady = m_cb && m_pointClamp;
+	return m_resourcesReady;
 }
 
 void AtmosphericFogEffect::ReleaseResources()
 {
-	m_cb.Reset();
-	m_pointClamp.Reset();
-	m_dsOff.Reset();
+	m_cb.reset();
+	m_pointClamp.reset();
 	m_vs = nullptr;
 	m_ps = nullptr;
 	m_resourcesReady = false;
 }
 
 void AtmosphericFogEffect::Apply(
-	ID3D11ShaderResourceView* input,
-	ID3D11RenderTargetView* output,
+	RHI::Texture* input,
+	RHI::Texture* output,
 	int width, int height)
 {
 	if (!input || !output) return;
 	if (!EnsureResources()) return;
-
-	auto* dx = DirectX11::GetInstance();
-	if (!dx) return;
-	ID3D11DeviceContext* ctx = dx->GetContext();
-	if (!ctx) return;
+	GraphicsSystem* gs = GraphicsSystem::GetInstance();
+	RHI::Device* dev = gs->GetDevice();
 
 	FogCB cb = {};
 	cb.invProj = XMMatrixTranspose(m_invProj);
@@ -97,37 +76,22 @@ void AtmosphericFogEffect::Apply(
 	cb._padFog = 0.0f;
 	cb.cameraPos = m_cameraPos;
 	cb._pad = 0.0f;
-	ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cb, 0, 0);
+	dev->BufferUpdate(m_cb.get(), &cb, sizeof(cb));
 
-	ctx->OMSetDepthStencilState(m_dsOff.Get(), 0);
-	ctx->OMSetRenderTargets(1, &output, nullptr);
+	ScopedOutput scope(output, width, height);
+	gs->SetDepthMode(DEPTH_OFF);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, m_vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, m_ps);
+	dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 0, m_cb.get());
+	dev->TextureSet(RHI::ShaderStage::Pixel, 0, input);
+	dev->TextureSet(RHI::ShaderStage::Pixel, 1, m_depth);
+	dev->SamplerSet(RHI::ShaderStage::Pixel, 0, m_pointClamp.get());
+	dev->InputLayoutSet(nullptr);
+	dev->TopologySet(RHI::Topology::TriangleList);
+	dev->Draw(3, 0);
 
-	D3D11_VIEWPORT vp = {};
-	vp.Width = (float)width;
-	vp.Height = (float)height;
-	vp.MaxDepth = 1.0f;
-	ctx->RSSetViewports(1, &vp);
-
-	ctx->VSSetShader(m_vs, nullptr, 0);
-	ctx->PSSetShader(m_ps, nullptr, 0);
-
-	ID3D11Buffer* cbs[] = { m_cb.Get() };
-	ctx->PSSetConstantBuffers(0, 1, cbs);
-
-	ID3D11ShaderResourceView* srvs[] = { input, m_depthSRV };
-	ctx->PSSetShaderResources(0, 2, srvs);
-
-	ID3D11SamplerState* smps[] = { m_pointClamp.Get() };
-	ctx->PSSetSamplers(0, 1, smps);
-
-	ctx->IASetInputLayout(nullptr);
-	ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ctx->Draw(3, 0);
-
-	ID3D11ShaderResourceView* nullSRVs[2] = {};
-	ctx->PSSetShaderResources(0, 2, nullSRVs);
-	ctx->OMSetDepthStencilState(nullptr, 0);
+	dev->TextureSet(RHI::ShaderStage::Pixel, 1, nullptr);
+	dev->DepthStencilStateSet(nullptr);
 }
 
 void AtmosphericFogEffect::DrawInspector()

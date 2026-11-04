@@ -1,4 +1,4 @@
-cbuffer ModelCB : register(b0)
+Ôªøcbuffer ModelCB : register(b0)
 {
     matrix gWorld;
     matrix gView;
@@ -124,7 +124,7 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N, float3 V, float shadow)
         float3 L = -normalize(l.direction);
         float ndl = saturate(dot(N, L));
         
-        // Blinn-Phong ÉXÉyÉLÉÖÉâÅ[
+        // Blinn-Phong „Çπ„Éö„Ç≠„É•„É©„Éº
         float3 H = normalize(L + V);
         float spec = pow(saturate(dot(N, H)), 32.0f) * 0.5f;
         
@@ -152,7 +152,7 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N, float3 V, float shadow)
                 return 0;
         }
         
-        // Blinn-Phong ÉXÉyÉLÉÖÉâÅ[
+        // Blinn-Phong „Çπ„Éö„Ç≠„É•„É©„Éº
         float3 H = normalize(L + V);
         float spec = pow(saturate(dot(N, H)), 32.0f) * 0.5f;
         

@@ -1,4 +1,4 @@
-struct VS_OUTPUT
+ï»¿struct VS_OUTPUT
 {
     float4 pos : SV_POSITION;
     float2 uv : TEXCOORD0;
@@ -7,7 +7,7 @@ struct VS_OUTPUT
 VS_OUTPUT main(uint id : SV_VertexID)
 {
     VS_OUTPUT output;
-    // ƒtƒ‹ƒXƒNƒŠ[ƒ“ƒgƒ‰ƒCƒAƒ“ƒOƒ‹
+    // ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒˆãƒ©ã‚¤ã‚¢ãƒ³ã‚°ãƒ«
     output.uv = float2((id << 1) & 2, id & 2);
     output.pos = float4(output.uv * float2(2, -2) + float2(-1, 1), 0, 1);
     return output;

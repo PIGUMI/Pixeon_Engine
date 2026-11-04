@@ -1,18 +1,18 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <unordered_map>
 #include "AssetTypes.h"
 #include "AnimationComponent.h"
 
-// œEƒ`ƒƒƒ“ƒlƒ‹‘Î‰ƒ_ƒ“ƒv
+// éª¨ãƒ»ãƒãƒ£ãƒ³ãƒãƒ«å¯¾å¿œãƒ€ãƒ³ãƒ—
 void DumpBoneChannelMapping(const ModelSharedResource* res);
 
-// œ nodeIndex Äƒ}ƒbƒvi–¼‘Oƒx[ƒXj
+// éª¨ nodeIndex å†ãƒãƒƒãƒ—ï¼ˆåå‰ãƒ™ãƒ¼ã‚¹ï¼‰
 int RebindBoneNodeIndices(ModelSharedResource* res);
 
-// 1 ‚Â‚ÌƒNƒŠƒbƒv‚É‘Î‚µ‚Äƒ`ƒƒƒ“ƒlƒ‹ nodeIndex ‚ğ nodeName ‚©‚çÄŒvZ
-// i–ß‚è’l: C³‚µ‚½ƒ`ƒƒƒ“ƒlƒ‹”j
+// 1 ã¤ã®ã‚¯ãƒªãƒƒãƒ—ã«å¯¾ã—ã¦ãƒãƒ£ãƒ³ãƒãƒ« nodeIndex ã‚’ nodeName ã‹ã‚‰å†è¨ˆç®—
+// ï¼ˆæˆ»ã‚Šå€¤: ä¿®æ­£ã—ãŸãƒãƒ£ãƒ³ãƒãƒ«æ•°ï¼‰
 int RebindChannelNodeIndices(ModelSharedResource* res, AnimationClipRuntime& runtimeClip);
 
-// –â‘èƒTƒ}ƒŠ‚ğŠÈˆÕƒƒO
+// å•é¡Œã‚µãƒãƒªã‚’ç°¡æ˜“ãƒ­ã‚°
 void QuickIntegrityReport(const ModelSharedResource* res);

@@ -1,4 +1,4 @@
-// IScript.cpp
+ï»¿// IScript.cpp
 #include "IScript.h"
 #include <unordered_map>
 #include <mutex>
@@ -8,7 +8,7 @@ static std::unordered_map<component, IScript*> g_scriptInstances;
 static std::mutex g_scriptInstancesMutex;
 
 // ========================================
-// ƒRƒŠƒWƒ‡ƒ“ƒR[ƒ‹ƒoƒbƒN
+// ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 // ========================================
 void OnEnterCallback(component collision, const APICollisionInfo* info)
 {
@@ -83,12 +83,12 @@ void IScript::BeginPlay()
 
 void IScript::Update(float DeltaTime)
 {
-	// Œp³æ‚ÅÀ‘•
+	// ç¶™æ‰¿å…ˆã§å®Ÿè£…
 }
 
 void IScript::FixedUpdate(float DeleteTime)
 {
-	// Œp³æ‚ÅÀ‘•
+	// ç¶™æ‰¿å…ˆã§å®Ÿè£…
 }
 
 void IScript::EndPlay()
@@ -99,7 +99,7 @@ void IScript::EndPlay()
 
 void IScript::CallCustom(const std::string& functionName)
 {
-	// Œp³æ‚ÅÀ‘•
+	// ç¶™æ‰¿å…ˆã§å®Ÿè£…
 }
 
 void IScript::ClearParent()
@@ -116,7 +116,7 @@ void IScript::ClearParent()
 }
 
 // ========================================
-// ƒRƒŠƒWƒ‡ƒ“ŠÇ—
+// ã‚³ãƒªã‚¸ãƒ§ãƒ³ç®¡ç†
 // ========================================
 void IScript::RegisterCollisionComponent(component collision)
 {
@@ -165,7 +165,7 @@ void IScript::OnCollisionStay(const APICollisionInfo* info) {}
 void IScript::OnCollisionExit(const APICollisionInfo* info) {}
 
 // ========================================
-// ©“®ƒƒ‚ƒŠŠÇ—
+// è‡ªå‹•ãƒ¡ãƒ¢ãƒªç®¡ç†
 // ========================================
 Object* IScript::CreateManagedObject(const std::string& prefabName)
 {
@@ -201,13 +201,13 @@ void IScript::ReleaseAllManagedResources()
 
 void IScript::CleanupAllResources()
 {
-	// ¶¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚ğƒV[ƒ“‚©‚çíœ
+	// ç”Ÿæˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚·ãƒ¼ãƒ³ã‹ã‚‰å‰Šé™¤
 	if (_parentScene) {
 		for (auto obj : _createdObjects) {
 			if (obj) {
 				try {
 					_parentScene->RemoveObject(obj);
-					delete obj;  // ƒ‰ƒbƒp[‚Ì‚İíœ
+					delete obj;  // ãƒ©ãƒƒãƒ‘ãƒ¼ã®ã¿å‰Šé™¤
 				}
 				catch (const std::exception& e) {
 					std::cerr << "[IScript] Exception during object cleanup: "
@@ -218,7 +218,7 @@ void IScript::CleanupAllResources()
 	}
 	_createdObjects.clear();
 
-	// ƒJƒXƒ^ƒ€ƒŠƒ\[ƒX‚Ì‰ğ•ú
+	// ã‚«ã‚¹ã‚¿ãƒ ãƒªã‚½ãƒ¼ã‚¹ã®è§£æ”¾
 	for (auto& cleanup : _managedResources) {
 		if (cleanup) {
 			try {
@@ -232,6 +232,6 @@ void IScript::CleanupAllResources()
 	}
 	_managedResources.clear();
 
-	// shared_ptr ‚ÌƒNƒŠƒA
+	// shared_ptr ã®ã‚¯ãƒªã‚¢
 	_sharedResources.clear();
 }

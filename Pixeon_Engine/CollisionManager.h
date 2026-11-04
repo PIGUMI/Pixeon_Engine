@@ -1,5 +1,5 @@
-// CollisionManager.h
-// Õ“ËŒŸo‚ÆƒR[ƒ‹ƒoƒbƒNŠÇ—‚ğs‚¤ƒ}ƒl[ƒWƒƒ[
+ï»¿// CollisionManager.h
+// è¡çªæ¤œå‡ºã¨ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç®¡ç†ã‚’è¡Œã†ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼
 #ifndef _COLLISION_MANAGER_H_
 #define _COLLISION_MANAGER_H_
 
@@ -16,7 +16,7 @@ class RigidBody;
 class AbstractObject;
 struct CollisionInfo;
 
-// Bullet‚ÌÕ“ËƒR[ƒ‹ƒoƒbƒN—p
+// Bulletã®è¡çªã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç”¨
 class CollisionContactCallback : public btCollisionWorld::ContactResultCallback
 {
 public:
@@ -43,7 +43,7 @@ public:
 	void Update();
 	void Shutdown();
 
-	// ƒRƒ“ƒ|[ƒlƒ“ƒg“o˜^/íœ
+	// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆç™»éŒ²/å‰Šé™¤
 	void RegisterBoxCollision(BoxCollision* collision);
 	void UnregisterBoxCollision(BoxCollision* collision);
 	void RegisterCapsuleCollision(CapsuleCollision* collision);
@@ -83,11 +83,11 @@ private:
 	std::vector<CapsuleCollision*> m_CapsuleCollisions;
 	std::vector<RigidBody*> m_RigidBodies;
 
-	// Õ“Ëó‘Ô’ÇÕ—p - BaseCollision‚ğg—p
+	// è¡çªçŠ¶æ…‹è¿½è·¡ç”¨ - BaseCollisionã‚’ä½¿ç”¨
 	std::unordered_map<BaseCollision*, std::vector<BaseCollision*>> m_PreviousCollisions;
 	std::unordered_map<BaseCollision*, std::vector<CollisionInfo>> m_CurrentCollisions;
 
-	// BulletƒR[ƒ‹ƒoƒbƒN—p
+	// Bulletã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç”¨
 	std::unordered_map<BaseCollision*, CollisionContactCallback*> m_ContactCallbacks;
 };
 

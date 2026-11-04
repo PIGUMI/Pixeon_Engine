@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Animator2D.h"
 #include "IMGUI/imgui.h"
 #include <vector>
@@ -10,31 +10,31 @@ public:
 	TimelineEditor();
 	~TimelineEditor();
 
-	// ƒƒCƒ“‚Ì•`‰æŠÖ”
+	// ãƒ¡ã‚¤ãƒ³ã®æç”»é–¢æ•°
 	void DrawTimeline(Animator2D* animator);
 
-	// İ’è
+	// è¨­å®š
 	void SetZoom(float zoom) { timeScale_ = zoom; }
 	float GetZoom() const { return timeScale_; }
 	void DrawProjectLoadPopup();
 	void RequestOpenProjectPopup() { wantOpenProjectPopup_ = true; }
-	// —v‹‚ğæ“¾‚µ‚ÄƒNƒŠƒAiŒÄ‚ñ‚¾‘¤‚ª OpenPopup ‚ğÀs‚·‚éj
+	// è¦æ±‚ã‚’å–å¾—ã—ã¦ã‚¯ãƒªã‚¢ï¼ˆå‘¼ã‚“ã å´ãŒ OpenPopup ã‚’å®Ÿè¡Œã™ã‚‹ï¼‰
 	bool ConsumeOpenProjectPopupRequest() { return wantOpenProjectPopup_; }
 	void ClearOpenProjectPopupRequest() { wantOpenProjectPopup_ = false; }
 private:
-	// ƒ^ƒCƒ€ƒ‰ƒCƒ“—v‘f‚Ì•`‰æ
+	// ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³è¦ç´ ã®æç”»
 	void DrawTimeRuler(float totalDuration);
 	void DrawPlayhead(float currentTime);
 	void DrawLayers(Animator2D* animator);
 	void DrawKeyFrame(KeyFrame* keyframe, int layerIndex);
 
-	// “ü—Íˆ—
+	// å…¥åŠ›å‡¦ç†
 	void HandleInput(Animator2D* animator);
 	void HandleKeyFrameDrag(KeyFrame* keyframe);
 	void HandleKeyFrameResize(KeyFrame* keyframe);
 	void HandleContextMenu(Animator2D* animator, KeyFrame* keyframe);
 
-	// ƒ†[ƒeƒBƒŠƒeƒB
+	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	float TimeToPixel(float time) const;
 	float PixelToTime(float pixel) const;
 	float SnapToGrid(float time) const;
@@ -43,16 +43,16 @@ private:
 private:
 	std::vector<std::string> projectFiles_;
 	int selectedProjectIndex_ = -1;
-	// ƒ^ƒCƒ€ƒ‰ƒCƒ“İ’è
-	float timeScale_ = 100.0f;          // ƒsƒNƒZƒ‹/•b
-	float scrollX_ = 0.0f;              // ‰¡ƒXƒNƒ[ƒ‹—Ê
-	float layerHeight_ = 40.0f;         // ƒŒƒCƒ„[‚Ì‚‚³
-	float rulerHeight_ = 30.0f;         // ƒ‹[ƒ‰[‚Ì‚‚³
-	float leftPanelWidth_ = 100.0f;     // ¶ƒpƒlƒ‹•
-	bool snapToGrid_ = true;            // ƒOƒŠƒbƒhƒXƒiƒbƒv
-	float snapInterval_ = 0.1f;         // ƒXƒiƒbƒvŠÔŠui•bj
+	// ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³è¨­å®š
+	float timeScale_ = 100.0f;          // ãƒ”ã‚¯ã‚»ãƒ«/ç§’
+	float scrollX_ = 0.0f;              // æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«é‡
+	float layerHeight_ = 40.0f;         // ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é«˜ã•
+	float rulerHeight_ = 30.0f;         // ãƒ«ãƒ¼ãƒ©ãƒ¼ã®é«˜ã•
+	float leftPanelWidth_ = 100.0f;     // å·¦ãƒ‘ãƒãƒ«å¹…
+	bool snapToGrid_ = true;            // ã‚°ãƒªãƒƒãƒ‰ã‚¹ãƒŠãƒƒãƒ—
+	float snapInterval_ = 0.1f;         // ã‚¹ãƒŠãƒƒãƒ—é–“éš”ï¼ˆç§’ï¼‰
 
-	// ‘€ìó‘Ô
+	// æ“ä½œçŠ¶æ…‹
 	KeyFrame* selectedKeyFrame_ = nullptr;
 	KeyFrame* draggedKeyFrame_ = nullptr;
 	KeyFrame* resizingKeyFrame_ = nullptr;
@@ -63,7 +63,7 @@ private:
 	ImVec2 dragStartPos_;
 	float dragStartTime_ = 0.0f;
 
-	// Fİ’è
+	// è‰²è¨­å®š
 	ImU32 colorBackground_ = IM_COL32(45, 45, 48, 255);
 	ImU32 colorGrid_ = IM_COL32(60, 60, 63, 255);
 	ImU32 colorRuler_ = IM_COL32(30, 30, 32, 255);

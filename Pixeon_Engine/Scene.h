@@ -10,8 +10,7 @@
 #include <vector>
 #include <mutex>
 #include <Windows.h>
-#include <wrl/client.h>
-#include <d3d11.h>
+#include "RHI/RHI.h"
 
 class AbstractObject;
 class LightComponent;
@@ -53,12 +52,12 @@ public:
 	std::vector<LightComponent*>* GetLights() { return &_lights; }
 
 	void RegisterLight(LightComponent* l);
-	ID3D11ShaderResourceView* GetShadowMapSRV() const { return m_shadowMapSRV.Get(); }
+	RHI::Texture* GetShadowMap() const { return m_shadowMap.get(); }
 	void DrawForGBuffer(int Layer);
 	void PrepareShadowAndLights(int Layer);
 	void DrawForwardObjects(int Layer);  // ImageRender/LineRenderer等のForward描画
-	ID3D11Buffer* GetLightArrayCB()  const { return m_lightArrayCB; }
-	ID3D11Buffer* GetLightCountCB()  const { return m_lightCountCB; }
+	RHI::Buffer* GetLightArrayCB()  const { return m_lightArrayCB.get(); }
+	RHI::Buffer* GetLightCountCB()  const { return m_lightCountCB.get(); }
 	void UnregisterLight(LightComponent* l);
 
 	btDiscreteDynamicsWorld* GetPhysicsWorld() { return pPhysicsWorld; }
@@ -100,14 +99,15 @@ private:
 	btCollisionDispatcher* pDispatcher = nullptr;
 	btDbvtBroadphase* pOverlappingPairCache = nullptr;
 	btSequentialImpulseConstraintSolver* pSolver = nullptr;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_shadowMapTexture;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_shadowMapDSV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shadowMapSRV;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_shadowSampler;
+	RHI::TextureRef m_shadowMap;
+	RHI::SamplerRef m_shadowSampler;
+	RHI::BufferRef m_shadowVSCB;
+	RHI::BufferRef m_shadowPSCB;
+	RHI::InputLayoutRef m_shadowLayout;
 
 	static constexpr int SHADOW_MAP_SIZE = 8192;
 
 	// ライト定数バッファ（LightingPassに渡すため保持）
-	ID3D11Buffer* m_lightArrayCB = nullptr;
-	ID3D11Buffer* m_lightCountCB = nullptr;
+	RHI::BufferRef m_lightArrayCB;
+	RHI::BufferRef m_lightCountCB;
 };

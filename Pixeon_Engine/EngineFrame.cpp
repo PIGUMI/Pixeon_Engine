@@ -1,6 +1,7 @@
 ﻿#include "EngineFrame.h"
 #include "MainFrame.h"
 #include "SettingManager.h"
+#include "AssetManager.h"
 
 #include "SceneManger.h"
 #include "Scene.h"
@@ -34,11 +35,19 @@ void EngineFrame::DestroyInstance()
 
 void EngineFrame::Init()
 {
+	const bool editor = MainFrame::GetInstance()->IsEditorMode();
 	SceneManger::GetInstance()->Init();
 	SceneManger::GetInstance()->Load();
 	LineRenderer::GetInstance()->Initialize();
-	ChatWindow::GetInstance()->Initialize();
-	ChatWindow::GetInstance()->SetVisible(true);
+	if (editor) {
+		ChatWindow::GetInstance()->Initialize();
+		ChatWindow::GetInstance()->SetVisible(true);
+	}
+	else {
+		// ビルド済みゲームはエディタ UI を出さず、即座にプレイを開始する
+		bInGame_ = true;
+		bShowGUI_ = false;
+	}
 	LoadPrefabs();
 }
 
@@ -60,6 +69,7 @@ void EngineFrame::Update()
 		bBeginPlayCalled_ = false;
 		SceneManger::GetInstance()->EditUpdate();
 	}
+	if (!MainFrame::GetInstance()->IsEditorMode()) return;
 	ChatWindow::GetInstance()->Update();
 	if (IsKeyPress(VK_SHIFT) && IsKeyTrigger(VK_RETURN))
 	{
@@ -85,7 +95,7 @@ void EngineFrame::UnInit()
 	LineRenderer::GetInstance()->Finalize();
 	SceneManger::GetInstance()->Save();
 	SceneManger::DestroyInstance();
-	ChatWindow::GetInstance()->DestroyInstance();
+	if (MainFrame::GetInstance()->IsEditorMode()) ChatWindow::GetInstance()->DestroyInstance();
 	prefabs_.clear();
 }
 
@@ -146,6 +156,7 @@ void EngineFrame::RemovePrefab(AbstractObject* ptr)
 
 void EngineFrame::SavePrefabs()
 {
+	if (!MainFrame::GetInstance()->IsEditorMode()) return;
 	std::vector<AbstractObject*> SaveObjects;
 
 	for (auto& prefab : prefabs_) {
@@ -167,11 +178,6 @@ void EngineFrame::SavePrefabs()
 	for (size_t i = 0; i < SaveObjects.size(); ++i) {
 		objectToId[SaveObjects[i]] = i;
 	}
-
-	auto Now = std::chrono::system_clock::now();
-	auto in_time_t = std::chrono::system_clock::to_time_t(Now);
-	std::tm localtime;
-	localtime_s(&localtime, &in_time_t);
 
 	nlohmann::json SceneData;
 	SceneData["SceneSettings"]["Name"] = "prefabs";
@@ -237,17 +243,13 @@ void EngineFrame::SavePrefabs()
 
 void EngineFrame::LoadPrefabs()
 {
-	std::string filePath = SettingManager::GetInstance()->GetSceneFilePath() + "Prefab.meta";
-	std::ifstream inFile(filePath);
-
-	if (!inFile.is_open()) {
+	std::string text;
+	if (!AssetManager::Instance()->TextRead(std::string(VfsPrefix::SCENE) + "Prefab.meta", text)) {
 		return;
 	}
 
 	try {
-		nlohmann::json sceneData;
-		inFile >> sceneData;
-		inFile.close();
+		nlohmann::json sceneData = nlohmann::json::parse(text);
 
 		if (!sceneData.contains("Objects")) {
 			MessageBox(nullptr, "Prefabファイルが不正です(Objects が含まれません)", "Error", MB_OK);
@@ -317,10 +319,8 @@ void EngineFrame::LoadPrefabs()
 	}
 	catch (const std::exception& e) {
 		MessageBox(nullptr, ("Prefab読み込みエラー:   " + std::string(e.what())).c_str(), "Error", MB_OK);
-		inFile.close();
 	}
 	catch (...) {
 		MessageBox(nullptr, "Prefab読み込み中に不明なエラーが発生しました", "Error", MB_OK);
-		inFile.close();
 	}
 }

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Component.h"
 #include "EffectManager.h"
@@ -9,7 +9,7 @@
 #include <DirectXMath.h>
 
 /**
- * @brief EffekseerƒGƒtƒFƒNƒg‚ğ§Œä‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒg
+ * @brief Effekseerã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’åˆ¶å¾¡ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
  */
 class EffectComponent : public AbstractComponent
 {
@@ -25,14 +25,14 @@ public:
 	void SaveToFile(std::ostream& out) override;
 	void LoadFromFile(std::istream& in) override;
 
-	// Ä¶§Œä
+	// å†ç”Ÿåˆ¶å¾¡
 	void Play();
 	void Stop();
 	void Pause(bool pause);
 	bool IsPlaying() const;
 	bool IsPaused() const;
 
-	// İ’è
+	// è¨­å®š
 	void SetEffectPath(const std::string& path);
 	const std::string& GetEffectPath() const { return effectPath_; }
 
@@ -54,11 +54,11 @@ public:
 	void SetRotation(const DirectX::XMFLOAT3& r);
 	DirectX::XMFLOAT3 GetRotation() const { return rotation_; }
 
-	// “®“Iƒpƒ‰ƒ[ƒ^
+	// å‹•çš„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	void SetDynamicInput(int32_t index, float value);
 	float GetDynamicInput(int32_t index) const;
 
-	// ƒGƒtƒFƒNƒgî•ñ
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆæƒ…å ±
 	Effekseer::Handle GetHandle() const { return handle_; }
 	int32_t GetInstanceCount() const;
 
@@ -67,7 +67,7 @@ private:
 	DirectX::XMFLOAT3 GetWorldPositionWithOffset() const;
 	DirectX::XMFLOAT3 GetWorldRotationWithOffset() const;
 
-	// Inspector—p
+	// Inspectorç”¨
 	void RefreshEffectList();
 	int FindEffectIndexByPath(const std::string& path) const;
 	void DrawPlaybackControls();
@@ -75,32 +75,32 @@ private:
 	void DrawDynamicParameters();
 
 private:
-	// Šî–{İ’è
+	// åŸºæœ¬è¨­å®š
 	std::string effectPath_;
 	bool autoPlay_ = true;
 	bool loop_ = false;
 	bool isPaused_ = false;
 
-	// ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+	// ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
 	DirectX::XMFLOAT3 offset_{ 0,0,0 };
 	DirectX::XMFLOAT3 rotation_{ 0,0,0 };
 	DirectX::XMFLOAT3 scale_{ 1,1,1 };
 
-	// Ä¶ƒpƒ‰ƒ[ƒ^
+	// å†ç”Ÿãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	float speed_ = 1.0f;
 
-	// “®“Iƒpƒ‰ƒ[ƒ^ (Effekseer‚Ì“®“Iƒpƒ‰ƒ[ƒ^—p)
+	// å‹•çš„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ (Effekseerã®å‹•çš„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç”¨)
 	std::array<float, 4> dynamicInputs_ = { 0,0,0,0 };
 	bool useDynamicInputs_ = false;
 
-	// eƒIƒuƒWƒFƒNƒg‚Ì’Ç]İ’è
+	// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¿½å¾“è¨­å®š
 	bool followParentRotation_ = false;
 	bool followParentScale_ = false;
 
-	// ƒGƒtƒFƒNƒgƒnƒ“ƒhƒ‹
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒãƒ³ãƒ‰ãƒ«
 	Effekseer::Handle handle_ = -1;
 
-	// Inspector—p
+	// Inspectorç”¨
 	std::vector<std::string> effectCandidates_;
 	int selectedIndex_ = 0;
 };

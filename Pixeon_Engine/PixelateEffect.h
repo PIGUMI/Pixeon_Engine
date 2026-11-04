@@ -8,8 +8,8 @@ public:
 	float intensity = 1.0f;
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
 
-	void Apply(ID3D11ShaderResourceView* input,
-		ID3D11RenderTargetView* output,
+	void Apply(RHI::Texture* input,
+		RHI::Texture* output,
 		int width, int height) override;
 
 	void DrawInspector() override;

@@ -1,4 +1,4 @@
-// ���\�[�X�Ǘ��T�[�r�X
+﻿// リソース管理サービス
 #ifndef RESOURCE_SERVICE_H
 #define RESOURCE_SERVICE_H
 

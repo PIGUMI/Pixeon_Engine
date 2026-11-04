@@ -1,29 +1,46 @@
-#include "HashUtill.h"
+﻿#include "HashUtil.h"
 #include <cstring>
 
 namespace HashUtil {
 	// ---- CRC32 ----
-	static uint32_t CRC32Table[256];
-	void InitCRC32() {
-		static bool inited = false;
-		if (inited) return;
-		inited = true;
-		uint32_t poly = 0xEDB88320u;
-		for (uint32_t i = 0; i < 256; ++i) {
-			uint32_t r = i;
-			for (int j = 0; j < 8; ++j) {
-				if (r & 1) r = (r >> 1) ^ poly;
-				else r >>= 1;
+	// テーブルは初回利用時に一度だけ生成する（スレッドセーフ）
+	static const uint32_t* CRC32TableGet() {
+		static const struct Table {
+			uint32_t v[256];
+			Table() {
+				const uint32_t poly = 0xEDB88320u;
+				for (uint32_t i = 0; i < 256; ++i) {
+					uint32_t r = i;
+					for (int j = 0; j < 8; ++j) r = (r & 1) ? ((r >> 1) ^ poly) : (r >> 1);
+					v[i] = r;
+				}
 			}
-			CRC32Table[i] = r;
-		}
+		} table;
+		return table.v;
 	}
+
+	void InitCRC32() {
+		CRC32TableGet();
+	}
+
 	uint32_t CalcCRC32(const void* data, size_t len, uint32_t crc) {
+		const uint32_t* table = CRC32TableGet();
 		const uint8_t* p = (const uint8_t*)data;
 		for (size_t i = 0; i < len; ++i) {
-			crc = CRC32Table[(crc ^ p[i]) & 0xFFu] ^ (crc >> 8);
+			crc = table[(crc ^ p[i]) & 0xFFu] ^ (crc >> 8);
 		}
 		return crc ^ 0xFFFFFFFFu;
+	}
+
+	// ---- FNV-1a 64bit ----
+	uint64_t CalcFNV1a64(const void* data, size_t len) {
+		const uint8_t* p = (const uint8_t*)data;
+		uint64_t h = 0xcbf29ce484222325ull;
+		for (size_t i = 0; i < len; ++i) {
+			h ^= p[i];
+			h *= 0x100000001b3ull;
+		}
+		return h;
 	}
 
 	// ---- SHA-256 ----
@@ -71,7 +88,7 @@ namespace HashUtil {
 
 		for (int i = 0; i < 64; ++i) {
 			uint32_t S1 = ROR(e, 6) ^ ROR(e, 11) ^ ROR(e, 25);
-			uint32_t ch = (e & g) ^ ((~e) & f);
+			uint32_t ch = (e & f) ^ ((~e) & g);
 			uint32_t temp1 = h + S1 + ch + K[i] + w[i];
 			uint32_t S0 = ROR(a, 2) ^ ROR(a, 13) ^ ROR(a, 22);
 			uint32_t maj = (a & c) ^ (a & b) ^ (b & c);

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <map>
 #include <vector>
 #include <string>
@@ -132,7 +132,7 @@ public:
 	void SetOwner(AbstractObject* owner);
 
 	void SetEditorMode(bool editor) { bEditorMode_ = editor; }
-	void SetEditorCamera(CameraComponent* camera) { editorCamera_ = camera; }  // ’Ç‰Á
+	void SetEditorCamera(CameraComponent* camera) { editorCamera_ = camera; }  // è¿½åŠ 
 	void PreviewUpdate();
 
 	void SetLayer(int layer) { layer_ = layer; }
@@ -164,5 +164,5 @@ public:
 	AbstractObject* owner_ = nullptr;
 	bool bEditorMode_ = false;
 	int layer_ = 0;
-	CameraComponent* editorCamera_ = nullptr;  // ’Ç‰Á
+	CameraComponent* editorCamera_ = nullptr;  // è¿½åŠ 
 };

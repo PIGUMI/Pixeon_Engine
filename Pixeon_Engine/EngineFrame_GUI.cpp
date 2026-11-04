@@ -194,7 +194,7 @@ void EngineFrame::GameViewWindow()
 	}
 	ImGui::PopStyleColor();
 
-	ID3D11ShaderResourceView* srv = MainFrame::GetInstance()->GetFinalRenderTargetSRV();
+	RHI::Texture* finalTexture = MainFrame::GetInstance()->GetFinalRenderTarget();
 	ImVec2 size = ImGui::GetContentRegionAvail();
 	float aspect = 16.0f / 9.0f;
 	if (size.x / size.y > aspect) {
@@ -207,8 +207,8 @@ void EngineFrame::GameViewWindow()
 	ImVec2 pos = ImGui::GetCursorPos();
 	pos.x += (ImGui::GetContentRegionAvail().x - size.x) * 0.5f;
 	ImGui::SetCursorPosX(pos.x);
-	if (srv)
-		ImGui::Image((ImTextureID)srv, size);
+	if (finalTexture)
+		ImGui::Image(GUI::GetInstance()->TextureIdGet(finalTexture), size);
 	else
 		ImGui::Text("SRVがNullです");
 

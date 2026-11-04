@@ -1,4 +1,4 @@
-#include "BoxCollision.h"
+ï»¿#include "BoxCollision.h"
 #include "RigidBody.h"
 #include "Object.h"
 #include "Scene.h"
@@ -130,21 +130,21 @@ void BoxCollision::Draw(int Layer)
 	DirectX::XMFLOAT3 rot = transform.rotation;
 	DirectX::XMFLOAT3 scale = transform.scale;
 
-	// ModelRender‚Æ“¯‚¶ƒ[ƒ‹ƒh²‰ñ“]‚ğg—p
+	// ModelRenderã¨åŒã˜ãƒ¯ãƒ¼ãƒ«ãƒ‰è»¸å›è»¢ã‚’ä½¿ç”¨
 	DirectX::XMMATRIX matRot = DirectX::XMMatrixRotationRollPitchYaw(
-		rot.x,  // Pitch (X²‰ñ“])
-		rot.y,  // Yaw   (Y²‰ñ“])
-		rot.z   // Roll  (Z²‰ñ“])
+		rot.x,  // Pitch (Xè»¸å›è»¢)
+		rot.y,  // Yaw   (Yè»¸å›è»¢)
+		rot.z   // Roll  (Zè»¸å›è»¢)
 	);
 
-	// ƒXƒP[ƒ‹‚ğ“K—p‚µ‚½ƒTƒCƒY
+	// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’é©ç”¨ã—ãŸã‚µã‚¤ã‚º
 	DirectX::XMFLOAT3 scaledSize = {
 		size.x * scale.x,
 		size.y * scale.y,
 		size.z * scale.z
 	};
 
-	// ƒ[ƒJƒ‹À•WŒn‚Å‚ÌƒR[ƒi[(ƒXƒP[ƒ‹“K—pÏ‚İ)
+	// ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®ã‚³ãƒ¼ãƒŠãƒ¼(ã‚¹ã‚±ãƒ¼ãƒ«é©ç”¨æ¸ˆã¿)
 	DirectX::XMFLOAT3 localCorners[8] = {
 		{center.x - scaledSize.x / 2, center.y - scaledSize.y / 2, center.z - scaledSize.z / 2},
 		{center.x + scaledSize.x / 2, center.y - scaledSize.y / 2, center.z - scaledSize.z / 2},
@@ -156,7 +156,7 @@ void BoxCollision::Draw(int Layer)
 		{center.x - scaledSize.x / 2, center.y + scaledSize.y / 2, center.z + scaledSize.z / 2}
 	};
 
-	// ƒ[ƒ‹ƒhÀ•W‚É•ÏŠ·
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã«å¤‰æ›
 	DirectX::XMFLOAT3 worldCorners[8];
 	for (int i = 0; i < 8; ++i) {
 		DirectX::XMVECTOR v = DirectX::XMVectorSet(
@@ -166,10 +166,10 @@ void BoxCollision::Draw(int Layer)
 			1.0f
 		);
 
-		// ‰ñ“]‚ğ“K—p
+		// å›è»¢ã‚’é©ç”¨
 		v = DirectX::XMVector3TransformNormal(v, matRot);
 
-		// ˆÊ’u‚ğ“K—p
+		// ä½ç½®ã‚’é©ç”¨
 		v = DirectX::XMVectorAdd(v, DirectX::XMVectorSet(pos.x, pos.y, pos.z, 0.0f));
 
 		DirectX::XMStoreFloat3(&worldCorners[i], v);
@@ -233,11 +233,11 @@ void BoxCollision::DrawInspector()
 	label = "Size##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒŒƒCƒ„[").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒ¬ã‚¤ãƒ¤ãƒ¼").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::InputInt("##LayerInput", &_LayerNumber);
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒTƒCƒY").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ã‚µã‚¤ã‚º").c_str());
 		ImGui::TableSetColumnIndex(1);
 		DirectX::XMFLOAT3 size = f3Size_;
 		if (ImGui::InputFloat3("##SizeInput", &size.x, "%.3f"))
@@ -246,7 +246,7 @@ void BoxCollision::DrawInspector()
 		};
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("’†SˆÊ’u").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ä¸­å¿ƒä½ç½®").c_str());
 		ImGui::TableSetColumnIndex(1);
 		DirectX::XMFLOAT3 center = f3Center_;
 		if (ImGui::InputFloat3("##CenterInput", &center.x, "%.3f"))
@@ -255,7 +255,7 @@ void BoxCollision::DrawInspector()
 		};
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒgƒŠƒK[").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒˆãƒªã‚¬ãƒ¼").c_str());
 		ImGui::TableSetColumnIndex(1);
 		bool isTrigger = bTrigger_;
 		if (ImGui::Checkbox("##TriggerInput", &isTrigger))
@@ -264,7 +264,7 @@ void BoxCollision::DrawInspector()
 		};
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒ‰ƒCƒ“•`‰æ").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒ©ã‚¤ãƒ³æç”»").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::Checkbox("##DrawWireframeInput", &m_b_BoxLine);
 		ImGui::EndTable();
@@ -378,14 +378,14 @@ void BoxCollision::UpdateCollisionShape()
 	bool wasInWorld = false;
 	btDiscreteDynamicsWorld* physicsWorld = nullptr;
 
-	// RigidBody‚ÌƒJƒŠƒ“ƒO§Œä‚ğl—¶
+	// RigidBodyã®ã‚«ãƒªãƒ³ã‚°åˆ¶å¾¡ã‚’è€ƒæ…®
 	if (pAttachedRigidBody_ && pAttachedRigidBody_->GetBtRigidBody())
 	{
 		if (_Parent && _Parent->GetParentScene())
 		{
 			physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
 
-			// RigidBody‚ÌƒJƒŠƒ“ƒO§Œä‚ª—LŒø‚ÅA‚©‚Â•¨—ƒ[ƒ‹ƒh‚©‚ç‚Ìíœ‚ğ‹–‰Â‚µ‚Ä‚¢‚éê‡‚Ì‚İíœ
+			// RigidBodyã®ã‚«ãƒªãƒ³ã‚°åˆ¶å¾¡ãŒæœ‰åŠ¹ã§ã€ã‹ã¤ç‰©ç†ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã®å‰Šé™¤ã‚’è¨±å¯ã—ã¦ã„ã‚‹å ´åˆã®ã¿å‰Šé™¤
 			if (physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld() && pAttachedRigidBody_->IsActiveInPhysicsWorld())
 			{
 				physicsWorld->removeRigidBody(pAttachedRigidBody_->GetBtRigidBody());
@@ -395,7 +395,7 @@ void BoxCollision::UpdateCollisionShape()
 		pAttachedRigidBody_->RemoveCollisionShape(pBoxShape_);
 	}
 
-	// Œ`ó‚ÌÄì¬
+	// å½¢çŠ¶ã®å†ä½œæˆ
 	if (pBoxShape_)
 	{
 		delete pBoxShape_;
@@ -418,14 +418,14 @@ void BoxCollision::UpdateCollisionShape()
 
 	if (pAttachedRigidBody_ && pBoxShape_)
 	{
-		// ƒ[ƒJƒ‹À•WŒn‚Å‚Ìƒgƒ‰ƒ“ƒXƒtƒH[ƒ€(‰ñ“]‚ÍŠÜ‚ß‚È‚¢)
+		// ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ (å›è»¢ã¯å«ã‚ãªã„)
 		btTransform localTransform;
 		localTransform.setIdentity();
 		localTransform.setOrigin(btVector3(f3Center_.x, f3Center_.y, f3Center_.z));
 
 		pAttachedRigidBody_->AddCollisionShape(pBoxShape_, localTransform);
 
-		// RigidBody‚ÌƒJƒŠƒ“ƒO§Œä‚ª‹–‰Â‚µ‚Ä‚¢‚éê‡‚Ì‚İƒ[ƒ‹ƒh‚É’Ç‰Á
+		// RigidBodyã®ã‚«ãƒªãƒ³ã‚°åˆ¶å¾¡ãŒè¨±å¯ã—ã¦ã„ã‚‹å ´åˆã®ã¿ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ 
 		if (wasInWorld && physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld())
 		{
 			physicsWorld->addRigidBody(pAttachedRigidBody_->GetBtRigidBody());
@@ -468,13 +468,13 @@ void BoxCollision::DetachFromRigidBody()
 
 void BoxCollision::ProcessCollisionCallBacks()
 {
-	/* Œ»İg—p‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ */
-	/* CollisionManager‚ª‘ã‚í‚è‚ÉÕ“Ëˆ—‚ğs‚¢‚Ü‚·B */
+	/* ç¾åœ¨ä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã›ã‚“ */
+	/* CollisionManagerãŒä»£ã‚ã‚Šã«è¡çªå‡¦ç†ã‚’è¡Œã„ã¾ã™ã€‚ */
 }
 
 bool BoxCollision::OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX::XMFLOAT3& rot1, const DirectX::XMFLOAT3& size1, const DirectX::XMFLOAT3& pos2, const DirectX::XMFLOAT3& rot2, const DirectX::XMFLOAT3& size2, CollisionInfo& info)
 {
-	// ƒ[ƒ‹ƒhÀ•W‚Å“–‚½‚è”»’è‚ğÀs
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã§å½“ãŸã‚Šåˆ¤å®šã‚’å®Ÿè¡Œ
 	DirectX::XMFLOAT3 min1 = { pos1.x - size1.x * 0.5f, pos1.y - size1.y * 0.5f, pos1.z - size1.z * 0.5f };
 	DirectX::XMFLOAT3 max1 = { pos1.x + size1.x * 0.5f, pos1.y + size1.y * 0.5f, pos1.z + size1.z * 0.5f };
 
@@ -487,14 +487,14 @@ bool BoxCollision::OBBIntersection(const DirectX::XMFLOAT3& pos1, const DirectX:
 
 	if (intersect)
 	{
-		// Õ“Ë“_‚Æ–@ü‚ğŒvZ(ŠÈˆÕ”Å)
+		// è¡çªç‚¹ã¨æ³•ç·šã‚’è¨ˆç®—(ç°¡æ˜“ç‰ˆ)
 		info.HitPoint = DirectX::XMFLOAT3(
 			(pos1.x + pos2.x) * 0.5f,
 			(pos1.y + pos2.y) * 0.5f,
 			(pos1.z + pos2.z) * 0.5f
 		);
 
-		// ŠÈˆÕ“I‚È–@üŒvZ(pos1‚©‚çpos2‚Ö‚Ì•ûŒü)
+		// ç°¡æ˜“çš„ãªæ³•ç·šè¨ˆç®—(pos1ã‹ã‚‰pos2ã¸ã®æ–¹å‘)
 		DirectX::XMFLOAT3 direction = {
 			pos2.x - pos1.x,
 			pos2.y - pos1.y,

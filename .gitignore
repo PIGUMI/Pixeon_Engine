@@ -367,3 +367,6 @@ FodyWeavers.xsd
 /Exe/embedded_texture_log.txt
 /Exe/material_cache_log.txt
 /Exe/material_process_log.txt
+
+# Pixeon: ゲームビルドの出力
+Exe/Build/

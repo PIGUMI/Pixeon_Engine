@@ -1,4 +1,4 @@
-cbuffer ModelCB : register(b0)
+ï»¿cbuffer ModelCB : register(b0)
 {
     matrix gWorld;
     matrix gView;
@@ -12,8 +12,8 @@ struct VS_INPUT
     float3 normal : NORMAL;
     float4 tangent : TANGENT;
     float2 uv : TEXCOORD;
-    uint4 bi : BLENDINDICES; // –¢g—pi«—ˆƒXƒLƒ“—pj
-    float4 bw : BLENDWEIGHT; // –¢g—p
+    uint4 bi : BLENDINDICES; // æœªä½¿ç”¨ï¼ˆå°†æ¥ã‚¹ã‚­ãƒ³ç”¨ï¼‰
+    float4 bw : BLENDWEIGHT; // æœªä½¿ç”¨
 };
 
 struct VS_OUTPUT
@@ -29,7 +29,7 @@ VS_OUTPUT main(VS_INPUT i)
     float4 wp = mul(float4(i.pos, 1), gWorld);
     float4 vp = mul(wp, gView);
     o.pos = mul(vp, gProj);
-    // –@ü‚Íƒ[ƒ‹ƒhs—ñ‚Ìã 3x3 ‚ğg—pi”ñƒXƒP[ƒ‹ or “™•ûƒXƒP[ƒ‹‘z’èj
+    // æ³•ç·šã¯ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®ä¸Š 3x3 ã‚’ä½¿ç”¨ï¼ˆéã‚¹ã‚±ãƒ¼ãƒ« or ç­‰æ–¹ã‚¹ã‚±ãƒ¼ãƒ«æƒ³å®šï¼‰
     o.normal = mul(float4(i.normal, 0), gWorld).xyz;
     o.uv = i.uv;
     return o;

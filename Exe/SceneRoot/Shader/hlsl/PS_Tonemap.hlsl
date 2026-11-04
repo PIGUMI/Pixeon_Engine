@@ -1,4 +1,4 @@
-Texture2D gHDRTex : register(t0);
+ï»¿Texture2D gHDRTex : register(t0);
 SamplerState gSamp : register(s0);
 
 cbuffer TonemapCB : register(b0)
@@ -29,13 +29,13 @@ float4 main(PS_IN input) : SV_Target
 {
     float3 hdrColor = gHDRTex.Sample(gSamp, input.uv).rgb;
     
-    // ˜Io’²®
+    // éœ²å‡ºèª¿æ•´
     hdrColor *= exposure;
     
-    // ƒg[ƒ“ƒ}ƒbƒsƒ“ƒO
+    // ãƒˆãƒ¼ãƒ³ãƒãƒƒãƒ”ãƒ³ã‚°
     float3 color = ACESFilm(hdrColor);
     
-    // ƒKƒ“ƒ}•â³
+    // ã‚¬ãƒ³ãƒè£œæ­£
     color = pow(color, 1.0 / gamma);
     
     return float4(color, 1.0);

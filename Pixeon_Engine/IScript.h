@@ -1,4 +1,4 @@
-// IScript.h
+ï»¿// IScript.h
 #ifndef _ISCRIPT_H_
 #define _ISCRIPT_H_
 
@@ -13,7 +13,7 @@
 class ScripComponent;
 
 // ========================================
-// ©“®ƒƒ‚ƒŠŠÇ—ƒNƒ‰ƒX
+// è‡ªå‹•ãƒ¡ãƒ¢ãƒªç®¡ç†ã‚¯ãƒ©ã‚¹
 // ========================================
 class IScript : public ScriptPropertyBase
 {
@@ -26,7 +26,7 @@ public:
 
 	virtual void CallCustom(const std::string& functionName);
 
-	// eƒIƒuƒWƒFƒNƒg/ƒV[ƒ“İ’è
+	// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ/ã‚·ãƒ¼ãƒ³è¨­å®š
 	void SetParentObject(object obj);
 	void SetParentScene(scene scene);
 	void SetOwnerComponent(ScripComponent* owner) { _ownerComponent = owner; }
@@ -35,30 +35,30 @@ public:
 	void ClearParent();
 
 public:
-	// ƒRƒŠƒWƒ‡ƒ“ƒR[ƒ‹ƒoƒbƒN
+	// ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 	virtual void OnCollisionEnter(const APICollisionInfo* info);
 	virtual void OnCollisionStay(const APICollisionInfo* info);
 	virtual void OnCollisionExit(const APICollisionInfo* info);
 
-	// ƒvƒƒpƒeƒBƒVƒXƒeƒ€iƒfƒtƒHƒ‹ƒgÀ‘•j
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚·ã‚¹ãƒ†ãƒ ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå®Ÿè£…ï¼‰
 	std::vector<PropertyMetadata> GetProperties() override { return {}; }
 	std::string SerializeProperty(const std::string& name) override { return ""; }
 	void DeserializeProperty(const std::string& name, const std::string& value) override {}
 
 protected:
 	// ========================================
-	// ©“®ƒƒ‚ƒŠŠÇ—‹@”\
+	// è‡ªå‹•ãƒ¡ãƒ¢ãƒªç®¡ç†æ©Ÿèƒ½
 	// ========================================
 
-	// ƒIƒuƒWƒFƒNƒg¶¬i©“®ŠÇ—j
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆï¼ˆè‡ªå‹•ç®¡ç†ï¼‰
 	Object* CreateManagedObject(const std::string& prefabName);
 
-	// ƒ†[ƒU[’è‹`ƒNƒ‰ƒX‚Ì©“®ŠÇ—
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©ã‚¯ãƒ©ã‚¹ã®è‡ªå‹•ç®¡ç†
 	template<typename T>
 	T* CreateManaged() {
 		T* obj = new T();
 
-		// íœ—p‚Ìƒ‰ƒ€ƒ_‚ğ“o˜^
+		// å‰Šé™¤ç”¨ã®ãƒ©ãƒ ãƒ€ã‚’ç™»éŒ²
 		_managedResources.push_back([obj]() {
 			delete obj;
 			});
@@ -66,7 +66,7 @@ protected:
 		return obj;
 	}
 
-	// ”z—ñ‚Ì©“®ŠÇ—
+	// é…åˆ—ã®è‡ªå‹•ç®¡ç†
 	template<typename T>
 	T* CreateManagedArray(size_t count) {
 		T* arr = new T[count];
@@ -78,7 +78,7 @@ protected:
 		return arr;
 	}
 
-	// std::shared_ptr ‚É‚æ‚éŠÇ—
+	// std::shared_ptr ã«ã‚ˆã‚‹ç®¡ç†
 	template<typename T>
 	std::shared_ptr<T> CreateShared() {
 		auto ptr = std::make_shared<T>();
@@ -86,35 +86,35 @@ protected:
 		return ptr;
 	}
 
-	// ƒJƒXƒ^ƒ€ƒNƒŠ[ƒ“ƒAƒbƒvˆ—‚Ì“o˜^
+	// ã‚«ã‚¹ã‚¿ãƒ ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—å‡¦ç†ã®ç™»éŒ²
 	void RegisterCleanupCallback(std::function<void()> callback) {
 		_managedResources.push_back(callback);
 	}
 
-	// ƒIƒuƒWƒFƒNƒg‚Ìè“®“o˜^
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ‰‹å‹•ç™»éŒ²
 	void RegisterManagedObject(Object* obj);
 
-	// ƒŠƒ\[ƒX‚Ìè“®‰ğ•ú
+	// ãƒªã‚½ãƒ¼ã‚¹ã®æ‰‹å‹•è§£æ”¾
 	void ReleaseAllManagedResources();
 
 protected:
-	// ƒ‰ƒbƒp[ƒNƒ‰ƒXiŠ—LŒ ‚È‚µj
+	// ãƒ©ãƒƒãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹ï¼ˆæ‰€æœ‰æ¨©ãªã—ï¼‰
 	Object* _parentObject = nullptr;
 	Scene* _parentScene = nullptr;
 	ScripComponent* _ownerComponent = nullptr;
 
 private:
-	// ƒRƒŠƒWƒ‡ƒ“ŠÇ—
+	// ã‚³ãƒªã‚¸ãƒ§ãƒ³ç®¡ç†
 	std::vector<component> _registeredCollisions;
 	void RegisterCollisionComponent(component collision);
 	void UnregisterAllCollisions();
 
-	// ©“®ƒƒ‚ƒŠŠÇ——p
-	std::vector<Object*> _createdObjects;                  // ¶¬‚µ‚½ƒIƒuƒWƒFƒNƒg
-	std::vector<std::function<void()>> _managedResources;  // ƒJƒXƒ^ƒ€ƒŠƒ\[ƒX
-	std::vector<std::shared_ptr<void>> _sharedResources;   // shared_ptr ƒŠƒ\[ƒX
+	// è‡ªå‹•ãƒ¡ãƒ¢ãƒªç®¡ç†ç”¨
+	std::vector<Object*> _createdObjects;                  // ç”Ÿæˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	std::vector<std::function<void()>> _managedResources;  // ã‚«ã‚¹ã‚¿ãƒ ãƒªã‚½ãƒ¼ã‚¹
+	std::vector<std::shared_ptr<void>> _sharedResources;   // shared_ptr ãƒªã‚½ãƒ¼ã‚¹
 
-	// ƒNƒŠ[ƒ“ƒAƒbƒvˆ—
+	// ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—å‡¦ç†
 	void CleanupAllResources();
 };
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 #include "ModelManager.h"
 #include "ModelRender.h"
@@ -62,13 +62,13 @@ public:
 	int  GetExternalFileCount() const { return (int)m_externalAnimationFiles.size(); }
 	int  GetClipCountInExternalFile(int externalFileIndex) const;
 
-	// Œ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€‚Å‚Ìƒ{[ƒ“s—ñ‚ğæ“¾
+	// ç¾åœ¨ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’å–å¾—
 	DirectX::XMMATRIX GetBoneLocalMatrix(int boneIndex) const;
 
-	// ƒ{[ƒ“‚ÌƒAƒjƒ[ƒVƒ‡ƒ“î•ñ‚ğæ“¾
+	// ãƒœãƒ¼ãƒ³ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—
 	BoneTransform GetBoneTransform(int boneIndex, float time = -1.0f) const;
 
-	// “Á’èƒ{[ƒ“‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒgƒ‰ƒbƒN‚ª‚ ‚é‚©Šm”F
+	// ç‰¹å®šãƒœãƒ¼ãƒ³ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒˆãƒ©ãƒƒã‚¯ãŒã‚ã‚‹ã‹ç¢ºèª
 	bool HasAnimationTrackForBone(int boneIndex) const;
 
 private:

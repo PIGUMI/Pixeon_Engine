@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "IZANAGI.h"
 #include <string>
@@ -32,7 +32,7 @@ public:
 	void SetVisible(bool visible) { isVisible_ = visible; }
 	void ToggleVisible() { isVisible_ = !isVisible_; }
 
-	// Shift-JIS‚©‚çUTF-8‚Ö‚Ì•ÏŠ·iŒöŠJj
+	// Shift-JISã‹ã‚‰UTF-8ã¸ã®å¤‰æ›ï¼ˆå…¬é–‹ï¼‰
 	std::string ConvertToUTF8(const std::string& sjis);
 
 private:

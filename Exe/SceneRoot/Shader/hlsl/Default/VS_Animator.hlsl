@@ -1,11 +1,11 @@
-// =======================================================
+ï»¿// =======================================================
 // VS_ModelSkinned.hlsl
-// ƒ{[ƒ“ƒXƒLƒjƒ“ƒO‘Î‰ƒ‚ƒfƒ‹—p’¸“_ƒVƒF[ƒ_
-// “ü—Í—v‘f: POSITION, NORMAL, TANGENT, TEXCOORD, BLENDINDICES, BLENDWEIGHT
-// ’è”ƒoƒbƒtƒ@ b0: World / View / Proj / BaseColor
-// ’è”ƒoƒbƒtƒ@ b1: Bone s—ñ”z—ñifinal = InverseBindPose * CurrentGlobalj
-//   CPU‘¤‚ÅŠù‚É final s—ñ‚ğŒvZ‚µ gBones[i] ‚É“]’u‚¹‚¸Ši”[ ¨ ‚±‚±‚Å“]’u•s—v
-//   ‚à‚µ CPU ‘¤‚Å“]’uÏ‚İ‚ğ“n‚µ‚Ä‚¢‚éê‡‚Í‚»‚Ì‚Ü‚Ü mul ‚µ‚Ä–â‘è‚È‚µ
+// ãƒœãƒ¼ãƒ³ã‚¹ã‚­ãƒ‹ãƒ³ã‚°å¯¾å¿œãƒ¢ãƒ‡ãƒ«ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€
+// å…¥åŠ›è¦ç´ : POSITION, NORMAL, TANGENT, TEXCOORD, BLENDINDICES, BLENDWEIGHT
+// å®šæ•°ãƒãƒƒãƒ•ã‚¡ b0: World / View / Proj / BaseColor
+// å®šæ•°ãƒãƒƒãƒ•ã‚¡ b1: Bone è¡Œåˆ—é…åˆ—ï¼ˆfinal = InverseBindPose * CurrentGlobalï¼‰
+//   CPUå´ã§æ—¢ã« final è¡Œåˆ—ã‚’è¨ˆç®—ã— gBones[i] ã«è»¢ç½®ã›ãšæ ¼ç´ â†’ ã“ã“ã§è»¢ç½®ä¸è¦
+//   ã‚‚ã— CPU å´ã§è»¢ç½®æ¸ˆã¿ã‚’æ¸¡ã—ã¦ã„ã‚‹å ´åˆã¯ãã®ã¾ã¾ mul ã—ã¦å•é¡Œãªã—
 // =======================================================
 
 cbuffer CBFrame : register(b0)
@@ -16,7 +16,7 @@ cbuffer CBFrame : register(b0)
     float4 gBaseColor;
 };
 
-// 256 –{‚Ü‚Å‘z’èi•K—v‚È‚çk¬ / Šg’£j
+// 256 æœ¬ã¾ã§æƒ³å®šï¼ˆå¿…è¦ãªã‚‰ç¸®å° / æ‹¡å¼µï¼‰
 cbuffer CBBones : register(b1)
 {
     float4x4 gBones[256];
@@ -43,10 +43,10 @@ struct VSOutput
 
 float3x3 InverseTranspose3x3(float4x4 M)
 {
-    // ”ñˆê—lƒXƒP[ƒ‹‚Ì–@ü•â³iGPUƒRƒXƒg‹–—e‚È‚çg—pj
+    // éä¸€æ§˜ã‚¹ã‚±ãƒ¼ãƒ«æ™‚ã®æ³•ç·šè£œæ­£ï¼ˆGPUã‚³ã‚¹ãƒˆè¨±å®¹ãªã‚‰ä½¿ç”¨ï¼‰
     float3x3 A = (float3x3) M;
-    // s—ñ‚Ì‹t“]’u
-    // ’¼Ú inverse(A) ‚ğŒvZ‚·‚éŠÈˆÕ”Å
+    // è¡Œåˆ—ã®é€†è»¢ç½®
+    // ç›´æ¥ inverse(A) ã‚’è¨ˆç®—ã™ã‚‹ç°¡æ˜“ç‰ˆ
     float3 a0 = A[0];
     float3 a1 = A[1];
     float3 a2 = A[2];
@@ -56,7 +56,7 @@ float3x3 InverseTranspose3x3(float4x4 M)
     float3 c2 = cross(a0, a1);
 
     float det = dot(a0, c0);
-    // det ‚ª‹É’[‚É¬‚³‚¢‚Í‚»‚Ì‚Ü‚Üi”j’]–h~j
+    // det ãŒæ¥µç«¯ã«å°ã•ã„æ™‚ã¯ãã®ã¾ã¾ï¼ˆç ´ç¶»é˜²æ­¢ï¼‰
     if (abs(det) < 1e-8f)
         return A;
 
@@ -66,7 +66,7 @@ float3x3 InverseTranspose3x3(float4x4 M)
     inv[1] = c1 * invDet;
     inv[2] = c2 * invDet;
 
-    // ‹t“]’u‚È‚Ì‚ÅÅŒã‚É“]’u
+    // é€†è»¢ç½®ãªã®ã§æœ€å¾Œã«è»¢ç½®
     float3x3 invT;
     invT[0] = float3(inv[0].x, inv[1].x, inv[2].x);
     invT[1] = float3(inv[0].y, inv[1].y, inv[2].y);
@@ -78,8 +78,8 @@ VSOutput main(VSInput IN)
 {
     VSOutput OUT;
 
-    // --- ƒ{[ƒ“‡¬s—ñiüŒ`ƒuƒŒƒ“ƒhj---
-    // d‚İ‚ª‘S‚Ä 0 ‚Ì’¸“_‚Ö‚Ì•ÛŒ¯
+    // --- ãƒœãƒ¼ãƒ³åˆæˆè¡Œåˆ—ï¼ˆç·šå½¢ãƒ–ãƒ¬ãƒ³ãƒ‰ï¼‰---
+    // é‡ã¿ãŒå…¨ã¦ 0 ã®é ‚ç‚¹ã¸ã®ä¿é™º
     float totalW = IN.boneWeights.x + IN.boneWeights.y + IN.boneWeights.z + IN.boneWeights.w;
     bool forceRoot = (totalW < 1e-7f);
 
@@ -102,22 +102,22 @@ VSOutput main(VSInput IN)
         }
     }
 
-    // ˆÊ’uƒXƒLƒ“
+    // ä½ç½®ã‚¹ã‚­ãƒ³
     float4 skinnedPos = mul(skin, float4(IN.position, 1.0f));
 
-    // ƒ[ƒ‹ƒh•ÏŠ·
+    // ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›
     float4 worldPos = mul(skinnedPos, gWorld);
     OUT.worldPos = worldPos;
 
-    // ƒNƒŠƒbƒvÀ•W
+    // ã‚¯ãƒªãƒƒãƒ—åº§æ¨™
     float4 viewPos = mul(worldPos, gView);
     OUT.svPos = mul(viewPos, gProj);
 
-    // –@üƒXƒLƒ“
-    // iŠÈˆÕjskin * world ‚Å•ÏŠ·Œã normalize
-    // ”ñˆê—lƒXƒP[ƒ‹‘Î‰‚ª•K—v‚È‚ç InverseTranspose3x3(world * skin) ‚ğg‚¤
+    // æ³•ç·šã‚¹ã‚­ãƒ³
+    // ï¼ˆç°¡æ˜“ï¼‰skin * world ã§å¤‰æ›å¾Œ normalize
+    // éä¸€æ§˜ã‚¹ã‚±ãƒ¼ãƒ«å¯¾å¿œãŒå¿…è¦ãªã‚‰ InverseTranspose3x3(world * skin) ã‚’ä½¿ã†
     float3 n = IN.normal;
-    // float3x3 N = InverseTranspose3x3(mul(skin, gWorld)); // ‚æ‚è³Šm
+    // float3x3 N = InverseTranspose3x3(mul(skin, gWorld)); // ã‚ˆã‚Šæ­£ç¢º
     // OUT.normal = normalize(mul(n, N));
     OUT.normal = normalize(mul(n, (float3x3) skin));
     OUT.normal = normalize(mul(OUT.normal, (float3x3) gWorld));

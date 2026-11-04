@@ -1,4 +1,4 @@
-cbuffer ModelCB : register(b0)
+ï»¿cbuffer ModelCB : register(b0)
 {
     matrix gWorld;
     matrix gView;
@@ -22,7 +22,7 @@ float4 main(PS_INPUT i) : SV_TARGET
     float ndl = saturate(dot(n, normalize(float3(0.3, 0.7, 0.6))));
     float lighting = 0.2 + 0.8 * ndl;
 
-    // •K‚¸‰½‚©‚µ‚ç‚Ì SRV ‚ªƒoƒCƒ“ƒh‚³‚ê‚Ä‚¢‚é‘O’ñiCPU ‘¤‚ª•ÛØj
+    // å¿…ãšä½•ã‹ã—ã‚‰ã® SRV ãŒãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã¦ã„ã‚‹å‰æï¼ˆCPU å´ãŒä¿è¨¼ï¼‰
     float4 texCol = gBaseTex.Sample(gLinear, i.uv);
     return texCol * gBaseColor;
 }

@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "CapsuleCollision.h"
 #include "RigidBody.h"
 #include "Object.h"
@@ -128,14 +128,14 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMFLOAT3 rot = transform.rotation;
 	DirectX::XMFLOAT3 scale = transform.scale;
 
-	// ‰ñ“]s—ñ‚ğì¬
+	// å›è»¢è¡Œåˆ—ã‚’ä½œæˆ
 	DirectX::XMMATRIX matRot = DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z);
 
-	// ƒXƒP[ƒ‹‚ğ“K—p‚µ‚½”¼Œa‚Æ‚‚³
+	// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’é©ç”¨ã—ãŸåŠå¾„ã¨é«˜ã•
 	float scaledRadius = fRadius_ * std::max(scale.x, scale.z);
 	float cylinderHeight = (fHeight_ - 2.0f * fRadius_) * scale.y;
 
-	// ƒJƒvƒZƒ‹‚Ì’†SˆÊ’u‚ğŒvZ
+	// ã‚«ãƒ—ã‚»ãƒ«ã®ä¸­å¿ƒä½ç½®ã‚’è¨ˆç®—
 	DirectX::XMVECTOR centerVec = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
 	centerVec = DirectX::XMVector3TransformNormal(centerVec, matRot);
 	centerVec = DirectX::XMVectorAdd(centerVec, DirectX::XMVectorSet(pos.x, pos.y, pos.z, 0.0f));
@@ -144,8 +144,8 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMStoreFloat3(&worldCenter, centerVec);
 
 	DirectX::XMFLOAT4 color = bTrigger_
-		? DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)  // ƒVƒAƒ“
-		: DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f); // —Î
+		? DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)  // ã‚·ã‚¢ãƒ³
+		: DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f); // ç·‘
 
 	auto Cam = _Parent->GetParentScene()->GetMainCamera();
 	if (!Cam) return;
@@ -156,14 +156,14 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
 
 	const int segments = 16;
-	const int hemisphereSegments = 8;  // ”¼‹…‚Ìc•ûŒü‚Ì•ªŠ„”
+	const int hemisphereSegments = 8;  // åŠçƒã®ç¸¦æ–¹å‘ã®åˆ†å‰²æ•°
 	const float angleStep = DirectX::XM_2PI / segments;
 
-	// Y²•ûŒü‚ÌƒxƒNƒgƒ‹(‰ñ“]“K—pŒã)
+	// Yè»¸æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«(å›è»¢é©ç”¨å¾Œ)
 	DirectX::XMVECTOR upVec = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	upVec = DirectX::XMVector3TransformNormal(upVec, matRot);
 
-	// ã‰º‚Ì”¼‹…‚Ì’†S
+	// ä¸Šä¸‹ã®åŠçƒã®ä¸­å¿ƒ
 	DirectX::XMVECTOR topCenter = DirectX::XMVectorAdd(
 		DirectX::XMLoadFloat3(&worldCenter),
 		DirectX::XMVectorScale(upVec, cylinderHeight * 0.5f)
@@ -177,14 +177,14 @@ void CapsuleCollision::Draw(int Layer)
 	DirectX::XMStoreFloat3(&topCenterF, topCenter);
 	DirectX::XMStoreFloat3(&bottomCenterF, bottomCenter);
 
-	// ‰~’Œ•”•ª‚Ì‰~‚Ì•`‰æ
+	// å††æŸ±éƒ¨åˆ†ã®å††ã®æç”»
 	DirectX::XMVECTOR rightVec = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	rightVec = DirectX::XMVector3TransformNormal(rightVec, matRot);
 
 	DirectX::XMVECTOR forwardVec = DirectX::XMVector3Cross(upVec, rightVec);
 	forwardVec = DirectX::XMVector3Normalize(forwardVec);
 
-	// ‰~’Œ•”•ª‚Ìã‰º‚Ì‰~
+	// å††æŸ±éƒ¨åˆ†ã®ä¸Šä¸‹ã®å††
 	for (int i = 0; i < segments; ++i)
 	{
 		float angle1 = angleStep * i;
@@ -200,26 +200,26 @@ void CapsuleCollision::Draw(int Layer)
 			DirectX::XMVectorScale(forwardVec, scaledRadius * sinf(angle2))
 		);
 
-		// ã‚Ì‰~
+		// ä¸Šã®å††
 		DirectX::XMFLOAT3 p1Top, p2Top;
 		DirectX::XMStoreFloat3(&p1Top, DirectX::XMVectorAdd(topCenter, offset1));
 		DirectX::XMStoreFloat3(&p2Top, DirectX::XMVectorAdd(topCenter, offset2));
 		LineRenderer::GetInstance()->DrawLine(p1Top, p2Top, color, world, view, Proj, 0.05f);
 
-		// ‰º‚Ì‰~
+		// ä¸‹ã®å††
 		DirectX::XMFLOAT3 p1Bottom, p2Bottom;
 		DirectX::XMStoreFloat3(&p1Bottom, DirectX::XMVectorAdd(bottomCenter, offset1));
 		DirectX::XMStoreFloat3(&p2Bottom, DirectX::XMVectorAdd(bottomCenter, offset2));
 		LineRenderer::GetInstance()->DrawLine(p1Bottom, p2Bottom, color, world, view, Proj, 0.05f);
 
-		// c‚Ìƒ‰ƒCƒ“(4–{)
+		// ç¸¦ã®ãƒ©ã‚¤ãƒ³(4æœ¬)
 		if (i % (segments / 4) == 0)
 		{
 			LineRenderer::GetInstance()->DrawLine(p1Top, p1Bottom, color, world, view, Proj, 0.05f);
 		}
 	}
 
-	// ã”¼‹…‚Ì•`‰æ
+	// ä¸ŠåŠçƒã®æç”»
 	for (int lat = 0; lat < hemisphereSegments; ++lat)
 	{
 		float phi1 = DirectX::XM_PIDIV2 * (float)lat / hemisphereSegments;
@@ -230,7 +230,7 @@ void CapsuleCollision::Draw(int Layer)
 			float theta1 = angleStep * lon;
 			float theta2 = angleStep * ((lon + 1) % segments);
 
-			// ˆÜ“x•ûŒü‚Ìƒ‰ƒCƒ“
+			// ç·¯åº¦æ–¹å‘ã®ãƒ©ã‚¤ãƒ³
 			DirectX::XMVECTOR p1 = DirectX::XMVectorAdd(
 				topCenter,
 				DirectX::XMVectorAdd(
@@ -257,14 +257,14 @@ void CapsuleCollision::Draw(int Layer)
 			DirectX::XMStoreFloat3(&p1f, p1);
 			DirectX::XMStoreFloat3(&p2f, p2);
 
-			// Œo“xü(4–{‚Ì‚İ)
+			// çµŒåº¦ç·š(4æœ¬ã®ã¿)
 			if (lon % (segments / 4) == 0)
 			{
 				LineRenderer::GetInstance()->DrawLine(p1f, p2f, color, world, view, Proj, 0.05f);
 			}
 
-			// ˆÜ“xü
-			if (lat % 2 == 0)  // 2’i‚¨‚«‚É•`‰æ
+			// ç·¯åº¦ç·š
+			if (lat % 2 == 0)  // 2æ®µãŠãã«æç”»
 			{
 				DirectX::XMVECTOR p3 = DirectX::XMVectorAdd(
 					topCenter,
@@ -284,7 +284,7 @@ void CapsuleCollision::Draw(int Layer)
 		}
 	}
 
-	// ‰º”¼‹…‚Ì•`‰æ
+	// ä¸‹åŠçƒã®æç”»
 	for (int lat = 0; lat < hemisphereSegments; ++lat)
 	{
 		float phi1 = DirectX::XM_PIDIV2 * (float)lat / hemisphereSegments;
@@ -295,7 +295,7 @@ void CapsuleCollision::Draw(int Layer)
 			float theta1 = angleStep * lon;
 			float theta2 = angleStep * ((lon + 1) % segments);
 
-			// ˆÜ“x•ûŒü‚Ìƒ‰ƒCƒ“
+			// ç·¯åº¦æ–¹å‘ã®ãƒ©ã‚¤ãƒ³
 			DirectX::XMVECTOR p1 = DirectX::XMVectorAdd(
 				bottomCenter,
 				DirectX::XMVectorAdd(
@@ -322,14 +322,14 @@ void CapsuleCollision::Draw(int Layer)
 			DirectX::XMStoreFloat3(&p1f, p1);
 			DirectX::XMStoreFloat3(&p2f, p2);
 
-			// Œo“xü(4–{‚Ì‚İ)
+			// çµŒåº¦ç·š(4æœ¬ã®ã¿)
 			if (lon % (segments / 4) == 0)
 			{
 				LineRenderer::GetInstance()->DrawLine(p1f, p2f, color, world, view, Proj, 0.05f);
 			}
 
-			// ˆÜ“xü
-			if (lat % 2 == 0)  // 2’i‚¨‚«‚É•`‰æ
+			// ç·¯åº¦ç·š
+			if (lat % 2 == 0)  // 2æ®µãŠãã«æç”»
 			{
 				DirectX::XMVECTOR p3 = DirectX::XMVectorAdd(
 					bottomCenter,
@@ -380,12 +380,12 @@ void CapsuleCollision::DrawInspector()
 	label = "CapsuleTable##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::BeginTable(SJ(label.c_str()).c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒŒƒCƒ„[").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒ¬ã‚¤ãƒ¤ãƒ¼").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::InputInt("##LayerInput", &_LayerNumber);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("”¼Œa").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("åŠå¾„").c_str());
 		ImGui::TableSetColumnIndex(1);
 		float radius = fRadius_;
 		if (ImGui::InputFloat("##RadiusInput", &radius, 0.1f, 1.0f, "%.3f"))
@@ -394,7 +394,7 @@ void CapsuleCollision::DrawInspector()
 		}
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("‚‚³").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("é«˜ã•").c_str());
 		ImGui::TableSetColumnIndex(1);
 		float height = fHeight_;
 		if (ImGui::InputFloat("##HeightInput", &height, 0.1f, 1.0f, "%.3f"))
@@ -403,7 +403,7 @@ void CapsuleCollision::DrawInspector()
 		}
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("’†SˆÊ’u").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ä¸­å¿ƒä½ç½®").c_str());
 		ImGui::TableSetColumnIndex(1);
 		DirectX::XMFLOAT3 center = f3Center_;
 		if (ImGui::InputFloat3("##CenterInput", &center.x, "%.3f"))
@@ -412,7 +412,7 @@ void CapsuleCollision::DrawInspector()
 		}
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ƒgƒŠƒK[").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ãƒˆãƒªã‚¬ãƒ¼").c_str());
 		ImGui::TableSetColumnIndex(1);
 		bool isTrigger = bTrigger_;
 		if (ImGui::Checkbox("##TriggerInput", &isTrigger))
@@ -421,7 +421,7 @@ void CapsuleCollision::DrawInspector()
 		}
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ü•`‰æ").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text(SJ("ç·šæç”»").c_str());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::Checkbox("##DrawWireframeInput", &m_b_CapsuleLine);
 
@@ -488,7 +488,7 @@ void CapsuleCollision::SetTrigger(bool isTrigger)
 
 void CapsuleCollision::DrawDebugWireframe()
 {
-	// •K—v‚É‰‚¶‚ÄÀ‘•
+	// å¿…è¦ã«å¿œã˜ã¦å®Ÿè£…
 }
 
 void CapsuleCollision::CreateCapsuleShape()
@@ -522,14 +522,14 @@ void CapsuleCollision::UpdateCollisionShape()
 	bool wasInWorld = false;
 	btDiscreteDynamicsWorld* physicsWorld = nullptr;
 
-	// RigidBody‚ÌƒJƒŠƒ“ƒO§Œä‚ğl—¶
+	// RigidBodyã®ã‚«ãƒªãƒ³ã‚°åˆ¶å¾¡ã‚’è€ƒæ…®
 	if (pAttachedRigidBody_ && pAttachedRigidBody_->GetBtRigidBody())
 	{
 		if (_Parent && _Parent->GetParentScene())
 		{
 			physicsWorld = _Parent->GetParentScene()->GetPhysicsWorld();
 
-			// RigidBody‚ÌƒJƒŠƒ“ƒO§Œä‚ª—LŒø‚ÅA‚©‚Â•¨—ƒ[ƒ‹ƒh‚©‚ç‚Ìíœ‚ğ‹–‰Â‚µ‚Ä‚¢‚éê‡‚Ì‚İíœ
+			// RigidBodyã®ã‚«ãƒªãƒ³ã‚°åˆ¶å¾¡ãŒæœ‰åŠ¹ã§ã€ã‹ã¤ç‰©ç†ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã®å‰Šé™¤ã‚’è¨±å¯ã—ã¦ã„ã‚‹å ´åˆã®ã¿å‰Šé™¤
 			if (physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld() && pAttachedRigidBody_->IsActiveInPhysicsWorld())
 			{
 				physicsWorld->removeRigidBody(pAttachedRigidBody_->GetBtRigidBody());
@@ -539,7 +539,7 @@ void CapsuleCollision::UpdateCollisionShape()
 		pAttachedRigidBody_->RemoveCollisionShape(pCapsuleShape_);
 	}
 
-	// Œ`ó‚ÌÄì¬
+	// å½¢çŠ¶ã®å†ä½œæˆ
 	if (pCapsuleShape_)
 	{
 		delete pCapsuleShape_;
@@ -570,7 +570,7 @@ void CapsuleCollision::UpdateCollisionShape()
 
 		pAttachedRigidBody_->AddCollisionShape(pCapsuleShape_, localTransform);
 
-		// RigidBody‚ÌƒJƒŠƒ“ƒO§Œä‚ª‹–‰Â‚µ‚Ä‚¢‚éê‡‚Ì‚İƒ[ƒ‹ƒh‚É’Ç‰Á
+		// RigidBodyã®ã‚«ãƒªãƒ³ã‚°åˆ¶å¾¡ãŒè¨±å¯ã—ã¦ã„ã‚‹å ´åˆã®ã¿ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ 
 		if (wasInWorld && physicsWorld && pAttachedRigidBody_->CanModifyPhysicsWorld())
 		{
 			physicsWorld->addRigidBody(pAttachedRigidBody_->GetBtRigidBody());

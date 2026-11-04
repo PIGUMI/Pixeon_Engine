@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{7208b45f-8f9b-481d-a784-a59f3fd4b078}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ソース ファイル">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -15,19 +18,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="..\Common\PixArchive.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="HashUtill.cpp">
+    <ClCompile Include="..\Common\HashUtil.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\FileUtil.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\AssetType.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ArchiveFormat.h">
-      <Filter>ソース ファイル</Filter>
+    <ClInclude Include="..\Common\PixArchive.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="HashUtill.h">
-      <Filter>ソース ファイル</Filter>
+    <ClInclude Include="..\Common\HashUtil.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\FileUtil.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\AssetType.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

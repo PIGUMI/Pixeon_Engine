@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "ModelRender.h"
 #include "System.h"
 #include "Scene.h"
@@ -10,12 +10,25 @@
 
 using namespace DirectX;
 
-Microsoft::WRL::ComPtr<ID3D11SamplerState>       ModelRenderComponent::s_linearSmp;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_whiteTexSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ModelRenderComponent::s_magentaTexSRV;
-Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullBack;
-Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullFront;
-Microsoft::WRL::ComPtr<ID3D11RasterizerState>    ModelRenderComponent::s_rasterizerCullNone;
+namespace {
+	// å…±é€šã‚¹ãƒ†ãƒ¼ãƒˆï¼ˆGraphicsSystem ãŒä¿æŒã™ã‚‹ï¼‰
+	RHI::Texture* WhiteTextureGet() { return GraphicsSystem::GetInstance()->GetWhiteTexture(); }
+
+	RHI::RasterizerState* RasterizerGet(ModelRenderComponent::CullMode mode)
+	{
+		GraphicsSystem* gs = GraphicsSystem::GetInstance();
+		switch (mode) {
+		case ModelRenderComponent::CullMode::Front: return gs->GetRasterizerState(CULL_FRONT);
+		case ModelRenderComponent::CullMode::None:  return gs->GetRasterizerState(CULL_NONE);
+		default:                                    return gs->GetRasterizerState(CULL_BACK);
+		}
+	}
+
+	RHI::Texture* TextureOf(const std::shared_ptr<TextureResource>& tex)
+	{
+		return (tex && tex->texture) ? tex->texture.get() : nullptr;
+	}
+}
 
 void ModelRenderComponent::Init(AbstractObject* owner) {
 	_Parent = owner;
@@ -49,7 +62,6 @@ bool ModelRenderComponent::SetModel(const std::string& logicalPath) {
 	RefreshMaterialCache();
 	if (!EnsureShaders(true)) return false;
 	if (!EnsureConstantBuffer()) return false;
-	if (!EnsureRasterizerStates()) return false;
 	m_texIssueReported.assign(m_model->submeshes.size(), 0);
 	m_ready = true;
 	return true;
@@ -74,19 +86,12 @@ void ModelRenderComponent::RefreshMaterialCache() {
 
 		if (!modelMat.baseColorTex.empty()) {
 			if (modelMat.isEmbedded && modelMat.baseColorTex[0] == '*') {
-				auto srv = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, modelMat.baseColorTex);
-				if (srv) {
+				auto embedded = ModelManager::Instance()->GetEmbeddedTexture(m_modelPath, modelMat.baseColorTex);
+				if (embedded) {
 					auto texRes = std::make_shared<TextureResource>();
-					texRes->srv = srv;
-					Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-					srv->GetResource(resource.GetAddressOf());
-					Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
-					if (SUCCEEDED(resource.As(&tex2D))) {
-						D3D11_TEXTURE2D_DESC desc;
-						tex2D->GetDesc(&desc);
-						texRes->width = desc.Width;
-						texRes->height = desc.Height;
-					}
+					texRes->texture = embedded;
+					texRes->width = embedded->GetWidth();
+					texRes->height = embedded->GetHeight();
 					rt.tex = texRes;
 				}
 			}
@@ -102,8 +107,8 @@ void ModelRenderComponent::RefreshMaterialCache() {
 bool ModelRenderComponent::EnsureShaders(bool forceRecreateLayout) {
 	auto* sm = ShaderManager::GetInstance();
 
-	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
-	ID3D11PixelShader* ps = sm->GetPixelShader(m_psName);
+	RHI::Shader* vs = sm->GetVertexShader(m_vsName);
+	RHI::Shader* ps = sm->GetPixelShader(m_psName);
 
 	if (!vs || !ps) {
 		sm->UpdateAndCompileShaders();
@@ -112,26 +117,13 @@ bool ModelRenderComponent::EnsureShaders(bool forceRecreateLayout) {
 		if (!vs || !ps) return false;
 	}
 
-	bool vsChanged = (m_vs.Get() != vs);
+	bool vsChanged = (m_vs != vs);
 	bool needLayout = forceRecreateLayout || vsChanged || !m_layout;
 
 	m_vs = vs;
 	m_ps = ps;
 
 	if (needLayout) RecreateInputLayout();
-
-	if (!s_linearSmp) {
-		D3D11_SAMPLER_DESC sd{};
-		sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sd.AddressU = sd.AddressV = sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		sd.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		sd.MinLOD = 0;
-		sd.MaxLOD = D3D11_FLOAT32_MAX;
-		auto dev = DirectX11::GetInstance()->GetDevice();
-		dev->CreateSamplerState(&sd, s_linearSmp.GetAddressOf());
-	}
-	EnsureDebugFallbackTextures();
-	EnsureRasterizerStates();
 
 	RebuildShaderTextureSlots();
 
@@ -163,48 +155,39 @@ void ModelRenderComponent::RebuildShaderTextureSlots() {
 }
 
 void ModelRenderComponent::RecreateInputLayout() {
-	m_layout.Reset();
-	const void* bc = nullptr;
-	size_t      bcSize = 0;
-	if (!ShaderManager::GetInstance()->GetVSBytecode(m_vsName, &bc, &bcSize)) return;
-	EnsureInputLayout(bc, bcSize);
+	m_layout.reset();
+	EnsureInputLayout(m_vs);
 }
 
-bool ModelRenderComponent::EnsureInputLayout(const void* vsBytecode, size_t size) {
+bool ModelRenderComponent::EnsureInputLayout(RHI::Shader* vertexShader) {
 	if (m_layout) return true;
-	D3D11_INPUT_ELEMENT_DESC desc[] = {
-		{ "POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, (UINT)offsetof(ModelVertex, position),    D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT,    0, (UINT)offsetof(ModelVertex, normal),      D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT",      0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, (UINT)offsetof(ModelVertex, tangent),     D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,       0, (UINT)offsetof(ModelVertex, uv),          D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BLENDINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT,  0, (UINT)offsetof(ModelVertex, boneIndices), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BLENDWEIGHT",  0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, (UINT)offsetof(ModelVertex, boneWeights), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	if (!vertexShader) return false;
+	const RHI::InputElement desc[] = {
+		{ "POSITION",     0, RHI::Format::R32G32B32_Float,    0, (uint32_t)offsetof(ModelVertex, position) },
+		{ "NORMAL",       0, RHI::Format::R32G32B32_Float,    0, (uint32_t)offsetof(ModelVertex, normal) },
+		{ "TANGENT",      0, RHI::Format::R32G32B32A32_Float, 0, (uint32_t)offsetof(ModelVertex, tangent) },
+		{ "TEXCOORD",     0, RHI::Format::R32G32_Float,       0, (uint32_t)offsetof(ModelVertex, uv) },
+		{ "BLENDINDICES", 0, RHI::Format::R32G32B32A32_UInt,  0, (uint32_t)offsetof(ModelVertex, boneIndices) },
+		{ "BLENDWEIGHT",  0, RHI::Format::R32G32B32A32_Float, 0, (uint32_t)offsetof(ModelVertex, boneWeights) },
 	};
-	auto    dev = DirectX11::GetInstance()->GetDevice();
-	HRESULT hr = dev->CreateInputLayout(desc, _countof(desc), vsBytecode, size, m_layout.GetAddressOf());
-	return SUCCEEDED(hr);
+	m_layout = GraphicsSystem::GetInstance()->GetDevice()->InputLayoutCreate(desc, (uint32_t)std::size(desc), vertexShader);
+	return m_layout != nullptr;
 }
 
 bool ModelRenderComponent::EnsureConstantBuffer() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!dev) return false;
+	RHI::BufferDesc bd;
+	bd.i_BindFlags = RHI::Bind_ConstantBuffer;
 	if (!m_cb) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(CBData);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		if (FAILED(dev->CreateBuffer(&bd, nullptr, m_cb.GetAddressOf()))) return false;
+		bd.i_Size = sizeof(CBData);
+		m_cb = dev->BufferCreate(bd);
 	}
-
 	if (!m_cameraCb) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(CameraCBData);
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		if (FAILED(dev->CreateBuffer(&bd, nullptr, m_cameraCb.GetAddressOf()))) return false;
+		bd.i_Size = sizeof(CameraCBData);
+		m_cameraCb = dev->BufferCreate(bd);
 	}
-
-	return true;
+	return m_cb && m_cameraCb;
 }
 
 DirectX::XMMATRIX ModelRenderComponent::BuildWorldMatrix() const {
@@ -215,94 +198,9 @@ DirectX::XMMATRIX ModelRenderComponent::BuildWorldMatrix() const {
 	return S * R * T;
 }
 
-bool ModelRenderComponent::EnsureWhiteTexture() {
-	if (s_whiteTexSRV) return true;
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) return false;
-	uint32_t pixel = 0xFFFFFFFF;
-	D3D11_TEXTURE2D_DESC td{};
-	td.Width = 1; td.Height = 1;
-	td.MipLevels = 1; td.ArraySize = 1;
-	td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	td.SampleDesc.Count = 1;
-	td.Usage = D3D11_USAGE_DEFAULT;
-	td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	D3D11_SUBRESOURCE_DATA init{};
-	init.pSysMem = &pixel; init.SysMemPitch = 4;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
-	if (FAILED(dev->CreateTexture2D(&td, &init, tex.GetAddressOf()))) return false;
-	if (FAILED(dev->CreateShaderResourceView(tex.Get(), nullptr, s_whiteTexSRV.GetAddressOf()))) return false;
-	return true;
-}
-
-bool ModelRenderComponent::EnsureDebugFallbackTextures() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) return false;
-	if (!s_whiteTexSRV) {
-		uint32_t pixel = 0xFFFFFFFF;
-		D3D11_TEXTURE2D_DESC td{};
-		td.Width = td.Height = 1;
-		td.MipLevels = 1; td.ArraySize = 1;
-		td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		td.SampleDesc.Count = 1;
-		td.Usage = D3D11_USAGE_DEFAULT;
-		td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		D3D11_SUBRESOURCE_DATA init{ &pixel, 4, 4 };
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
-		if (SUCCEEDED(dev->CreateTexture2D(&td, &init, tex.GetAddressOf())))
-			dev->CreateShaderResourceView(tex.Get(), nullptr, s_whiteTexSRV.GetAddressOf());
-	}
-	if (!s_magentaTexSRV) {
-		uint8_t pix[4] = { 255, 255, 255, 255 };
-		D3D11_TEXTURE2D_DESC td{};
-		td.Width = td.Height = 1;
-		td.MipLevels = 1; td.ArraySize = 1;
-		td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		td.SampleDesc.Count = 1;
-		td.Usage = D3D11_USAGE_DEFAULT;
-		td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		D3D11_SUBRESOURCE_DATA init{ pix, 4, 4 };
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
-		if (SUCCEEDED(dev->CreateTexture2D(&td, &init, tex.GetAddressOf())))
-			dev->CreateShaderResourceView(tex.Get(), nullptr, s_magentaTexSRV.GetAddressOf());
-	}
-	return (s_whiteTexSRV && s_magentaTexSRV);
-}
-
-bool ModelRenderComponent::EnsureRasterizerStates() {
-	auto dev = DirectX11::GetInstance()->GetDevice();
-	if (!dev) return false;
-
-	if (!s_rasterizerCullBack) {
-		D3D11_RASTERIZER_DESC rd{};
-		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_BACK;
-		rd.FrontCounterClockwise = FALSE;
-		rd.DepthClipEnable = TRUE;
-		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullBack.GetAddressOf()))) return false;
-	}
-	if (!s_rasterizerCullFront) {
-		D3D11_RASTERIZER_DESC rd{};
-		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_FRONT;
-		rd.FrontCounterClockwise = FALSE;
-		rd.DepthClipEnable = TRUE;
-		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullFront.GetAddressOf()))) return false;
-	}
-	if (!s_rasterizerCullNone) {
-		D3D11_RASTERIZER_DESC rd{};
-		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_NONE;
-		rd.FrontCounterClockwise = FALSE;
-		rd.DepthClipEnable = TRUE;
-		if (FAILED(dev->CreateRasterizerState(&rd, s_rasterizerCullNone.GetAddressOf()))) return false;
-	}
-	return true;
-}
-
 void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 	const SubMesh& sm, const MaterialRuntime* mat,
-	ID3D11ShaderResourceView* chosenSRV, bool usedMagentaFallback, bool usedWhiteFallback)
+	RHI::Texture* chosenTexture, bool usedMagentaFallback, bool usedWhiteFallback)
 {
 	if (submeshIdx >= m_texIssueReported.size()) return;
 	if (m_texIssueReported[submeshIdx]) return;
@@ -329,9 +227,9 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 				issue = TextureIssue::TextureLoadFailed;
 				detail = "LoadOrGet null " + mrt->texName;
 			}
-			else if (mrt->tex && !mrt->tex->srv) {
+			else if (mrt->tex && !mrt->tex->texture) {
 				issue = TextureIssue::TextureSRVNull;
-				detail = "SRV null " + mrt->texName;
+				detail = "Texture null " + mrt->texName;
 			}
 			if (issue == TextureIssue::None) {
 				if (!sm.hasUV) { issue = TextureIssue::NoUVChannel; detail = "No UV"; }
@@ -339,7 +237,7 @@ void ModelRenderComponent::DiagnoseAndReportTextureIssue(size_t submeshIdx,
 			}
 		}
 	}
-	if (issue == TextureIssue::None && !s_linearSmp) {
+	if (issue == TextureIssue::None && !GraphicsSystem::GetInstance()->GetSampler(SAMPLER_LINEAR)) {
 		issue = TextureIssue::SamplerMissing; detail = "Sampler missing";
 	}
 	if (issue == TextureIssue::None) {
@@ -584,35 +482,26 @@ void ModelRenderComponent::Draw(int Layer) {
 	XMMATRIX proj = cam->GetProjection();
 	XMFLOAT3 camPos = cam->GetPosition();
 
-	auto ctx = DirectX11::GetInstance()->GetContext();
-
-	UINT stride = sizeof(ModelVertex);
-	UINT offset = 0;
-	ID3D11Buffer* vb = m_model->vb.Get();
-	ID3D11Buffer* ib = m_model->ib.Get();
-	ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-	ctx->IASetInputLayout(m_layout.Get());
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	ctx->VSSetShader(m_vs.Get(), nullptr, 0);
-	ctx->PSSetShader(m_ps.Get(), nullptr, 0);
-
-	ID3D11SamplerState* smp = s_linearSmp.Get();
-	ctx->PSSetSamplers(0, 1, &smp);
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	dev->VertexBufferSet(0, m_model->vb.get(), sizeof(ModelVertex), 0);
+	dev->IndexBufferSet(m_model->ib.get(), RHI::IndexFormat::UInt32, 0);
+	dev->InputLayoutSet(m_layout.get());
+	dev->TopologySet(RHI::Topology::TriangleList);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, m_vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, m_ps);
+	GraphicsSystem::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
 
 	if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty())
-		SetupBoneMatricesForShader(ctx);
-
-	EnsureDebugFallbackTextures();
+		SetupBoneMatricesForShader();
 
 	auto* sm = ShaderManager::GetInstance();
+	RHI::Texture* white = WhiteTextureGet();
 
 	for (size_t i = 0; i < m_model->submeshes.size(); ++i) {
 		const SubMesh& smesh = m_model->submeshes[i];
 		size_t matIndex = smesh.materialIndex;
 
-		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
+		RHI::Texture* texture = white;
 		XMFLOAT4 materialColor = m_color;
 		XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
@@ -636,34 +525,25 @@ void ModelRenderComponent::Draw(int Layer) {
 			meshRotation = mat.meshRotation;
 			cullMode = mat.cullMode;
 
-			if (mat.tex && mat.tex->srv) {
-				srv = mat.tex->srv.Get();
+			if (RHI::Texture* matTex = TextureOf(mat.tex)) {
+				texture = matTex;
 				usedWhite = false;
 			}
 			else if (mat.color.x != 1.0f || mat.color.y != 1.0f ||
 				mat.color.z != 1.0f || mat.color.w != 1.0f) {
-				srv = s_whiteTexSRV.Get();
 				usedWhite = false;
 			}
 			else if (!mat.texName.empty()) {
-				srv = s_magentaTexSRV.Get();
 				usedMagenta = true;
 				usedWhite = false;
 			}
 		}
 		else {
-			srv = s_magentaTexSRV.Get();
 			usedMagenta = true;
 			usedWhite = false;
 		}
 
-		ID3D11RasterizerState* rasterizerState = nullptr;
-		switch (cullMode) {
-		case CullMode::Back:  rasterizerState = s_rasterizerCullBack.Get();  break;
-		case CullMode::Front: rasterizerState = s_rasterizerCullFront.Get(); break;
-		case CullMode::None:  rasterizerState = s_rasterizerCullNone.Get();  break;
-		}
-		if (rasterizerState) ctx->RSSetState(rasterizerState);
+		dev->RasterizerStateSet(RasterizerGet(cullMode));
 
 		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale, meshRotation);
 
@@ -672,58 +552,55 @@ void ModelRenderComponent::Draw(int Layer) {
 		cbd.View = XMMatrixTranspose(view);
 		cbd.Proj = XMMatrixTranspose(proj);
 		cbd.BaseColor = materialColor;
-
-		ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
-		ID3D11Buffer* cbs[] = { m_cb.Get() };
-		ctx->VSSetConstantBuffers(0, 1, cbs);
-		ctx->PSSetConstantBuffers(0, 1, cbs);
+		dev->BufferUpdate(m_cb.get(), &cbd, sizeof(cbd));
+		dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 0, m_cb.get());
+		dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 0, m_cb.get());
 
 		CameraCBData camCbd;
 		camCbd.CameraPos = camPos;
 		camCbd._pad = 0.0f;
-		ctx->UpdateSubresource(m_cameraCb.Get(), 0, nullptr, &camCbd, 0, 0);
-		ID3D11Buffer* camCbs[] = { m_cameraCb.Get() };
-		ctx->PSSetConstantBuffers(4, 1, camCbs);
+		dev->BufferUpdate(m_cameraCb.get(), &camCbd, sizeof(camCbd));
+		dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 4, m_cameraCb.get());
 
-		ctx->PSSetShaderResources(0, 1, &srv);
+		dev->TextureSet(RHI::ShaderStage::Pixel, 0, texture);
 
 		for (auto& slot : m_shaderTexSlots) {
-			ID3D11ShaderResourceView* slotSRV =
-				(slot.tex && slot.tex->srv) ? slot.tex->srv.Get() : s_whiteTexSRV.Get();
-			sm->BindSRV(ShaderStage::PS, m_psName, slot.varName, slotSRV);
+			RHI::Texture* slotTex = TextureOf(slot.tex);
+			sm->BindSRV(ShaderStage::PS, m_psName, slot.varName, slotTex ? slotTex : white);
 		}
 
-		ctx->DrawIndexed(smesh.indexCount, smesh.indexOffset, 0);
+		dev->IndexedDraw(smesh.indexCount, smesh.indexOffset, 0);
 
 		if (usedWhite || usedMagenta)
-			DiagnoseAndReportTextureIssue(i, smesh, matPtr, srv, usedMagenta, usedWhite);
+			DiagnoseAndReportTextureIssue(i, smesh, matPtr, texture, usedMagenta, usedWhite);
 	}
 
-	ctx->RSSetState(s_rasterizerCullBack.Get());
+	dev->RasterizerStateSet(RasterizerGet(CullMode::Back));
 }
 
-void ModelRenderComponent::SetupBoneMatricesForShader(ID3D11DeviceContext* ctx) {
-	static Microsoft::WRL::ComPtr<ID3D11Buffer> s_boneCB;
-	if (!s_boneCB) {
-		D3D11_BUFFER_DESC bd{};
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.ByteWidth = sizeof(DirectX::XMFLOAT4X4) * 256;
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		auto dev = DirectX11::GetInstance()->GetDevice();
-		if (FAILED(dev->CreateBuffer(&bd, nullptr, s_boneCB.GetAddressOf()))) return;
+/*
+* é–¢æ•°åã€€: SetupBoneMatricesForShader
+* å¼•ã€€æ•°  : ãªã—
+* æˆ»ã‚Šå€¤  : ãªã—
+* èª¬ã€€æ˜ã€€: ãƒœãƒ¼ãƒ³è¡Œåˆ— (æœ€å¤§ 256) ã‚’é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã® b1 ã«è¨­å®šã™ã‚‹
+*/
+void ModelRenderComponent::SetupBoneMatricesForShader() {
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	if (!m_boneCb) {
+		RHI::BufferDesc bd;
+		bd.i_Size = sizeof(DirectX::XMFLOAT4X4) * 256;
+		bd.i_BindFlags = RHI::Bind_ConstantBuffer;
+		m_boneCb = dev->BufferCreate(bd);
+		if (!m_boneCb) return;
 	}
 	struct BoneCB { DirectX::XMFLOAT4X4 m[256]; } data;
 	size_t count = std::min(m_boneMatrices.size(), size_t(256));
-	for (size_t i = 0; i < count; ++i) {
-		DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&m_boneMatrices[i]);
-		DirectX::XMStoreFloat4x4(&data.m[i], M);
-	}
+	for (size_t i = 0; i < count; ++i) data.m[i] = m_boneMatrices[i];
 	for (size_t i = count; i < 256; ++i)
 		DirectX::XMStoreFloat4x4(&data.m[i], DirectX::XMMatrixIdentity());
 
-	ctx->UpdateSubresource(s_boneCB.Get(), 0, nullptr, &data, 0, 0);
-	ID3D11Buffer* cbs[] = { s_boneCB.Get() };
-	ctx->VSSetConstantBuffers(1, 1, cbs);
+	dev->BufferUpdate(m_boneCb.get(), &data, sizeof(data));
+	dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 1, m_boneCb.get());
 }
 
 bool ModelRenderComponent::SetMaterialTexture(int materialIndex, const std::string& texLogicalPath) {
@@ -851,23 +728,23 @@ void ModelRenderComponent::DrawInspector() {
 	if (!ImGui::BeginTable(title.c_str(), 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) return;
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒŒƒCƒ„[”Ô†: ").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·: ").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::InputInt("Layer", &_LayerNumber);
 	if (0 > _LayerNumber)  _LayerNumber = 0;
 	if (10 <= _LayerNumber) _LayerNumber = 9;
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ‚ƒfƒ‹–¼").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¢ãƒ‡ãƒ«å").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::Text("%s", m_modelPath.c_str());
 
 	ImGui::TableNextRow();
 	static char pathBuf[256];
 	std::snprintf(pathBuf, sizeof(pathBuf), "%s", m_modelPath.c_str());
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ‚ƒfƒ‹‚Ìİ’è").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¢ãƒ‡ãƒ«ã®è¨­å®š").c_str());
 	ImGui::TableSetColumnIndex(1);
-	if (ImGui::Button(SJ("Ä“Ç‚İ‚İ/“K—p").c_str())) SetModel(pathBuf);
+	if (ImGui::Button(SJ("å†èª­ã¿è¾¼ã¿/é©ç”¨").c_str())) SetModel(pathBuf);
 	ImGui::SameLine();
-	if (ImGui::Button(SJ("ƒ‚ƒfƒ‹‘I‘ğ").c_str())) ImGui::OpenPopup("ModelSelectPopup");
+	if (ImGui::Button(SJ("ãƒ¢ãƒ‡ãƒ«é¸æŠ").c_str())) ImGui::OpenPopup("ModelSelectPopup");
 	ShowModelSelectPopup();
 
 	ImGui::TableNextRow();
@@ -878,15 +755,15 @@ void ModelRenderComponent::DrawInspector() {
 	if (vsList.empty()) vsList = sm->GetShaderList("VS");
 	if (psList.empty()) psList = sm->GetShaderList("PS");
 
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒVƒF[ƒ_[‚ÌÄ“Ç‚İ‚İ").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å†èª­ã¿è¾¼ã¿").c_str());
 	ImGui::TableSetColumnIndex(1);
-	if (ImGui::Button(SJ("XV(ˆê——)").c_str())) {
+	if (ImGui::Button(SJ("æ›´æ–°(ä¸€è¦§)").c_str())) {
 		vsList = sm->GetShaderList("VS");
 		psList = sm->GetShaderList("PS");
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("’¸“_ƒVƒF[ƒ_[").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼").c_str());
 	ImGui::TableSetColumnIndex(1);
 	if (ImGui::BeginCombo("VS", m_vsName.c_str())) {
 		for (auto& n : vsList) {
@@ -901,7 +778,7 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒsƒNƒZƒ‹ƒVƒF[ƒ_[").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼").c_str());
 	ImGui::TableSetColumnIndex(1);
 	if (ImGui::BeginCombo("PS", m_psName.c_str())) {
 		for (auto& n : psList) {
@@ -916,11 +793,11 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒx[ƒXFİ’è").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ™ãƒ¼ã‚¹è‰²è¨­å®š").c_str());
 	ImGui::TableSetColumnIndex(1); ImGui::ColorEdit4("Color", (float*)&m_color);
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("‘S‘ÌƒIƒtƒZƒbƒg").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("å…¨ä½“ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 	ImGui::TableSetColumnIndex(1);
 	float globalOffset[3] = { m_globalOffset.x, m_globalOffset.y, m_globalOffset.z };
 	if (ImGui::DragFloat3("GlobalOffset", globalOffset, 0.01f, -100.0f, 100.0f)) {
@@ -930,7 +807,7 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("‘S‘ÌƒXƒP[ƒ‹").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("å…¨ä½“ã‚¹ã‚±ãƒ¼ãƒ«").c_str());
 	ImGui::TableSetColumnIndex(1);
 	float globalScale[3] = { m_globalScale.x, m_globalScale.y, m_globalScale.z };
 	if (ImGui::DragFloat3("GlobalScale", globalScale, 0.01f, 0.01f, 10.0f)) {
@@ -940,7 +817,7 @@ void ModelRenderComponent::DrawInspector() {
 	}
 
 	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("‘S‘Ì‚Ì‰ñ“]").c_str());
+	ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("å…¨ä½“ã®å›è»¢").c_str());
 	ImGui::TableSetColumnIndex(1);
 	XMFLOAT3 globalRotationDeg;
 	globalRotationDeg.x = XMConvertToDegrees(m_globalRotation.x);
@@ -959,24 +836,24 @@ void ModelRenderComponent::DrawInspector() {
 
 	DrawShaderTextureSlotInspector();
 
-	title = "ƒ}ƒeƒŠƒAƒ‹ˆê——##" + std::to_string(reinterpret_cast<uintptr_t>(this));
+	title = "ãƒãƒ†ãƒªã‚¢ãƒ«ä¸€è¦§##" + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (ImGui::TreeNode(SJ(title.c_str()).c_str())) {
-		ImGui::Text("%s %zu", SJ("ƒ}ƒeƒŠƒAƒ‹”:").c_str(), m_materials.size());
+		ImGui::Text("%s %zu", SJ("ãƒãƒ†ãƒªã‚¢ãƒ«æ•°:").c_str(), m_materials.size());
 		for (size_t i = 0; i < m_materials.size(); ++i) {
 			ImGui::PushID((int)i);
 			std::string nodeLabel = "Mat " + std::to_string(i);
 			if (ImGui::TreeNode(nodeLabel.c_str())) {
-				std::string shown = m_materials[i].texName.empty() ? SJ("(‚È‚µ)") : m_materials[i].texName;
+				std::string shown = m_materials[i].texName.empty() ? SJ("(ãªã—)") : m_materials[i].texName;
 				ImGui::Text("tex=%s", shown.c_str());
 				ImGui::SameLine();
-				if (ImGui::Button(SJ("ƒeƒNƒXƒ`ƒƒ•ÏX").c_str())) {
+				if (ImGui::Button(SJ("ãƒ†ã‚¯ã‚¹ãƒãƒ£å¤‰æ›´").c_str())) {
 					m_openTexPopup = true;
 					m_texPopupMatIndex = (int)i;
 					ImGui::OpenPopup("TextureSelectPopup");
 				}
 
 				ImGui::Separator();
-				ImGui::Text("%s", SJ("ƒƒbƒVƒ…ƒIƒtƒZƒbƒg").c_str());
+				ImGui::Text("%s", SJ("ãƒ¡ãƒƒã‚·ãƒ¥ã‚ªãƒ•ã‚»ãƒƒãƒˆ").c_str());
 				float offset[3] = { m_materials[i].meshOffset.x, m_materials[i].meshOffset.y, m_materials[i].meshOffset.z };
 				if (ImGui::DragFloat3("Offset", offset, 0.01f, -100.0f, 100.0f)) {
 					m_materials[i].meshOffset.x = offset[0];
@@ -984,7 +861,7 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshOffset.z = offset[2];
 				}
 
-				ImGui::Text("%s", SJ("ƒƒbƒVƒ…ƒXƒP[ƒ‹").c_str());
+				ImGui::Text("%s", SJ("ãƒ¡ãƒƒã‚·ãƒ¥ã‚¹ã‚±ãƒ¼ãƒ«").c_str());
 				float scale[3] = { m_materials[i].meshScale.x, m_materials[i].meshScale.y, m_materials[i].meshScale.z };
 				if (ImGui::DragFloat3("Scale", scale, 0.01f, 0.01f, 10.0f)) {
 					m_materials[i].meshScale.x = scale[0];
@@ -992,7 +869,7 @@ void ModelRenderComponent::DrawInspector() {
 					m_materials[i].meshScale.z = scale[2];
 				}
 
-				ImGui::Text("%s", SJ("ƒƒbƒVƒ…‰ñ“](“x)").c_str());
+				ImGui::Text("%s", SJ("ãƒ¡ãƒƒã‚·ãƒ¥å›è»¢(åº¦)").c_str());
 				float rotDeg[3] = {
 					XMConvertToDegrees(m_materials[i].meshRotation.x),
 					XMConvertToDegrees(m_materials[i].meshRotation.y),
@@ -1005,22 +882,22 @@ void ModelRenderComponent::DrawInspector() {
 				}
 
 				ImGui::Separator();
-				ImGui::Text("%s", SJ("ƒJƒŠƒ“ƒOƒ‚[ƒh").c_str());
-				std::string cullBack = SJ("— –ÊƒJƒŠƒ“ƒO(’Êí)");
-				std::string cullFront = SJ("•\–ÊƒJƒŠƒ“ƒO");
-				std::string cullNone = SJ("—¼–Ê•`‰æ");
+				ImGui::Text("%s", SJ("ã‚«ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰").c_str());
+				std::string cullBack = SJ("è£é¢ã‚«ãƒªãƒ³ã‚°(é€šå¸¸)");
+				std::string cullFront = SJ("è¡¨é¢ã‚«ãƒªãƒ³ã‚°");
+				std::string cullNone = SJ("ä¸¡é¢æç”»");
 				const char* cullModeNames[] = { cullBack.c_str(), cullFront.c_str(), cullNone.c_str() };
 				int currentCullMode = static_cast<int>(m_materials[i].cullMode);
 				if (ImGui::Combo("CullMode", &currentCullMode, cullModeNames, 3))
 					m_materials[i].cullMode = static_cast<CullMode>(currentCullMode);
 
-				if (ImGui::Button(SJ("ƒIƒtƒZƒbƒgƒŠƒZƒbƒg").c_str()))
+				if (ImGui::Button(SJ("ã‚ªãƒ•ã‚»ãƒƒãƒˆãƒªã‚»ãƒƒãƒˆ").c_str()))
 					m_materials[i].meshOffset = XMFLOAT3(0.0f, 0.0f, 0.0f);
 				ImGui::SameLine();
-				if (ImGui::Button(SJ("ƒXƒP[ƒ‹ƒŠƒZƒbƒg").c_str()))
+				if (ImGui::Button(SJ("ã‚¹ã‚±ãƒ¼ãƒ«ãƒªã‚»ãƒƒãƒˆ").c_str()))
 					m_materials[i].meshScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 				ImGui::SameLine();
-				if (ImGui::Button(SJ("‰ñ“]ƒŠƒZƒbƒg").c_str()))
+				if (ImGui::Button(SJ("å›è»¢ãƒªã‚»ãƒƒãƒˆ").c_str()))
 					m_materials[i].meshRotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 				ImGui::TreePop();
@@ -1032,16 +909,16 @@ void ModelRenderComponent::DrawInspector() {
 
 	if (m_model && m_model->hasSkin && !m_model->bones.empty()) {
 		ImGui::Separator();
-		title = SJ("ƒ{[ƒ“•\¦") + " (" + std::to_string(m_model->bones.size()) + ")##" +
+		title = SJ("ãƒœãƒ¼ãƒ³è¡¨ç¤º") + " (" + std::to_string(m_model->bones.size()) + ")##" +
 			std::to_string(reinterpret_cast<uintptr_t>(this));
 		if (ImGui::TreeNode(title.c_str())) {
-			ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), m_boneFilterBuffer, sizeof(m_boneFilterBuffer));
+			ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), m_boneFilterBuffer, sizeof(m_boneFilterBuffer));
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("‚·‚×‚Ä“WŠJ").c_str())) {
+			if (ImGui::Button(SJ("ã™ã¹ã¦å±•é–‹").c_str())) {
 				for (size_t i = 0; i < m_model->bones.size(); ++i) m_boneTreeOpenState[i] = true;
 			}
 			ImGui::SameLine();
-			if (ImGui::Button(SJ("‚·‚×‚Äô‚Ş").c_str())) m_boneTreeOpenState.clear();
+			if (ImGui::Button(SJ("ã™ã¹ã¦ç•³ã‚€").c_str())) m_boneTreeOpenState.clear();
 			ImGui::Separator();
 			ImGui::BeginChild("BoneHierarchy", ImVec2(0, 300), true);
 			for (size_t i = 0; i < m_model->bones.size(); ++i)
@@ -1059,9 +936,9 @@ void ModelRenderComponent::DrawInspector() {
 
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), filter, sizeof(filter));
-		auto list = AssetManager::Instance()->GetCachedTextureNames();
-		ImGui::Text("%s:  %zu", SJ("Œ”").c_str(), list.size());
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), filter, sizeof(filter));
+		auto list = AssetManager::Instance()->AssetListGet(AssetType::Texture);
+		ImGui::Text("%s:  %zu", SJ("ä»¶æ•°").c_str(), list.size());
 		ImGui::Separator();
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
 		static int highlight = -1;
@@ -1083,12 +960,12 @@ void ModelRenderComponent::DrawInspector() {
 			if (m_texPopupMatIndex >= 0 && m_texPopupMatIndex < (int)m_materials.size()
 				&& m_materials[m_texPopupMatIndex].texName == rawName) {
 				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[g—p’†]").c_str());
+				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[ä½¿ç”¨ä¸­]").c_str());
 			}
 		}
 		ImGui::EndChild();
 		ImGui::Separator();
-		if (ImGui::Button(SJ("“K—p").c_str())) {
+		if (ImGui::Button(SJ("é©ç”¨").c_str())) {
 			if (highlight >= 0 && highlight < (int)list.size() && m_texPopupMatIndex >= 0) {
 				const std::string& sel = list[highlight];
 				m_materials[m_texPopupMatIndex].texName = sel;
@@ -1099,7 +976,7 @@ void ModelRenderComponent::DrawInspector() {
 			m_texPopupMatIndex = -1;
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("ƒLƒƒƒ“ƒZƒ‹").c_str())) {
+		if (ImGui::Button(SJ("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) {
 			ImGui::CloseCurrentPopup();
 			m_openTexPopup = false;
 			m_texPopupMatIndex = -1;
@@ -1112,11 +989,11 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 
 	ImGui::Separator();
-	std::string title = SJ("ƒVƒF[ƒ_[ƒeƒNƒXƒ`ƒƒƒXƒƒbƒg##") + std::to_string(reinterpret_cast<uintptr_t>(this));
+	std::string title = SJ("ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ­ãƒƒãƒˆ##") + std::to_string(reinterpret_cast<uintptr_t>(this));
 	if (!ImGui::TreeNode(title.c_str())) return;
 
 	if (m_shaderTexSlots.empty()) {
-		ImGui::TextDisabled("%s", SJ("(ƒXƒƒbƒg‚È‚µ / PSƒŠƒtƒŒƒNƒVƒ‡ƒ“–¢æ“¾)").c_str());
+		ImGui::TextDisabled("%s", SJ("(ã‚¹ãƒ­ãƒƒãƒˆãªã— / PSãƒªãƒ•ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³æœªå–å¾—)").c_str());
 		ImGui::TreePop();
 		return;
 	}
@@ -1129,17 +1006,17 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 		ImGui::SameLine();
 
 		if (slot.assignedTexName.empty()) {
-			ImGui::TextDisabled("[–¢İ’è]");
+			ImGui::TextDisabled("[æœªè¨­å®š]");
 		}
 		else {
-			bool loaded = slot.tex && slot.tex->srv;
+			bool loaded = TextureOf(slot.tex) != nullptr;
 			ImGui::TextColored(
 				loaded ? ImVec4(0.5f, 0.9f, 0.5f, 1.0f) : ImVec4(1.0f, 0.4f, 0.4f, 1.0f),
 				"%s", slot.assignedTexName.c_str());
 		}
 
 		ImGui::SameLine();
-		if (ImGui::SmallButton(SJ("‘I‘ğ").c_str())) {
+		if (ImGui::SmallButton(SJ("é¸æŠ").c_str())) {
 			m_openShaderTexPopup = true;
 			m_shaderTexPopupSlotIndex = i;
 		}
@@ -1149,8 +1026,8 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 			slot.tex.reset();
 		}
 
-		if (slot.tex && slot.tex->srv) {
-			ImGui::Image((ImTextureID)slot.tex->srv.Get(), ImVec2(48, 48));
+		if (RHI::Texture* preview = TextureOf(slot.tex)) {
+			ImGui::Image(GUI::GetInstance()->TextureIdGet(preview), ImVec2(48, 48));
 		}
 
 		ImGui::PopID();
@@ -1162,11 +1039,11 @@ void ModelRenderComponent::DrawShaderTextureSlotInspector() {
 	}
 
 	if (ImGui::BeginPopup("ShaderTexSelect")) {
-		ImGui::TextUnformatted(SJ("ƒeƒNƒXƒ`ƒƒ‚ğ‘I‘ğ").c_str());
+		ImGui::TextUnformatted(SJ("ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’é¸æŠ").c_str());
 		ImGui::Separator();
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^[").c_str(), filter, sizeof(filter));
-		auto texList = AssetManager::Instance()->GetCachedTextureNames();
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼").c_str(), filter, sizeof(filter));
+		auto texList = AssetManager::Instance()->AssetListGet(AssetType::Texture);
 		ImGui::BeginChild("ShaderTexList", ImVec2(300, 300), true);
 		for (auto& name : texList) {
 			if (filter[0] && name.find(filter) == std::string::npos) continue;
@@ -1193,10 +1070,10 @@ void ModelRenderComponent::ShowModelSelectPopup() {
 	if (ImGui::BeginPopupModal("ModelSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^(•”•ªˆê’v)").c_str(), filter, sizeof(filter));
-		auto list = AssetManager::Instance()->GetCachedAssetNames(true);
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿(éƒ¨åˆ†ä¸€è‡´)").c_str(), filter, sizeof(filter));
+		auto list = AssetManager::Instance()->AssetListGet(AssetType::Model);
 		{
-			std::string label = SJ("“o˜^ƒ‚ƒfƒ‹”:  ") + std::to_string(list.size());
+			std::string label = SJ("ç™»éŒ²ãƒ¢ãƒ‡ãƒ«æ•°:  ") + std::to_string(list.size());
 			ImGui::Text("%s", label.c_str());
 		}
 		ImGui::Separator();
@@ -1216,12 +1093,12 @@ void ModelRenderComponent::ShowModelSelectPopup() {
 			}
 			if (m_modelPath == rawName) {
 				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[g—p’†]").c_str());
+				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[ä½¿ç”¨ä¸­]").c_str());
 			}
 		}
 		ImGui::EndChild();
 		ImGui::Separator();
-		if (ImGui::Button(SJ("“K—p").c_str())) {
+		if (ImGui::Button(SJ("é©ç”¨").c_str())) {
 			if (currentHighlight >= 0 && currentHighlight < (int)list.size()) {
 				const std::string& sel = list[currentHighlight];
 				if (SetModel(sel)) m_modelPath = sel;
@@ -1229,9 +1106,9 @@ void ModelRenderComponent::ShowModelSelectPopup() {
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("ƒLƒƒƒ“ƒZƒ‹").c_str())) ImGui::CloseCurrentPopup();
+		if (ImGui::Button(SJ("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) ImGui::CloseCurrentPopup();
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("Äƒ[ƒh").c_str())) {
+		if (ImGui::Button(SJ("å†ãƒ­ãƒ¼ãƒ‰").c_str())) {
 			if (!m_modelPath.empty()) SetModel(m_modelPath);
 		}
 		ImGui::EndPopup();
@@ -1243,9 +1120,9 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
 	if (ImGui::BeginPopupModal("TextureSelectPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 		static char filter[128] = "";
-		ImGui::InputText(SJ("ƒtƒBƒ‹ƒ^").c_str(), filter, sizeof(filter));
-		auto list = AssetManager::Instance()->GetCachedTextureNames();
-		ImGui::Text("%s: %zu", SJ("Œ”").c_str(), list.size());
+		ImGui::InputText(SJ("ãƒ•ã‚£ãƒ«ã‚¿").c_str(), filter, sizeof(filter));
+		auto list = AssetManager::Instance()->AssetListGet(AssetType::Texture);
+		ImGui::Text("%s: %zu", SJ("ä»¶æ•°").c_str(), list.size());
 		ImGui::Separator();
 		ImGui::BeginChild("TextureSelectList", ImVec2(420, 320), true);
 		static int highlight = -1;
@@ -1266,12 +1143,12 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
 			}
 			if (m_materials[materialIndex].texName == rawName) {
 				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[g—p’†]").c_str());
+				ImGui::TextColored(ImVec4(0.3f, 0.8f, 0.3f, 1.0f), SJ("[ä½¿ç”¨ä¸­]").c_str());
 			}
 		}
 		ImGui::EndChild();
 		ImGui::Separator();
-		if (ImGui::Button(SJ("“K—p").c_str())) {
+		if (ImGui::Button(SJ("é©ç”¨").c_str())) {
 			if (highlight >= 0 && highlight < (int)list.size()) {
 				const std::string& sel = list[highlight];
 				m_materials[materialIndex].texName = sel;
@@ -1282,7 +1159,7 @@ void ModelRenderComponent::ShowTextureSelectPopup(int materialIndex) {
 			m_texPopupMatIndex = -1;
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(SJ("ƒLƒƒƒ“ƒZƒ‹").c_str())) {
+		if (ImGui::Button(SJ("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) {
 			ImGui::CloseCurrentPopup();
 			m_openTexPopup = false;
 			m_texPopupMatIndex = -1;
@@ -1326,12 +1203,12 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 	if (ImGui::IsItemClicked()) m_selectedBoneIndex = boneIndex;
 
 	if (ImGui::BeginPopupContextItem()) {
-		ImGui::Text("%s", SJ("ƒ{[ƒ“: ").c_str());
+		ImGui::Text("%s", SJ("ãƒœãƒ¼ãƒ³: ").c_str());
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", bone.name.c_str());
 		ImGui::Separator();
-		if (ImGui::MenuItem(SJ("–¼‘O‚ğƒRƒs[").c_str())) ImGui::SetClipboardText(bone.name.c_str());
-		if (ImGui::MenuItem(SJ("ƒ[ƒ‹ƒhˆÊ’u‚ğƒƒOo—Í").c_str())) {
+		if (ImGui::MenuItem(SJ("åå‰ã‚’ã‚³ãƒ”ãƒ¼").c_str())) ImGui::SetClipboardText(bone.name.c_str());
+		if (ImGui::MenuItem(SJ("ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®ã‚’ãƒ­ã‚°å‡ºåŠ›").c_str())) {
 			XMFLOAT3 pos = GetBoneWorldPosition(boneIndex);
 			char buf[256];
 			sprintf_s(buf, "[Bone] %s: (%.3f, %.3f, %.3f)\n", bone.name.c_str(), pos.x, pos.y, pos.z);
@@ -1342,11 +1219,11 @@ void ModelRenderComponent::DrawBoneHierarchyRecursive(int boneIndex, int depth) 
 
 	if (ImGui::IsItemHovered()) {
 		ImGui::BeginTooltip();
-		ImGui::Text("%s: %s", SJ("ƒ{[ƒ“–¼").c_str(), bone.name.c_str());
-		ImGui::Text("%s: %d", SJ("ƒCƒ“ƒfƒbƒNƒX").c_str(), boneIndex);
-		ImGui::Text("%s: %d", SJ("eƒCƒ“ƒfƒbƒNƒX").c_str(), bone.parentIndex);
-		ImGui::Text("%s: %d", SJ("ƒm[ƒhƒCƒ“ƒfƒbƒNƒX").c_str(), bone.nodeIndex);
-		ImGui::Text("%s: %zu", SJ("q‚Ì”").c_str(), children.size());
+		ImGui::Text("%s: %s", SJ("ãƒœãƒ¼ãƒ³å").c_str(), bone.name.c_str());
+		ImGui::Text("%s: %d", SJ("ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str(), boneIndex);
+		ImGui::Text("%s: %d", SJ("è¦ªã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str(), bone.parentIndex);
+		ImGui::Text("%s: %d", SJ("ãƒãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str(), bone.nodeIndex);
+		ImGui::Text("%s: %zu", SJ("å­ã®æ•°").c_str(), children.size());
 		ImGui::EndTooltip();
 	}
 
@@ -1370,42 +1247,42 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 	auto SJ = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
 	const auto& bone = m_model->bones[boneIndex];
 
-	ImGui::Text("%s", SJ("‘I‘ğ’†‚Ìƒ{[ƒ“Ú×:").c_str());
+	ImGui::Text("%s", SJ("é¸æŠä¸­ã®ãƒœãƒ¼ãƒ³è©³ç´°:").c_str());
 	ImGui::Separator();
 
 	if (ImGui::BeginTable("BoneDetailsTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ{[ƒ“–¼").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒœãƒ¼ãƒ³å").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("%s", bone.name.c_str());
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒCƒ“ƒfƒbƒNƒX").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("%d", boneIndex);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("eƒCƒ“ƒfƒbƒNƒX").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("è¦ªã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str());
 		ImGui::TableSetColumnIndex(1);
 		if (bone.parentIndex >= 0)
 			ImGui::Text("%d (%s)", bone.parentIndex, m_model->bones[bone.parentIndex].name.c_str());
 		else
-			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", SJ("‚È‚µ(ƒ‹[ƒgƒ{[ƒ“)").c_str());
+			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", SJ("ãªã—(ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³)").c_str());
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒm[ƒhƒCƒ“ƒfƒbƒNƒX").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("%d", bone.nodeIndex);
 
 		XMFLOAT3 worldPos = GetBoneWorldPosition(boneIndex);
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ[ƒ‹ƒhˆÊ’u").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("(%.3f, %.3f, %.3f)", worldPos.x, worldPos.y, worldPos.z);
 
 		XMFLOAT4 worldRot = GetBoneWorldRotationQuaternion(boneIndex);
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒ[ƒ‹ƒh‰ñ“]").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ãƒ¯ãƒ¼ãƒ«ãƒ‰å›è»¢").c_str());
 		ImGui::TableSetColumnIndex(1); ImGui::Text("(%.3f, %.3f, %.3f, %.3f)", worldRot.x, worldRot.y, worldRot.z, worldRot.w);
 
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ƒIƒtƒZƒbƒgs—ñ").c_str());
+		ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ã‚ªãƒ•ã‚»ãƒƒãƒˆè¡Œåˆ—").c_str());
 		ImGui::TableSetColumnIndex(1);
 		if (ImGui::TreeNode("OffsetMatrix")) {
 			XMFLOAT4X4 offset;
@@ -1417,7 +1294,7 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 
 		if (boneIndex < (int)m_boneMatrices.size()) {
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("Œ»İ‚Ìƒ{[ƒ“s—ñ").c_str());
+			ImGui::TableSetColumnIndex(0); ImGui::Text("%s", SJ("ç¾åœ¨ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—").c_str());
 			ImGui::TableSetColumnIndex(1);
 			if (ImGui::TreeNode("CurrentMatrix")) {
 				const auto& mat = m_boneMatrices[boneIndex];
@@ -1434,7 +1311,7 @@ void ModelRenderComponent::DrawBoneDetails(int boneIndex) {
 	if (!children.empty()) {
 		ImGui::Separator();
 		auto SJ2 = [](const char* s)->std::string { return GUI::GetInstance()->ShiftJISToUTF8(s); };
-		std::string childLabel = SJ2("qƒ{[ƒ“") + " (" + std::to_string(children.size()) + ")";
+		std::string childLabel = SJ2("å­ãƒœãƒ¼ãƒ³") + " (" + std::to_string(children.size()) + ")";
 		if (ImGui::TreeNode(childLabel.c_str())) {
 			for (int childIdx : children) {
 				std::string lbl = m_model->bones[childIdx].name + " [" + std::to_string(childIdx) + "]";
@@ -1454,43 +1331,35 @@ void ModelRenderComponent::DrawForGBuffer(int Layer) {
 	CameraComponent* cam = scene->GetMainCamera();
 	if (!cam) return;
 
-	auto ctx = DirectX11::GetInstance()->GetContext();
 	auto* sm = ShaderManager::GetInstance();
-
-	ID3D11VertexShader* vs = sm->GetVertexShader(m_vsName);
-	ID3D11PixelShader* ps = sm->GetPixelShader("PS_GBuffer");
+	RHI::Shader* vs = sm->GetVertexShader(m_vsName);
+	RHI::Shader* ps = sm->GetPixelShader("PS_GBuffer");
 	if (!vs || !ps) return;
+	if (!m_layout && !EnsureInputLayout(vs)) return;
 
 	if (m_model->hasSkin && m_boneMatrices.empty()) EnsureDefaultBoneMatrices();
 
 	XMMATRIX view = cam->GetView();
 	XMMATRIX proj = cam->GetProjection();
 
-	UINT stride = sizeof(ModelVertex);
-	UINT offset = 0;
-	ID3D11Buffer* vb = m_model->vb.Get();
-	ID3D11Buffer* ib = m_model->ib.Get();
-	ctx->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-	ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-	ctx->IASetInputLayout(m_layout.Get());
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	ctx->VSSetShader(vs, nullptr, 0);
-	ctx->PSSetShader(ps, nullptr, 0);
-
-	ID3D11SamplerState* smp = s_linearSmp.Get();
-	ctx->PSSetSamplers(0, 1, &smp);
+	RHI::Device* dev = GraphicsSystem::GetInstance()->GetDevice();
+	dev->VertexBufferSet(0, m_model->vb.get(), sizeof(ModelVertex), 0);
+	dev->IndexBufferSet(m_model->ib.get(), RHI::IndexFormat::UInt32, 0);
+	dev->InputLayoutSet(m_layout.get());
+	dev->TopologySet(RHI::Topology::TriangleList);
+	dev->ShaderSet(RHI::ShaderStage::Vertex, vs);
+	dev->ShaderSet(RHI::ShaderStage::Pixel, ps);
+	GraphicsSystem::GetInstance()->SetSamplerState(SAMPLER_LINEAR);
 
 	if (m_model->hasSkin && m_useBoneMatrices && !m_boneMatrices.empty())
-		SetupBoneMatricesForShader(ctx);
+		SetupBoneMatricesForShader();
 
-	EnsureDebugFallbackTextures();
-
+	RHI::Texture* white = WhiteTextureGet();
 	for (size_t i = 0; i < m_model->submeshes.size(); ++i) {
 		const SubMesh& sm2 = m_model->submeshes[i];
 		size_t matIndex = sm2.materialIndex;
 
-		ID3D11ShaderResourceView* srv = s_whiteTexSRV.Get();
+		RHI::Texture* texture = white;
 		XMFLOAT4 materialColor = m_color;
 		XMFLOAT3 meshOffset(0.0f, 0.0f, 0.0f);
 		XMFLOAT3 meshScale(1.0f, 1.0f, 1.0f);
@@ -1507,17 +1376,10 @@ void ModelRenderComponent::DrawForGBuffer(int Layer) {
 			meshScale = mat.meshScale;
 			meshRotation = mat.meshRotation;
 			cullMode = mat.cullMode;
-			if (mat.tex && mat.tex->srv) srv = mat.tex->srv.Get();
-			else if (!mat.texName.empty()) srv = s_magentaTexSRV.Get();
+			if (RHI::Texture* matTex = TextureOf(mat.tex)) texture = matTex;
 		}
 
-		ID3D11RasterizerState* rs = nullptr;
-		switch (cullMode) {
-		case CullMode::Back:  rs = s_rasterizerCullBack.Get();  break;
-		case CullMode::Front: rs = s_rasterizerCullFront.Get(); break;
-		case CullMode::None:  rs = s_rasterizerCullNone.Get();  break;
-		}
-		if (rs) ctx->RSSetState(rs);
+		dev->RasterizerStateSet(RasterizerGet(cullMode));
 
 		XMMATRIX world = BuildMeshWorldMatrix(meshOffset, meshScale, meshRotation);
 		CBData cbd;
@@ -1525,15 +1387,13 @@ void ModelRenderComponent::DrawForGBuffer(int Layer) {
 		cbd.View = XMMatrixTranspose(view);
 		cbd.Proj = XMMatrixTranspose(proj);
 		cbd.BaseColor = materialColor;
+		dev->BufferUpdate(m_cb.get(), &cbd, sizeof(cbd));
+		dev->ConstantBufferSet(RHI::ShaderStage::Vertex, 0, m_cb.get());
+		dev->ConstantBufferSet(RHI::ShaderStage::Pixel, 0, m_cb.get());
 
-		ctx->UpdateSubresource(m_cb.Get(), 0, nullptr, &cbd, 0, 0);
-		ID3D11Buffer* cbs[] = { m_cb.Get() };
-		ctx->VSSetConstantBuffers(0, 1, cbs);
-		ctx->PSSetConstantBuffers(0, 1, cbs);
-
-		ctx->PSSetShaderResources(0, 1, &srv);
-		ctx->DrawIndexed(sm2.indexCount, sm2.indexOffset, 0);
+		dev->TextureSet(RHI::ShaderStage::Pixel, 0, texture);
+		dev->IndexedDraw(sm2.indexCount, sm2.indexOffset, 0);
 	}
 
-	ctx->RSSetState(s_rasterizerCullBack.Get());
+	dev->RasterizerStateSet(RasterizerGet(CullMode::Back));
 }

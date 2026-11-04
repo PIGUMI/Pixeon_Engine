@@ -1,6 +1,5 @@
 ﻿#pragma once
-#include <d3d11.h>
-#include <wrl/client.h>
+#include "RHI/RHI.h"
 
 // ============================================================
 // GBuffer
@@ -10,7 +9,7 @@
 // 構成:
 //   RT0: Albedo        RGBA8_UNORM      (RGB=テクスチャ色, A=未使用)
 //   RT1: Normal        RGBA16F          (RGB=ビュー空間法線, A=未使用)
-//   Depth: R24G8_TYPELESS               (深度SRVとして読み取り可能)
+//   Depth: D24S8                        (深度SRVとして読み取り可能)
 //
 // 深度バッファは Geometry Pass で書き込み、
 // SSAO Pass / Lighting Pass で SRV として読み取る
@@ -19,54 +18,36 @@ class GBuffer
 {
 public:
 	// 初期化・解放
-	bool Init(ID3D11Device* device, int width, int height);
+	bool Init(int width, int height);
 	void Release();
 
 	// Geometry Pass の開始
 	// 複数RTと深度バッファをセットし、クリアする
-	void BeginGeometryPass(ID3D11DeviceContext* ctx);
+	void BeginGeometryPass();
 
 	// Geometry Pass の終了
-	// RTをデフォルトに戻す（End後にSRVとして読める）
-	void EndGeometryPass(ID3D11DeviceContext* ctx);
+	// RTを外す（End後にSRVとして読める）
+	void EndGeometryPass();
 
 	// サイズ変更（解像度変更時）
-	bool Resize(ID3D11Device* device, int width, int height);
+	bool Resize(int width, int height);
 
-	// ---- SRV アクセサ（Lighting / SSAO Pass で使用）----
-	// RT0: Albedo SRV
-	ID3D11ShaderResourceView* GetAlbedoSRV()  const { return m_albedoSRV.Get(); }
-	// RT1: Normal SRV
-	ID3D11ShaderResourceView* GetNormalSRV()  const { return m_normalSRV.Get(); }
-	// Depth SRV (R24_UNORM_X8_TYPELESS)
-	ID3D11ShaderResourceView* GetDepthSRV()   const { return m_depthSRV.Get(); }
-	// DSV（Geometry Pass 後にTransparent描画等で再利用する場合）
-	ID3D11DepthStencilView* GetDSV()        const { return m_dsv.Get(); }
+	// ---- アクセサ（Lighting / SSAO Pass で使用）----
+	RHI::Texture* GetAlbedo() const { return m_cls_Albedo.get(); }
+	RHI::Texture* GetNormal() const { return m_cls_Normal.get(); }
+	// 深度（Geometry Pass 後に SRV として読む / Transparent 描画で DSV として再利用）
+	RHI::Texture* GetDepth()  const { return m_cls_Depth.get(); }
 
-	int GetWidth()  const { return m_width; }
-	int GetHeight() const { return m_height; }
+	int GetWidth()  const { return m_i_Width; }
+	int GetHeight() const { return m_i_Height; }
 
 private:
-	// RT0: Albedo  (RGBA8_UNORM)
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_albedoTex;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_albedoRTV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoSRV;
-
-	// RT1: Normal  (RGBA16F)
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_normalTex;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   m_normalRTV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalSRV;
-
-	// Depth (R24G8_TYPELESS → DSV + SRV)
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_depthTex;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>   m_dsv;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthSRV;
-
-	// ビューポート
-	D3D11_VIEWPORT m_viewport = {};
-	int m_width = 0;
-	int m_height = 0;
+	RHI::TextureRef m_cls_Albedo;
+	RHI::TextureRef m_cls_Normal;
+	RHI::TextureRef m_cls_Depth;
+	int m_i_Width = 0;
+	int m_i_Height = 0;
 
 	// 内部生成ヘルパー
-	bool CreateRenderTargets(ID3D11Device* device, int width, int height);
+	bool CreateRenderTargets(int width, int height);
 };

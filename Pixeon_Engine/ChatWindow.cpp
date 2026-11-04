@@ -1,4 +1,4 @@
-#include "ChatWindow.h"
+ï»¿#include "ChatWindow.h"
 #include "GUI.h"
 #include <chrono>
 
@@ -68,17 +68,17 @@ void ChatWindow::Initialize() {
 	IZANAGI* izanagi = IZANAGI::GetInstance();
 
 	if (!izanagi) {
-		AddMessage("System", ConvertToUTF8("IZANAGI‚ª‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ"), true);
+		AddMessage("System", ConvertToUTF8("IZANAGIãŒåˆæœŸåŒ–ã•ã‚Œã¦ã„ã¾ã›ã‚“"), true);
 		return;
 	}
 
 	if (!izanagi->GetInitialized()) {
-		AddMessage("System", ConvertToUTF8("IZANAGIƒGƒ“ƒWƒ“‚ª‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ"), true);
+		AddMessage("System", ConvertToUTF8("IZANAGIã‚¨ãƒ³ã‚¸ãƒ³ãŒåˆæœŸåŒ–ã•ã‚Œã¦ã„ã¾ã›ã‚“"), true);
 		return;
 	}
 
-	AddMessage("System", ConvertToUTF8("AIƒ`ƒƒƒbƒg‚ª€”õŠ®—¹‚µ‚Ü‚µ‚½"), false);
-	AddMessage("System", ConvertToUTF8("‰½‚©˜b‚µ‚©‚¯‚Ä‚­‚¾‚³‚¢"), false);
+	AddMessage("System", ConvertToUTF8("AIãƒãƒ£ãƒƒãƒˆãŒæº–å‚™å®Œäº†ã—ã¾ã—ãŸ"), false);
+	AddMessage("System", ConvertToUTF8("ä½•ã‹è©±ã—ã‹ã‘ã¦ãã ã•ã„"), false);
 
 	isInitialized_ = true;
 }
@@ -115,19 +115,19 @@ void ChatWindow::Draw() {
 
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 
-	std::string windowTitle = ConvertToUTF8("AIƒ`ƒƒƒbƒg[IZANAGI]");
+	std::string windowTitle = ConvertToUTF8("AIãƒãƒ£ãƒƒãƒˆ[IZANAGI]");
 	if (ImGui::Begin(windowTitle.c_str(), &isVisible_, flags)) {
-		// ƒwƒbƒ_[î•ñ
-		std::string statusLabel = ConvertToUTF8("ó‘Ô: ");
+		// ãƒ˜ãƒƒãƒ€ãƒ¼æƒ…å ±
+		std::string statusLabel = ConvertToUTF8("çŠ¶æ…‹: ");
 		ImGui::Text("%s", statusLabel.c_str());
 		ImGui::SameLine();
 
 		if (!isInitialized_) {
-			std::string uninitText = ConvertToUTF8("–¢‰Šú‰»");
+			std::string uninitText = ConvertToUTF8("æœªåˆæœŸåŒ–");
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%s", uninitText.c_str());
 		}
 		else if (isWaitingForResponse_) {
-			std::string waitingText = ConvertToUTF8("‰ž“š‘Ò‹@’†...");
+			std::string waitingText = ConvertToUTF8("å¿œç­”å¾…æ©Ÿä¸­...");
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", waitingText.c_str());
 
 			ImGui::SameLine();
@@ -142,17 +142,17 @@ void ChatWindow::Draw() {
 			ImGui::Text("%s", spinnerFrames[spinnerFrame]);
 		}
 		else {
-			std::string readyText = ConvertToUTF8("‘Ò‹@’†");
+			std::string readyText = ConvertToUTF8("å¾…æ©Ÿä¸­");
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", readyText.c_str());
 		}
 
 		ImGui::SameLine();
-		std::string autoScrollLabel = ConvertToUTF8("Ž©“®ƒXƒNƒ[ƒ‹");
+		std::string autoScrollLabel = ConvertToUTF8("è‡ªå‹•ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«");
 		ImGui::Checkbox(autoScrollLabel.c_str(), &autoScroll_);
 
 		ImGui::Separator();
 
-		// ƒ`ƒƒƒbƒg—š—ð•\Ž¦ƒGƒŠƒA
+		// ãƒãƒ£ãƒƒãƒˆå±¥æ­´è¡¨ç¤ºã‚¨ãƒªã‚¢
 		ImGui::BeginChild("ChatHistory", ImVec2(0, -90), true, ImGuiWindowFlags_HorizontalScrollbar);
 
 		{
@@ -164,15 +164,15 @@ void ChatWindow::Draw() {
 
 				if (msg.sender == "User") {
 					color = ImVec4(0.6f, 0.8f, 1.0f, 1.0f);
-					prefix = ConvertToUTF8("‚ ‚È‚½: ");
+					prefix = ConvertToUTF8("ã‚ãªãŸ: ");
 				}
 				else if (msg.sender == "AI") {
 					color = ImVec4(0.8f, 1.0f, 0.6f, 1.0f);
-					prefix = ConvertToUTF8("ƒCƒUƒiƒMAI: ");
+					prefix = ConvertToUTF8("ã‚¤ã‚¶ãƒŠã‚®AI: ");
 				}
 				else if (msg.sender == "System") {
 					color = msg.isError ? ImVec4(1.0f, 0.4f, 0.4f, 1.0f) : ImVec4(0.7f, 0.7f, 0.7f, 1.0f);
-					prefix = ConvertToUTF8("[ƒVƒXƒeƒ€] ");
+					prefix = ConvertToUTF8("[ã‚·ã‚¹ãƒ†ãƒ ] ");
 				}
 
 				ImGui::PushStyleColor(ImGuiCol_Text, color);
@@ -196,7 +196,7 @@ void ChatWindow::Draw() {
 
 		ImGui::Separator();
 
-		// “ü—ÍƒGƒŠƒAiŒÅ’èƒoƒbƒtƒ@”ÅAUTF-8j
+		// å…¥åŠ›ã‚¨ãƒªã‚¢ï¼ˆå›ºå®šãƒãƒƒãƒ•ã‚¡ç‰ˆã€UTF-8ï¼‰
 		static char inputBuffer[4096] = "";
 
 		ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_AllowTabInput;
@@ -206,7 +206,7 @@ void ChatWindow::Draw() {
 
 		ImGui::PushItemWidth(-1);
 
-		// ’Êí‚Ìchar”z—ñ‚ðŽg—piImGui‚ª“à•”‚ÅUTF-8‚ðˆ—j
+		// é€šå¸¸ã®charé…åˆ—ã‚’ä½¿ç”¨ï¼ˆImGuiãŒå†…éƒ¨ã§UTF-8ã‚’å‡¦ç†ï¼‰
 		ImGui::InputTextMultiline(
 			"##Input",
 			inputBuffer,
@@ -215,7 +215,7 @@ void ChatWindow::Draw() {
 			inputFlags
 		);
 
-		// Ctrl+Enter‚Å‘—M
+		// Ctrl+Enterã§é€ä¿¡
 		bool ctrlEnterPressed = false;
 		if (ImGui::IsItemFocused()) {
 			ImGuiIO& io = ImGui::GetIO();
@@ -226,27 +226,27 @@ void ChatWindow::Draw() {
 
 		ImGui::PopItemWidth();
 
-		// ‘—Mƒ{ƒ^ƒ“
-		std::string sendButtonLabel = ConvertToUTF8("‘—M (Ctrl+Enter)");
+		// é€ä¿¡ãƒœã‚¿ãƒ³
+		std::string sendButtonLabel = ConvertToUTF8("é€ä¿¡ (Ctrl+Enter)");
 		if (ImGui::Button(sendButtonLabel.c_str(), ImVec2(-1, 0))) {
 			ctrlEnterPressed = true;
 		}
 
-		// ‘—Mˆ—
+		// é€ä¿¡å‡¦ç†
 		if (ctrlEnterPressed && strlen(inputBuffer) > 0 && !isWaitingForResponse_) {
-			// inputBuffer‚ÍŠù‚ÉUTF-8iImGui‚ÆStartUp.cpp‚ÌIMEˆ—‚Ì‚¨‚©‚°j
+			// inputBufferã¯æ—¢ã«UTF-8ï¼ˆImGuiã¨StartUp.cppã®IMEå‡¦ç†ã®ãŠã‹ã’ï¼‰
 			std::string messageUTF8(inputBuffer);
 
 			SendAIMessage(messageUTF8);
 
-			// ƒoƒbƒtƒ@ƒNƒŠƒA
+			// ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 			memset(inputBuffer, 0, sizeof(inputBuffer));
 			ImGui::SetKeyboardFocusHere(-2);
 		}
 
-		// ƒVƒ‡[ƒgƒJƒbƒgƒwƒ‹ƒv
+		// ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆãƒ˜ãƒ«ãƒ—
 		ImGui::Spacing();
-		std::string helpText = ConvertToUTF8("Ctrl+Enter‚Å‘—M | Enter‚Å‰üs | Ctrl+Shift+C‚ÅŠJ•Â");
+		std::string helpText = ConvertToUTF8("Ctrl+Enterã§é€ä¿¡ | Enterã§æ”¹è¡Œ | Ctrl+Shift+Cã§é–‹é–‰");
 		ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", helpText.c_str());
 	}
 	ImGui::End();
@@ -257,11 +257,11 @@ void ChatWindow::SendAIMessage(const std::string& messageUTF8) {
 
 	IZANAGI* izanagi = IZANAGI::GetInstance();
 	if (!izanagi || !izanagi->GetInitialized()) {
-		AddMessage("System", ConvertToUTF8("IZANAGI‚ª—˜—p‚Å‚«‚Ü‚¹‚ñ"), true);
+		AddMessage("System", ConvertToUTF8("IZANAGIãŒåˆ©ç”¨ã§ãã¾ã›ã‚“"), true);
 		return;
 	}
 
-	// ––”ö‚Ì‰üs‚ðœ‹Ž
+	// æœ«å°¾ã®æ”¹è¡Œã‚’é™¤åŽ»
 	std::string cleanMessage = messageUTF8;
 	while (!cleanMessage.empty() && (cleanMessage.back() == '\n' || cleanMessage.back() == '\r')) {
 		cleanMessage.pop_back();
@@ -269,16 +269,16 @@ void ChatWindow::SendAIMessage(const std::string& messageUTF8) {
 
 	if (cleanMessage.empty()) return;
 
-	// ƒ†[ƒU[ƒƒbƒZ[ƒW‚ð’Ç‰ÁiUTF-8j
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¿½åŠ ï¼ˆUTF-8ï¼‰
 	AddMessage("User", cleanMessage, false);
 
-	// ‘O‰ñ‚Ì‰ž“š‚ðƒNƒŠƒAid—vIj
+	// å‰å›žã®å¿œç­”ã‚’ã‚¯ãƒªã‚¢ï¼ˆé‡è¦ï¼ï¼‰
 	lastResponseContent_.clear();
 
-	// IZANAGI‚É‘—MiUTF-8‚Ì‚Ü‚Üj
+	// IZANAGIã«é€ä¿¡ï¼ˆUTF-8ã®ã¾ã¾ï¼‰
 	izanagi->SendAIMessage(cleanMessage);
 
-	// ‰ž“š‘Ò‹@ƒtƒ‰ƒO‚ðƒZƒbƒg
+	// å¿œç­”å¾…æ©Ÿãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆ
 	isWaitingForResponse_ = true;
 
 	ScrollToBottom();
@@ -290,12 +290,12 @@ void ChatWindow::CheckAIResponse() {
 	IZANAGI* izanagi = IZANAGI::GetInstance();
 	if (!izanagi || !izanagi->GetInitialized()) return;
 
-	// AIˆ—’†‚©ƒ`ƒFƒbƒN
+	// AIå‡¦ç†ä¸­ã‹ãƒã‚§ãƒƒã‚¯
 	if (!izanagi->Processing()) {
-		// ‰ž“š‚ðŽæ“¾iUTF-8j
+		// å¿œç­”ã‚’å–å¾—ï¼ˆUTF-8ï¼‰
 		std::string response = izanagi->GetAIMessage();
 
-		// ‰ž“š‚ª‹ó‚Å‚È‚­A‚©‚Â‘O‰ñ‚ÆˆÙ‚È‚éê‡‚Ì‚Ý•\Ž¦
+		// å¿œç­”ãŒç©ºã§ãªãã€ã‹ã¤å‰å›žã¨ç•°ãªã‚‹å ´åˆã®ã¿è¡¨ç¤º
 		if (!response.empty() && (lastResponseContent_.empty() || response != lastResponseContent_)) {
 			AddMessage("AI", response, false);
 			lastResponseContent_ = response;
@@ -303,12 +303,12 @@ void ChatWindow::CheckAIResponse() {
 			isWaitingForResponse_ = false;
 		}
 		else if (response.empty()) {
-			// ‹ó‚Ì‰ž“š‚ª‘±‚­ê‡‚Ìƒ^ƒCƒ€ƒAƒEƒgˆ—
+			// ç©ºã®å¿œç­”ãŒç¶šãå ´åˆã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå‡¦ç†
 			static int emptyResponseCount = 0;
 			emptyResponseCount++;
 
-			if (emptyResponseCount > 20) {  // 10‚©‚ç20‚É‘‚â‚·
-				AddMessage("System", ConvertToUTF8("AI‚©‚ç‚Ì‰ž“š‚ª‚ ‚è‚Ü‚¹‚ñ‚Å‚µ‚½"), true);
+			if (emptyResponseCount > 20) {  // 10ã‹ã‚‰20ã«å¢—ã‚„ã™
+				AddMessage("System", ConvertToUTF8("AIã‹ã‚‰ã®å¿œç­”ãŒã‚ã‚Šã¾ã›ã‚“ã§ã—ãŸ"), true);
 				isWaitingForResponse_ = false;
 				emptyResponseCount = 0;
 			}
@@ -325,7 +325,7 @@ void ChatWindow::AddMessage(const std::string& sender, const std::string& conten
 
 	messages_.emplace_back(sender, contentUTF8, timestamp, isError);
 
-	// ƒƒbƒZ[ƒW”‚ð§ŒÀiÅ‘å100Œj
+	// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ•°ã‚’åˆ¶é™ï¼ˆæœ€å¤§100ä»¶ï¼‰
 	if (messages_.size() > 100) {
 		messages_.pop_front();
 	}

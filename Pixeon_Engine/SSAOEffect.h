@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include "LayerSettings.h"
-#include <d3d11.h>
 #include <DirectXMath.h>
-#include <wrl/client.h>
 #include <vector>
 
 class SSAOEffect : public PostEffectBase
@@ -12,8 +10,8 @@ public:
 	~SSAOEffect() = default;
 
 	void Apply(
-		ID3D11ShaderResourceView* input,
-		ID3D11RenderTargetView* output,
+		RHI::Texture* input,
+		RHI::Texture* output,
 		int width, int height) override;
 
 	void DrawInspector() override;
@@ -23,8 +21,8 @@ public:
 	void LoadFromJson(const nlohmann::json& j) override;
 	PostEffectBase* Clone() const override;
 
-	void SetDepthSRV(ID3D11ShaderResourceView* depthSRV) { depthSRV_ = depthSRV; }
-	void SetNormalSRV(ID3D11ShaderResourceView* normalSRV) { normalSRV_ = normalSRV; }
+	void SetDepthTexture(RHI::Texture* depth) { depth_ = depth; }
+	void SetNormalTexture(RHI::Texture* normal) { normal_ = normal; }
 	void SetCameraMatrices(const DirectX::XMMATRIX& proj, const DirectX::XMMATRIX& invProj)
 	{
 		proj_ = proj;
@@ -33,7 +31,7 @@ public:
 
 	void GenerateAO(int width, int height);
 
-	ID3D11ShaderResourceView* GetAOSRV() const { return blurSRV_.Get(); }
+	RHI::Texture* GetAOTexture() const { return blurTex_.get(); }
 
 	bool IsAOGenerated()    const { return aoGenerated_; }
 	void ResetAOGenerated() { aoGenerated_ = false; }
@@ -65,30 +63,23 @@ private:
 		DirectX::XMFLOAT3 _pad;
 	};
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          ssaoTex_;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   ssaoRTV_;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ssaoSRV_;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          blurTex_;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   blurRTV_;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> blurSRV_;
+	RHI::TextureRef ssaoTex_;
+	RHI::TextureRef blurTex_;
+	RHI::TextureRef noiseTex_;
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>          noiseTex_;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> noiseSRV_;
+	RHI::SamplerRef pointClampSmp_;
+	RHI::SamplerRef pointWrapSmp_;
+	RHI::SamplerRef linearSmp_;
 
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>       pointClampSmp_;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>       pointWrapSmp_;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>       linearSmp_;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>  dsOff_;
-
-	Microsoft::WRL::ComPtr<ID3D11Buffer>             ssaoCB_;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>             kernelCB_;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>             blurCB_;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>             compositeCB_;
+	RHI::BufferRef ssaoCB_;
+	RHI::BufferRef kernelCB_;
+	RHI::BufferRef blurCB_;
+	RHI::BufferRef compositeCB_;
 
 	std::vector<DirectX::XMFLOAT4> kernel_;
 
-	ID3D11ShaderResourceView* depthSRV_ = nullptr;
-	ID3D11ShaderResourceView* normalSRV_ = nullptr;
+	RHI::Texture* depth_ = nullptr;
+	RHI::Texture* normal_ = nullptr;
 	bool aoGenerated_ = false;
 
 	DirectX::XMMATRIX proj_ = DirectX::XMMatrixIdentity();
@@ -101,18 +92,11 @@ private:
 	void EnsureKernel();
 	void EnsureNoise();
 	void EnsureSamplers();
-	void EnsureDepthStencilState();
 	void EnsureConstantBuffers();
 
-	void DrawFullscreen(
-		ID3D11PixelShader* ps,
-		ID3D11ShaderResourceView* const* srvs,
-		UINT                              srvCount,
-		UINT                              srvSlot,
-		ID3D11Buffer* const* psCBs,
-		UINT                              cbCount,
-		UINT                              cbSlot,
-		ID3D11RenderTargetView* rtv,
-		int width, int height
-	);
+	// AO 生成（SSAO → ブラー）。normal があれば Deferred 版のシェーダーを使う
+	bool AOPassRun(int width, int height, RHI::Texture* normal);
+	// 入力をそのまま出力へ描く（シェーダーや深度が無い場合のフォールバック）
+	void PassThrough(RHI::Texture* input, RHI::Texture* output, int width, int height);
+	void FullscreenDraw(RHI::Shader* ps, RHI::Texture* target, int width, int height);
 };

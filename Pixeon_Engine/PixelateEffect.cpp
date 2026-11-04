@@ -4,31 +4,11 @@
 #include "System.h"
 #include "GUI.h"
 
-void PixelateEffect::Apply(ID3D11ShaderResourceView* input,
-	ID3D11RenderTargetView* output,
+void PixelateEffect::Apply(RHI::Texture* input,
+	RHI::Texture* output,
 	int width, int height) {
 	if (!input || !output) return;
-
-	auto* dx = DirectX11::GetInstance();
-	if (!dx) return;
-
-	ID3D11DeviceContext* ctx = dx->GetContext();
-	if (!ctx) return;
-
-	ID3D11RenderTargetView* oldRTV = nullptr;
-	ID3D11DepthStencilView* oldDSV = nullptr;
-	ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
-
-	ctx->OMSetRenderTargets(1, &output, nullptr);
-
-	D3D11_VIEWPORT vp = {};
-	vp.Width = (FLOAT)width;
-	vp.Height = (FLOAT)height;
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	ctx->RSSetViewports(1, &vp);
+	ScopedOutput scope(output, width, height);
 	ImageUtils::DrawSRVPixelated(
 		input,
 		0.0f, 0.0f,
@@ -37,13 +17,6 @@ void PixelateEffect::Apply(ID3D11ShaderResourceView* input,
 		intensity,
 		color
 	);
-	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	ctx->PSSetShaderResources(0, 1, nullSRV);
-
-	ctx->OMSetRenderTargets(1, oldRTV ? &oldRTV : nullptr, oldDSV);
-
-	if (oldRTV) oldRTV->Release();
-	if (oldDSV) oldDSV->Release();
 }
 
 void PixelateEffect::DrawInspector() {

@@ -5,8 +5,9 @@
 #define PIXEON_ENGINE_INEDITOR true
 
 #include <Windows.h>
+#include "../Common/EngineApi.h"
 #include <string>
-#include <d3d11.h>
+#include "RHI/RHI.h"
 #include <chrono>
 #include <list>
 #include <vector>
@@ -14,6 +15,8 @@
 class GameRenderTarget;
 class GBuffer;
 class LightingPass;
+class Layer;
+class AbstractScene;
 
 enum class SoftWareMode {
 	ENGINE,
@@ -24,15 +27,7 @@ class MainFrame {
 private:
 	using clock = std::chrono::steady_clock;
 public:
-	struct EngineConfig {
-		HWND        wnd;
-		int         screenWidth;
-		int         screenHeight;
-		const char* windowTitle;
-		bool        fullscreen;
-		float       targetFPS;
-		const char* startScene;
-	};
+	using EngineConfig = ::EngineConfig;
 public:
 	static MainFrame* GetInstance();
 	static void DeleteInstance();
@@ -43,8 +38,12 @@ public:
 	void UnInit();
 public:
 	HWND GetWindowHandle() const { return _wnd; }
+	bool IsEditorMode() const { return _engineConfig.runMode == EngineRunMode::Editor; }
+	const EngineConfig& GetEngineConfig() const { return _engineConfig; }
+	// 起動引数で指定された開始シーン（空ならシーン設定ファイルに従う）
+	const std::string& GetStartSceneOverride() const { return _startSceneName; }
 	float GetDeltaTime() { return _deltaTime; }
-	ID3D11ShaderResourceView* GetFinalRenderTargetSRV();
+	RHI::Texture* GetFinalRenderTarget();
 	void SetSoftwareMode(SoftWareMode mode) { _softwareMode = mode; }
 	SoftWareMode GetSoftwareMode() const { return _softwareMode; }
 	void fixedMouseCursor(bool fixedCursor) { _fixedMouseCursorFlag = fixedCursor; }
@@ -69,6 +68,16 @@ private:
 	bool _fixedMouseCursorFlag = false;
 
 	void DrawGeometryPass(int layerIndex, GBuffer* gbuffer);
+	Layer* LayerSettingsGet(int layerIndex) const;
+	void LayerSceneDraw(int layerIndex, GameRenderTarget* layerRT, Layer* layerSettings);
+	RHI::Texture* DeferredSSAOGenerate(AbstractScene* scene, Layer* layerSettings, GBuffer* gb);
+	void LayerAnimator2DDraw(int layerIndex, GameRenderTarget* layerRT);
+	void LayerComposite(int layerIndex, GameRenderTarget* layerRT, Layer* layerSettings);
+	bool AssetsMount();
+	void AssetHotReloadRegister();
+	std::string _startSceneName;
+	std::string _archivePath;
+	int _assetListenerId = 0;
 
 private:
 	MainFrame() = default;

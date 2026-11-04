@@ -21,7 +21,7 @@ static std::string GetFileStem(const std::string& path) {
 }
 
 static std::vector<std::string> GetFBXListFromModelManager() {
-	return AssetManager::Instance()->GetCachedAssetNames(true);
+	return AssetManager::Instance()->AssetListGet(AssetType::Model);
 }
 
 void AnimationComponent::Init(AbstractObject* owner) {

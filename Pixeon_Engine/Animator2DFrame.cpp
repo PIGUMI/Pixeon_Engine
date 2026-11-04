@@ -1,4 +1,4 @@
-#include "Animator2DFrame.h"
+ï»¿#include "Animator2DFrame.h"
 #include "Input.h"
 #include "TimelineEditor.h"
 #include "Animator2DManager.h"
@@ -28,29 +28,29 @@ void Animator2DFrame::Init()
 {
 	timelineEditor_ = new TimelineEditor();
 
-	// ƒGƒfƒBƒ^—p‚Ìƒ_ƒ~[ƒJƒƒ‰‚ðì¬ie‚È‚µj
+	// ã‚¨ãƒ‡ã‚£ã‚¿ç”¨ã®ãƒ€ãƒŸãƒ¼ã‚«ãƒ¡ãƒ©ã‚’ä½œæˆï¼ˆè¦ªãªã—ï¼‰
 	editorCamera_ = new CameraComponent();
 	editorCamera_->Init(nullptr);
 
-	// ƒJƒƒ‰‚Ì‰ŠúÝ’è
+	// ã‚«ãƒ¡ãƒ©ã®åˆæœŸè¨­å®š
 	editorCamera_->SetProjectionValues(
 		DirectX::XMConvertToRadians(45.0f),  // FOV
-		1920.0f / 1080.0f,                    // ƒAƒXƒyƒNƒg”ä
+		1920.0f / 1080.0f,                    // ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”
 		0.1f,                                 // Near
 		1000.0f                               // Far
 	);
 
-	// UI•\Ž¦‚É“K‚µ‚½ƒJƒƒ‰ˆÊ’u
+	// UIè¡¨ç¤ºã«é©ã—ãŸã‚«ãƒ¡ãƒ©ä½ç½®
 	Transform camTransform;
 	camTransform.position = DirectX::XMFLOAT3(0.0f, 0.0f, -10.0f);
 	camTransform.rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	camTransform.scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	editorCamera_->SetTransform(camTransform);
 
-	// ’Ž‹“_‚ðÝ’è
+	// æ³¨è¦–ç‚¹ã‚’è¨­å®š
 	editorCamera_->SetFixation(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	// ƒfƒoƒbƒO•`‰æ‚Í–³Œø‰»
+	// ãƒ‡ãƒãƒƒã‚°æç”»ã¯ç„¡åŠ¹åŒ–
 	editorCamera_->SetDebugDraw(false);
 }
 
@@ -73,7 +73,7 @@ void Animator2DFrame::Update()
 		}
 		animator_->SetViewMode(ViewMode::UI);
 
-		// ƒGƒfƒBƒ^ƒJƒƒ‰‚ðÝ’è
+		// ã‚¨ãƒ‡ã‚£ã‚¿ã‚«ãƒ¡ãƒ©ã‚’è¨­å®š
 		if (editorCamera_)
 		{
 			animator_->SetEditorCamera(editorCamera_);

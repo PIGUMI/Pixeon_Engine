@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "TimelineEditor.h"
 #include "Input.h"
 #include "Animator2DFrame.h"
@@ -27,21 +27,21 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 		ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y),
 		colorBackground_);
 
-	// ƒ^ƒCƒ€ƒ‹[ƒ‰[•`‰æ
+	// ã‚¿ã‚¤ãƒ ãƒ«ãƒ¼ãƒ©ãƒ¼æç”»
 	if (animator)
 	{
 		DrawTimeRuler(animator->GetTotalTime());
 
-		// ƒŒƒCƒ„[•`‰æ
+		// ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»
 		DrawLayers(animator);
 
-		// Ä¶ƒwƒbƒh•`‰æiÅ‘O–Êj
+		// å†ç”Ÿãƒ˜ãƒƒãƒ‰æç”»ï¼ˆæœ€å‰é¢ï¼‰
 		DrawPlayhead(animator->fNowTime_);
 
-		// “ü—Íˆ—
+		// å…¥åŠ›å‡¦ç†
 		HandleInput(animator);
 
-		// ‘ŠÔXV
+		// ç·æ™‚é–“æ›´æ–°
 		std::vector<KeyFrame>* keyframes = animator->GetKeyFramePtr();
 		float maxTime = 0.0f;
 		for (auto& kf : *keyframes)
@@ -57,22 +57,22 @@ void TimelineEditor::DrawTimeline(Animator2D* animator)
 	ImGuiIO& io = ImGui::GetIO();
 	ImVec2 mousePos = io.MousePos;
 
-	// ‰EƒNƒŠƒbƒN‚ÅƒRƒ“ƒeƒLƒXƒgƒƒjƒ…[ƒI[ƒvƒ“
+	// å³ã‚¯ãƒªãƒƒã‚¯ã§ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚ªãƒ¼ãƒ—ãƒ³
 	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 	{
 		ImGui::OpenPopup("TimelineContextMenu");
 	}
 
-	// ƒRƒ“ƒeƒLƒXƒgƒƒjƒ…[
+	// ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼
 	if (ImGui::BeginPopup("TimelineContextMenu"))
 	{
 		if (!animator)
 		{
-			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ƒvƒƒWƒFƒNƒg‚ğŠJ‚­").c_str()))
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’é–‹ã").c_str()))
 			{
 				RequestOpenProjectPopup();
 			}
-			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("V‹KƒvƒƒWƒFƒNƒg‚Ìì¬").c_str()))
+			if (ImGui::MenuItem(GUI::GetInstance()->ShiftJISToUTF8("æ–°è¦ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆ").c_str()))
 			{
 				Animator2D* newAnimator = new Animator2D();
 				Animator2DFrame::GetInstance()->SetAnimator(newAnimator);
@@ -131,17 +131,17 @@ void TimelineEditor::DrawTimeRuler(float totalDuration)
 	ImVec2 origin = GetTimelineOrigin();
 	ImVec2 canvasSize = ImGui::GetContentRegionAvail();
 
-	// ƒ‹[ƒ‰[”wŒi
+	// ãƒ«ãƒ¼ãƒ©ãƒ¼èƒŒæ™¯
 	drawList->AddRectFilled(
 		ImVec2(origin.x, origin.y),
 		ImVec2(origin.x + canvasSize.x, origin.y + rulerHeight_),
 		colorRuler_);
 
-	// ŠÔƒƒ‚ƒŠ•`‰æ
+	// æ™‚é–“ãƒ¡ãƒ¢ãƒªæç”»
 	float pixelWidth = totalDuration * timeScale_;
-	float step = 1.0f; // 1•b‚İ
+	float step = 1.0f; // 1ç§’åˆ»ã¿
 
-	// ƒY[ƒ€‚É‰‚¶‚ÄƒXƒeƒbƒv‚ğ’²®
+	// ã‚ºãƒ¼ãƒ ã«å¿œã˜ã¦ã‚¹ãƒ†ãƒƒãƒ—ã‚’èª¿æ•´
 	if (timeScale_ < 50.0f) step = 5.0f;
 	else if (timeScale_ > 200.0f) step = 0.5f;
 
@@ -149,13 +149,13 @@ void TimelineEditor::DrawTimeRuler(float totalDuration)
 	{
 		float x = origin.x + leftPanelWidth_ + TimeToPixel(t);
 
-		// cü
+		// ç¸¦ç·š
 		drawList->AddLine(
 			ImVec2(x, origin.y + rulerHeight_ - 10),
 			ImVec2(x, origin.y + rulerHeight_),
 			IM_COL32(150, 150, 150, 255));
 
-		// ŠÔƒeƒLƒXƒg
+		// æ™‚é–“ãƒ†ã‚­ã‚¹ãƒˆ
 		char timeText[32];
 		snprintf(timeText, sizeof(timeText), "%.1fs", t);
 		drawList->AddText(
@@ -164,7 +164,7 @@ void TimelineEditor::DrawTimeRuler(float totalDuration)
 			timeText);
 	}
 
-	// ƒOƒŠƒbƒhüi‚’¼j
+	// ã‚°ãƒªãƒƒãƒ‰ç·šï¼ˆå‚ç›´ï¼‰
 	for (float t = 0.0f; t <= totalDuration; t += snapInterval_)
 	{
 		float x = origin.x + leftPanelWidth_ + TimeToPixel(t);
@@ -183,13 +183,13 @@ void TimelineEditor::DrawPlayhead(float currentTime)
 
 	float x = origin.x + leftPanelWidth_ + TimeToPixel(currentTime);
 
-	// Ä¶ƒwƒbƒhƒ‰ƒCƒ“
+	// å†ç”Ÿãƒ˜ãƒƒãƒ‰ãƒ©ã‚¤ãƒ³
 	drawList->AddLine(
 		ImVec2(x, origin.y),
 		ImVec2(x, origin.y + canvasSize.y),
 		colorPlayhead_, 2.0f);
 
-	// Ä¶ƒwƒbƒhOŠpŒ`
+	// å†ç”Ÿãƒ˜ãƒƒãƒ‰ä¸‰è§’å½¢
 	ImVec2 triangle[3] = {
 		ImVec2(x, origin.y + rulerHeight_),
 		ImVec2(x - 6, origin.y + rulerHeight_ - 10),
@@ -203,7 +203,7 @@ void TimelineEditor::DrawLayers(Animator2D* animator)
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 	ImVec2 origin = GetTimelineOrigin();
 
-	// ƒŒƒCƒ„[”‚ğæ“¾iÅ‘åƒŒƒCƒ„[”Ô†+1j
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°ã‚’å–å¾—ï¼ˆæœ€å¤§ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·+1ï¼‰
 	int maxLayer = 0;
 	for (auto& kf : animator->GetKeyFrames())
 	{
@@ -211,24 +211,24 @@ void TimelineEditor::DrawLayers(Animator2D* animator)
 	}
 	int layerCount = maxLayer + 1;
 
-	// ƒŒƒCƒ„[‚²‚Æ‚É•`‰æ
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼ã”ã¨ã«æç”»
 	for (int i = 0; i < layerCount; ++i)
 	{
 		float y = origin.y + rulerHeight_ + i * layerHeight_;
 
-		// ƒŒƒCƒ„[”wŒii¶ƒpƒlƒ‹j
+		// ãƒ¬ã‚¤ãƒ¤ãƒ¼èƒŒæ™¯ï¼ˆå·¦ãƒ‘ãƒãƒ«ï¼‰
 		drawList->AddRectFilled(
 			ImVec2(origin.x, y),
 			ImVec2(origin.x + leftPanelWidth_, y + layerHeight_),
 			IM_COL32(50, 50, 52, 255));
 
-		// ƒŒƒCƒ„[‹«ŠEü
+		// ãƒ¬ã‚¤ãƒ¤ãƒ¼å¢ƒç•Œç·š
 		drawList->AddLine(
 			ImVec2(origin.x, y + layerHeight_),
 			ImVec2(origin.x + 2000, y + layerHeight_),
 			colorGrid_);
 
-		// ƒŒƒCƒ„[–¼
+		// ãƒ¬ã‚¤ãƒ¤ãƒ¼å
 		char layerName[32];
 		snprintf(layerName, sizeof(layerName), "Layer %d", i);
 		drawList->AddText(
@@ -237,7 +237,7 @@ void TimelineEditor::DrawLayers(Animator2D* animator)
 			layerName);
 	}
 
-	// KeyFrame•`‰æ
+	// KeyFrameæç”»
 	for (auto& kf : *animator->GetKeyFramePtr())
 	{
 		DrawKeyFrame(&kf, kf.Layer);
@@ -253,7 +253,7 @@ void TimelineEditor::DrawKeyFrame(KeyFrame* keyframe, int layerIndex)
 	float endX = origin.x + leftPanelWidth_ + TimeToPixel(keyframe->EndTime);
 	float y = origin.y + rulerHeight_ + layerIndex * layerHeight_;
 
-	// KeyFrame‹éŒ`
+	// KeyFrameçŸ©å½¢
 	ImVec2 rectMin(startX, y + 5);
 	ImVec2 rectMax(endX, y + layerHeight_ - 5);
 
@@ -262,13 +262,13 @@ void TimelineEditor::DrawKeyFrame(KeyFrame* keyframe, int layerIndex)
 	drawList->AddRectFilled(rectMin, rectMax, fillColor, 4.0f);
 	drawList->AddRect(rectMin, rectMax, colorKeyFrameBorder_, 4.0f, 0, 2.0f);
 
-	// ŠÔ•\¦
+	// æ™‚é–“è¡¨ç¤º
 	drawList->AddText(
 		ImVec2(startX + 5, y + layerHeight_ / 2 - 7),
 		IM_COL32(255, 255, 255, 255),
 		keyframe->KeyFrameName.c_str());
 
-	// ƒŠƒTƒCƒYƒnƒ“ƒhƒ‹
+	// ãƒªã‚µã‚¤ã‚ºãƒãƒ³ãƒ‰ãƒ«
 	drawList->AddRectFilled(
 		ImVec2(startX, y + 5),
 		ImVec2(startX + 5, y + layerHeight_ - 5),
@@ -295,10 +295,10 @@ void TimelineEditor::DrawProjectLoadPopup()
 	}
 
 	if (ImGui::BeginPopupModal("LoadProject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("“Ç‚İ‚ŞƒvƒƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:").c_str());
+		ImGui::Text(GUI::GetInstance()->ShiftJISToUTF8("èª­ã¿è¾¼ã‚€ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠã—ã¦ãã ã•ã„:").c_str());
 		ImGui::Separator();
 
-		// ƒtƒ@ƒCƒ‹‚ğƒŠƒXƒg•\¦
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒªã‚¹ãƒˆè¡¨ç¤º
 		for (int i = 0; i < projectFiles_.size(); ++i) {
 			bool selected = (i == selectedProjectIndex_);
 			if (ImGui::Selectable(projectFiles_[i].c_str(), selected)) {
@@ -313,7 +313,7 @@ void TimelineEditor::DrawProjectLoadPopup()
 			}
 		}
 		ImGui::Separator();
-		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ƒLƒƒƒ“ƒZƒ‹").c_str())) {
+		if (ImGui::Button(GUI::GetInstance()->ShiftJISToUTF8("ã‚­ãƒ£ãƒ³ã‚»ãƒ«").c_str())) {
 			ClearOpenProjectPopupRequest();
 			ImGui::CloseCurrentPopup();
 		}
@@ -328,13 +328,13 @@ void TimelineEditor::HandleInput(Animator2D* animator)
 	ImVec2 mousePos = io.MousePos;
 	ImVec2 origin = GetTimelineOrigin();
 
-	// ƒ}ƒEƒX‚ªƒ^ƒCƒ€ƒ‰ƒCƒ“ã‚É‚ ‚é‚©
+	// ãƒã‚¦ã‚¹ãŒã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ä¸Šã«ã‚ã‚‹ã‹
 	if (!ImGui::IsWindowHovered()) return;
 
-	// ¶ƒNƒŠƒbƒN
+	// å·¦ã‚¯ãƒªãƒƒã‚¯
 	if (ImGui::IsMouseClicked(0))
 	{
-		// KeyFrame‚Ì‘I‘ğ‚Æƒhƒ‰ƒbƒOŠJn
+		// KeyFrameã®é¸æŠã¨ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹
 		selectedKeyFrame_ = nullptr;
 		Animator2DFrame::GetInstance()->SetSelectedKeyFrame(nullptr);
 
@@ -344,14 +344,14 @@ void TimelineEditor::HandleInput(Animator2D* animator)
 			float endX = origin.x + leftPanelWidth_ + TimeToPixel(kf.EndTime);
 			float y = origin.y + rulerHeight_ + kf.Layer * layerHeight_;
 
-			// ƒ}ƒEƒX‚ªKeyFrameã‚É‚ ‚é‚©
+			// ãƒã‚¦ã‚¹ãŒKeyFrameä¸Šã«ã‚ã‚‹ã‹
 			if (mousePos.x >= startX && mousePos.x <= endX &&
 				mousePos.y >= y + 5 && mousePos.y <= y + layerHeight_ - 5)
 			{
 				selectedKeyFrame_ = &kf;
 				Animator2DFrame::GetInstance()->SetSelectedKeyFrame(&kf);
 
-				// ƒŠƒTƒCƒYƒnƒ“ƒhƒ‹ƒ`ƒFƒbƒN
+				// ãƒªã‚µã‚¤ã‚ºãƒãƒ³ãƒ‰ãƒ«ãƒã‚§ãƒƒã‚¯
 				if (mousePos.x <= startX + 5)
 				{
 					isResizingLeft_ = true;
@@ -373,7 +373,7 @@ void TimelineEditor::HandleInput(Animator2D* animator)
 			}
 		}
 
-		// Ä¶ƒwƒbƒh‚ÌƒNƒŠƒbƒN
+		// å†ç”Ÿãƒ˜ãƒƒãƒ‰ã®ã‚¯ãƒªãƒƒã‚¯
 		if (mousePos.y <= origin.y + rulerHeight_)
 		{
 			float clickTime = PixelToTime(mousePos.x - origin.x - leftPanelWidth_);
@@ -381,19 +381,19 @@ void TimelineEditor::HandleInput(Animator2D* animator)
 		}
 	}
 
-	// ƒhƒ‰ƒbƒO’†
+	// ãƒ‰ãƒ©ãƒƒã‚°ä¸­
 	if (isDragging_ && draggedKeyFrame_)
 	{
 		HandleKeyFrameDrag(draggedKeyFrame_);
 	}
 
-	// ƒŠƒTƒCƒY’†
+	// ãƒªã‚µã‚¤ã‚ºä¸­
 	if ((isResizingLeft_ || isResizingRight_) && resizingKeyFrame_)
 	{
 		HandleKeyFrameResize(resizingKeyFrame_);
 	}
 
-	// ƒ}ƒEƒXƒŠƒŠ[ƒX
+	// ãƒã‚¦ã‚¹ãƒªãƒªãƒ¼ã‚¹
 	if (ImGui::IsMouseReleased(0))
 	{
 		isDragging_ = false;
@@ -403,7 +403,7 @@ void TimelineEditor::HandleInput(Animator2D* animator)
 		resizingKeyFrame_ = nullptr;
 	}
 
-	// ‰EƒNƒŠƒbƒNƒƒjƒ…[
+	// å³ã‚¯ãƒªãƒƒã‚¯ãƒ¡ãƒ‹ãƒ¥ãƒ¼
 	if (ImGui::IsMouseClicked(1) && selectedKeyFrame_)
 	{
 		ImGui::OpenPopup("KeyFrameContextMenu");
@@ -413,7 +413,7 @@ void TimelineEditor::HandleInput(Animator2D* animator)
 
 	if (IsKeyPress(VK_CONTROL))
 	{
-		// ƒ}ƒEƒXƒzƒC[ƒ‹‚ÅƒY[ƒ€
+		// ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ã§ã‚ºãƒ¼ãƒ 
 		if (io.MouseWheel != 0.0f)
 		{
 			timeScale_ += io.MouseWheel * 10.0f;
@@ -439,7 +439,7 @@ void TimelineEditor::HandleKeyFrameDrag(KeyFrame* keyframe)
 	keyframe->StartTime = std::max(0.0f, newStartTime);
 	keyframe->EndTime = keyframe->StartTime + duration;
 
-	// ƒŒƒCƒ„[•ÏX
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼å¤‰æ›´
 	int layerDelta = static_cast<int>(delta.y / layerHeight_);
 	keyframe->Layer = std::max(0, keyframe->Layer + layerDelta);
 
@@ -475,7 +475,7 @@ void TimelineEditor::HandleContextMenu(Animator2D* animator, KeyFrame* keyframe)
 {
 	if (ImGui::BeginPopup("KeyFrameContextMenu"))
 	{
-		if (ImGui::MenuItem("íœ"))
+		if (ImGui::MenuItem("å‰Šé™¤"))
 		{
 			animator->RemoveKeyFrame(keyframe);
 			selectedKeyFrame_ = nullptr;
@@ -483,9 +483,9 @@ void TimelineEditor::HandleContextMenu(Animator2D* animator, KeyFrame* keyframe)
 
 		ImGui::Separator();
 
-		ImGui::Text("ŠJn: %.2fs", keyframe->StartTime);
-		ImGui::Text("I—¹: %.2fs", keyframe->EndTime);
-		ImGui::Text("ƒŒƒCƒ„[: %d", keyframe->Layer);
+		ImGui::Text("é–‹å§‹: %.2fs", keyframe->StartTime);
+		ImGui::Text("çµ‚äº†: %.2fs", keyframe->EndTime);
+		ImGui::Text("ãƒ¬ã‚¤ãƒ¤ãƒ¼: %d", keyframe->Layer);
 
 		ImGui::EndPopup();
 	}

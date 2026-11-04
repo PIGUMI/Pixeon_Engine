@@ -1,4 +1,4 @@
-cbuffer ModelCB : register(b0)
+ï»¿cbuffer ModelCB : register(b0)
 {
     matrix gWorld;
     matrix gView;
@@ -108,17 +108,17 @@ float4 main(PS_INPUT i) : SV_TARGET
     float3 ambient = 0.1 * gBaseColor.rgb;
     float3 color = (ambient + lighting) * texCol.rgb * gBaseColor.rgb;
     
-    // ƒrƒ…[‹óŠÔ‚Å‚ÌZ‹——£iƒJƒƒ‰‚©‚ç‚Ì[“xj‚ğg—p
+    // ãƒ“ãƒ¥ãƒ¼ç©ºé–“ã§ã®Zè·é›¢ï¼ˆã‚«ãƒ¡ãƒ©ã‹ã‚‰ã®æ·±åº¦ï¼‰ã‚’ä½¿ç”¨
     float distToCamera = length(i.viewPos);
     
-    // “§‰ßƒpƒ‰ƒ[ƒ^iƒJƒƒ‰‚ÌNearPlane=0.1‚ğl—¶j
-    float fadeStartDist = 1.5; // ‚±‚Ì‹——£‚©‚ç“§–¾‰»ŠJn
-    float fadeEndDist = 0.5; // ‚±‚Ì‹——£‚ÅŠ®‘S“§–¾
+    // é€éãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ï¼ˆã‚«ãƒ¡ãƒ©ã®NearPlane=0.1ã‚’è€ƒæ…®ï¼‰
+    float fadeStartDist = 1.5; // ã“ã®è·é›¢ã‹ã‚‰é€æ˜åŒ–é–‹å§‹
+    float fadeEndDist = 0.5; // ã“ã®è·é›¢ã§å®Œå…¨é€æ˜
     
-    // ‹ß‚¢‚Ù‚Ç“§–¾‚Éi‹t•âŠÔj
+    // è¿‘ã„ã»ã©é€æ˜ã«ï¼ˆé€†è£œé–“ï¼‰
     float alphaByDistance = saturate((distToCamera - fadeEndDist) / (fadeStartDist - fadeEndDist));
     
-    // ƒXƒ€[ƒY‚È“§‰ß‹Èü‚ğ“K—p
+    // ã‚¹ãƒ ãƒ¼ã‚ºãªé€éæ›²ç·šã‚’é©ç”¨
     alphaByDistance = smoothstep(0.0, 1.0, alphaByDistance);
     
     float finalAlpha = texCol.a * gBaseColor.a * alphaByDistance;

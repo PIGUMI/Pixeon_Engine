@@ -1,4 +1,4 @@
-#ifndef ANIMATOR2DFRAME_H
+﻿#ifndef ANIMATOR2DFRAME_H
 #define ANIMATOR2DFRAME_H
 
 #include "CameraComponent.h"
@@ -34,7 +34,7 @@ private:
 	Animator2D* animator_ = nullptr;
 	KeyFrame* selectedKeyFrame_ = nullptr;
 	TimelineEditor* timelineEditor_ = nullptr;
-	CameraComponent* editorCamera_ = nullptr;  // �ǉ�
+	CameraComponent* editorCamera_ = nullptr;  // 追加
 	bool isPlaying_ = false;
 	bool wantOpenTexturePopup_ = false;
 private:

@@ -1,477 +1,267 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼@AssetManager
-* à@@@–¾@ƒAƒZƒbƒgŠÇ—ƒNƒ‰ƒX
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«åã€€AssetManager
+* èª¬ã€€ã€€ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆç®¡ç†ã‚¯ãƒ©ã‚¹
 */
 #include "AssetManager.h"
-#include <fstream>
-#include <Windows.h>
 #include "IMGUI/imgui.h"
+#include <algorithm>
 
-AssetManager* AssetManager::_instance = nullptr;
+AssetManager* AssetManager::m_cls_Instance = nullptr;
 
 /*
-* ŠÖ”–¼@Instance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒ|ƒCƒ“ƒ^
-* à@–¾@AssetManager‚ÌƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚é
+* é–¢æ•°åã€€Instance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+* èª¬ã€€æ˜ã€€AssetManagerã®ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 */
 AssetManager* AssetManager::Instance()
 {
-	if (!_instance) {
-		_instance = new AssetManager();
-	}
-	return _instance;
+	if (!m_cls_Instance) m_cls_Instance = new AssetManager();
+	return m_cls_Instance;
 }
 
 /*
-* ŠÖ”–¼@DeleteInstance
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@AssetManager‚ÌƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü‚·‚é
+* é–¢æ•°åã€€DeleteInstance
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€AssetManagerã®ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã™ã‚‹
 */
 void AssetManager::DeleteInstance()
 {
-	if (_instance) {
-		_instance->UnInit();
-		delete _instance;
-		_instance = nullptr;
+	if (m_cls_Instance) {
+		m_cls_Instance->UnInit();
+		delete m_cls_Instance;
+		m_cls_Instance = nullptr;
 	}
 }
 
+AssetManager::~AssetManager()
+{
+	WatchStop();
+}
+
 /*
-* ŠÖ”–¼@UnInit
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@AssetManager‚ÌƒAƒ“ƒCƒjƒVƒƒƒ‰ƒCƒYˆ—
+* é–¢æ•°åã€€UnInit
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ç›£è¦–ã‚’æ­¢ã‚ã€ãƒã‚¦ãƒ³ãƒˆã¨ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’è§£æ”¾ã™ã‚‹
 */
 void AssetManager::UnInit()
 {
-	StopAutoSync();
-	ClearRawCache();
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		_recentChanges.clear();
-	}
+	WatchStop();
+	m_cls_Vfs.SourcesClear();
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	m_RecentChanges.clear();
+	m_Listeners.clear();
 }
 
 /*
-* ŠÖ”–¼@~AssetManager
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@AssetManager‚ÌƒfƒXƒgƒ‰ƒNƒ^
+* é–¢æ•°åã€€DirectoryMount
+* å¼•ã€€æ•°ã€€prefixï¼šãƒã‚¦ãƒ³ãƒˆå…ˆ (VfsPrefix)ã€€dirï¼šå®Ÿãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€€watchï¼šå¤‰æ›´ç›£è¦–ã™ã‚‹ã‹
+* æˆ»ã‚Šå€¤ã€€ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒå­˜åœ¨ã™ã‚Œã° true
+* èª¬ã€€æ˜ã€€ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ãƒã‚¦ãƒ³ãƒˆã™ã‚‹
 */
-AssetManager::~AssetManager() {
-	StopAutoSync();
-}
-
-/*
-* ŠÖ”–¼@SetRoot
-* ˆø@”@rootFƒAƒZƒbƒgƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ‚ÌƒpƒX
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒAƒZƒbƒgƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ‚ğİ’è‚·‚é
-*/
-void AssetManager::SetRoot(const std::string& root) { _root = root; }
-
-/*
-* ŠÖ”–¼@SetLoadMode
-* ˆø@”@mFƒ[ƒhƒ‚[ƒh
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒAƒZƒbƒg‚Ìƒ[ƒhƒ‚[ƒh‚ğİ’è‚·‚é
-*/
-void AssetManager::SetLoadMode(LoadMode m) { _mode = m; }
-
-/*
-* ŠÖ”–¼@Normalize
-* ˆø@”@nameF³‹K‰»‚·‚éƒAƒZƒbƒg–¼
-* –ß‚è’l@³‹K‰»‚³‚ê‚½ƒAƒZƒbƒg–¼
-* à@–¾@ƒAƒZƒbƒg–¼‚ÌƒpƒX‹æØ‚è•¶š‚ğ“ˆê‚·‚é
-*/
-std::string AssetManager::Normalize(const std::string& name) const {
-	std::string s = name;
-	for (auto& c : s) if (c == '\\') c = '/';
-	return s;
-}
-
-/*
-* ŠÖ”–¼@Exists
-* ˆø@”@logicalNameF˜_—ƒAƒZƒbƒg–¼
-* –ß‚è’l@‘¶İ‚·‚éê‡trueA‘¶İ‚µ‚È‚¢ê‡false
-* à@–¾@ƒAƒZƒbƒg‚ª‘¶İ‚·‚é‚©‚Ç‚¤‚©‚ğŠm”F‚·‚é
-*/
-bool AssetManager::Exists(const std::string& logicalName) {
-	std::string norm = Normalize(logicalName);
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		if (_cache.find(norm) != _cache.end()) return true;
-	}
-	std::filesystem::path p = std::filesystem::path(_root) / norm;
-	return std::filesystem::exists(p);
-}
-
-/*
-* ŠÖ”–¼@LoadAsset
-* ˆø@”@logicalNameF˜_—ƒAƒZƒbƒg–¼
-* @@@@outDataF“Ç‚İ‚ñ‚¾ƒAƒZƒbƒgƒf[ƒ^‚Ìo—Íæ
-* –ß‚è’l@“Ç‚İ‚İ‚É¬Œ÷‚µ‚½ê‡trueA¸”s‚µ‚½ê‡false
-* à@–¾@ƒAƒZƒbƒg‚ğ“Ç‚İ‚İA¶ƒoƒCƒgƒf[ƒ^‚ğæ“¾‚·‚é
-*/
-bool AssetManager::LoadAsset(const std::string& logicalName, std::vector<uint8_t>& outData) {
-	std::string norm = Normalize(logicalName);
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		auto it = _cache.find(norm);
-		if (it != _cache.end()) {
-			outData = it->second;
-			return true;
-		}
-	}
-
-	std::filesystem::path p = std::filesystem::path(_root) / norm;
-	std::ifstream ifs(p, std::ios::binary);
-	if (!ifs) {
-		return false;
-	}
-	ifs.seekg(0, std::ios::end);
-	size_t sz = (size_t)ifs.tellg();
-	ifs.seekg(0, std::ios::beg);
-	outData.resize(sz);
-	ifs.read((char*)outData.data(), sz);
-	if (!ifs) {
-		return false;
-	}
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		_cache[norm] = outData;
-	}
-	return true;
-}
-
-/*
-* ŠÖ”–¼@ClearRawCache
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@¶ƒoƒCƒgƒLƒƒƒbƒVƒ…‚ğƒNƒŠƒA‚·‚é
-*/
-void AssetManager::ClearRawCache() {
-	std::lock_guard<std::mutex> lk(_mtx);
-	_cache.clear();
-	_fileMeta.clear();
-}
-
-/*
-* ŠÖ”–¼@PushChange
-* ˆø@”@typeF•ÏXƒ^ƒCƒv
-* @@@@pathF•ÏX‚³‚ê‚½ƒAƒZƒbƒg‚ÌƒpƒX
-* –ß‚è’l@‚È‚µ
-* à@–¾@•ÏXƒƒO‚ğ’Ç‰Á‚·‚é
-*/
-void AssetManager::PushChange(ChangeType type, const std::string& path) {
-	std::lock_guard<std::mutex> lk(_mtx);
-	if (_recentChanges.size() >= _kMaxRecentChanges)
-		_recentChanges.pop_front();
-	_recentChanges.push_back({ type, path, _scanCount.load() });
-}
-
-/*
-* ŠÖ”–¼@StartAutoSync
-* ˆø@”@intervalFƒXƒLƒƒƒ“ŠÔŠu
-* @@@@recursiveFÄ‹A“I‚ÉƒTƒuƒfƒBƒŒƒNƒgƒŠ‚àŠÄ‹‚·‚é‚©‚Ç‚¤‚©
-* –ß‚è’l@‚È‚µ
-* à@–¾@©“®“¯ŠúŠÄ‹‚ğŠJn‚·‚é
-*/
-void AssetManager::StartAutoSync(std::chrono::milliseconds interval, bool recursive) {
-	if (_watchRunning.load()) return;
-	if (_root.empty()) {
-		return;
-	}
-	_interval = interval;
-	_recursive = recursive;
-	_watchRunning = true;
-	_watchThread = std::thread(&AssetManager::WatchLoop, this);
-}
-
-/*
-* ŠÖ”–¼@StopAutoSync
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@©“®“¯ŠúŠÄ‹‚ğ’â~‚·‚é
-*/
-void AssetManager::StopAutoSync() {
-	if (!_watchRunning.load()) return;
-	_watchRunning = false;
-	if (_watchThread.joinable()) _watchThread.join();
-}
-
-/*
-* ŠÖ”–¼@WatchLoop
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@©“®“¯ŠúŠÄ‹ƒ‹[ƒv
-*/
-void AssetManager::WatchLoop() {
-	PerformScan();
-	while (_watchRunning.load()) {
-		auto t0 = std::chrono::steady_clock::now();
-		PerformScan();
-		auto t1 = std::chrono::steady_clock::now();
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-		_lastScanDurationMs.store((uint64_t)elapsed);
-		std::this_thread::sleep_for(_interval);
-	}
-}
-
-/*
-* ŠÖ”–¼@PerformScan
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒAƒZƒbƒgƒfƒBƒŒƒNƒgƒŠ‚ÌƒXƒLƒƒƒ“‚ğÀs‚µA•ÏX‚ğŒŸo‚µ‚Ä“K—p‚·‚é
-*/
-void AssetManager::PerformScan() {
-	using namespace std::filesystem;
-
-	std::unordered_map<std::string, FileMeta> current;
-	std::vector<std::string> additions;
-	std::vector<std::string> modifications;
-	std::vector<std::string> deletions;
-
-	const path root_Path(_root);
-	if (!exists(root_Path)) {
-		return;
-	}
-
-	auto scan_Start = std::chrono::steady_clock::now();
-
-	std::error_code ec;
-	if (_recursive) {
-		for (recursive_directory_iterator it(root_Path, ec), end; it != end && !ec; ++it) {
-			if (!it->is_regular_file()) continue;
-			auto rel = relative(it->path(), root_Path, ec);
-			if (ec) continue;
-			std::string relStr = Normalize(rel.generic_string());
-			FileMeta meta;
-			meta.size = (uint64_t)file_size(it->path(), ec);
-			meta.writeTime = last_write_time(it->path(), ec);
-			current[relStr] = meta;
-		}
-	}
-	else {
-		for (directory_iterator it(root_Path, ec), end; it != end && !ec; ++it) {
-			if (!it->is_regular_file()) continue;
-			auto rel = relative(it->path(), root_Path, ec);
-			if (ec) continue;
-			std::string relStr = Normalize(rel.generic_string());
-			FileMeta meta;
-			meta.size = (uint64_t)file_size(it->path(), ec);
-			meta.writeTime = last_write_time(it->path(), ec);
-			current[relStr] = meta;
-		}
-	}
-
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		for (auto& kv : current) {
-			auto itOld = _fileMeta.find(kv.first);
-			if (itOld == _fileMeta.end()) {
-				additions.push_back(kv.first);
-			}
-			else {
-				if (kv.second.size != itOld->second.size ||
-					kv.second.writeTime != itOld->second.writeTime) {
-					modifications.push_back(kv.first);
-				}
-			}
-		}
-		for (auto& old : _fileMeta) {
-			if (current.find(old.first) == current.end()) {
-				deletions.push_back(old.first);
-			}
-		}
-	}
-
-	for (auto& add : additions) {
-		std::vector<uint8_t> dummy;
-		if (LoadAsset(add, dummy)) {
-			PushChange(ChangeType::Added, add);
-		}
-		else {
-			PushChange(ChangeType::ReloadFailed, add);
-		}
-	}
-	for (auto& mod : modifications) {
-		std::vector<uint8_t> dummy;
-		if (LoadAsset(mod, dummy)) {
-			PushChange(ChangeType::Modified, mod);
-		}
-		else {
-			PushChange(ChangeType::ReloadFailed, mod);
-		}
-	}
-
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		for (auto& del : deletions) {
-			_cache.erase(del);
-			_fileMeta.erase(del);
-			PushChange(ChangeType::Removed, del);
-		}
-		for (auto& kv : current) {
-			_fileMeta[kv.first] = kv.second;
-		}
-	}
-
-	_lastDiffAdds.store(additions.size());
-	_lastDiffMods.store(modifications.size());
-	_lastDiffRemoves.store(deletions.size());
-	_scanCount.fetch_add(1);
-}
-
-/*
-* ŠÖ”–¼@DrawDebugGUI
-* ˆø@”@‚È‚µ
-* –ß‚è’l@‚È‚µ
-* à@–¾@ƒfƒoƒbƒO—pGUI‚ğ•`‰æ‚·‚é
-*/
-void AssetManager::DrawDebugGUI()
+bool AssetManager::DirectoryMount(const std::string& prefix, const std::string& dir, bool watch)
 {
-	std::lock_guard<std::mutex> lk(_mtx);
+	return m_cls_Vfs.DirectoryMount(prefix, dir, watch);
+}
+
+/*
+* é–¢æ•°åã€€ArchiveMount
+* å¼•ã€€æ•°ã€€archive_pathï¼šã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã€€out_errorï¼šã‚¨ãƒ©ãƒ¼å†…å®¹
+* æˆ»ã‚Šå€¤ã€€æˆåŠŸãªã‚‰ true
+* èª¬ã€€æ˜ã€€ãƒ“ãƒ«ãƒ‰æ¸ˆã¿ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’ãƒã‚¦ãƒ³ãƒˆã™ã‚‹ï¼ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚ˆã‚Šå„ªå…ˆã•ã‚Œã‚‹ï¼‰
+*/
+bool AssetManager::ArchiveMount(const std::string& archive_path, std::string* out_error)
+{
+	return m_cls_Vfs.ArchiveMount(archive_path, out_error);
+}
+
+/*
+* é–¢æ•°åã€€AssetPathMake
+* å¼•ã€€æ•°ã€€logical_nameï¼šAssets ãƒ«ãƒ¼ãƒˆã‹ã‚‰ã®ç›¸å¯¾å
+* æˆ»ã‚Šå€¤ã€€ä»®æƒ³ãƒ‘ã‚¹
+* èª¬ã€€æ˜ã€€è«–ç†åã‚’ assets/ ä»¥ä¸‹ã®ä»®æƒ³ãƒ‘ã‚¹ã¸å¤‰æ›ã™ã‚‹
+*/
+std::string AssetManager::AssetPathMake(const std::string& logical_name)
+{
+	return std::string(VfsPrefix::ASSETS) + PixArchive::PathClean(logical_name);
+}
+
+/*
+* é–¢æ•°åã€€AssetLoad
+* å¼•ã€€æ•°ã€€logical_nameï¼šè«–ç†ã‚¢ã‚»ãƒƒãƒˆåã€€out_dataï¼šèª­ã¿è¾¼ã¿å…ˆ
+* æˆ»ã‚Šå€¤ã€€æˆåŠŸãªã‚‰ true
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆã®ç”Ÿãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
+*/
+bool AssetManager::AssetLoad(const std::string& logical_name, std::vector<uint8_t>& out_data)
+{
+	return m_cls_Vfs.FileRead(AssetPathMake(logical_name), out_data);
+}
+
+/*
+* é–¢æ•°åã€€AssetExists
+* å¼•ã€€æ•°ã€€logical_nameï¼šè«–ç†ã‚¢ã‚»ãƒƒãƒˆå
+* æˆ»ã‚Šå€¤ã€€å­˜åœ¨ã™ã‚Œã° true
+* èª¬ã€€æ˜ã€€ã‚¢ã‚»ãƒƒãƒˆã®å­˜åœ¨ã‚’ç¢ºèªã™ã‚‹
+*/
+bool AssetManager::AssetExists(const std::string& logical_name) const
+{
+	return m_cls_Vfs.FileExists(AssetPathMake(logical_name));
+}
+
+/*
+* é–¢æ•°åã€€AssetListGet
+* å¼•ã€€æ•°ã€€typesï¼šå–å¾—ã™ã‚‹ç¨®åˆ¥
+* æˆ»ã‚Šå€¤ã€€è«–ç†ã‚¢ã‚»ãƒƒãƒˆåã®ä¸€è¦§ï¼ˆæ˜‡é †ï¼‰
+* èª¬ã€€æ˜ã€€ç´¢å¼•ã‹ã‚‰æŒ‡å®šç¨®åˆ¥ã®ã‚¢ã‚»ãƒƒãƒˆåã‚’åˆ—æŒ™ã™ã‚‹ï¼ˆãƒ•ã‚¡ã‚¤ãƒ«å†…å®¹ã¯èª­ã¾ãªã„ï¼‰
+*/
+std::vector<std::string> AssetManager::AssetListGet(std::initializer_list<AssetType> types) const
+{
+	const size_t prefix_len = std::char_traits<char>::length(VfsPrefix::ASSETS);
+	std::vector<std::string> result;
+	for (auto& info : m_cls_Vfs.FileListGet(VfsPrefix::ASSETS)) {
+		const AssetType t = AssetTypeUtil::TypeFromPath(info.path);
+		if (std::find(types.begin(), types.end(), t) != types.end()) {
+			result.push_back(info.path.substr(prefix_len));
+		}
+	}
+	return result;
+}
+
+std::vector<std::string> AssetManager::AssetListGet(AssetType type) const
+{
+	return AssetListGet({ type });
+}
+
+bool AssetManager::FileRead(const std::string& virtual_path, std::vector<uint8_t>& out_data)
+{
+	return m_cls_Vfs.FileRead(virtual_path, out_data);
+}
+
+bool AssetManager::TextRead(const std::string& virtual_path, std::string& out_text)
+{
+	return m_cls_Vfs.TextRead(virtual_path, out_text);
+}
+
+bool AssetManager::FileExists(const std::string& virtual_path) const
+{
+	return m_cls_Vfs.FileExists(virtual_path);
+}
+
+std::vector<FileInfo> AssetManager::FileListGet(const std::string& prefix) const
+{
+	return m_cls_Vfs.FileListGet(prefix);
+}
+
+/*
+* é–¢æ•°åã€€WatchStart
+* å¼•ã€€æ•°ã€€intervalï¼šèµ°æŸ»é–“éš”
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ç›£è¦–å¯¾è±¡ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å¤‰æ›´æ¤œå‡ºã‚’é–‹å§‹ã™ã‚‹
+*/
+void AssetManager::WatchStart(std::chrono::milliseconds interval)
+{
+	m_cls_Vfs.WatchStart(interval);
+}
+
+void AssetManager::WatchStop()
+{
+	m_cls_Vfs.WatchStop();
+}
+
+/*
+* é–¢æ•°åã€€ListenerAdd
+* å¼•ã€€æ•°ã€€listenerï¼šå¤‰æ›´é€šçŸ¥ã‚’å—ã‘å–ã‚‹é–¢æ•°
+* æˆ»ã‚Šå€¤ã€€è§£é™¤ç”¨ã® ID
+* èª¬ã€€æ˜ã€€ãƒ•ã‚¡ã‚¤ãƒ«å¤‰æ›´ã®é€šçŸ¥å…ˆã‚’ç™»éŒ²ã™ã‚‹
+*/
+int AssetManager::ListenerAdd(ChangeListener listener)
+{
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	const int id = m_i_NextListenerId++;
+	m_Listeners.emplace_back(id, std::move(listener));
+	return id;
+}
+
+void AssetManager::ListenerRemove(int id)
+{
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	m_Listeners.erase(std::remove_if(m_Listeners.begin(), m_Listeners.end(),
+		[id](const auto& p) { return p.first == id; }), m_Listeners.end());
+}
+
+/*
+* é–¢æ•°åã€€ChangesDispatch
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ç›£è¦–ã‚¹ãƒ¬ãƒƒãƒ‰ãŒæ¤œå‡ºã—ãŸå¤‰æ›´ã‚’ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã§ãƒªã‚¹ãƒŠãƒ¼ã¸é…ä¿¡ã™ã‚‹
+*         ï¼ˆGPU ãƒªã‚½ãƒ¼ã‚¹ã®å†ç”Ÿæˆã¯ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã§è¡Œã†å¿…è¦ãŒã‚ã‚‹ãŸã‚ï¼‰
+*/
+void AssetManager::ChangesDispatch()
+{
+	std::vector<FileChange> changes;
+	if (m_cls_Vfs.ChangesPoll(changes) == 0) return;
+
+	std::vector<std::pair<int, ChangeListener>> listeners;
+	{
+		std::lock_guard<std::mutex> lk(m_Mutex);
+		listeners = m_Listeners;
+		for (auto& c : changes) {
+			if (m_RecentChanges.size() >= MAX_RECENT_CHANGES) m_RecentChanges.pop_front();
+			m_RecentChanges.push_back({ c, m_cls_Vfs.ScanCountGet() });
+		}
+	}
+	for (auto& c : changes) {
+		for (auto& l : listeners) l.second(c);
+	}
+}
+
+/*
+* é–¢æ•°åã€€DebugGUIDraw
+* å¼•ã€€æ•°ã€€ãªã—
+* æˆ»ã‚Šå€¤ã€€ãªã—
+* èª¬ã€€æ˜ã€€ãƒ‡ãƒãƒƒã‚°ç”¨GUIã‚’æç”»ã™ã‚‹
+*/
+void AssetManager::DebugGUIDraw()
+{
 	ImGui::TextUnformatted("AssetManager");
 	ImGui::Separator();
-	ImGui::Text("Root: %s", _root.c_str());
-	ImGui::Text("Mode: %s", (_mode == LoadMode::FromSource) ? "FromSource" : "FromArchive");
-	ImGui::Text("Cached Raw Files: %zu", _cache.size());
-	ImGui::Text("AutoSync: %s", _watchRunning.load() ? "Running" : "Stopped");
-	ImGui::Text("ScanCount: %llu", (unsigned long long)_scanCount.load());
-	ImGui::Text("LastDiff A=%llu M=%llu R=%llu",
-		(unsigned long long)_lastDiffAdds.load(),
-		(unsigned long long)_lastDiffMods.load(),
-		(unsigned long long)_lastDiffRemoves.load());
-	ImGui::Text("LastScanDuration: %llu ms", (unsigned long long)_lastScanDurationMs.load());
+	ImGui::TextUnformatted("Mounts (ä¸Šã»ã©å„ªå…ˆ):");
+	for (auto& name : m_cls_Vfs.SourceNamesGet()) ImGui::BulletText("%s", name.c_str());
+
+	const auto st = m_cls_Vfs.CacheStatsGet();
+	ImGui::Text("Raw Cache: %zu files, %.2f / %.2f MB (hit %llu / miss %llu)",
+		st.i_Entries, st.i_Bytes / (1024.0 * 1024.0), st.i_Budget / (1024.0 * 1024.0),
+		(unsigned long long)st.i_Hits, (unsigned long long)st.i_Misses);
+	ImGui::Text("AutoSync: %s  ScanCount: %llu", IsWatching() ? "Running" : "Stopped",
+		(unsigned long long)m_cls_Vfs.ScanCountGet());
 
 	static char filter[128] = "";
 	ImGui::InputText("Filter (substring)", filter, sizeof(filter));
-
-	if (ImGui::Button("Clear Raw Cache")) {
-		_cache.clear();
-		_fileMeta.clear();
-	}
+	if (ImGui::Button("Clear Raw Cache")) m_cls_Vfs.CacheClear();
 	ImGui::SameLine();
-	if (ImGui::Button("Clear Change Log")) {
-		_recentChanges.clear();
-	}
+	std::lock_guard<std::mutex> lk(m_Mutex);
+	if (ImGui::Button("Clear Change Log")) m_RecentChanges.clear();
 
 	ImGui::Separator();
 	ImGui::TextUnformatted("Recent Changes:");
 	ImGui::BeginChild("AssetManagerChanges", ImVec2(0, 120), true);
-	for (auto it = _recentChanges.rbegin(); it != _recentChanges.rend(); ++it) {
-		const char* t = "";
-		switch (it->type) {
-		case ChangeType::Added: t = "ADD"; break;
-		case ChangeType::Removed: t = "DEL"; break;
-		case ChangeType::Modified: t = "MOD"; break;
-		case ChangeType::ReloadFailed: t = "ERR"; break;
-		}
-		if (filter[0] && it->path.find(filter) == std::string::npos) continue;
-		ImGui::Text("[%s] %s (scan=%llu)", t, it->path.c_str(), (unsigned long long)it->timestampFrame);
+	for (auto it = m_RecentChanges.rbegin(); it != m_RecentChanges.rend(); ++it) {
+		const char* t = (it->change.e_Type == FileChange::Type::Added) ? "ADD"
+			: (it->change.e_Type == FileChange::Type::Removed) ? "DEL" : "MOD";
+		if (filter[0] && it->change.path.find(filter) == std::string::npos) continue;
+		ImGui::Text("[%s] %s (scan=%llu)", t, it->change.path.c_str(), (unsigned long long)it->i_Scan);
 	}
 	ImGui::EndChild();
 
 	ImGui::Separator();
-	ImGui::TextUnformatted("Cache Entries:");
-	ImGui::BeginChild("AssetManagerCacheList", ImVec2(0, 160), true);
-	for (auto& kv : _cache) {
-		if (filter[0] && kv.first.find(filter) == std::string::npos) continue;
-		ImGui::Text("%s (size=%zu bytes)", kv.first.c_str(), kv.second.size());
+	ImGui::TextUnformatted("Files:");
+	ImGui::BeginChild("AssetManagerFileList", ImVec2(0, 160), true);
+	for (auto& info : m_cls_Vfs.FileListGet("")) {
+		if (filter[0] && info.path.find(filter) == std::string::npos) continue;
+		ImGui::Text("%-12s %s (%llu bytes)", AssetTypeUtil::NameGet(AssetTypeUtil::TypeFromPath(info.path)),
+			info.path.c_str(), (unsigned long long)info.i_Size);
 	}
 	ImGui::EndChild();
-}
-
-/*
-* ŠÖ”–¼@GetCachedAssetNames
-* ˆø@”@onlyModelExtFƒ‚ƒfƒ‹Šg’£q‚Ì‚İæ“¾‚·‚é‚©‚Ç‚¤‚©
-* –ß‚è’l@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg
-* à@–¾@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
-*/
-std::vector<std::string> AssetManager::GetCachedAssetNames(bool onlyModelExt) const {
-	std::vector<std::string> result;
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		result.reserve(_cache.size());
-		for (auto& kv : _cache) {
-			if (!onlyModelExt) {
-				result.push_back(kv.first);
-			}
-			else {
-				std::string lower = kv.first;
-				for (auto& c : lower) c = (char)tolower(c);
-				auto hasExt = [&](const char* ext)->bool {
-					size_t Ls = lower.size(), Le = std::strlen(ext);
-					if (Ls < Le) return false;
-					return lower.compare(Ls - Le, Le, ext) == 0;
-					};
-				if (hasExt(".fbx") || hasExt(".obj") || hasExt(".glb"))
-					result.push_back(kv.first);
-			}
-		}
-	}
-	std::sort(result.begin(), result.end());
-	return result;
-}
-
-/*
-* ŠÖ”–¼@GetCachedTextureNames
-* ˆø@”@‚È‚µ
-* –ß‚è’l@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg
-* à@–¾@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
-*/
-std::vector<std::string> AssetManager::GetCachedTextureNames() const {
-	static const char* exts[] = { ".png", ".jpg", ".jpeg", ".tga", ".dds", ".bmp", ".hdr" };
-	std::vector<std::string> result;
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		result.reserve(_cache.size());
-		for (auto& kv : _cache) {
-			std::string lower = kv.first;
-			for (auto& c : lower) c = (char)tolower(c);
-			auto hasExt = [&](const char* ext)->bool {
-				size_t Ls = lower.size(), Le = std::strlen(ext);
-				if (Ls < Le) return false;
-				return lower.compare(Ls - Le, Le, ext) == 0;
-				};
-			for (auto* e : exts) {
-				if (hasExt(e)) { result.push_back(kv.first); break; }
-			}
-		}
-	}
-	std::sort(result.begin(), result.end());
-	return result;
-}
-
-/*
-* ŠÖ”–¼@GetCachedEffectNames
-* ˆø@”@‚È‚µ
-* –ß‚è’l@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒGƒtƒFƒNƒgƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg
-* à@–¾@ƒLƒƒƒbƒVƒ…‚³‚ê‚Ä‚¢‚éƒGƒtƒFƒNƒgƒAƒZƒbƒg–¼‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
-*/
-std::vector<std::string> AssetManager::GetCachedEffectNames() const
-{
-	static const char* exts[] = { ".efkefc", ".efk" };
-	std::vector<std::string> result;
-	{
-		std::lock_guard<std::mutex> lk(_mtx);
-		result.reserve(_cache.size());
-		for (auto& kv : _cache) {
-			std::string lower = kv.first;
-			for (auto& c : lower) c = (char)tolower(c);
-			auto hasExt = [&](const char* ext)->bool {
-				size_t Ls = lower.size(), Le = std::strlen(ext);
-				if (Ls < Le) return false;
-				return lower.compare(Ls - Le, Le, ext) == 0;
-				};
-			for (auto* e : exts) {
-				if (hasExt(e)) { result.push_back(kv.first); break; }
-			}
-		}
-	}
-	std::sort(result.begin(), result.end());
-	return result;
 }

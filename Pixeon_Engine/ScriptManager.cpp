@@ -1,4 +1,4 @@
-#include "ScriptManager.h"
+ï»¿#include "ScriptManager.h"
 #include "ScripComponent.h"
 #include "SettingManager.h"
 #include "IScript.h"
@@ -33,7 +33,7 @@ void ScriptManager::Release()
 ScriptManager::~ScriptManager()
 {
 	std::lock_guard<std::mutex> lk(_mutex);
-	// ‘S‚Ä‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü‚µ‚ÄDLL‚ğƒAƒ“ƒ[ƒh
+	// å…¨ã¦ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã—ã¦DLLã‚’ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰
 	for (auto& kv : _dllMap) {
 		UnloadDllEntry(kv.second);
 	}
@@ -56,17 +56,17 @@ void ScriptManager::UnloadAllInstancesOfScript(const std::string& scriptName)
 
 	auto& entry = it->second;
 
-	// ‚·‚×‚Ä‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü
+	// ã™ã¹ã¦ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„
 	if (entry.hDll) {
 		auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(entry.hDll, "DestroyScriptInstance");
 
-		// ƒCƒ“ƒXƒ^ƒ“ƒX‚ÌƒRƒs[‚ğì¬(ƒCƒeƒŒ[ƒg’†‚Ì•ÏX‚ğ”ğ‚¯‚é‚½‚ß)
+		// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ã‚³ãƒ”ãƒ¼ã‚’ä½œæˆ(ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆä¸­ã®å¤‰æ›´ã‚’é¿ã‘ã‚‹ãŸã‚)
 		std::vector<std::pair<ScripComponent*, IScript*>> instancesCopy;
 		for (auto& kv : entry.instances) {
 			instancesCopy.push_back(kv);
 		}
 
-		// ‚·‚×‚Ä‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü
+		// ã™ã¹ã¦ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„
 		for (auto& kv : instancesCopy) {
 			IScript* inst = kv.second;
 			if (inst) {
@@ -77,7 +77,7 @@ void ScriptManager::UnloadAllInstancesOfScript(const std::string& scriptName)
 		}
 		entry.instances.clear();
 
-		// DLL‚ğƒAƒ“ƒ[ƒh
+		// DLLã‚’ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰
 		FreeLibrary(entry.hDll);
 		entry.hDll = nullptr;
 		entry.refCount = 0;
@@ -88,20 +88,20 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 {
 	std::lock_guard<std::mutex> lk(_mutex);
 
-	// ƒGƒ“ƒgƒŠì¬‚Ü‚½‚Íæ“¾
+	// ã‚¨ãƒ³ãƒˆãƒªä½œæˆã¾ãŸã¯å–å¾—
 	auto& entry = _dllMap[scriptName];
 
-	// ƒ\[ƒX/ƒoƒCƒiƒŠƒpƒX
+	// ã‚½ãƒ¼ã‚¹/ãƒã‚¤ãƒŠãƒªãƒ‘ã‚¹
 	std::string srcPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".cpp";
 	std::string headerPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".h";
 	std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
-	// ƒ\[ƒXƒtƒ@ƒCƒ‹‚Ì‘¶İŠm”F
+	// ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ç¢ºèª
 	bool hasCpp = fs::exists(srcPath);
 	bool hasH = fs::exists(headerPath);
 	bool hasDll = fs::exists(dllPath);
 
-	// ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚Ì‰Šú‰»(‰‰ñ‚Ì‚İAƒ\[ƒXƒtƒ@ƒCƒ‹‚ª‚ ‚éê‡)
+	// ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã®åˆæœŸåŒ–(åˆå›ã®ã¿ã€ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚‹å ´åˆ)
 	if (!entry.initialized) {
 		try {
 			if (hasCpp) {
@@ -113,41 +113,41 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 			entry.initialized = true;
 		}
 		catch (...) {
-			// ƒ^ƒCƒ€ƒXƒ^ƒ“ƒvæ“¾¸”s‚Í‰Šú‰»Ï‚İƒtƒ‰ƒO‚¾‚¯—§‚Ä‚é
+			// ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—å–å¾—å¤±æ•—æ™‚ã¯åˆæœŸåŒ–æ¸ˆã¿ãƒ•ãƒ©ã‚°ã ã‘ç«‹ã¦ã‚‹
 			entry.initialized = true;
 		}
 	}
 
-	// ƒrƒ‹ƒh‚ª•K—v‚©ƒ`ƒFƒbƒN
+	// ãƒ“ãƒ«ãƒ‰ãŒå¿…è¦ã‹ãƒã‚§ãƒƒã‚¯
 	bool needBuild = false;
 
-	// ƒP[ƒX1: DLL‚àƒ\[ƒX‚à‚È‚¢ ¨ ƒGƒ‰[
+	// ã‚±ãƒ¼ã‚¹1: DLLã‚‚ã‚½ãƒ¼ã‚¹ã‚‚ãªã„ â†’ ã‚¨ãƒ©ãƒ¼
 	if (!hasDll && !hasCpp) {
 		std::cerr << "[ScriptManager] Neither DLL nor source files found for: " << scriptName << std::endl;
 		return nullptr;
 	}
 
-	// ƒP[ƒX2: DLL‚Í‚È‚¢‚ªƒ\[ƒX‚ª‚ ‚é ¨ ƒrƒ‹ƒh•K{
+	// ã‚±ãƒ¼ã‚¹2: DLLã¯ãªã„ãŒã‚½ãƒ¼ã‚¹ãŒã‚ã‚‹ â†’ ãƒ“ãƒ«ãƒ‰å¿…é ˆ
 	if (!hasDll && hasCpp) {
 		needBuild = true;
 		std::cout << "[ScriptManager] DLL not found but source exists, building: " << scriptName << std::endl;
 	}
 
-	// ƒP[ƒX3: DLL‚ª‚ ‚Á‚Äƒ\[ƒX‚à‚ ‚é ¨ ƒ^ƒCƒ€ƒXƒ^ƒ“ƒvƒ`ƒFƒbƒN
+	// ã‚±ãƒ¼ã‚¹3: DLLãŒã‚ã£ã¦ã‚½ãƒ¼ã‚¹ã‚‚ã‚ã‚‹ â†’ ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ãƒã‚§ãƒƒã‚¯
 	if (hasDll && (hasCpp || hasH)) {
-		// .cppƒtƒ@ƒCƒ‹‚Ì•ÏX‚ğƒ`ƒFƒbƒN
+		// .cppãƒ•ã‚¡ã‚¤ãƒ«ã®å¤‰æ›´ã‚’ãƒã‚§ãƒƒã‚¯
 		if (hasCpp) {
 			try {
 				auto currentCppTime = fs::last_write_time(srcPath);
 				auto dllTime = fs::last_write_time(dllPath);
 
-				// .cppƒtƒ@ƒCƒ‹‚ªDLL‚æ‚èV‚µ‚¢ê‡
+				// .cppãƒ•ã‚¡ã‚¤ãƒ«ãŒDLLã‚ˆã‚Šæ–°ã—ã„å ´åˆ
 				if (currentCppTime > dllTime) {
 					needBuild = true;
 					std::cout << "[ScriptManager] .cpp file modified, rebuilding: " << scriptName << std::endl;
 				}
 
-				// ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ğXV
+				// ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’æ›´æ–°
 				entry.lastCppWriteTime = currentCppTime;
 			}
 			catch (...) {
@@ -155,19 +155,19 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 			}
 		}
 
-		// .hƒtƒ@ƒCƒ‹‚Ì•ÏX‚ğƒ`ƒFƒbƒN
+		// .hãƒ•ã‚¡ã‚¤ãƒ«ã®å¤‰æ›´ã‚’ãƒã‚§ãƒƒã‚¯
 		if (hasH) {
 			try {
 				auto currentHTime = fs::last_write_time(headerPath);
 				auto dllTime = fs::last_write_time(dllPath);
 
-				// .hƒtƒ@ƒCƒ‹‚ªDLL‚æ‚èV‚µ‚¢ê‡
+				// .hãƒ•ã‚¡ã‚¤ãƒ«ãŒDLLã‚ˆã‚Šæ–°ã—ã„å ´åˆ
 				if (currentHTime > dllTime) {
 					needBuild = true;
 					std::cout << "[ScriptManager] .h file modified, rebuilding: " << scriptName << std::endl;
 				}
 
-				// ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ğXV
+				// ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’æ›´æ–°
 				entry.lastHWriteTime = currentHTime;
 			}
 			catch (...) {
@@ -176,14 +176,14 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 		}
 	}
 
-	// ƒP[ƒX4: DLL‚ª‚ ‚é‚ªƒ\[ƒX‚ª‚È‚¢ ¨ ƒrƒ‹ƒh•s—vADLL‚ğ‚»‚Ì‚Ü‚Üg—p
+	// ã‚±ãƒ¼ã‚¹4: DLLãŒã‚ã‚‹ãŒã‚½ãƒ¼ã‚¹ãŒãªã„ â†’ ãƒ“ãƒ«ãƒ‰ä¸è¦ã€DLLã‚’ãã®ã¾ã¾ä½¿ç”¨
 	if (hasDll && !hasCpp && !hasH) {
 		std::cout << "[ScriptManager] Using precompiled DLL (no source files): " << scriptName << std::endl;
 		needBuild = false;
 	}
 
 	if (needBuild) {
-		// ƒ\[ƒXƒtƒ@ƒCƒ‹‚ª‚È‚¢ê‡‚Íƒrƒ‹ƒh‚Å‚«‚È‚¢
+		// ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„å ´åˆã¯ãƒ“ãƒ«ãƒ‰ã§ããªã„
 		if (!hasCpp) {
 			std::cerr << "[ScriptManager] Cannot build: source file not found: " << srcPath << std::endl;
 			if (hasDll) {
@@ -194,7 +194,7 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 			}
 		}
 		else {
-			// ƒrƒ‹ƒh‘O‚ÉDLL‚ğƒAƒ“ƒ[ƒh(d—v!)
+			// ãƒ“ãƒ«ãƒ‰å‰ã«DLLã‚’ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰(é‡è¦!)
 			if (entry.hDll != nullptr) {
 				std::cout << "[ScriptManager] Unloading DLL before rebuild: " << scriptName << std::endl;
 				UnloadDllEntry(entry);
@@ -204,13 +204,13 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 			if (!result.success) {
 				std::cerr << "[ScriptManager] Build failed for " << scriptName << ": " << result.errorMessage << std::endl;
 
-				// Build¸”s: Šù‘¶‚ÌDLL‚ª‘¶İ‚·‚éê‡‚Í‚»‚ê‚ğg—p
+				// Buildå¤±æ•—æ™‚: æ—¢å­˜ã®DLLãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯ãã‚Œã‚’ä½¿ç”¨
 				if (hasDll) {
 					std::cout << "[ScriptManager] Using existing DLL after build failure: " << scriptName << std::endl;
-					// ƒrƒ‹ƒh¸”s‚µ‚½‚ªŠù‘¶DLL‚ğg‚¤‚Ì‚Åˆ—‚ğ‘±s
+					// ãƒ“ãƒ«ãƒ‰å¤±æ•—ã—ãŸãŒæ—¢å­˜DLLã‚’ä½¿ã†ã®ã§å‡¦ç†ã‚’ç¶šè¡Œ
 				}
 				else {
-					// DLL‚ª‘¶İ‚¹‚¸Aƒrƒ‹ƒh‚à¸”s‚µ‚½ê‡‚ÍƒGƒ‰[
+					// DLLãŒå­˜åœ¨ã›ãšã€ãƒ“ãƒ«ãƒ‰ã‚‚å¤±æ•—ã—ãŸå ´åˆã¯ã‚¨ãƒ©ãƒ¼
 					std::cerr << "[ScriptManager] No DLL available and build failed for: " << scriptName << std::endl;
 					return nullptr;
 				}
@@ -218,7 +218,7 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 		}
 	}
 
-	// DLL‚ª‚Ü‚¾ƒ[ƒh‚³‚ê‚Ä‚¢‚È‚¢‚È‚çƒ[ƒh
+	// DLLãŒã¾ã ãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ãªã„ãªã‚‰ãƒ­ãƒ¼ãƒ‰
 	if (entry.hDll == nullptr) {
 		if (!LoadDllForScript(scriptName, entry)) {
 			std::cerr << "[ScriptManager] Load DLL failed for " << scriptName << std::endl;
@@ -226,7 +226,7 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 		}
 	}
 
-	// CreateScriptInstanceŠÖ”‚ğŒÄ‚Ño‚µ‚ÄƒCƒ“ƒXƒ^ƒ“ƒXì¬
+	// CreateScriptInstanceé–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
 	auto createFunc = (CreateScriptInstanceFunc)GetProcAddress(entry.hDll, "CreateScriptInstance");
 	if (!createFunc) {
 		std::cerr << "[ScriptManager] CreateScriptInstance not found in " << scriptName << std::endl;
@@ -239,7 +239,7 @@ IScript* ScriptManager::CreateScriptInstance(const std::string& scriptName, Scri
 		return nullptr;
 	}
 
-	// “o˜^
+	// ç™»éŒ²
 	entry.instances[owner] = instance;
 	entry.refCount++;
 
@@ -257,16 +257,16 @@ void ScriptManager::DestroyScriptInstance(const std::string& scriptName, ScripCo
 
 	IScript* instance = itInst->second;
 	if (instance) {
-		// EndPlay ŒÄ‚Ño‚µ(ˆÀ‘S‚Ì‚½‚ß) ¨ Destroy
+		// EndPlay å‘¼ã³å‡ºã—(å®‰å…¨ã®ãŸã‚) â†’ Destroy
 		instance->EndPlay();
 
-		// DestroyScriptInstance ‚ğ DLL ‚©‚çŒÄ‚Ô(‚ ‚ê‚Î)
+		// DestroyScriptInstance ã‚’ DLL ã‹ã‚‰å‘¼ã¶(ã‚ã‚Œã°)
 		auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(entry.hDll, "DestroyScriptInstance");
 		if (destroyFunc) {
 			destroyFunc(instance);
 		}
 		else {
-			// ƒGƒNƒXƒ|[ƒg‚³‚ê‚Ä‚¢‚È‚¢‚È‚ç delete
+			// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ãªã„ãªã‚‰ delete
 			delete instance;
 		}
 	}
@@ -274,7 +274,7 @@ void ScriptManager::DestroyScriptInstance(const std::string& scriptName, ScripCo
 	entry.instances.erase(itInst);
 	entry.refCount--;
 	if (entry.refCount <= 0) {
-		// ƒAƒ“ƒ[ƒh
+		// ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰
 		UnloadDllEntry(entry);
 		_dllMap.erase(it);
 	}
@@ -284,7 +284,7 @@ void ScriptManager::Update()
 {
 	std::lock_guard<std::mutex> lk(_mutex);
 
-	// Še“o˜^ƒXƒNƒŠƒvƒg‚É‚Â‚¢‚Äƒ\[ƒX‚ÌXV‚ğƒ`ƒFƒbƒN
+	// å„ç™»éŒ²ã‚¹ã‚¯ãƒªãƒ—ãƒˆã«ã¤ã„ã¦ã‚½ãƒ¼ã‚¹ã®æ›´æ–°ã‚’ãƒã‚§ãƒƒã‚¯
 	for (auto it = _dllMap.begin(); it != _dllMap.end(); /*inc inside*/) {
 		const std::string scriptName = it->first;
 		DllEntry& entry = it->second;
@@ -293,12 +293,12 @@ void ScriptManager::Update()
 		std::string headerPath = SettingManager::GetInstance()->GetScriptFilePath() + scriptName + ".h";
 		std::string dllPath = SettingManager::GetInstance()->GetDLLFilePath() + scriptName + ".dll";
 
-		// ƒ\[ƒXƒtƒ@ƒCƒ‹‚Ì‘¶İŠm”F
+		// ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ç¢ºèª
 		bool hasCpp = fs::exists(srcPath);
 		bool hasH = fs::exists(headerPath);
 		bool hasDll = fs::exists(dllPath);
 
-		// ƒ\[ƒXƒtƒ@ƒCƒ‹‚ª‚È‚¢ê‡‚ÍƒzƒbƒgƒŠƒ[ƒh•s‰ÂiDLL‚Ì‚İ‰^—pj
+		// ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„å ´åˆã¯ãƒ›ãƒƒãƒˆãƒªãƒ­ãƒ¼ãƒ‰ä¸å¯ï¼ˆDLLã®ã¿é‹ç”¨ï¼‰
 		if (!hasCpp && !hasH) {
 			++it;
 			continue;
@@ -306,11 +306,11 @@ void ScriptManager::Update()
 
 		bool needBuild = false;
 
-		// .cppƒtƒ@ƒCƒ‹‚Ì•ÏX‚ğƒ`ƒFƒbƒN
+		// .cppãƒ•ã‚¡ã‚¤ãƒ«ã®å¤‰æ›´ã‚’ãƒã‚§ãƒƒã‚¯
 		if (hasCpp) {
 			try {
 				auto cppTime = fs::last_write_time(srcPath);
-				// ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ª•Ï‚í‚Á‚½ ‚©‚Â DLL‚æ‚èV‚µ‚¢
+				// ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ãŒå¤‰ã‚ã£ãŸ ã‹ã¤ DLLã‚ˆã‚Šæ–°ã—ã„
 				if (cppTime != entry.lastCppWriteTime) {
 					entry.lastCppWriteTime = cppTime;
 					if (!hasDll || cppTime > fs::last_write_time(dllPath)) {
@@ -322,11 +322,11 @@ void ScriptManager::Update()
 			catch (...) {}
 		}
 
-		// .hƒtƒ@ƒCƒ‹‚Ì•ÏX‚ğƒ`ƒFƒbƒN
+		// .hãƒ•ã‚¡ã‚¤ãƒ«ã®å¤‰æ›´ã‚’ãƒã‚§ãƒƒã‚¯
 		if (hasH) {
 			try {
 				auto hTime = fs::last_write_time(headerPath);
-				// ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ª•Ï‚í‚Á‚½ ‚©‚Â DLL‚æ‚èV‚µ‚¢
+				// ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ãŒå¤‰ã‚ã£ãŸ ã‹ã¤ DLLã‚ˆã‚Šæ–°ã—ã„
 				if (hTime != entry.lastHWriteTime) {
 					entry.lastHWriteTime = hTime;
 					if (!hasDll || hTime > fs::last_write_time(dllPath)) {
@@ -341,7 +341,7 @@ void ScriptManager::Update()
 		if (needBuild) {
 			std::cout << "[ScriptManager] Detected change in " << scriptName << ", building..." << std::endl;
 
-			// •Û‘¶‚µ‚Ä‚¨‚­ƒf[ƒ^
+			// ä¿å­˜ã—ã¦ãŠããƒ‡ãƒ¼ã‚¿
 			auto oldH = entry.hDll;
 			auto owners = std::vector<ScripComponent*>{};
 			for (auto& kv : entry.instances) owners.push_back(kv.first);
@@ -384,14 +384,14 @@ void ScriptManager::Update()
 								entry.refCount++;
 								newInst->SetOwnerComponent(owner);
 
-								// CRITICAL: SetParentObject/Scene‚ğİ’è‚µ‚È‚¢‚ÆBeginPlay‚Å—áŠO‚ª”­¶
+								// CRITICAL: SetParentObject/Sceneã‚’è¨­å®šã—ãªã„ã¨BeginPlayã§ä¾‹å¤–ãŒç™ºç”Ÿ
 								try {
-									// ScripComponent‚©‚çeƒIƒuƒWƒFƒNƒg‚ğæ“¾
+									// ScripComponentã‹ã‚‰è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
 									AbstractObject* parentObj = owner->GetParent();
 									if (parentObj) {
 										newInst->SetParentObject(static_cast<object>(parentObj));
 
-										// eƒV[ƒ“‚ğæ“¾
+										// è¦ªã‚·ãƒ¼ãƒ³ã‚’å–å¾—
 										AbstractScene* parentScene = parentObj->GetParentScene();
 										if (parentScene) {
 											newInst->SetParentScene(static_cast<scene>(parentScene));
@@ -402,7 +402,7 @@ void ScriptManager::Update()
 									std::cerr << "[ScriptManager] Exception while setting parent: " << e.what() << std::endl;
 								}
 
-								// BeginPlay‚ğŒÄ‚Ño‚µ
+								// BeginPlayã‚’å‘¼ã³å‡ºã—
 								try {
 									newInst->BeginPlay();
 								}
@@ -421,7 +421,7 @@ void ScriptManager::Update()
 				std::cerr << "[ScriptManager] Build failed: " << scriptName << std::endl;
 				std::cerr << result.log << std::endl;
 
-				// Build¸”s: Šù‘¶‚ÌDLL‚ğÄƒ[ƒh‚µ‚Äg—p
+				// Buildå¤±æ•—æ™‚: æ—¢å­˜ã®DLLã‚’å†ãƒ­ãƒ¼ãƒ‰ã—ã¦ä½¿ç”¨
 				if (hasDll) {
 					std::cout << "[ScriptManager] Attempting to use existing DLL after build failure: " << scriptName << std::endl;
 
@@ -438,7 +438,7 @@ void ScriptManager::Update()
 									entry.refCount++;
 									newInst->SetOwnerComponent(owner);
 
-									// CRITICAL: SetParentObject/Scene‚ğİ’è‚µ‚È‚¢‚ÆBeginPlay‚Å—áŠO‚ª”­¶
+									// CRITICAL: SetParentObject/Sceneã‚’è¨­å®šã—ãªã„ã¨BeginPlayã§ä¾‹å¤–ãŒç™ºç”Ÿ
 									try {
 										AbstractObject* parentObj = owner->GetParent();
 										if (parentObj) {
@@ -454,7 +454,7 @@ void ScriptManager::Update()
 										std::cerr << "[ScriptManager] Exception while setting parent: " << e.what() << std::endl;
 									}
 
-									// BeginPlay‚ğŒÄ‚Ño‚µ
+									// BeginPlayã‚’å‘¼ã³å‡ºã—
 									try {
 										newInst->BeginPlay();
 									}
@@ -497,7 +497,7 @@ bool ScriptManager::LoadDllForScript(const std::string& scriptName, DllEntry& en
 
 void ScriptManager::UnloadDllEntry(DllEntry& entry)
 {
-	// ‘S‚Ä‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü(DLL‚Ì DestroyScriptInstance ‚ğg‚¤)
+	// å…¨ã¦ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„(DLLã® DestroyScriptInstance ã‚’ä½¿ã†)
 	if (entry.hDll) {
 		auto destroyFunc = (DestroyScriptInstanceFunc)GetProcAddress(entry.hDll, "DestroyScriptInstance");
 		for (auto& kv : entry.instances) {
@@ -538,7 +538,7 @@ void ScriptManager::RegisterAllScripts()
 
 	if (srcDirStr.empty() && dllDirStr.empty()) return;
 
-	// ƒ\[ƒXƒfƒBƒŒƒNƒgƒŠ‚©‚ç.cppƒtƒ@ƒCƒ‹‚ğ’T‚·
+	// ã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã‚‰.cppãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¢ã™
 	if (!srcDirStr.empty()) {
 		fs::path srcDir = srcDirStr;
 		if (fs::exists(srcDir)) {
@@ -554,7 +554,7 @@ void ScriptManager::RegisterAllScripts()
 					try {
 						entry.lastCppWriteTime = fs::last_write_time(p.path());
 
-						// ‘Î‰‚·‚é.hƒtƒ@ƒCƒ‹‚ª‚ ‚ê‚Î‚»‚Ìƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚à‹L˜^
+						// å¯¾å¿œã™ã‚‹.hãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Œã°ãã®ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚‚è¨˜éŒ²
 						std::string hPath = srcDirStr + name + ".h";
 						if (fs::exists(hPath)) {
 							entry.lastHWriteTime = fs::last_write_time(hPath);
@@ -568,7 +568,7 @@ void ScriptManager::RegisterAllScripts()
 					_dllMap.emplace(name, std::move(entry));
 				}
 				else {
-					// Šù‚É‘¶İ‚·‚éê‡‚Íƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ğÅV‚É‚µ‚Ä‚¨‚­
+					// æ—¢ã«å­˜åœ¨ã™ã‚‹å ´åˆã¯ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’æœ€æ–°ã«ã—ã¦ãŠã
 					try {
 						it->second.lastCppWriteTime = fs::last_write_time(p.path());
 
@@ -585,7 +585,7 @@ void ScriptManager::RegisterAllScripts()
 		}
 	}
 
-	// DLLƒfƒBƒŒƒNƒgƒŠ‚©‚ç.dllƒtƒ@ƒCƒ‹‚ğ’T‚·iƒ\[ƒX‚ª‚È‚­‚Ä‚à“o˜^j
+	// DLLãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã‚‰.dllãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¢ã™ï¼ˆã‚½ãƒ¼ã‚¹ãŒãªãã¦ã‚‚ç™»éŒ²ï¼‰
 	if (!dllDirStr.empty()) {
 		fs::path dllDir = dllDirStr;
 		if (fs::exists(dllDir)) {
@@ -596,11 +596,11 @@ void ScriptManager::RegisterAllScripts()
 
 				std::string name = p.path().stem().string();
 
-				// ‚Ü‚¾“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Ì‚İ’Ç‰Áiƒ\[ƒX‚©‚ç“o˜^Ï‚İ‚Ìê‡‚ÍƒXƒLƒbƒvj
+				// ã¾ã ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã®ã¿è¿½åŠ ï¼ˆã‚½ãƒ¼ã‚¹ã‹ã‚‰ç™»éŒ²æ¸ˆã¿ã®å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—ï¼‰
 				auto it = _dllMap.find(name);
 				if (it == _dllMap.end()) {
 					DllEntry entry;
-					entry.initialized = true; // DLL‚Ì‚İ‚Ìê‡‚Í‰Šú‰»Ï‚İ‚Æ‚·‚é
+					entry.initialized = true; // DLLã®ã¿ã®å ´åˆã¯åˆæœŸåŒ–æ¸ˆã¿ã¨ã™ã‚‹
 					_dllMap.emplace(name, std::move(entry));
 					std::cout << "[ScriptManager] Registered precompiled DLL: " << name << std::endl;
 				}
@@ -623,7 +623,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	std::string libPath = binDir + "/" + scriptName + ".lib";
 	std::string pdbPath = binDir + "/" + scriptName + ".pdb";
 
-	// ƒƒOƒtƒ@ƒCƒ‹ƒpƒX
+	// ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 	std::string logFile = SettingManager::GetInstance()->GetScriptLogFilePath() + "build_" + scriptName + ".log";
 
 	// check vcvars
@@ -635,7 +635,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		return result;
 	}
 
-	// ƒ\[ƒXƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚é‚©Šm”F
+	// ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹ã‹ç¢ºèª
 	if (!fs::exists(srcPath)) {
 		result.errorMessage = "Source file not found: " + srcPath;
 		result.log = result.errorMessage;
@@ -650,7 +650,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	}
 	catch (...) {}
 
-	// ŒÃ‚¢DLL‚Ìƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ğ‹L˜^(ƒrƒ‹ƒh‘O)
+	// å¤ã„DLLã®ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’è¨˜éŒ²(ãƒ“ãƒ«ãƒ‰å‰)
 	fs::file_time_type oldDllTime;
 	bool hadOldDll = false;
 	if (fs::exists(dllPath)) {
@@ -662,13 +662,13 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	}
 
 	// ========================================
-	// vcpkg ƒpƒX‚Ìİ’è
+	// vcpkg ãƒ‘ã‚¹ã®è¨­å®š
 	// ========================================
 	std::string vcpkgRoot = SettingManager::GetInstance()->GetVcpkgFilePath();
 	std::string vcpkgInclude = vcpkgRoot + "/installed/x64-windows/include";
 	std::string vcpkgLib = vcpkgRoot + "/installed/x64-windows/lib";
 
-	// vcpkg‚ª‘¶İ‚·‚é‚©Šm”F
+	// vcpkgãŒå­˜åœ¨ã™ã‚‹ã‹ç¢ºèª
 	bool hasVcpkg = fs::exists(vcpkgInclude);
 	if (!hasVcpkg) {
 		std::cout << "[ScriptManager] Warning: vcpkg not found at " << vcpkgRoot << std::endl;
@@ -684,14 +684,14 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		<< "/Fe:\"" << dllPath << "\" "
 		<< "/I\"" << includeDir << "\" ";
 
-	// vcpkg‚ÌƒCƒ“ƒNƒ‹[ƒhƒpƒX‚ğ’Ç‰Á
+	// vcpkgã®ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ‘ã‚¹ã‚’è¿½åŠ 
 	if (hasVcpkg) {
 		cmd << "/I\"" << vcpkgInclude << "\" ";
 	}
 
 	cmd << "/link /LIBPATH:\"" << includeDir << "\" ";
 
-	// vcpkg‚Ìƒ‰ƒCƒuƒ‰ƒŠƒpƒX‚ğ’Ç‰Á
+	// vcpkgã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ‘ã‚¹ã‚’è¿½åŠ 
 	if (hasVcpkg) {
 		cmd << "/LIBPATH:\"" << vcpkgLib << "\" ";
 	}
@@ -706,7 +706,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 	std::cout << "[ScriptManager] Running build command: " << command << std::endl;
 	int exitCode = std::system(command.c_str());
 
-	// ƒƒOƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+	// ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
 	if (fs::exists(logFile)) {
 		std::ifstream ifs(logFile);
 		std::ostringstream ss;
@@ -717,7 +717,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		result.log = "No build log produced.";
 	}
 
-	// ƒrƒ‹ƒhŒ‹‰Ê‚ğ”»’è
+	// ãƒ“ãƒ«ãƒ‰çµæœã‚’åˆ¤å®š
 	if (exitCode != 0) {
 		result.errorMessage = "cl.exe returned error code " + std::to_string(exitCode);
 		result.log = "Build failed (Exit code: " + std::to_string(exitCode) + ")\n\n" + result.log;
@@ -725,7 +725,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		return result;
 	}
 
-	// DLL‚ª‘¶İ‚·‚é‚©Šm”F
+	// DLLãŒå­˜åœ¨ã™ã‚‹ã‹ç¢ºèª
 	if (!fs::exists(dllPath)) {
 		result.errorMessage = "DLL not found after build: " + dllPath;
 		result.log = "Build failed: DLL was not created.\n\n" + result.log;
@@ -733,7 +733,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		return result;
 	}
 
-	// DLL‚ªÀÛ‚ÉXV‚³‚ê‚½‚©Šm”F(ƒ^ƒCƒ€ƒXƒ^ƒ“ƒvƒ`ƒFƒbƒN)
+	// DLLãŒå®Ÿéš›ã«æ›´æ–°ã•ã‚ŒãŸã‹ç¢ºèª(ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ãƒã‚§ãƒƒã‚¯)
 	if (hadOldDll) {
 		try {
 			fs::file_time_type newDllTime = fs::last_write_time(dllPath);
@@ -749,7 +749,7 @@ ScriptManager::BuildResult ScriptManager::BuildScriptDll(const std::string& scri
 		}
 	}
 
-	// ¬Œ÷
+	// æˆåŠŸ
 	result.success = true;
 	result.log = "Build succeeded.\n\n" + result.log;
 

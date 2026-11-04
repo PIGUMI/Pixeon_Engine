@@ -1,7 +1,7 @@
-#include "File.h"
+ï»¿#include "File.h"
 #include <Windows.h>
 
-// Explorer‚Åw’èƒpƒX‚ğŠJ‚­
+// Explorerã§æŒ‡å®šãƒ‘ã‚¹ã‚’é–‹ã
 void File::OpenExplorer(const std::string& path) {
 	ShellExecuteA(
 		NULL,
@@ -13,7 +13,7 @@ void File::OpenExplorer(const std::string& path) {
 	);
 }
 
-// Àsƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğæ“¾
+// å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’å–å¾—
 std::string File::GetExePath() {
 	char path[MAX_PATH];
 	DWORD length = GetModuleFileNameA(nullptr, path, MAX_PATH);
@@ -21,7 +21,7 @@ std::string File::GetExePath() {
 	return std::string(path, length);
 }
 
-// Àsƒtƒ@ƒCƒ‹–¼‚ğœ‚¢‚½ƒpƒX‚ğæ“¾
+// å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«åã‚’é™¤ã„ãŸãƒ‘ã‚¹ã‚’å–å¾—
 std::string File::RemoveExeFromPath(const std::string& exePath) {
 	size_t pos = exePath.find_last_of("\\/");
 	if (pos != std::string::npos)return exePath.substr(0, pos);
@@ -29,7 +29,7 @@ std::string File::RemoveExeFromPath(const std::string& exePath) {
 	return exePath;
 }
 
-// ƒAƒZƒbƒgƒpƒbƒJ[‚ğŒÄ‚Ño‚·
+// ã‚¢ã‚»ãƒƒãƒˆãƒ‘ãƒƒã‚«ãƒ¼ã‚’å‘¼ã³å‡ºã™
 bool File::CallAssetPacker(const std::string& toolPath, const std::string& assetDir, const std::string& outputPak) {
 	std::string cmd = "\"" + toolPath + "\" \"" + assetDir + "\" \"" + outputPak + "\"";
 	STARTUPINFOA si = { sizeof(si) };
@@ -51,7 +51,7 @@ bool File::CallAssetPacker(const std::string& toolPath, const std::string& asset
 	return (exitCode == 0);
 }
 
-// ƒA[ƒJƒCƒuƒc[ƒ‹‚ğÀs
+// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ„ãƒ¼ãƒ«ã‚’å®Ÿè¡Œ
 bool File::RunArchiveTool(const std::string& toolExePath, const std::string& assetDir, const std::string& archivePath) {
 	std::string cmd = "\"" + toolExePath + "\" \"" + assetDir + "\" \"" + archivePath + "\"";
 
@@ -85,9 +85,9 @@ bool File::RunArchiveTool(const std::string& toolExePath, const std::string& ass
 	return (exitCode == 0);
 }
 
-// w’èƒfƒBƒŒƒNƒgƒŠ“à‚Ìƒtƒ@ƒCƒ‹–¼‚ğ•ÏX
-// SceneManger‚É‚à“¯–¼‹`ŠÖ”‚ª‚ ‚è‚Ü‚·‚ªA‚±‚¿‚ç‚Í”Ä—p“I‚Ég—p‚·‚é‚½‚ß‚Ì‚à‚Ì‚Å‚·
-// SceneManager‘¤‚ÍŠg’£q‚ª.scene‚ÅŒÅ’è‚³‚ê‚Ä‚¢‚é‚½‚ßAƒpƒX‚ÌŒ‹‡ˆ—‚ªˆÙ‚È‚è‚Ü‚·
+// æŒ‡å®šãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå†…ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å¤‰æ›´
+// SceneMangerã«ã‚‚åŒåç¾©é–¢æ•°ãŒã‚ã‚Šã¾ã™ãŒã€ã“ã¡ã‚‰ã¯æ±ç”¨çš„ã«ä½¿ç”¨ã™ã‚‹ãŸã‚ã®ã‚‚ã®ã§ã™
+// SceneManagerå´ã¯æ‹¡å¼µå­ãŒ.sceneã§å›ºå®šã•ã‚Œã¦ã„ã‚‹ãŸã‚ã€ãƒ‘ã‚¹ã®çµåˆå‡¦ç†ãŒç•°ãªã‚Šã¾ã™
 bool File::RenameFileInDirectory(const std::string& oldName, const std::string& newName) {
 	std::string oldPath = oldName;
 	std::string newPath = newName;

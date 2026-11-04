@@ -7,7 +7,6 @@
 #include "System.h"
 #include "Input.h"
 #include "IMGUI/imgui_impl_win32.h"
-#include "IMGUI/imgui_impl_dx11.h"
 #include "IMGUI/imgui.h"
 #include "StartUp.h"
 #include "MainFrame.h"
@@ -37,6 +36,11 @@ extern "C" {
 	* 説　明　ソフトウェアの初期化を行う関数
 	*/
 	__declspec(dllexport) int SoftInit(const MainFrame::EngineConfig& config) {
+		// Exe と DLL で EngineConfig の定義が食い違っていないか確認する
+		if (config.structSize != sizeof(MainFrame::EngineConfig)) {
+			MessageBox(nullptr, "EngineConfig のサイズが一致しません。Exe と Pixeon_Engine.dll を同じバージョンでビルドしてください。", "エラー", MB_OK | MB_ICONERROR);
+			return -1;
+		}
 		int nResult = 0;
 		nResult = MainFrame::GetInstance()->Init(config);
 		screenHeight = config.screenHeight;
@@ -213,7 +217,7 @@ extern "C" {
 				UINT height = HIWORD(lparam);
 				screenHeight = height;
 				screenWidth = width;
-				DirectX11::GetInstance()->OnResize(width, height);
+				GraphicsSystem::GetInstance()->OnResize(width, height);
 			}
 			return 0;
 		}

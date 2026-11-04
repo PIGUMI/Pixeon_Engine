@@ -1,4 +1,4 @@
-#ifndef _OBJECT_H_
+ï»¿#ifndef _OBJECT_H_
 #define _OBJECT_H_
 
 #include "Struct.h"
@@ -26,11 +26,11 @@ public:
 	Transform GetTransform() { return _transform; }
 	void SetTransform(Transform transform) { _transform = transform; }
 
-	// ƒ[ƒJƒ‹ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚Ìæ“¾Eİ’è
+	// ãƒ­ãƒ¼ã‚«ãƒ«ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã®å–å¾—ãƒ»è¨­å®š
 	Transform GetLocalTransform() { return _transform; }
 	void SetLocalTransform(const Transform& transform) { _transform = transform; }
 
-	// ƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚Ìæ“¾
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã®å–å¾—
 	Transform GetWorldTransform();
 
 	std::string GetObjectName() { return _ObjectName; }
@@ -48,11 +48,11 @@ public:
 		_transform.scale = { x, y, z };
 	}
 
-	// ƒ[ƒ‹ƒhˆÊ’u‚Ìæ“¾
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®ã®å–å¾—
 	DirectX::XMFLOAT3 GetWorldPosition();
 
 public:
-	// eqŠÖŒW‚ÌŠÇ—
+	// è¦ªå­é–¢ä¿‚ã®ç®¡ç†
 	void SetParent(AbstractObject* parent);
 	AbstractObject* GetParent() const { return _parentObject; }
 	void RemoveParent();
@@ -64,10 +64,10 @@ public:
 	const std::vector<AbstractObject*>& GetChildren() const { return _children; }
 
 public:
-	// –¼‘O‚©‚çƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+	// åå‰ã‹ã‚‰ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
 	AbstractComponent* GetComponent(const std::string& name);
 
-	// Œ^‚©‚çƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+	// å‹ã‹ã‚‰ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
 	template<typename T = AbstractComponent>
 	T* GetComponent() {
 		for (auto comp : _components) {
@@ -79,7 +79,7 @@ public:
 		return nullptr;
 	}
 
-	// ‘SƒRƒ“ƒ|[ƒlƒ“ƒg‚Ìæ“¾
+	// å…¨ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®å–å¾—
 	std::vector<AbstractComponent*> GetComponents() { return _components; }
 
 	template<typename T = AbstractComponent>
@@ -96,15 +96,15 @@ public:
 
 	std::vector<AbstractComponent*> GetComponentsByTypeID(int typeID);
 
-	// ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ìíœ
+	// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®å‰Šé™¤
 	void RemoveComponent(AbstractComponent* comp);
 
-	// ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì’Ç‰Á
+	// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®è¿½åŠ 
 	template<typename T = AbstractComponent>
 	T* AddComponent() {
 		T* newComp = new T();
 		newComp->Init(this);
-		// “¯ˆêŒ^‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚ªŠù‚É‘¶İ‚·‚éê‡‚Í–¼‘O‚É”Ô†‚ğ•t—^
+		// åŒä¸€å‹ã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒæ—¢ã«å­˜åœ¨ã™ã‚‹å ´åˆã¯åå‰ã«ç•ªå·ã‚’ä»˜ä¸
 		std::string baseName = newComp->GetComponentName();
 
 		int count = 1;
@@ -133,7 +133,7 @@ protected:
 	std::vector<AbstractComponent*> _components;
 	AbstractScene* _ParentScene = nullptr;
 
-	// eqŠÖŒW
+	// è¦ªå­é–¢ä¿‚
 	AbstractObject* _parentObject = nullptr;
 	std::vector<AbstractObject*> _children;
 

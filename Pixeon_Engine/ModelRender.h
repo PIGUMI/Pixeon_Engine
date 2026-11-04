@@ -4,9 +4,8 @@
 #include "TextureManager.h"
 #include "ShaderManager.h"
 
-#include <wrl/client.h>
-#include <d3d11.h>
 #include <DirectXMath.h>
+#include "RHI/RHI.h"
 #include <string>
 #include <vector>
 #include <functional>
@@ -55,7 +54,7 @@ public:
 	void SetBoneMatrices(const std::vector<DirectX::XMFLOAT4X4>& matrices);
 	const std::vector<DirectX::XMFLOAT4X4>& GetBoneMatrices() const { return m_boneMatrices; }
 	bool HasBoneMatrices() const { return !m_boneMatrices.empty(); }
-	void SetupBoneMatricesForShader(ID3D11DeviceContext* ctx);
+	void SetupBoneMatricesForShader();
 
 	bool SetMaterialTexture(int materialIndex, const std::string& texLogicalPath);
 
@@ -133,7 +132,7 @@ private:
 	};
 
 	bool EnsureShaders(bool forceRecreateLayout = false);
-	bool EnsureInputLayout(const void* vsBytecode, size_t size);
+	bool EnsureInputLayout(RHI::Shader* vertexShader);
 	bool EnsureConstantBuffer();
 	void RefreshMaterialCache();
 	void RebuildShaderTextureSlots();
@@ -149,14 +148,11 @@ private:
 		const DirectX::XMFLOAT3& scale,
 		const DirectX::XMFLOAT3& rotation) const;
 
-	bool EnsureWhiteTexture();
-	bool EnsureDebugFallbackTextures();
-	bool EnsureRasterizerStates();
 
 	void DiagnoseAndReportTextureIssue(size_t submeshIdx,
 		const SubMesh& sm,
 		const MaterialRuntime* mat,
-		ID3D11ShaderResourceView* chosenSRV,
+		RHI::Texture* chosenTexture,
 		bool usedMagentaFallback,
 		bool usedWhiteFallback);
 
@@ -169,23 +165,17 @@ private:
 
 	DirectX::XMFLOAT4 m_color{ 1,1,1,1 };
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cb;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cameraCb;
+	RHI::BufferRef      m_cb;
+	RHI::BufferRef      m_cameraCb;
+	RHI::BufferRef      m_boneCb;
 
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ps;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_layout;
+	RHI::Shader*        m_vs = nullptr;   // ShaderManager が所有
+	RHI::Shader*        m_ps = nullptr;
+	RHI::InputLayoutRef m_layout;
 
 	std::string m_vsName = "VS_ModelStatic";
 	std::string m_psName = "PS_ModelStatic";
 
-	static Microsoft::WRL::ComPtr<ID3D11SamplerState>       s_linearSmp;
-	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_whiteTexSRV;
-	static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> s_magentaTexSRV;
-
-	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullBack;
-	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullFront;
-	static Microsoft::WRL::ComPtr<ID3D11RasterizerState>    s_rasterizerCullNone;
 
 	std::vector<uint8_t> m_texIssueReported;
 

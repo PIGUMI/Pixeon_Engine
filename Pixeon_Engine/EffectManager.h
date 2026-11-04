@@ -1,20 +1,22 @@
-/*
-* ƒtƒ@ƒCƒ‹–¼ EffectManager.h
-* ŠT—v      EffekseerƒGƒtƒFƒNƒgŠÇ—ƒNƒ‰ƒX (EffekseerForCpp 1.7.2.0 / DX11)
+ï»¿/*
+* ãƒ•ã‚¡ã‚¤ãƒ«å EffectManager.h
+* æ¦‚è¦      Effekseerã‚¨ãƒ•ã‚§ã‚¯ãƒˆç®¡ç†ã‚¯ãƒ©ã‚¹ (EffekseerForCpp 1.7.2.0)
+*           æç”»ã¯ RHI ã®ãƒãƒƒã‚¯ã‚¨ãƒ³ãƒ‰ã«åˆã‚ã›ã¦ EffekseerRendererDX11 / DX12 ã‚’ä½¿ã„åˆ†ã‘ã‚‹
+*           Vulkan ç”¨ã® Effekseer ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã¯åŒæ¢±ã—ã¦ã„ãªã„ãŸã‚ã€Vulkan ã§ã¯ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’æç”»ã—ãªã„
 */
 #ifndef EFFECTMANAGER_H
 #define EFFECTMANAGER_H
 
 #include "Effekseer/Effekseer.h"
-#include "Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
+#include "RHI/RHI.h"
 
 #include <unordered_map>
 #include <string>
 #include <vector>
 
 #include <DirectXMath.h>
-#include <d3d11.h>
-#include <wrl/client.h>
+
+namespace EffekseerRenderer { class Renderer; class CommandList; class SingleFrameMemoryPool; }
 
 class EffectManager
 {
@@ -22,35 +24,35 @@ public:
 	static EffectManager* Instance();
 	static void DeleteInstance();
 
-	// ‰Šú‰»EI—¹
-	bool Init(ID3D11Device* device, ID3D11DeviceContext* context, int maxParticles = 8000);
+	// åˆæœŸåŒ–ãƒ»çµ‚äº†
+	bool Init(RHI::Device* device, int maxParticles = 8000);
 	void UnInit();
 
-	// ƒGƒtƒFƒNƒgƒŠƒ\[ƒXŠÇ—
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒªã‚½ãƒ¼ã‚¹ç®¡ç†
 	Effekseer::EffectRef LoadEffect(const std::string& path);
 	void UnloadEffect(const std::string& path);
 	void ClearAllEffects();
 
-	// ƒGƒtƒFƒNƒgÄ¶
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
 	Effekseer::Handle PlayEffect(const std::string& path, const DirectX::XMFLOAT3& position);
 	void StopEffect(Effekseer::Handle handle);
 	void StopAllEffects();
 	bool IsPlaying(Effekseer::Handle handle);
 
-	// ƒGƒtƒFƒNƒgƒpƒ‰ƒ[ƒ^İ’è
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 	void SetEffectPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position);
 	void SetEffectRotation(Effekseer::Handle handle, const DirectX::XMFLOAT3& rotation);
 	void SetEffectScale(Effekseer::Handle handle, const DirectX::XMFLOAT3& scale);
 	void SetEffectSpeed(Effekseer::Handle handle, float speed);
 
-	// ƒJƒƒ‰İ’è
+	// ã‚«ãƒ¡ãƒ©è¨­å®š
 	void SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
 
-	// XVE•`‰æ
+	// æ›´æ–°ãƒ»æç”»
 	void Update(float deltaTime = 1.0f / 60.0f);
 	void Draw();
 
-	// ƒfƒoƒbƒO
+	// ãƒ‡ãƒãƒƒã‚°
 	void DrawDebugGUI();
 	int GetPlayingEffectsCount() const;
 
@@ -60,7 +62,7 @@ private:
 	EffectManager() = default;
 	~EffectManager();
 
-	// ƒ[ƒ_[iAssetManagerŒo—Rj
+	// ãƒ­ãƒ¼ãƒ€ãƒ¼ï¼ˆAssetManagerçµŒç”±ï¼‰
 	class EffectLoader;
 	class TextureLoader;
 	class ModelLoader;
@@ -70,26 +72,31 @@ private:
 
 	static EffectManager* _instance;
 
+	bool RendererCreate();
+	Effekseer::Backend::TextureRef BackendTextureCreate(RHI::Texture* texture);
+
 	// Effekseer
 	Effekseer::ManagerRef _manager;
-	EffekseerRendererDX11::RendererRef _renderer;
+	Effekseer::RefPtr<EffekseerRenderer::Renderer> _renderer;
+	Effekseer::RefPtr<EffekseerRenderer::CommandList> _commandList;          // DX12 ã®ã¿
+	Effekseer::RefPtr<EffekseerRenderer::SingleFrameMemoryPool> _memoryPool; // DX12 ã®ã¿
 
-	// DX11
-	ID3D11Device* _device = nullptr;
-	ID3D11DeviceContext* _context = nullptr;
+	RHI::Device* _device = nullptr;
+	RHI::BlendStateRef _blendState;
 
-	// ƒLƒƒƒbƒVƒ…
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥
 	std::unordered_map<std::string, Effekseer::EffectRef> _effectCache;
 
 	struct TextureCacheEntry
 	{
-		Effekseer::TextureRef tex; // Effekseer::Texturei“à•”‚ÉBackend::Texturej
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv; // À‘Ì•ÛiˆÀ‘S‚Ì‚½‚ßj
+		Effekseer::TextureRef tex;  // Effekseer::Textureï¼ˆå†…éƒ¨ã«Backend::Textureï¼‰
+		RHI::TextureRef texture;    // å®Ÿä½“ä¿æŒ
 		int w = 0;
 		int h = 0;
 		uint64_t bytes = 0;
 	};
 	std::unordered_map<std::string, TextureCacheEntry> _textureCache;
+	std::vector<TextureCacheEntry> _memoryTextures;   // ãƒ¡ãƒ¢ãƒªã‹ã‚‰èª­ã¿è¾¼ã‚“ã ãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼ˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆåŸ‹ã‚è¾¼ã¿ï¼‰
 
 	int _maxParticles = 8000;
 	bool _initialized = false;

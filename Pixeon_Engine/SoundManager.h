@@ -1,4 +1,4 @@
-// �T�E���h���\�[�X�̊Ǘ�
+﻿// サウンドリソースの管理
 
 #ifndef SOUND_MANAGER_H
 #define SOUND_MANAGER_H

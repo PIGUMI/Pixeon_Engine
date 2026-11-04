@@ -1,4 +1,4 @@
-Texture2D gTex0 : register(t0);
+ï»¿Texture2D gTex0 : register(t0);
 SamplerState gSamp : register(s0);
 
 struct LightGPU
@@ -33,7 +33,7 @@ struct PS_IN
     float4 col : COLOR0;
     float3 worldPos : WORLDPOS;
     float3 normal : NORMAL;
-    bool isFrontFace : SV_IsFrontFace; // ’Ç‰ÁF•\— ”»’è
+    bool isFrontFace : SV_IsFrontFace; // è¿½åŠ ï¼šè¡¨è£åˆ¤å®š
 };
 
 float AttenuationPoint(float dist, float range)
@@ -64,7 +64,7 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
     {
         // Directional
         float3 L = -normalize(l.direction);
-        float ndl = saturate(abs(dot(N, L))); // abs()‚Å—¼–Ê‘Î‰
+        float ndl = saturate(abs(dot(N, L))); // abs()ã§ä¸¡é¢å¯¾å¿œ
         result = l.color * (ndl * l.intensity);
     }
     else
@@ -75,7 +75,7 @@ float3 ApplyLight(LightGPU l, float3 P, float3 N)
             return 0;
         
         float3 L = Lvec / dist;
-        float ndl = saturate(abs(dot(N, L))); // abs()‚Å—¼–Ê‘Î‰
+        float ndl = saturate(abs(dot(N, L))); // abs()ã§ä¸¡é¢å¯¾å¿œ
         if (ndl <= 0)
             return 0;
         
